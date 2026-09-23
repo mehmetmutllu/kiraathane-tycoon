@@ -38,6 +38,8 @@ export const PALETTE = {
   // Tost ocağı (M3)
   griddle: '#4a4f54', // sac/ızgara metali
   griddleLid: '#37474f', // tost presi kapağı
+  tostCelik: '#b8c2c8', // tost makinesi paslanmaz gövdesi (T8b · G-90 · D-143)
+  tostKol: '#3b3f44', // tost makinesi kolu + nervürler + ayaklar
   toast: '#d9913b', // hazır tost (kızarmış)
   toastDark: '#a8632a', // tost ızgara izi
   bread: '#e3c388', // ekmek

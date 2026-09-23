@@ -1,9 +1,28 @@
 {
  "not": "İlerleme panosunun ESKİ oturum kartları. Pano her turda büyüyordu (67 kart / 219 KB) ve yayını canlı sürümün tamamının okunmasını şart koştuğu için tur başına maliyeti ARTIYORDU — okunanın neredeyse tamamı bir daha bakılmayacak arşivdi. Projenin kendi kuralı buraya da uygulandı (eski anlatı → arsiv/). Pano son 8 turu gösterir; öncesi burada ve git geçmişinde durur.",
  "kaynak": "docs/pano/ilerleme-panosu.html",
- "tasindi": "2026-09-21",
- "kart": 68,
+ "tasindi": "2026-09-23",
+ "kart": 70,
  "gunluk": [
+  {
+   "tarih": "17.09.2026",
+   "etiket": "Faz R · 4. oturum (R4 — çevre sanatı — D-129) — Faz R KAPANDI",
+   "baslik": "Seçilen kol uygulanmadı; <b>kullanıcının cümlesi</b> uygulandı",
+   "govde": "On iki aday gerçek oyunun içinde, aynı ışıkla, üç kadrajdan çizildi ve kullanıcıya <b>metinle değil kareyle</b> soruldu. Zemin ve duvar gruplarının tamamı elendi (<i>&#34;şu anki haliyle kalsın&#34;</i>); tek seçilen kol <b>C2 — bahçe</b> oldu. Ama kullanıcı kolu seçerken kapsamını da değiştirdi: <i>&#34;alan olarak açmadığım her yer öyle olsun, açtıklarım zaten oynanabilir olacak.&#34;</i><br><br>Karar paketindeki C2 <b>binanın dışındaki kuşaktı</b>. İstenen şey daha geniş: bahçe <b>binanın ayak izinin tümleyeni</b> — kilitli alanlar zemin karesinin İÇİNDE ve onlar da bahçe; bant çizilmeden önce bandın yeri de bahçe. Böylece bahçe <code>areasOpen</code> ile <b>küçülüyor</b>: satın alınan her alan bahçeden düşüp oynanabilir zemine dönüyor. Çim, çit ve bitkilerin üçü de tek kaynaktan (<code>binaAyakIzi</code>) türüyor — güncellenecek ikinci liste yok.<br><br><b>Yeni yüzey eski kusuru miras alabilirdi.</b> Bu turun bulgusu &#34;düz yüzey bitmemiş okunuyor&#34;du; düz bir yeşil düzlem şikâyeti yeşile boyardı. Çim bu yüzden parça başına tonlanıyor ve bekçi bunu denetliyor.<br><br><b>Ve kaçan mutasyon her zaman delik göstermez.</b> İlk koşuda 4 mutasyon kaçtı; ikisi (M12 ve M13) aynı kuralı hedefliyordu ve <b>ikisi birden</b> kaçtı. Şüphe bekçide değil <b>kuralda</b>ydı: &#34;müşteri koridorunu boş bırak&#34; elemesi hiçbir <code>areasOpen</code> değerinde ateşlenmiyordu, çünkü kapı her zaman açık bir alanın ayak izinin içinde. Ateşlenemeyen kural koruma değil gürültü — silindi, yerine gerçek değişmez kondu.",
+   "maddeler": [
+    "<b>D-129:</b> zemin (Z1/Z2/Z3) ve duvar (D1/D2/D3) grupları <b>tamamen elendi</b>; tek kol C2, kapsamı kullanıcı genişletti",
+    "<b>Şikâyetin ağırlık merkezi:</b> ZEMİN karenin ort. <b>%59,6</b>&#39;sı (en yüksek %82,8) · DUVAR %8,0 · BOŞLUK %4,2 (en yüksek <b>%20,0</b>)",
+    "<b>&#34;Bitmemiş&#34; hissi sayıya döndü:</b> zemin sapma <b>1,39</b> / <b>11</b> ayrık renk ↔ yanındaki gltf yüzeyleri <b>27,6-39,3</b> / <b>144-372</b>",
+    "<b>Zeminin bütün değişkenliği ödünç:</b> gölge olmasa zemin tek renk — <code>parke</code> teması D-073&#39;ten beri <code>kind: flat</code>",
+    "<b>Üç kol sunulmadan elendi:</b> gökyüzü silueti (ufuk üstü boşluk <b>18/18 karede %0,0</b>) · sokak cephesine bahçe (<b>%1,6</b>) · vinyet",
+    "<b>Boşluk nerede:</b> sol <b>%53,1</b> · sağ %27,3 · arka %17,9 · ön <b>%1,6</b> → kuşak sokağa değil <b>yanlara</b>; P90 taşma <b>11,11 br</b>",
+    "<b>C2&#39;nin bedeli ölçüldü:</b> 67 nesnenin tamamı, düz çimenliğe göre karenin yalnız <b>%2,6&#39;sı</b> — ama o %2,6 siluet",
+    "<b>Araç kendini üç kez çürüttü:</b> duvarlar InstancedMesh olduğu için DUVAR payı sahte <b>%1,5</b> okunuyordu · tek eşikli kabuk kuralı ara duvarı kaçırıyordu · fark eşiği (24) ölçtüğü kolun genliğinden büyüktü",
+    "<b>Yolda kapanan dikiş:</b> kaldırım 19,90&#39;da bitip asfalt 20,00&#39;de başlıyordu — <b>0,10 br</b>&#39;lik çizgiden arka plan görünüyordu; ön kenara düşen 80 ışının <b>tamamı aynı taşmayı</b> verdiği için yakalandı",
+    "Bekçi: <code>bahce-r4</code> (21 den.) · <code>mutasyon-bahce-r4</code> <b>23/23 kırmızı</b> · ilk koşuda 4 kaçtı, <b>ikisi ÖLÜ KOD gösterdi</b>",
+    "vitest <b>1273 ✓</b> · duman <b>45/45 ✓</b> · tsc temiz · konsol hatası 0"
+   ]
+  },
   {
    "tarih": "17.09.2026",
    "etiket": "Faz R · 3. oturum (R3 — HUD çerçeveleri — D-128)",

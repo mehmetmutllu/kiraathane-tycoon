@@ -194,19 +194,18 @@ export const dishStationVisible = (questIndex: number): boolean => questIndex >=
  * birikmeye başlıyor"* diye bildirdi. Döngünün nedeni (taşıma) ile sonucu (tezgâhın kirlenmesi)
  * arasındaki bağ kopmuştu.
  *
- * Artık gövde yalnız kirli kap TAŞINIRKEN dolu: oyuncunun tepsisinde ya da bulaşıkçının leğeninde.
- * Teslimde temiz havuz artar → yıkama parlaması → gövde boşalır.
- *
- * KAPSAM: kullanıcının *"birkaç tane bıraktıktan sonra"* dediği, tezgâhta BİRİKEN istif ayrı bir
- * iştir — bugün yıkama teslim anında anlıktır, "tezgâhta bekleyen bulaşık" durumu yoktur. Onu
- * eklemek bardak döngüsünün hızını değiştirir → denge kolu (plan T3-K9).
+ * Gövde, kirli kap ona GELİRKEN (oyuncunun tepsisinde ya da bulaşıkçının elinde) ve leğende
+ * BEKLERKEN dolu. D-143 (T8b · K9) ile leğen birikiyor: kullanıcının *"birkaç tane bıraktıktan
+ * sonra kirlenip, o adam oraya geldiğinde temizlenmesi"* — toplu yıkamada yığın bir anda boşalır.
  */
 export const sinkDirty = (s: {
   carriedDirty: number;
   carriedDirtyFood: number;
   dishwasher: { tray: number; trayFood: number } | null;
+  legen: { bardak: number; tabak: number };
 }): boolean =>
   s.carriedDirty + s.carriedDirtyFood > 0 ||
+  s.legen.bardak + s.legen.tabak > 0 ||
   (s.dishwasher ? s.dishwasher.tray + s.dishwasher.trayFood : 0) > 0;
 
 // Görev geçiş ritmi (2026-06-17, kullanıcı onayı): hedef tamamlanınca kart ANINDA takas

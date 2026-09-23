@@ -64,7 +64,7 @@ import {
   REACH_HOME,
   dist2D,
   moveToward,
-  activeSolids,
+  oyuncuKatilari,
   clampToOpenAreas,
   openServices,
   tableSolids,
@@ -175,6 +175,8 @@ export interface TickCtx {
   tray: number;
   trayFood: number;
   cleanCups: number;
+  /** K9 (D-143): leğende bekleyen kirliler + toplu yıkama sayacı. */
+  legen: Legen;
   carriedDirty: number;
   carriedDirtyFood: number;
   tableUpgradeFills: number[];
@@ -266,6 +268,7 @@ export function createTickCtx(s: GameState, dt: number): TickCtx {
     tray: s.tray,
     trayFood: s.trayFood,
     cleanCups: s.cleanCups,
+    legen: { ...s.legen },
     carriedDirty: s.carriedDirty,
     carriedDirtyFood: s.carriedDirtyFood,
     tableUpgradeFills: s.tableUpgradeFills.slice(),
@@ -728,7 +731,7 @@ function playerMoveSystem(c: TickCtx): void {
     // MOBİLYA = KATI engel: yeni bir engele GİRİŞ bloklanır (eksen-başı kayma; kafa kafaya gelince durur).
     // AMA oyuncu zaten bir engelin İÇİNDEyse (ör. üstünde masa açıldı) kilitlenmesin → çıkışına izin ver
     // (aktör collision'ındaki desenin aynısı). Böylece "zorlasan da giremezsin" korunur ama hapsolmazsın.
-    const furn = activeSolids(tables, areasOpen);
+    const furn = oyuncuKatilari(tables, areasOpen);
     const stuckInFurn = hitsSolid(oldX, oldZ, furn, pr);
     if (dxIn !== 0 && hitsSolid(nx, oldZ, furn, pr) && !stuckInFurn) nx = oldX;
     if (dzIn !== 0 && hitsSolid(nx, nz, furn, pr) && !stuckInFurn) nz = oldZ;
@@ -887,7 +890,7 @@ function dishCycleSystem(c: TickCtx): void {
   // Bulaşık noktasına yaklaşınca taşınan kirliler yıkanır → GLOBAL temiz havuza (B2: tek nokta).
   if (carriedDirty + carriedDirtyFood > 0 && dist2D(player, place.dish) < C.cups.washRadius) {
     const washed = carriedDirty + carriedDirtyFood;
-    cleanCups = lavaboyaBirak(cleanCups, washed);
+    cleanCups = legeneBirak(c, cleanCups, carriedDirty, carriedDirtyFood);
     stats.dishesWashed += washed;
     xp += C.xp.perDishWashed * washed;
     carriedDirty = 0;
@@ -1038,7 +1041,8 @@ function waiterSystem(c: TickCtx): void {
         if (tasinan >= carry || (tasinan > 0 && dishes.length === 0)) {
           // Dolu (ya da toplanacak kalmadı) → leğene götür. Bardak da tabak da AYNI havuza döner.
           if (navStep(w.pos, place.dish, wStep, navGrid, reachWash(c.areasOpen), player, obstacles)) {
-            cleanCups = lavaboyaBirak(cleanCups, tasinan); // bardak da tabak da AYNI havuza döner (korunum tek)
+            // bardak da tabak da AYNI havuza döner (korunum tek) — leğenden geçerek (D-143)
+            cleanCups = legeneBirak(c, cleanCups, w.dirtyCarry ?? 0, w.dirtyCarryFood ?? 0);
             // `stats.dishesWashed` OYUNCUNUN sayacıdır (q_wash görevi + "Temizlik" başarımı +
             // XP): personelin yıkadığı oraya yazılmaz. Bulaşıkçı da yazmaz — aynı kural.
             w.dirtyCarry = 0;
@@ -1096,7 +1100,7 @@ function dishwasherSystem(c: TickCtx): void {
     // Dolu (ya da elinde var ama toplanacak kalmadı) → bulaşıkta yıka. Bardak da tabak da AYNI
     // havuza döner (korunum değişmezi tek).
     if (navStep(dw.pos, place.dish, dStep, navGrid, reachWash(c.areasOpen), player, obstacles)) {
-      cleanCups = lavaboyaBirak(cleanCups, dw.tray + dw.trayFood);
+      cleanCups = legeneBirak(c, cleanCups, dw.tray, dw.trayFood);
       dw.tray = 0;
       dw.trayFood = 0;
     }
@@ -1657,7 +1661,7 @@ const SISTEMLER: readonly (readonly [string, (c: TickCtx) => void])[] = [
   ['dishCycleSystem', dishCycleSystem],
   ['waiterSystem', waiterSystem],
   ['dishwasherSystem', dishwasherSystem],
-  ['bulasikKuyruguSystem', bulasikKuyruguSystem],
+  ['legenSystem', legenSystem],
   ['interactionZoneSystem', interactionZoneSystem],
   ['revealSystem', revealSystem],
   ['padFillSystem', padFillSystem],
@@ -1709,55 +1713,62 @@ export const izdihamKoluAyarla = (k: IzdihamKolu | null): void => { izdihamKolu 
 export const izdihamKoluOku = (): IzdihamKolu | null => izdihamKolu;
 
 // ---------------------------------------------------------------------------
-// BULAŞIK KUYRUĞU ÖLÇÜM KOLU (T8b · T3-K9) — **yalnız ölçüm; varsayılan null = anlık yıkama.**
+// LEĞEN — bırakılan kirli birikir, TOPTAN yıkanır (T8b · K9 · D-143)
 // ---------------------------------------------------------------------------
 /**
- * K9 (G-70'in tam kolu): bırakılan kirli leğende BEKLER ve `yikamaSn` başına bir kap temize döner.
- * Bardak döngüsünün hızını değiştirir → varyant kapısı: kalıcı yazılmadan önce ölçülür
- * (`tools/olcum-tezgah-t8b.ts`). Kuyruk ölçüm süresince burada yaşar; korunum damgası onu sayar.
+ * Kullanıcı (G-70): *"birkaç tane bıraktıktan sonra kirlenip, o adam oraya geldiğinde temizlenmesi
+ * gerek"*. Oyuncu/garson/bulaşıkçı kirliyi leğene bırakır; kirliler `legen`de bekler ve her
+ * `cups.washBatchSec` saniyede bir hepsi birden temiz havuza döner (çaycının leğene geldiği an).
+ *
+ * NEDEN TOPLU, NEDEN KAP BAŞINA SÜRE DEĞİL (`docs/tezgah-raporu-t8b.md` Bulgu 3): kap başına
+ * 0,5-2 sn'lik süre leğende en fazla 2-4 kap biriktiriyor — kirliler 1-2'şer geldiği için yığın
+ * ekranda hiç oluşmuyor. Toplu yıkama 4-10 kaplık görünür yığın kurar; bedeli geç oyunda −%3 servis.
+ *
+ * Kayıt şeması DEĞİŞMEDİ: `cleanCups` kayda yazılmaz, yüklemede havuzdan yeniden türer — leğendeki
+ * kirliler de onunla birlikte temiz sayılır.
  */
-/**
- * İki biçim: `yikamaSn` → kuyruk sabit hızla erir (kap başına süre) · `topluSn` → kuyruk birikir ve
- * her `topluSn` saniyede bir TOPTAN temizlenir (kullanıcının tarifi: *"birkaç tane bıraktıktan sonra
- * … o adam oraya geldiğinde temizlenmesi gerek"*).
- */
-export interface BulasikKolu { yikamaSn?: number; topluSn?: number }
-let bulasikKolu: BulasikKolu | null = null;
-let lavaboKuyrugu = 0;
-let lavaboBirikim = 0;
-export const bulasikKoluAyarla = (k: BulasikKolu | null): void => {
-  bulasikKolu = k;
-  lavaboKuyrugu = 0;
-  lavaboBirikim = 0;
-};
-export const lavaboKuyruguOku = (): number => lavaboKuyrugu;
+export interface Legen {
+  bardak: number;
+  tabak: number;
+  /** Son toplu yıkamadan beri geçen süre (sn). */
+  t: number;
+}
+export const BOS_LEGEN: Legen = { bardak: 0, tabak: 0, t: 0 };
 
-function lavaboyaBirak(temiz: number, n: number): number {
-  if (!bulasikKolu) return temiz + n;
-  lavaboKuyrugu += n;
+function legeneBirak(c: TickCtx, temiz: number, bardak: number, tabak: number): number {
+  if (bulasikKolu?.topluSn === 0) return temiz + bardak + tabak; // ölçüm kolu: anlık (D-143 öncesi)
+  c.legen.bardak += bardak;
+  c.legen.tabak += tabak;
   return temiz;
 }
 
-function bulasikKuyruguSystem(c: TickCtx): void {
-  if (!bulasikKolu) return;
-  if (bulasikKolu.topluSn) {
-    lavaboBirikim += c.dt;
-    if (lavaboBirikim >= bulasikKolu.topluSn) {
-      lavaboBirikim -= bulasikKolu.topluSn;
-      c.cleanCups += lavaboKuyrugu;
-      lavaboKuyrugu = 0;
-    }
+function legenSystem(c: TickCtx): void {
+  const L = c.legen;
+  const n = L.bardak + L.tabak;
+  if (bulasikKolu?.yikamaSn) {
+    // Ölçüm kolu: kap başına süre (Bulgu 3'ün Y satırları).
+    if (n === 0) { L.t = 0; return; }
+    L.t += c.dt / bulasikKolu.yikamaSn;
+    let k = Math.min(n, Math.floor(L.t));
+    L.t -= k;
+    const b = Math.min(L.bardak, k);
+    L.bardak -= b;
+    k -= b;
+    L.tabak -= k;
+    c.cleanCups += b + k;
     return;
   }
-  if (lavaboKuyrugu === 0) {
-    lavaboBirikim = 0;
-    return;
-  }
-  lavaboBirikim += c.dt / (bulasikKolu.yikamaSn ?? 1);
-  const n = Math.min(lavaboKuyrugu, Math.floor(lavaboBirikim));
-  if (n > 0) {
-    lavaboKuyrugu -= n;
-    lavaboBirikim -= n;
-    c.cleanCups += n;
-  }
+  const periyot = bulasikKolu?.topluSn ?? C.cups.washBatchSec;
+  L.t += c.dt;
+  if (L.t < periyot) return;
+  L.t -= periyot;
+  c.cleanCups += n;
+  L.bardak = 0;
+  L.tabak = 0;
 }
+
+// ---- ÖLÇÜM KOLU (yalnız ölçüm; null = yürürlükteki toplu yıkama) ----
+/** `topluSn: 0` → anlık yıkama (D-143 öncesi) · `topluSn: T` → T sn'de bir toptan · `yikamaSn` → kap başına. */
+export interface BulasikKolu { yikamaSn?: number; topluSn?: number }
+let bulasikKolu: BulasikKolu | null = null;
+export const bulasikKoluAyarla = (k: BulasikKolu | null): void => { bulasikKolu = k; };

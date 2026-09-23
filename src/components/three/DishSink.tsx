@@ -5,6 +5,7 @@ import { KayTezgah } from './Kitchen';
 import { useGame } from '../../game/store';
 import { sinkDirty } from '../../game/rules';
 import { FRONT_TOP_Y, onHatGovdeleri } from './kitchenLook';
+import { CarriedDirty } from './carriedDirty';
 
 /**
  * DishSink.tsx — BULAŞIK NOKTASI (S4).
@@ -20,18 +21,16 @@ import { FRONT_TOP_Y, onHatGovdeleri } from './kitchenLook';
  *  ③ *"millet bulaşık getirince oto kirlenir, NPC gelince bir efektle temiz olur, döngü devam eder"*
  *     → aşağıdaki `yikandi` parlaması.
  *
- * **`tick.ts`E DOKUNULMADI.** Bu tamamen SUNUM katmanıdır (E3 / D-096 deseni): var olan durumu
- * okur, hiçbir yeni durum üretmez. Okunan iki sayı:
- *   - kirli var mı  = TEZGÂHA GELEN kap (oyuncunun tepsisi + bulaşıkçının leğeni). G-70'e
- *                     kadar kattaki her bardak sayılıyordu; masadaki bardak tezgâhı kirletiyordu.
- *   - `cleanCups`   = yıkanmış kap havuzu; ARTTIĞI an "yıkandı" demektir (bulaşıkçı lavaboya
- *                     vardığında `dishwasherSystem` tam bunu yapıyor)
- * Yeni bir sayaç eklemek yerine var olan korunum değişkenine bağlanması bilinçli: denge
- * dosyalarına dokunmadan döngü kendiliğinden doğru çalışır.
+ * SUNUM katmanı: var olan durumu okur, hiçbir durum üretmez. Okunan iki şey:
+ *   - kirli var mı  = TEZGÂHA GELEN ya da LEĞENDE bekleyen kap (`sinkDirty`, G-70 · D-143).
+ *   - `legen`       = leğende biriken kirliler (D-143, toplu yıkama). Yığın sayıyla büyür; leğen
+ *                     BOŞALDIĞI an "yıkandı" demektir — parlama o anda patlar.
  */
 
 /** Bulaşıklığın tezgâh üstündeki yeri — modelin kendi ayak izinden türer, elle yazılmaz. */
 const RACK_Z = -0.1;
+/** Leğen yığınında çizilen en çok kap (iki sıra × 4). */
+const LEGEN_GORUNEN = 8;
 /** Parlamanın süresi (sn). Hafif tutuldu: `feedback_visual_polish` — animasyon göze girmez. */
 const FLASH = 0.55;
 
@@ -39,16 +38,17 @@ const FLASH = 0.55;
  * Yıkama parlaması: lavabonun üstünde kısa bir su-mavisi halka açılır ve söner.
  * `useFrame` + tek ref — setState YOK (60 fps'te render tetiklenmez).
  */
-function Yikama({ tetik }: { tetik: number }) {
+function Yikama({ bekleyen }: { bekleyen: number }) {
   const ref = useRef<Group>(null);
   const t = useRef(0);
-  const son = useRef(tetik);
+  const son = useRef(bekleyen);
   useFrame((_, dt) => {
     const g = ref.current;
     if (!g) return;
-    if (tetik !== son.current) {
-      son.current = tetik;
-      t.current = FLASH;
+    // Leğen dolu → boş: toplu yıkama oldu (D-143).
+    if (bekleyen !== son.current) {
+      if (son.current > 0 && bekleyen === 0) t.current = FLASH;
+      son.current = bekleyen;
     }
     if (t.current <= 0) {
       if (g.visible) g.visible = false;
@@ -82,8 +82,8 @@ export function DishSink({ pos, rot, areasOpen }: { pos: readonly [number, numbe
   // Kirli var mı / gövdenin sahnede olup olmadığı: ikisi de `rules.ts`teki saf yüklemlerden
   // (`sinkDirty` · `dishStationVisible`). Gerekçe orada, tek yerde — G-69/G-70, 2026-09-18.
   const kirli = useGame(sinkDirty);
-  // Temiz kap havuzu ARTTIĞINDA yıkama olmuştur — ayrı bir olay/sayaç eklemeye gerek yok.
-  const temizSayac = useGame((s) => s.cleanCups);
+  const bardak = useGame((s) => s.legen.bardak);
+  const tabak = useGame((s) => s.legen.tabak);
   // Boş ↔ dolu: paketin KARDEŞ modelleri. Ayrı bir bulaşıklık koymuyoruz — kullanıcı
   // *"kendinden bulaşıklı ve bulaşıksız hâli olan"* asseti istedi, o yüzden gövdenin kendisi değişir.
   const model = kirli ? 'kitchentable_sink_large_decorated' : 'kitchentable_sink_large';
@@ -110,7 +110,12 @@ export function DishSink({ pos, rot, areasOpen }: { pos: readonly [number, numbe
           </group>
         }
       />
-      <Yikama tetik={temizSayac} />
+      {/* LEĞENDEKİ YIĞIN (D-143): kullanıcının *"birkaç tane bıraktıktan sonra"*sı — sayıyla büyür,
+          toplu yıkamada bir anda boşalır. Taşınan kirlinin çizimi ortak (`CarriedDirty`), en çok 8. */}
+      <group position={[govde.dx - govde.w / 2 + 0.35, FRONT_TOP_Y - 0.93, -0.3]}>
+        <CarriedDirty cups={Math.min(bardak, LEGEN_GORUNEN)} plates={Math.min(tabak, Math.max(0, LEGEN_GORUNEN - bardak))} />
+      </group>
+      <Yikama bekleyen={bardak + tabak} />
     </group>
   );
 }

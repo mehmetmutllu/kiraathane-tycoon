@@ -567,8 +567,14 @@ export const economyConfig = {
      * komşu masadan yanlış toplama 0 yön.
      */
     collectReach: 0.7,
-    /** Bulaşık noktasında yıkama yakınlığı (varınca taşınan kirliler temize döner). */
+    /** Bulaşık noktasında yıkama yakınlığı (varınca taşınan kirliler LEĞENE bırakılır). */
     washRadius: 1.6,
+    /**
+     * Leğenin toplu yıkama periyodu (sn) — T8b · K9 · D-143. Bırakılan kirliler leğende birikir ve
+     * her periyotta hepsi birden temize döner. 10 sn: leğende 4-7 kaplık görünür yığın, geç oyunda
+     * servis −%3 (20 sn: −%4, yığın 10'a çıkar) — `docs/tezgah-raporu-t8b.md` Bulgu 3.
+     */
+    washBatchSec: 10,
     /**
      * Kirli masa eşiği (D-019): bir masada bu sayıdan FAZLA (>) kirli bardak birikince masa KİRLİ olur.
      * Eşik 2 → 2'den fazla = 3+ kirli ⇒ masa kirli (kullanıcı isteği "2'den fazla / 3+"). Kirli masaya:

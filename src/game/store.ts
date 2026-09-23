@@ -174,7 +174,7 @@ export {
 } from './rules';
 export type { ActiveSpot, GameNotice, LevelUpOdul, QuestView, QuestCtx, CamFocus } from './rules';
 
-import { createTickCtx, runTick } from './tick';
+import { createTickCtx, runTick, BOS_LEGEN, type Legen } from './tick';
 
 
 /**
@@ -287,6 +287,8 @@ export interface GameState {
   waiters: Waiter[];
   /** Katın TEK bulaşıkçısı (yoksa null) — konum/taşıdığı kirli transient. */
   dishwasher: Waiter | null;
+  /** Leğende bekleyen kirliler (D-143, transient — yüklemede temiz havuza katılır). */
+  legen: Legen;
   /** Servisin HAZIR ürünleri — ÜRÜN başına (B2: tek nokta, seviyeye göre iki ürün). */
   ready: Record<ProductId, number>;
   /** Ürün başına birikmiş hazırlama süresi (sn); tezgâh aynı anda tek kalem hazırlar. */
@@ -483,6 +485,7 @@ export const useGame = create<GameState>((set, get) => ({
   npcCount: 0,
   waiters: [],
   dishwasher: null,
+  legen: { ...BOS_LEGEN },
   ready: { tea: 0, tost: 0 },
   brewProgress: { tea: 0, tost: 0 },
   tray: 0,
@@ -640,6 +643,7 @@ export const useGame = create<GameState>((set, get) => ({
       dishwasher: world.services[THE_SERVICE].hasDishwasher
         ? { pos: [...initPlace.dishwasherHome] as Vec3, tray: 0, trayFood: 0 }
         : null,
+      legen: { ...BOS_LEGEN },
       ready: { tea: 0, tost: 0 },
       brewProgress: { tea: 0, tost: 0 },
       tray: 0,
@@ -805,6 +809,7 @@ export const useGame = create<GameState>((set, get) => ({
         player: c.player,
         waiters: c.waiters,
         dishwasher: c.dishwasher,
+        legen: c.legen,
         ready: c.ready,
         brewProgress: c.brewProgress,
         tray: c.tray,

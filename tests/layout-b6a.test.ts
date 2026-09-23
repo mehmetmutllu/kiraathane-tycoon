@@ -11,6 +11,7 @@ import {
   WAITER_HOME_GAP,
   dist2D,
 } from '../src/game/layout';
+import { FLOOR_HALF } from '../src/game/layout';
 import { MAX_WAITERS, areaTableStart, areaTableSlots } from '../src/game/world';
 import { decorItems } from '../src/config/decor';
 import { WALL_H } from '../src/components/three/wallPanel';
@@ -171,10 +172,10 @@ describe('B6a — dekor katmanı (salt görsel) yerinde ve kilitli alana sızmı
     expect(before).toHaveLength(0);
     const after = decorItems(3).filter((d) => d.kind === 'konsol' || d.kind === 'tvUnitesi');
     expect(after).toHaveLength(2);
-    // ve gerçekten servisin ESKİ yerinin bandında duruyorlar (maket v14'ün "boşalan 13 birim"i)
-    const sp = servicePlace(1);
+    // ve gerçekten servisin ESKİ yerinin bandında, SOL DUVARDA duruyorlar (maket v14'ün "boşalan 13
+    // birim"i). Ölçü duvara göre: D-143'te tezgâh duvardan 0,75'e açıldı, duvar yerinde kaldı.
     for (const d of after) {
-      expect(Math.abs(d.pos[0] - sp.station[0])).toBeLessThan(1.5);
+      expect(Math.abs(d.pos[0] + FLOOR_HALF)).toBeLessThan(1.0);
       expect(d.pos[2]).toBeGreaterThan(2);
       expect(d.pos[2]).toBeLessThan(14);
     }

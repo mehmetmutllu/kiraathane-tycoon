@@ -171,7 +171,7 @@ describe('G-69 · bulaşık tezgâhı mekanikle aynı anda doğar', () => {
 });
 
 describe('G-70 · tezgâh yalnız ona GELEN kapla kirlenir', () => {
-  const bos = { carriedDirty: 0, carriedDirtyFood: 0, dishwasher: null };
+  const bos = { carriedDirty: 0, carriedDirtyFood: 0, dishwasher: null, legen: { bardak: 0, tabak: 0 } };
 
   it('hiç kirli taşınmıyorsa tezgâh temizdir', () => {
     expect(sinkDirty(bos)).toBe(false);
@@ -185,6 +185,11 @@ describe('G-70 · tezgâh yalnız ona GELEN kapla kirlenir', () => {
   it('bulaşıkçının leğenindeki kirli tezgâhı kirletir', () => {
     expect(sinkDirty({ ...bos, dishwasher: { tray: 2, trayFood: 0 } })).toBe(true);
     expect(sinkDirty({ ...bos, dishwasher: { tray: 0, trayFood: 0 } })).toBe(false);
+  });
+
+  it('D-143: LEĞENDE bekleyen kirli tezgâhı kirletir (toplu yıkamaya kadar)', () => {
+    expect(sinkDirty({ ...bos, legen: { bardak: 3, tabak: 0 } })).toBe(true);
+    expect(sinkDirty({ ...bos, legen: { bardak: 0, tabak: 1 } })).toBe(true);
   });
 
   it('MASADAKİ kirli bardak tezgâhı kirletmez (kusurun kendisi)', () => {

@@ -302,8 +302,9 @@ describe('R2 · başlangıç hattı bitişik (G-37 · B2)', () => {
   it('bulaşığa bağlı ankrajlar bulaşıkla birlikte taşınmış (elle kalmamış)', () => {
     const p = servicePlace(2);
     const dishZ = p.dish[2];
-    // Bulaşıkçının postası bulaşığın 2,0 br kuzeyinde durur — ilişki türemiş olmalı.
-    expect(p.dishwasherHome[2] - dishZ, 'bulaşıkçı postası bulaşıktan koptu').toBeCloseTo(2.0, 6);
+    // D-143: bulaşıkçının postası leğenin TAM arkasında (aynı z, duvarla gövde arasında) — türemiş.
+    expect(p.dishwasherHome[2] - dishZ, 'bulaşıkçı postası bulaşıktan koptu').toBeCloseTo(0, 6);
+    expect(p.dishwasherHome[0], 'bulaşıkçı gövdenin ARKASINDA').toBeLessThan(p.dish[0] - p.dishHalf[0]);
     // Bulaşıkçı pad'i bulaşığın TAM yanında (aynı z) — pad hedefin konumundadır.
     expect(LAYOUT.padPos.dishwasher[2] - dishZ, 'bulaşıkçı pad\'i boş zemini işaretliyor').toBeCloseTo(0, 6);
     // Çaycının yolu hattın boyunca uzanır: bulaşığın ön ucunu geçmez, tezgâhın arkasında başlar.

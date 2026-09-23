@@ -20,6 +20,7 @@ import {
   PAD_RADIUS,
   TABLE_UP_RADIUS,
   activeSolids,
+  oyuncuKatilari,
   clampToOpenAreas,
   getNavGrid,
   getPlayerNavGrid,
@@ -52,9 +53,10 @@ const acikAlanda = (x: number, z: number, areasOpen: number): boolean => {
   return cx === x && cz === z;
 };
 
-/** Oyuncu bu noktada DURABİLİR mi? (`playerMoveSystem`in iki kuralı: mobilya + açık alan.) */
+/** Oyuncu bu noktada DURABİLİR mi? (`playerMoveSystem`in iki kuralı: oyuncu katıları + açık alan;
+ *  D-143'ten beri oyuncu katıları = mobilya + sol duvar döneminde tezgâhın arka şeridi.) */
 const durabilir = (x: number, z: number, tables: number, areasOpen: number): boolean =>
-  !hitsSolid(x, z, activeSolids(tables, areasOpen), LAYOUT.playerRadius) && acikAlanda(x, z, areasOpen);
+  !hitsSolid(x, z, oyuncuKatilari(tables, areasOpen), LAYOUT.playerRadius) && acikAlanda(x, z, areasOpen);
 
 describe('D-091 · oyuncunun ızgarası (getPlayerNavGrid)', () => {
   it('1) HÜCRE KURALI — açık hücre = oyuncunun DURABİLDİĞİ hücre, istisnasız', () => {

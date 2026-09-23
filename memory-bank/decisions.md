@@ -4670,3 +4670,19 @@ Kapısız seviye ₺'si ilk alımı 22 → 3 sn'ye indiriyordu → Sv 5 kapısı
 Seviye atlama artık ödül ekranı; kayıt v34 (tepsi kademesi göçü). `docs/zincir-raporu-t8a.md`.
 **Sıra kilidi 7. yanlış pozitif:** commit #2 `karma-commit` sayıldı — final tam koşu + rapor §Karar kodla aynı
 commit'te (protokolün istediği); commit #1 `aa387c8` + `e0c9f7b` (karar bölümü boş) push'lu.
+
+---
+
+## D-143 · Tezgâh duvardan 0,75 açıldı, personel arkada; leğen birikip 10 sn'de toptan yıkanır; Türk tost makinesi (2026-09-23)
+
+**Karar (kullanıcı, T8b karar paketi):** K10 pay **0,75** (önerilen) · K9 **toplu yıkama 10 sn** (önerilen) ·
+G-85/G-90'da D→E ile F (ayrı modül) arasında kararsız kaldı → bu tur **A (aynı tezgâh) + D→E** uygulandı,
+F sonraki oturumda oyunda görülerek sorulacak. Ek istek: L1 tepsisindeki **iki beyaz bardak kaldırıldı**.
+**Belirleyici sayı:** 0,60 en küçük yeterli pay ama aktörün yan payı 0,02 (kare: kafa duvarda); hiçbir pay
+servisi düşürmüyor. Kap başına süreli yıkama leğende en fazla 2-4 kap biriktiriyor (görünmez); toplu 10 sn
+4-7 kaplık yığın kuruyor, geç oyunda −%3 servis (yayılım bandında). Final: W20 9,0 → 8,7 · W8 9,8 → 9,6.
+**Teknik (soru açılmadı):** arka şerit oyuncuya kapalı (`oyuncuKatilari`), çaycı tezgâh parçasında, bulaşıkçı
+leğenin arkasında; 1. garson postası payla kayar, 2.si kaymaz (pad çakışması). Kayıt şeması değişmedi
+(`cleanCups` kayda yazılmıyor). Pres tipi makine hiçbir CC0 pakette yok → ilkelden çizim. `docs/tezgah-raporu-t8b.md`.
+**Sıra kilidi 8. yanlış pozitif:** commit #2 `karma-commit` sayıldı — final tam koşu + rapor §Karar kodla aynı
+commit'te (protokolün istediği); commit #1 `ab57cc9` (karar bölümü boş) + paket `3207de1` push'lu.

@@ -55,7 +55,8 @@ function bardakToplami(s: ReturnType<typeof useGame.getState>): number {
     s.waiters.reduce((a, w) => a + w.tray + w.trayFood + (w.dirtyCarry ?? 0) + (w.dirtyCarryFood ?? 0), 0) +
     (s.dishwasher ? s.dishwasher.tray + s.dishwasher.trayFood : 0) +
     s.npcs.filter((n) => n.state === 'drinking').length +
-    s.dishes.length
+    s.dishes.length +
+    s.legen.bardak + s.legen.tabak
   );
 }
 

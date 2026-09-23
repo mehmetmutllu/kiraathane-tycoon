@@ -5,31 +5,22 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-23 — T8b AÇIK · adım 2 ÖLÇ)
+## ŞU AN (2026-09-23 — T8b KAPANDI · D-143; sıradaki T9)
 
 ```
-SORU            : Tezgâh arkası — adam tezgâhın ARKASINDA dursun (K10, en küçük yeterli duvar payı),
-                  bulaşık tezgâhta birikip süreyle yıkansın (K9), tost noktası ekranda okunsun (G-85)
-                  ve tost makinesi gerçek asset olsun (G-90).
-ÖLÇÜLECEK KOLLAR: K10 — sol duvar payı 0,30 (bugün) · 0,60 · 0,75 · 0,90 · 1,05 br
-                  (nav şeridi · ön koridor · pad/nokta çakışması · oyuncu arkaya girebiliyor mu ·
-                  bulaşıkçı arkada → servis/dk)
-                  K9  — yıkama anlık (bugün) · kuyruk + 0,5 / 1,0 / 2,0 sn/kap (servis/dk · temiz=0 payı ·
-                  kuyruk boyu)
-                  G-85 — A aynı tezgâh okunur tost bölgesi · B ayrı tost modülü, aynı merdiven
-                  (ikisi denge dışı; C "ayrı pad + ayrı merdiven" denge işi → seçilirse kendi turu)
-                  G-90 — aday kartı: bugünkü çizim · Kenney toaster · KayKit tava/ocak · KayKit ayrı
-                  modül · yeniden çizilmiş Türk tost makinesi (aynı kadraj)
-SAYILAR         : (adım 2 — docs/tezgah-raporu-t8b.md §Bulgular)
-KARAR           : (adım 3 — D-143)
-UYGULAMA        : (adım 4)
-BEKÇİ           : (adım 4)
+T8b SONUÇ       : sol duvar payı 0,30 → 0,75 · çaycı + bulaşıkçı tezgâhın ARKASINDA · arka şerit oyuncuya
+                  kapalı (`oyuncuKatilari`) · leğen birikir, 10 sn'de TOPTAN yıkanır (`cups.washBatchSec`) ·
+                  Türk tost makinesi (L5 tekli, L6 geniş plaka) · L1 tepsisindeki iki beyaz bardak kalktı
+BEDEL           : geç oyun servis 9,0 → 8,7 (−%3, yayılım bandında); K10'un servis bedeli yok
+KARELER         : docs/gorsel/ss/t8b-final.png · t8b-k10-yanyana.png · t8b-tost-aday.png
 ```
 
 ## ⏭️ SIRADAKİ ADIM
 
-1. Ölçüm dikişleri (layout: sol duvar payı · tick: bulaşık kolu, ikisi varsayılanda kapalı) +
-   `tools/olcum-tezgah-t8b.ts` + tost aday kartı → rapor → commit #1 → karar paketi.
+1. **Açılışta kullanıcıya SOR (T8b'den kalan):** tost yeri **A (aynı tezgâh, D→E makine — şu an oyunda)** mı,
+   **F (yan tezgâhta ayrı tost modülü)** mı? Kullanıcı *"bilemedim, ya d->e ya da f"* dedi; önce oyunda
+   görsün. F seçilirse iki dönemde yer ölçüsü ister (arka bantta garson postaları batı cebinde) → küçük tur.
+2. Sonra **T9 — G-88 genel tarama** (aşağıdaki sıra).
 
 ## AÇIK KALEMLER
 - **g1 kolu (garson merdiveni ucuzlatma) D-142 sonrası ölçütü iyileştiriyor** — elenme gerekçesi düştü;
@@ -44,8 +35,8 @@ BEKÇİ           : (adım 4)
 ## SONRAKİ TURLAR (kullanıcı onaylı sıra)
 1. ~~T6 commit #2~~ ✅ · ~~tarayıcı kayma ölçümü~~ ✅
 2. ~~T7 — banket + pad + WC kabini~~ ✅ D-141
-3. ~~T8a — zincir + T3 denge~~ ✅ D-142 · **T8b — tezgâh arkası (G-85 · G-90 · K9 · K10)** ← buradan başla
-4. **T9 — G-88 genel tarama** (kod + oynanış, ağırlık performans) + N2 yol önbelleği + lint 66 + tick ~5 ms (T6b Bulgu C)
+3. ~~T8a — zincir + T3 denge~~ ✅ D-142 · ~~T8b — tezgâh arkası~~ ✅ D-143 (F sorusu açık)
+4. **T9 — G-88 genel tarama** ← buradan başla (kod + oynanış, ağırlık performans) + N2 yol önbelleği + lint 66 + tick ~5 ms (T6b Bulgu C)
 5. **Faz F — F3 reklam · F4 IAP · F5 mağaza + G-89 store görseli/videosu (EN SON)**
 
 ---

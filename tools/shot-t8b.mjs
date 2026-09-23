@@ -45,6 +45,20 @@ await sayfa.evaluate(() => document.body.classList.add('dsb-hide-hud'));
 await sayfa.evaluate(() => { window.__devPlan({ topDown: false, gridStep: 0 }); window.__teleport(-12.6, 8.2); });
 await sayfa.waitForTimeout(4000);
 
+// --final (commit #2): yürürlükteki yerleşim (kol yok) · L5 tekli makine · L6 geniş · leğende yığın.
+if (process.argv.includes('--final')) {
+  for (const L of [5, 6]) {
+    await sayfa.evaluate((lv) => window.__setState({ stationLevels: [lv], legen: { bardak: 5, tabak: 2, t: 0 } }), L);
+    await sayfa.evaluate(() => window.__teleport(-12.6, 8.2));
+    await sayfa.waitForTimeout(2500);
+    await sayfa.screenshot({ path: `${OUT}/t8b-final-L${L}.png`, clip: { x: 0, y: 0, width: 620, height: 560 } });
+  }
+  await tarayici.close();
+  sunucu.kill();
+  console.log(hatalar.length ? 'KONSOL HATALARI: ' + hatalar.join(' | ') : 'konsol temiz');
+  process.exit(hatalar.length ? 1 : 0);
+}
+
 for (const { ad, k } of KOLLAR) {
   await sayfa.evaluate((kol) => window.__solDuvarKolu(kol), k);
   // Dönemi bir an arka banda alıp geri döndür: yerleşime abone bileşenler yeni kolla yeniden çizilir.

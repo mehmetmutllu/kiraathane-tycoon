@@ -34,16 +34,77 @@ function Puff({ baseY, phase }: { baseY: number; phase: number }) {
 }
 
 /**
+ * TÜRK TOST MAKİNESİ (T8b · G-90 · D-143). Kullanıcı: *"şu an sanki kendi çizdiğin var gibi ve o da
+ * kötü duruyor"*. KayKit'in dokuz paketinde, Kenney Food Kit'te ve Kenney Furniture Kit'te pres tipi
+ * makine YOK (Furniture Kit'in `toaster`ı dikey ekmek kızartma makinesi) — Türk'e özgü obje kendi
+ * ilkelimizden çizilir (çay bardağı gibi). Aday kartı: `docs/gorsel/ss/t8b-tost-aday.png` (D → E).
+ *
+ * Paslanmaz gövde + nervürlü alt plaka + 35° açık kapak + kalın siyah kol. `genis` (L6) ikinci presin
+ * yerine plakayı genişletir: seviye bir kutu daha değil, makinenin kendisi büyür. Hazır tost
+ * AÇIK PLAKANIN üstünde bekler (kapak kalkık, dilim içinde).
+ */
+function TostMakinesi({ genis, hazir }: { genis: boolean; hazir: number }) {
+  const W = genis ? 0.9 : 0.56;
+  const D = 0.46;
+  const dilim = Math.min(hazir, genis ? 3 : 2);
+  return (
+    <group>
+      <mesh castShadow position={[0, 0.05, 0]}>
+        <boxGeometry args={[W, 0.1, D]} />
+        <meshStandardMaterial color={PALETTE.tostCelik} metalness={0.55} roughness={0.35} />
+      </mesh>
+      <mesh position={[0, 0.11, 0.01]}>
+        <boxGeometry args={[W - 0.06, 0.02, 0.38]} />
+        <meshStandardMaterial color={PALETTE.griddle} metalness={0.5} roughness={0.45} />
+      </mesh>
+      {[-3, -2, -1, 0, 1, 2, 3].map((i) => (
+        <mesh key={i} position={[0, 0.125, i * 0.05]}>
+          <boxGeometry args={[W - 0.1, 0.012, 0.018]} />
+          <meshStandardMaterial color={PALETTE.tostKol} />
+        </mesh>
+      ))}
+      {/* kapak: arka menteşeden açık */}
+      <group position={[0, 0.12, -D / 2 + 0.03]} rotation={[-0.62, 0, 0]}>
+        <mesh castShadow position={[0, 0.035, 0.21]}>
+          <boxGeometry args={[W, 0.07, 0.42]} />
+          <meshStandardMaterial color={PALETTE.tostCelik} metalness={0.55} roughness={0.35} />
+        </mesh>
+        <mesh castShadow position={[0, 0.03, 0.46]}>
+          <boxGeometry args={[W * 0.7, 0.035, 0.05]} />
+          <meshStandardMaterial color={PALETTE.tostKol} />
+        </mesh>
+      </group>
+      {/* çalışıyor ışığı */}
+      <mesh position={[W / 2 - 0.07, 0.07, D / 2 + 0.005]}>
+        <boxGeometry args={[0.03, 0.03, 0.01]} />
+        <meshStandardMaterial color="#e53935" emissive="#e53935" emissiveIntensity={0.6} />
+      </mesh>
+      {Array.from({ length: dilim }).map((_, i) => (
+        <group key={i} position={[(i - (dilim - 1) / 2) * 0.24, 0.16, 0.02]}>
+          <mesh castShadow>
+            <boxGeometry args={[0.2, 0.05, 0.18]} />
+            <meshStandardMaterial color={PALETTE.toast} />
+          </mesh>
+          <mesh position={[0, 0.027, 0]}>
+            <boxGeometry args={[0.2, 0.006, 0.03]} />
+            <meshStandardMaterial color={PALETTE.toastDark} />
+          </mesh>
+        </group>
+      ))}
+    </group>
+  );
+}
+
+/**
  * SERVİS NOKTASI (B2 — D-060): katın TEK üretim objesi. **Tek merdiven, iki kimlik** (plan §4):
  *   L0-L3  derme çatma ÇAY OCAĞI — tezgâh + semaver; semaver seviyeyle büyür/ısınır.
  *   L4+    TEZGÂH — gövde kaplanır (koyu tezgâh ahşabı + pirinç bant), arkaya cezve ocağı gelir.
  *          Obje YER DEĞİŞTİRMEZ, seviye SIFIRLANMAZ: aynı nokta kimlik değiştirir.
- *   L5+    TOST açılır — sac + pres + ekmek kasası eklenir (eski ayrı "TostStation" objesinin
- *          parçaları; artık ayrı bir istasyon değil, aynı tezgâhın üst basamağı).
- * Hazır ürünler tezgâhın sol yarısında: çay ÖN sırada (bardak), tost ARKA sırada (dilim).
+ *   L5+    TOST açılır — Türk tost makinesi + ekmek kasası (D-143); L6'da makinenin plakası genişler.
+ *          Ayrı istasyon değil, aynı tezgâhın üst basamağı: tezgâhın sol ucu "tost yeri"dir (G-85 A).
+ * Hazır ürünler tezgâhın sol yarısında: çay ÖN sırada (bardak), tost makinenin açık plakasında.
  * Faz 6'da .glb takılır; B3'te maket ölçeğinde arka banda taşınacak.
  */
-const LID_HEAT = ['#37474f', '#4e4239', '#6e4a2f', '#9c5b28', '#c0392b', '#e25822'];
 export function ServicePoint({
   position,
   level = 0,
@@ -64,7 +125,6 @@ export function ServicePoint({
   const color = LEVEL_COLOR[Math.min(level, LEVEL_COLOR.length - 1)];
   const counter = isCounter(level); // L4: ocak → TEZGÂH
   const tost = sellsTost(level); // L5: tost açılır
-  const lid = LID_HEAT[Math.min(level + 1, LID_HEAT.length - 1)];
   const govde = onHatGovdeleri(areasOpen).station;
   // R2/C2 (D-127): seviyenin BİÇİM işaretleri. Hangi basamakta neyin açıldığı `kitchenLook`ta;
   // burası yalnız çizer. Yerleşim tablanın serbest sağ ucunda (semaverin doğusu) ve sol ucunda.
@@ -146,19 +206,14 @@ export function ServicePoint({
                 ayak izine girmeden yerleşir — ölçüden sonra kimse üst üste binmesin diye aralıkları
                 `tests/mutfak-r2.test.ts` denetliyor. */}
 
-            {/* L1 — SERVİS TEPSİSİ: ilk yükseltmenin işareti. Tabla üstünde, sağ uçta. */}
+            {/* L1 — SERVİS TEPSİSİ: ilk yükseltmenin işareti. Tabla üstünde, sağ uçta. Üstündeki iki beyaz
+                bardak kaldırıldı (kullanıcı 2026-09-23: *"2 tane beyaz bardak gibi bir şey var o ne kaldır"*). */}
             {tepsi && (
               <group position={[yer('tepsi').x, 0.93, yer('tepsi').z]}>
                 <mesh castShadow>
                   <boxGeometry args={[0.4, 0.03, 0.28]} />
                   <meshStandardMaterial color={PALETTE.brass} metalness={0.5} roughness={0.45} />
                 </mesh>
-                {[-0.1, 0.1].map((gx) => (
-                  <mesh key={gx} castShadow position={[gx, 0.09, 0]}>
-                    <cylinderGeometry args={[0.055, 0.045, 0.14, 8]} />
-                    <meshStandardMaterial color={PALETTE.plate} />
-                  </mesh>
-                ))}
               </group>
             )}
 
@@ -205,31 +260,12 @@ export function ServicePoint({
               </group>
             )}
 
-            {/* L5: TOST SACI + PRES — tezgâhın SOL ucunda, ARKA sırada (tabla üstü, 2.2×0.8'in İÇİNDE:
-                gövde ±1.1 x / ±0.4 z; sac -1.05..-0.15 aralığında durur, dışarı taşmaz). Ekmek kasası
-                arkadaki hazırlık modülünün üstünde — tezgâhın oynanış yüzünü kalabalıklaştırmaz. */}
+            {/* L5: TÜRK TOST MAKİNESİ (D-143) — tezgâhın SOL ucunda, ARKA sırada; eski sacın ayak izi
+                (x −1,05…−0,15) içinde: tekli 0,56, L6'da geniş 0,90 = tam o aralık. */}
             {tost && (
-              <group position={[-0.6, 0, -0.12]}>
-                <mesh castShadow position={[0, 0.94, 0]}>
-                  <boxGeometry args={[0.9, 0.06, 0.4]} />
-                  <meshStandardMaterial color={PALETTE.griddle} metalness={0.5} roughness={0.4} />
-                </mesh>
-                {/* pres kapağı: L6'da ikinci pres (kapasite hissi); renk seviyeyle ısınır.
-                    Basamak eşiği `kitchenLook.SERVIS_ISARETLERI`ten — düz `level >= 6` koşulu
-                    bir seviye işaretiydi ama hiçbir yerde öyle sayılmıyordu (R2/D-127). */}
-                {(ikinciPres ? [-0.22, 0.22] : [0]).map((px) => (
-                  <group key={px} position={[px, 1.0, -0.16]} rotation={[0.5, 0, 0]}>
-                    <mesh castShadow>
-                      <boxGeometry args={[0.34, 0.05, 0.3]} />
-                      <meshStandardMaterial color={lid} metalness={0.4} roughness={0.5} />
-                    </mesh>
-                    <mesh position={[0, 0.06, 0.12]}>
-                      <cylinderGeometry args={[0.025, 0.025, 0.1, 8]} />
-                      <meshStandardMaterial color="#2b2b2b" />
-                    </mesh>
-                  </group>
-                ))}
-                <Puff baseY={1.1} phase={0.25} />
+              <group position={[-0.6, 0.91, -0.12]}>
+                <TostMakinesi genis={ikinciPres} hazir={readyTost} />
+                <Puff baseY={0.3} phase={0.25} />
               </group>
             )}
             {/* Ekmek kasası: arkadaki hazırlık modülünün üstünde (yalnız tost açıkken). */}
@@ -254,19 +290,6 @@ export function ServicePoint({
                 <cylinderGeometry args={[0.06, 0.05, 0.16, 8]} />
                 <meshStandardMaterial color="#c0392b" emissive="#7a1f17" emissiveIntensity={0.25} />
               </mesh>
-            ))}
-            {/* HAZIR TOST — SACIN ÜSTÜNDE (kızarmış tostlar sacda bekler), en çok 3 dilim. */}
-            {Array.from({ length: Math.min(readyTost, 3) }).map((_, i) => (
-              <group key={`f${i}`} position={[-0.9 + i * 0.3, 1.0, -0.02]}>
-                <mesh castShadow>
-                  <boxGeometry args={[0.18, 0.06, 0.14]} />
-                  <meshStandardMaterial color={PALETTE.toast} />
-                </mesh>
-                <mesh position={[0, 0.035, 0]}>
-                  <boxGeometry args={[0.18, 0.012, 0.03]} />
-                  <meshStandardMaterial color={PALETTE.toastDark} />
-                </mesh>
-              </group>
             ))}
         </group>
       </group>

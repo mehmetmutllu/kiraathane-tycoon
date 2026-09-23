@@ -1,6 +1,6 @@
 # T8b — TEZGÂH ARKASI (K10 duvar payı · K9 bulaşık kuyruğu · G-85 tost noktası · G-90 tost asset'i)
 
-> Karar: (boş — karar paketinden sonra)
+> Karar: **D-143** (2026-09-23) — pay 0,75 · personel arkada · toplu yıkama 10 sn · tost A + D→E · L1 beyaz bardaklar kalktı
 > Araçlar: `tools/olcum-tezgah-t8b.ts` → `docs/olcum-tezgah-t8b.txt` (§A geometri + §B oyunun kendi
 > `tick`'i) · `tools/shot-t8b.mjs` → `docs/gorsel/ss/t8b-k10-*.png` · `tools/tost-bak.mjs` →
 > `docs/gorsel/ss/t8b-tost-aday.png`
@@ -143,4 +143,49 @@ Aday kartı (`docs/gorsel/ss/t8b-tost-aday.png`, aynı tezgâh parçası + aynı
 
 ## §Karar
 
-(boş — karar paketinden sonra doldurulur)
+**D-143 (kullanıcı, 2026-09-23).** Karar paketi: https://claude.ai/artifact/JB9KwfFMHyiuXrskQ4nGxa
+
+| soru | seçilen | not |
+|---|---|---|
+| K10 duvar payı | **0,75** (önerilen) | |
+| K9 bulaşık | **toplu, her 10 sn** (önerilen) | |
+| G-85 tost yeri | kullanıcı: *"bunu bilemedim. ya d->e ya da f"* | bu tur **A + D→E**; F (ayrı modül) iki dönemde yer ölçüsü ister → **sonraki oturumda, oyunda görülerek sorulur** |
+| G-90 makine | *"ya d->e ya da f"* | D (L5 tekli) → E (L6 geniş plaka) |
+| ek | *"2 tane beyaz bardak gibi bir şey var o ne kaldır onu oyunda var"* | L1 servis tepsisinin üstündeki iki beyaz bardak kaldırıldı; tepsi L1 işareti olarak kalıyor |
+
+**Uygulama (teknik, soru açılmadı):**
+- `SOL_DUVAR_PAYI` 0,75; sol duvar yerleşimi paydan türer (`solDuvarYeri`). Çaycının yolu yalnız tezgâh
+  parçası, bulaşıkçının postası leğenin tam arkası (Bulgu 1'in karesindeki üst üste binme). 1. garson
+  postası payla kayar; 2. posta kaymaz — kayınca bulaşıkçı pad'ine 0,99 br'ye giriyordu (`layout-b6a`).
+- Arka şerit OYUNCUYA kapalı: yeni `oyuncuKatilari` = `activeSolids` + şerit katısı; oyuncu hareketi,
+  oyuncu ızgarası ve park noktası onu okur. `activeSolids`e girseydi personel noktaları "katının içinde"
+  sayılırdı (üç bekçi bunu yakaladı).
+- Leğen: `legen {bardak, tabak, t}` (transient) + `legenSystem` + `cups.washBatchSec: 10`. Kayıt şeması
+  değişmedi — `cleanCups` kayda yazılmıyor, yüklemede havuzdan türüyor. `sinkDirty` leğeni de sayar;
+  lavabonun teknesinde yığın sayıyla büyür (en çok 8), parlama leğen BOŞALINCA patlar (eskiden her
+  `cleanCups` değişiminde, demlemede bile).
+- Tost: `TostMakinesi` (ilkel, KayKit oranları) eski sac + presin ayak izinde; hazır tost açık plakada.
+- Ölçüm dikişleri kaldı (`solDuvarKoluAyarla` · `bulasikKoluAyarla`); `topluSn: 0` = D-143 öncesi anlık yıkama.
+
+### Final tam koşu (`docs/olcum-tezgah-t8b-final.txt`, T0 = yürürlük · ESKI = commit #1'in tabanı)
+
+| dünya | T0 servis/dk | ESKI servis/dk | T0 leğen ort / maks |
+|---|---|---|---|
+| W4 (bulaşıkçı yok, AFK) | 13,0 ± 0,8 | 8,0 ± 5,6 | 1,1 / 5 |
+| W8 (Salon 2, bulaşıkçı yeni) | 9,6 ± 0,9 | 9,8 ± 1,8 | 0,7 / 5 |
+| W20 (geç oyun, arka bant) | 8,7 ± 1,0 | 9,0 ± 0,5 | 0,5 / 4 |
+
+W20 = YT10 satırının birebiri (arka bantta K10 yok) — kararın bedeli −%3, ölçüldüğü gibi. W4'te ESKI'nin
+yayılımı ±5,6: kararsız rejim (Bulgu 2); T0 aynı dünyada kararlı çıkıyor ama bu bir iddia değil, AFK dünyası.
+ESKI satırı commit #1'in T0'ını birebir veriyor (damga: aynı tohum, aynı sayı).
+
+### Bekçi
+
+`tests/tezgah-t8b.test.ts` (6 denetim): pay 0,75 ve aktör sığıyor · personel duvarla gövde arasında ·
+çaycı leğenin arkasına taşmıyor · arka şerit personele açık / oyuncuya kapalı · şerit katısı yalnız oyuncunun ·
+leğen periyottan önce yıkanmıyor, periyotta toptan dönüyor. **Üç mutasyonla doğrulandı:** ① pay 0,30 → 3 kırmızı ·
+② periyot kaldırıldı → 1 kırmızı · ③ oyuncunun şerit katısı kaldırıldı → 1 kırmızı.
+Eski bekçiler güncellendi (gerekçe test içinde): `olcu-donduruldu` (üç nokta D-143) · `mutfak-r2` (bulaşıkçı
+postası leğenin arkası) · `layout-b6a` (dekor duvara göre ölçülür) · `logic` + `bardak` (korunum leğeni sayar) ·
+`onarim-g58-g81` (leğen tezgâhı kirletir) · `oyuncu-dunyasi` (oyuncu kuralı `oyuncuKatilari`).
+Kare: `docs/gorsel/ss/t8b-final.png` (L5 tekli · L6 geniş · leğende yığın).

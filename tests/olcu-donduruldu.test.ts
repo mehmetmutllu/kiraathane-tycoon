@@ -209,13 +209,13 @@ const NOKTA: Record<string, DonmusNokta> = {
   'pad.garson3': { deger: [14.7, -5.0], karar: 'B5a', canli: () => xz(LAYOUT.padPos.waiter3) },
   'lavabo.kapi': { deger: [13.4, -9.3], karar: 'B4 (pad + yükseltme noktası + müşteri hedefi AYNI nokta)', canli: () => xz(LAVABO.spot) },
   'lavabo.paraIstifi': { deger: [13.4, -8.4], karar: 'B4', canli: () => xz(LAVABO.coinSpot) },
-  'servis.solDuvar.tezgah': { deger: [-16.2, 6.4], karar: 'maket v13 adım 1-2', canli: () => xz(servicePlace(1).station) },
-  'servis.solDuvar.tepsi': { deger: [-15.0, 6.4], karar: 'D-025', canli: () => xz(servicePlace(1).pickup) },
+  'servis.solDuvar.tezgah': { deger: [-15.75, 6.4], karar: 'maket v13 adım 1-2 · duvar payı 0,75 D-143', canli: () => xz(servicePlace(1).station) },
+  'servis.solDuvar.tepsi': { deger: [-14.55, 6.4], karar: 'D-025 · D-143', canli: () => xz(servicePlace(1).pickup) },
   /* R2/D-127 (G-37) — "ocağın yanında" BİTİŞİK oldu: 10,60 → 9,00. Kullanıcı 2026-09-16
      *"başlangıçta tezgahlar da bitişik olsun"* dedi ve üç kol ölçülüp B2 seçildi (kutu da
      gövdeyle taşınır). Sayı artık türemiş: tezgâh merkezi + iki yarı-derinlik. D-025'in
      "bulaşık ocağın yanında" kararı korunuyor, yalnız mesafesi sıfırlandı. */
-  'servis.solDuvar.bulasik': { deger: [-16.2, 9.0], karar: 'D-025 · mesafe R2/D-127 (bitişik)', canli: () => xz(servicePlace(1).dish) },
+  'servis.solDuvar.bulasik': { deger: [-15.75, 9.0], karar: 'D-025 · mesafe R2/D-127 (bitişik) · D-143', canli: () => xz(servicePlace(1).dish) },
   'servis.arkaBant.tezgah': { deger: [-13.0, -10.3], karar: 'D-074 (küme mutfağın İÇİNE alındı: ön yüz bandın hattında)', canli: () => xz(servicePlace(3).station) },
   'servis.arkaBant.tepsi': { deger: [-13.0, -9.3], karar: 'D-074 (erişim 0,85 br sabit kaldı)', canli: () => xz(servicePlace(3).pickup) },
   'servis.arkaBant.bulasik': { deger: [-7.4, -10.3], karar: 'D-074', canli: () => xz(servicePlace(3).dish) },

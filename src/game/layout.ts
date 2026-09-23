@@ -513,18 +513,27 @@ const SOL_DUVAR_BULASIK_HZ = 1.0;
 /** Bulaşığın merkezi — tezgâhın kutusuna BİTİŞİK (boşluk tanım gereği 0,00). */
 const SOL_DUVAR_BULASIK_Z = SOL_DUVAR_TEZGAH_Z + SOL_DUVAR_TEZGAH_HZ + SOL_DUVAR_BULASIK_HZ;
 
-/** Sol duvar döneminde tezgâh+bulaşık gövdesinin duvarın iç yüzüne uzaklığı (G-68 · T3-K10). */
-export const SOL_DUVAR_PAYI = 0.3;
+/**
+ * SOL DUVAR PAYI — tezgâh ile bulaşığın arka yüzünün duvarın iç yüzüne (x = −FLOOR_HALF) uzaklığı.
+ *
+ * D-143 (T8b · K10 · G-68): 0,30 → **0,75**. Kullanıcı: *"tezgah olduğu yerde kalsın adam da arkasına
+ * geçsin … duvardan çıkmasın … yine de kaliteli olsun"*. 0,30'da aktör gövdesi (0,56) sığmıyordu.
+ * Ölçüm (`docs/tezgah-raporu-t8b.md` Bulgu 1-2): 0,60 en küçük yeterli pay ama aktörün iki yana
+ * payı 0,02 — karede kafa duvara giriyor; 0,75'te 0,09 ve iki sütunluk nav şeridi. Servise bedeli yok.
+ */
+export const SOL_DUVAR_PAYI = 0.75;
+/** Aşağıdaki elle yazılı koordinatların ölçüldüğü pay (D-143 öncesi). Hepsi bundan `dx` kadar kayar. */
+const ILK_PAY = 0.3;
 
 /**
- * Sol duvar yerleşimi, duvar payından TÜRER. `pay` tezgâhla bulaşığın arka yüzünün duvarın iç
- * yüzüne (x = −FLOOR_HALF) uzaklığıdır; ön yüze bağlı her nokta (çay alma, yükseltme, çaycının ön
- * yolu) aynı miktarda kayar. `arkada`: çaycı ve bulaşıkçının postası gövdenin ARKASINA, duvarla
- * tezgâh arasındaki şeride alınır (T8b ölçüm kolu; varsayılan ön taraf).
+ * Sol duvar yerleşimi, duvar payından TÜRER: ön yüze bağlı her nokta (çay alma, yükseltme, ön
+ * postalar) pay kadar kayar. `arkada`: çaycı ve bulaşıkçı gövdenin ARKASINDA, duvarla tezgâh
+ * arasındaki şeritte çalışır (D-143); `false` yalnız ölçüm kolu (D-143 öncesinin ön postaları).
  */
 function solDuvarYeri(pay: number, arkada: boolean): ServicePlace {
-  const dx = pay - SOL_DUVAR_PAYI;
+  const dx = pay - ILK_PAY;
   const arkaX = -FLOOR_HALF + pay / 2;
+  const tezgahZ0 = SOL_DUVAR_TEZGAH_Z - SOL_DUVAR_TEZGAH_HZ;
   return {
     areaIndex: 0,
     station: [-16.2 + dx, 0, SOL_DUVAR_TEZGAH_Z],
@@ -535,25 +544,39 @@ function solDuvarYeri(pay: number, arkada: boolean): ServicePlace {
     dish: [-16.2 + dx, 0, SOL_DUVAR_BULASIK_Z],
     dishRot: Math.PI / 2,
     dishHalf: [0.5, SOL_DUVAR_BULASIK_HZ],
+    /* 1. posta gövdeyle birlikte kayar: kaymasa 0,75'te gövdeye 0,25 br kalıyordu (Bulgu 1). 2. posta
+       KAYMAZ — kayınca bulaşıkçı pad'ine 0,99 br'ye giriyordu (pad dairesi 1,3; `layout-b6a` bekçisi);
+       yerinde gövdeye 0,75 br kalıyor. */
     waiterHome: [-14.4, 0, 8.6],
-    waiterPosts: [[-15, 0, 5], [-14.5, 0, 9.75], [-11.75, 0, 7.5]] as const,
-    /* Bulaşıkçının postası bulaşığın 2,0 br KUZEYİNDE duruyordu (10,60 → 12,60); bulaşık 1,60
-       yanaşınca aynı ilişki korunsun diye o da türetildi. Elle bırakılsaydı boş zeminin önünde
-       bekleyen bir bulaşıkçı kalırdı. */
-    dishwasherHome: arkada ? [arkaX, 0, SOL_DUVAR_BULASIK_Z] : [-14.4, 0, SOL_DUVAR_BULASIK_Z + 2.0],
-    /* Çaycının yolu ÖN HATTIN boyudur: tezgâhın arka ucundan bulaşığın ön ucuna. Uçlardaki 0,1 /
-       0,2 pay, dönüp geri yürürken gövdelerin köşesine girmemesi için. */
-    staffWalk: {
-      a: [arkada ? arkaX : -15.1 + dx, 0, SOL_DUVAR_TEZGAH_Z - SOL_DUVAR_TEZGAH_HZ + 0.1],
-      b: [arkada ? arkaX : -15.1 + dx, 0, SOL_DUVAR_BULASIK_Z + SOL_DUVAR_BULASIK_HZ - 0.2],
-      face: arkada ? -Math.PI / 2 : Math.PI / 2,
-    },
+    waiterPosts: [[-15 + dx, 0, 5], [-14.5, 0, 9.75], [-11.75, 0, 7.5]] as const,
+    /* Arkada: bulaşıkçı leğenin tam arkasında bekler. Önde (ölçüm kolu): bulaşığın 2,0 br kuzeyi. */
+    dishwasherHome: arkada ? [arkaX, 0, SOL_DUVAR_BULASIK_Z] : [-14.4 + dx, 0, SOL_DUVAR_BULASIK_Z + 2.0],
+    /* Arkada çaycının yolu yalnız TEZGÂH parçası: leğenin arkası bulaşıkçının postası, ikisi aynı
+       şeritte üst üste biniyordu (Bulgu 1'in karesi). Uçlardaki 0,1 pay köşeye girmemek için. */
+    staffWalk: arkada
+      ? { a: [arkaX, 0, tezgahZ0 + 0.3], b: [arkaX, 0, SOL_DUVAR_TEZGAH_Z + SOL_DUVAR_TEZGAH_HZ - 0.3], face: Math.PI / 2 }
+      : {
+          a: [-15.1 + dx, 0, tezgahZ0 + 0.1],
+          b: [-15.1 + dx, 0, SOL_DUVAR_BULASIK_Z + SOL_DUVAR_BULASIK_HZ - 0.2],
+          face: Math.PI / 2,
+        },
   };
 }
 
-const PLACE_LEFT_WALL: ServicePlace = solDuvarYeri(SOL_DUVAR_PAYI, false);
+const PLACE_LEFT_WALL: ServicePlace = solDuvarYeri(SOL_DUVAR_PAYI, true);
 
-// ---- T8b ÖLÇÜM KOLU — sol duvar payı (yalnız ölçüm; null = bugünkü yerleşim) ----
+/**
+ * Arka şerit OYUNCUYA kapalı (D-143): 0,75'te oyuncu ızgarasında 17 hücre açılıyordu — arkada
+ * oyuncunun işi yok. Yalnız oyuncunun katılarına eklenir; personel ızgarası şeridi kullanır.
+ */
+function arkaSeritKatisi(sp: ServicePlace): Solid {
+  const arka = sp.station[0] - sp.half[0];
+  const z0 = sp.station[2] - sp.half[1];
+  const z1 = sp.dish[2] + sp.dishHalf[1];
+  return { c: [(-FLOOR_HALF + arka) / 2, 0, (z0 + z1) / 2], h: [(arka + FLOOR_HALF) / 2, (z1 - z0) / 2] };
+}
+
+// ---- T8b ÖLÇÜM KOLU — sol duvar payı (yalnız ölçüm; null = yürürlükteki yerleşim) ----
 /**
  * K10'un kolları yerleşimi değiştiriyor ve varyant kapısına tabi (D-084): kalıcı yazılmadan ölçülür.
  * `izdihamKolu` deseni — kapalıyken bedel tek null okumasıdır. Ayarlanınca nav önbellekleri düşer.
@@ -847,6 +870,16 @@ export function activeSolids(tables: number, areasOpen: number): Solid[] {
   return solids;
 }
 
+/**
+ * OYUNCUNUN katıları = `activeSolids` + sol duvar döneminde tezgâhın ARKA ŞERİDİ (D-143). Şerit
+ * personelin çalışma yeri; `activeSolids`e girseydi personel noktaları "katının içinde" sayılırdı.
+ */
+export function oyuncuKatilari(tables: number, areasOpen: number): Solid[] {
+  const solids = activeSolids(tables, areasOpen);
+  if (openServices(areasOpen).length > 0 && !serviceMoved(areasOpen)) solids.push(arkaSeritKatisi(servicePlace(areasOpen)));
+  return solids;
+}
+
 /** Oyuncuyu AÇIK alanların BİRLEŞİMİNE kelepçele (M2): nokta hiçbir açık alanda değilse en yakın
  *  açık-alan-içi noktaya çekilir. 3 alan açıkken L-şekli doğru çalışır (eski tek-eksen openMaxX
  *  kelepçesi 2×2 ızgarada yetmiyordu). */
@@ -1006,7 +1039,7 @@ export function getNavGrid(tables: number, areasOpen: number): NavGrid {
 export function getPlayerNavGrid(tables: number, areasOpen: number): NavGrid {
   const key = `${tables}|${areasOpen}`;
   if (playerNavCache && playerNavCache.key === key) return playerNavCache.grid;
-  const grid = buildNavGrid(LAYOUT.area, NAV_CELL, activeSolids(tables, areasOpen), LAYOUT.playerRadius);
+  const grid = buildNavGrid(LAYOUT.area, NAV_CELL, oyuncuKatilari(tables, areasOpen), LAYOUT.playerRadius);
   // AÇIK ALAN KELEPÇESİ: oyuncu `clampToOpenAreas` ile açık alanların birleşimine kapalıdır —
   // personel değildir. Kelepçe ızgaraya anlatılmazsa rota kilitli arsadan kestirme yapar.
   for (let r = 0; r < grid.rows; r++) {
@@ -1088,7 +1121,7 @@ function interactionPoints(areasOpen: number, tables: number): RVec3[] {
 
 function scanParkSpot(areasOpen: number, tables: number, onlyArea?: number): { pos: Vec3; clearance: number } {
   const pts = interactionPoints(areasOpen, tables);
-  const solids = activeSolids(tables, areasOpen);
+  const solids = oyuncuKatilari(tables, areasOpen);
   const step = 0.25;
   let best: Vec3 = [0, 0.6, 0];
   let bestD = -1;

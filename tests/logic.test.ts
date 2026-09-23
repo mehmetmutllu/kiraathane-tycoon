@@ -695,7 +695,7 @@ describe('bardak döngüsü (Faz 2e) — demleme temiz harcar, içen kirli bıra
     const drinking = s.npcs.filter((n) => n.state === 'drinking').length;
     return (
       s.cleanCups + s.ready.tea + s.tray + s.carriedDirty + s.dishes.length + drinking +
-      (s.waiters[0]?.tray ?? 0) + (s.dishwasher?.tray ?? 0)
+      (s.waiters[0]?.tray ?? 0) + (s.dishwasher?.tray ?? 0) + s.legen.bardak + s.legen.tabak
     );
   }
 
@@ -763,7 +763,14 @@ describe('bardak döngüsü (Faz 2e) — demleme temiz harcar, içen kirli bıra
     stand(ds);
     useGame.getState().tick(0.1);
     expect(useGame.getState().carriedDirty).toBe(0);
-    expect(useGame.getState().cleanCups).toBe(cleanBefore + carried);
+    // D-143: kirli önce LEĞENDE birikir, toplu yıkamada temize döner.
+    expect(useGame.getState().legen.bardak).toBe(carried);
+    expect(useGame.getState().cleanCups).toBe(cleanBefore);
+    expect(totalCups()).toBe(pool);
+    useGame.setState({ legen: { ...useGame.getState().legen, t: economyConfig.cups.washBatchSec } });
+    useGame.getState().tick(0.1);
+    expect(useGame.getState().legen.bardak).toBe(0);
+    expect(useGame.getState().cleanCups).toBeGreaterThanOrEqual(cleanBefore + carried - 1); // aynı karede demleme 1 harcayabilir
     expect(totalCups()).toBe(pool);
   });
 
@@ -843,7 +850,12 @@ describe('bardak döngüsü (Faz 2e) — demleme temiz harcar, içen kirli bıra
     useGame.getState().tick(0.1);
     expect(useGame.getState().carriedDirty).toBe(0);
     expect(useGame.getState().carriedDirtyFood).toBe(0);
-    expect(useGame.getState().cleanCups).toBe(cleanBefore + 2);
+    // D-143: tür leğende de korunur, toplu yıkamada ikisi de ORTAK havuza döner.
+    expect(useGame.getState().legen).toMatchObject({ bardak: 1, tabak: 1 });
+    useGame.setState({ legen: { ...useGame.getState().legen, t: economyConfig.cups.washBatchSec } });
+    useGame.getState().tick(0.1);
+    expect(useGame.getState().legen).toMatchObject({ bardak: 0, tabak: 0 });
+    expect(useGame.getState().cleanCups).toBeGreaterThanOrEqual(cleanBefore + 2 - 1);
   });
 
   it('DEADLOCK YOK: elinde çay + tüm masalar kirli → kirli toplanıp temizlenebilir', () => {

@@ -33,7 +33,7 @@ import {
   getNavGrid, getPlayerNavGrid, reachWash, waiterHomeAt, REACH_TABLE, tableHalfFor, type Solid,
 } from '../src/game/layout';
 import { findNavPath, type NavGrid } from '../src/game/nav';
-import { bulasikKoluAyarla, lavaboKuyruguOku } from '../src/game/tick';
+import { bulasikKoluAyarla } from '../src/game/tick';
 import { ACTOR_RADIUS, PLAYER_RADIUS } from '../src/config/actor';
 
 const f2 = (x: number) => x.toFixed(2);
@@ -114,7 +114,8 @@ for (const w of GEO) {
   console.log(bas);
   console.log('-'.repeat(bas.length));
   for (const pay of PAYLAR) {
-    solDuvarKoluAyarla(pay === SOL_DUVAR_PAYI ? null : { pay, arkada: true });
+    // 0,30 satırı D-143 öncesidir (personel önde); diğerleri arkada.
+    solDuvarKoluAyarla(pay === SOL_DUVAR_PAYI ? null : { pay, arkada: pay !== 0.3 });
     const sp = servicePlace(w.alan);
     const arkaYuz = sp.station[0] - sp.half[0];
     const onYuz = sp.station[0] + sp.half[0];
@@ -171,7 +172,7 @@ const W4: Dunya = { ad: 'W4 Salon 1 dolu (4 masa · 2 garson · bulaşıkçı YO
 const W8: Dunya = { ad: 'W8 Salon 2 dolu (8 masa · masalar L2 · ocak L3 · bulaşıkçı yeni)', padSon: 'z2table4', masaSv: 2, ocak: 3, solDuvar: true };
 const W20: Dunya = { ad: 'W20 geç oyun (20 masa · masalar L4 · ocak tavan · arka bant)', padSon: 'z3table12', masaSv: 4, ocak: 'tavan', solDuvar: false };
 
-interface Kol { kod: string; ad: string; pay: number | null; yikamaSn: number | null; topluSn?: number; yalnizSolDuvar?: boolean }
+interface Kol { kod: string; ad: string; pay: number | null; arkada?: boolean; yikamaSn: number | null; topluSn?: number; yalnizSolDuvar?: boolean }
 
 function kur(w: Dunya, tohum: number): number {
   seedRandom(tohum);
@@ -213,8 +214,8 @@ interface Olcum {
 }
 
 function kos(w: Dunya, k: Kol, tohum: number): Olcum {
-  solDuvarKoluAyarla(k.pay == null ? null : { pay: k.pay, arkada: true });
-  bulasikKoluAyarla(k.topluSn ? { topluSn: k.topluSn } : k.yikamaSn == null ? null : { yikamaSn: k.yikamaSn });
+  solDuvarKoluAyarla(k.pay == null ? null : { pay: k.pay, arkada: k.arkada ?? true });
+  bulasikKoluAyarla(k.topluSn != null ? { topluSn: k.topluSn } : k.yikamaSn == null ? null : { yikamaSn: k.yikamaSn });
   const havuz = kur(w, tohum);
   const tick = useGame.getState().tick;
   for (let i = 0; i < Math.round(ISINMA_SN / DT); i++) tick(DT);
@@ -232,7 +233,7 @@ function kos(w: Dunya, k: Kol, tohum: number): Olcum {
     const garsonda = s.waiters.reduce((a, x) => a + x.tray + x.trayFood + (x.dirtyCarry ?? 0) + (x.dirtyCarryFood ?? 0), 0);
     const dw = s.dishwasher ? s.dishwasher.tray + s.dishwasher.trayFood : 0;
     const elde = s.tray + s.trayFood + s.carriedDirty + s.carriedDirtyFood;
-    const kuyruk = lavaboKuyruguOku();
+    const kuyruk = s.legen.bardak + s.legen.tabak;
     const toplam = s.cleanCups + s.ready.tea + s.ready.tost + garsonda + elde + musteride + s.dishes.length + dw + kuyruk;
     korunum = Math.max(korunum, Math.abs(toplam - havuz));
     temizTop += s.cleanCups;
@@ -260,21 +261,25 @@ function kos(w: Dunya, k: Kol, tohum: number): Olcum {
   };
 }
 
+// Commit #1'in kolları D-143 ÖNCESİ oyuna göre yazılmıştı (taban: pay 0,30 · önde · anlık). D-143'ten
+// sonra T0 yürürlükteki oyundur; eski taban ESKI satırıdır ve commit #1'in T0'ını birebir verir.
+const ESKI = { pay: 0.3, arkada: false, topluSn: 0 } as const;
 const TUM_KOLLAR: Kol[] = [
-  { kod: 'T0', ad: 'bugün: pay 0,30 · personel önde · yıkama anlık', pay: null, yikamaSn: null },
-  { kod: 'P60', ad: 'pay 0,60 · personel ARKADA', pay: 0.6, yikamaSn: null, yalnizSolDuvar: true },
-  { kod: 'P75', ad: 'pay 0,75 · personel ARKADA', pay: 0.75, yikamaSn: null, yalnizSolDuvar: true },
-  { kod: 'P90', ad: 'pay 0,90 · personel ARKADA', pay: 0.9, yikamaSn: null, yalnizSolDuvar: true },
-  { kod: 'P105', ad: 'pay 1,05 · personel ARKADA', pay: 1.05, yikamaSn: null, yalnizSolDuvar: true },
-  { kod: 'Y05', ad: 'leğen kuyruğu · 0,5 sn/kap', pay: null, yikamaSn: 0.5 },
-  { kod: 'Y10', ad: 'leğen kuyruğu · 1,0 sn/kap', pay: null, yikamaSn: 1.0 },
-  { kod: 'Y20', ad: 'leğen kuyruğu · 2,0 sn/kap', pay: null, yikamaSn: 2.0 },
-  { kod: 'YT10', ad: 'leğen birikir · her 10 sn TOPTAN yıkanır', pay: null, yikamaSn: null, topluSn: 10 },
-  { kod: 'YT20', ad: 'leğen birikir · her 20 sn TOPTAN yıkanır', pay: null, yikamaSn: null, topluSn: 20 },
+  { kod: 'T0', ad: 'yürürlük (D-143): pay 0,75 · personel arkada · 10 sn toplu yıkama', pay: null, yikamaSn: null },
+  { kod: 'ESKI', ad: 'D-143 öncesi: pay 0,30 · personel önde · yıkama anlık', ...ESKI, yikamaSn: null },
+  { kod: 'P60', ad: 'pay 0,60 · personel ARKADA · anlık', pay: 0.6, yikamaSn: null, topluSn: 0, yalnizSolDuvar: true },
+  { kod: 'P75', ad: 'pay 0,75 · personel ARKADA · anlık', pay: 0.75, yikamaSn: null, topluSn: 0, yalnizSolDuvar: true },
+  { kod: 'P90', ad: 'pay 0,90 · personel ARKADA · anlık', pay: 0.9, yikamaSn: null, topluSn: 0, yalnizSolDuvar: true },
+  { kod: 'P105', ad: 'pay 1,05 · personel ARKADA · anlık', pay: 1.05, yikamaSn: null, topluSn: 0, yalnizSolDuvar: true },
+  { kod: 'Y05', ad: 'eski yerleşim · leğen kuyruğu 0,5 sn/kap', pay: 0.3, arkada: false, yikamaSn: 0.5 },
+  { kod: 'Y10', ad: 'eski yerleşim · leğen kuyruğu 1,0 sn/kap', pay: 0.3, arkada: false, yikamaSn: 1.0 },
+  { kod: 'Y20', ad: 'eski yerleşim · leğen kuyruğu 2,0 sn/kap', pay: 0.3, arkada: false, yikamaSn: 2.0 },
+  { kod: 'YT10', ad: 'eski yerleşim · her 10 sn TOPTAN', pay: 0.3, arkada: false, yikamaSn: null, topluSn: 10 },
+  { kod: 'YT20', ad: 'eski yerleşim · her 20 sn TOPTAN', pay: 0.3, arkada: false, yikamaSn: null, topluSn: 20 },
 ];
 // KOL_SEC=T0,YT10 → yalnız bu kollar (sonradan eklenen kolun ayrı tam koşusu için; taban T0 hep başta).
 const SECIM = process.env.KOL_SEC?.split(',');
-const KOLLAR = (KISA ? TUM_KOLLAR.filter((k) => ['T0', 'P75', 'Y10', 'Y20'].includes(k.kod)) : TUM_KOLLAR)
+const KOLLAR = (KISA ? TUM_KOLLAR.filter((k) => ['T0', 'ESKI'].includes(k.kod)) : TUM_KOLLAR)
   .filter((k) => !SECIM || SECIM.includes(k.kod));
 
 console.log('§B OYUN — oyunun kendi tick\'i, oyuncu parkta (AFK alt sınırı)');
@@ -306,7 +311,7 @@ for (const w of KISA ? [W8] : [W4, W8, W20]) {
 }
 solDuvarKoluAyarla(null);
 bulasikKoluAyarla(null);
-damga('dikişler kapalı', solDuvarKoluOku() === null && lavaboKuyruguOku() === 0, 'ölçüm kolu açık kaldı');
+damga('dikişler kapalı', solDuvarKoluOku() === null, 'ölçüm kolu açık kaldı');
 console.log('KOLLAR:');
 for (const k of KOLLAR) console.log(`  ${k.kod.padEnd(4)} ${k.ad}`);
 

@@ -156,9 +156,9 @@ Yürüme döngüsünün geometrisi. **Katman 2'nin denge ölçümü doğrudan bu
 | `pad.garson3` | 14,70 / −5,00 | B5a |
 | `lavabo.kapi` | 13,40 / −9,30 | B4 — pad + yükseltme noktası + müşteri hedefi aynı nokta |
 | `lavabo.paraIstifi` | 13,40 / −8,40 | B4 |
-| `servis.solDuvar.tezgah` | −16,20 / 6,40 | maket v13 adım 1-2 |
-| `servis.solDuvar.tepsi` | −15,00 / 6,40 | D-025 |
-| `servis.solDuvar.bulasik` | −16,20 / 10,60 | D-025 — bulaşık ocağın yanında |
+| `servis.solDuvar.tezgah` | −15,75 / 6,40 | maket v13 adım 1-2 · duvar payı 0,30 → 0,75 (D-143) |
+| `servis.solDuvar.tepsi` | −14,55 / 6,40 | D-025 · D-143 |
+| `servis.solDuvar.bulasik` | −15,75 / 9,00 | D-025 — bulaşık ocağın yanında · bitişik (D-127) · D-143 |
 | `servis.arkaBant.tezgah` | −13,00 / −10,30 | D-074 — küme mutfağın içine alındı, ön yüz bandın hattında |
 | `servis.arkaBant.tepsi` | −13,00 / −9,30 | D-074 — erişim 0,85 br sabit kaldı |
 | `servis.arkaBant.bulasik` | −7,40 / −10,30 | D-074 |

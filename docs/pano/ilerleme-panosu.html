@@ -195,7 +195,7 @@ h2{font-size:21px;font-weight:800}
 <script type="application/json" id="durum">
 {
  "guncelleme": "23.09.2026",
- "yapilan": 116,
+ "yapilan": 117,
  "toplam": 122,
  "kilometre": [
   {
@@ -216,14 +216,14 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "ozet": {
-  "etiket": "Bu oturum — T8a kapandı (D-142): zincir + T3 denge + nokta kapısı + seviye ₺",
-  "baslik": "2. garson artık <b>Salon 1'de</b>, garson <b>2'li tepsiyle</b> başlıyor",
-  "aciklama": "22 kol oyunun kendisi üstünde ölçüldü; kullanıcı dört soruda da önerilen kolu seçti. Tepsi ₺30, 4. masa ₺250, 2. garson ₺800 (152. dk → 29. dk), seviye atlama artık ödül ekranı (Seviye 5'ten itibaren son 60 sn'nin kazancı), yükseltme noktası yalnız kendi görevinde. Kat 1 <b>−%7,7</b>, hiçbir eşik kırılmadı."
+  "etiket": "Bu oturum — T8b kapandı (D-143): tezgâh arkası",
+  "baslik": "Adam artık tezgâhın <b>arkasında</b>, bulaşık leğende <b>birikiyor</b>",
+  "aciklama": "Tezgâh sol duvardan 0,30 → <b>0,75</b> açıldı; çaycı ve bulaşıkçı arkada çalışıyor, oyuncu arkaya giremiyor. Kirli leğende birikip her 10 sn'de toptan yıkanıyor (geç oyunda −%3 servis). Tost için hiçbir CC0 pakette pres tipi makine yok — Türk tost makinesi çizildi (L6'da plaka genişliyor). L1 tepsisindeki beyaz bardaklar kalktı."
  },
  "siradaki": {
-  "etiket": "Sırada — T8b tezgâh arkası · T9 tarama · Faz F yayın",
-  "baslik": "T8b: <b>tost noktası</b> + tost asset'i + bulaşık kuyruğu + tezgâh payı",
-  "aciklama": "G-85/G-90/K9/K10 aynı ölçü dondurma işi. Açık: D1'in g1 kolu D-142 sonrası artık iyileştiriyor (3 → 2) — uygulanmamış aday."
+  "etiket": "Sırada — tost yeri sorusu · T9 tarama · Faz F yayın",
+  "baslik": "Önce soru: tost <b>aynı tezgâhta</b> mı kalsın, <b>ayrı modül</b> mü?",
+  "aciklama": "Kullanıcı D→E ile F arasında kaldı; makine oyunda görülerek sorulacak. Sonra T9 — G-88 genel tarama (performans ağırlıklı) + lint 66 + tick ~5 ms."
  },
  "donemler": [
   {
@@ -386,8 +386,8 @@ h2{font-size:21px;font-weight:800}
     {
      "k": "T",
      "t": "Tur serisi: geri bildirim + performans",
-     "d": "Kullanıcının oynayıp verdiği geri bildirimin turları. <b>T1</b> onarım (bir <b>veri kaybı</b> dâhil) · <b>T2</b> görev akışı (mantık + görsel) · <b>T4</b> performans: fps tavanı yoktu, erken oyunda <b>116,7 fps</b> çiziliyordu; ve kare <b>bölüşümü</b> ölçülünce herkesin bir tur boyunca <b>yanlış yarıya</b> baktığı görüldü — çizim karenin yarısı bile değil, en büyük kalem <code>findNavPath</code>. <b>T5 (D-139):</b> devralınan plan (&#34;41 KB tampon ayırmak pahalı&#34;) ölçülüp <b>çürütüldü</b>; üç kol uygulandı, çıktı birebir aynı kaldı. <b>T5b:</b> T5&#39;in açık ucu kapandı — iki kol <b>aynı sayfada</b>, ABBA deseninde, gölge montajda sabitlenmiş hâlde koşturuldu ve nav&#39;la ilgisiz kalemler <b>denetim kolu</b> olarak sınandı. Tarayıcıda oran <b>×1,09</b> çıktı, node&#39;da <b>×2,52</b>; tarayıcının GERÇEK çağrıları node&#39;da oynatılınca <b>×2,82</b> → korpus temsilî, fark <b>ortamda</b> (node blok ölçer, GC dâhil; tarayıcı çağrı-içi ölçer, GC dışarıda). <b>T5&#39;in kaçırdığı asıl kazanç:</b> ayırma <b>178,6 → 33,5 MB/sn</b> — T5 bunu &#34;tabanın %10,3&#39;ü&#34; diye elemişti, zaman olarak doğruydu ama ayırma bir <b>hız</b>tır ve telefonda karşılığı GC takılması + pildir. Kare kazancı kanıtlandı ama küçük: <b>%5,9-7,1</b>. <b>T6 (D-140, kapandı):</b> kullanıcı <i>&#34;kapı dışında izdiham oluyor, 100lerce npc birikiyor&#34;</i> dedi ve ölçüm aynı şeyi sayıyla gördü — 2 dakikada üçgen <b>+%80</b>, kare <b>+%31</b>, NPC 39 → 56. Kodda doğrulanan şüpheli: doğma tavanı <code>leaving</code>/WC durumlarını saymıyor, yani ekrandaki <b>toplam nüfusun tavanı yok</b>. Piyasa standardı araştırıldı (Restaurant Tycoon 2/3: &#34;uygun masa yoksa hiç doğma&#34;; kuramı Little yasası). Kök doğma tavanı değil çıkış çıktı: <code>leaving</code> ayrışmadan muaf tutuldu → 10 dk'da NPC <b>494 → 59</b>, kapı önü <b>475 → 11</b>; final koşu ölçülen kolu birebir verdi. <b>T7 (D-141, kapandı):</b> banket artık masayla <b>ortadan dışa</b> büyüyor, minder adaya <b>komple</b> geliyor (ada dolunca en düşük masa seviyesi: keten → bordo + sırt → yastık → pirinç biye + kapitone), ada başına tek mesh; Salon 3 pad&#39;inin çakışması kapandı; WC kabini elle çizildi. Bedel ölçüldü: Kat 1 <b>−%4,3</b>, eşikler aynı. <b>T8a (D-142, kapandı):</b> zincir sırası ve T3'ün fiyat kolları yürürlükteki oyunun üstünde ölçüldü — sim'in tabanının oyunun sıra kuralını (D-124) oynamadığı da bu sırada çıktı. 2. garson Salon 1'in sonuna (152. → 29. dk), garson 2'li tepsiyle başlıyor, seviye atlama ödül ekranı oldu (Seviye 5'ten itibaren son 60 sn'nin kazancı), yükseltme noktası yalnız kendi görevinde canlı. Kat 1 <b>−%7,7</b>, eşikler temiz; final taban ölçülen kolla parmak izine kadar aynı.",
-     "yapilan": 8,
+     "d": "Kullanıcının oynayıp verdiği geri bildirimin turları. <b>T1</b> onarım (bir <b>veri kaybı</b> dâhil) · <b>T2</b> görev akışı (mantık + görsel) · <b>T4</b> performans: fps tavanı yoktu, erken oyunda <b>116,7 fps</b> çiziliyordu; ve kare <b>bölüşümü</b> ölçülünce herkesin bir tur boyunca <b>yanlış yarıya</b> baktığı görüldü — çizim karenin yarısı bile değil, en büyük kalem <code>findNavPath</code>. <b>T5 (D-139):</b> devralınan plan (&#34;41 KB tampon ayırmak pahalı&#34;) ölçülüp <b>çürütüldü</b>; üç kol uygulandı, çıktı birebir aynı kaldı. <b>T5b:</b> T5&#39;in açık ucu kapandı — iki kol <b>aynı sayfada</b>, ABBA deseninde, gölge montajda sabitlenmiş hâlde koşturuldu ve nav&#39;la ilgisiz kalemler <b>denetim kolu</b> olarak sınandı. Tarayıcıda oran <b>×1,09</b> çıktı, node&#39;da <b>×2,52</b>; tarayıcının GERÇEK çağrıları node&#39;da oynatılınca <b>×2,82</b> → korpus temsilî, fark <b>ortamda</b> (node blok ölçer, GC dâhil; tarayıcı çağrı-içi ölçer, GC dışarıda). <b>T5&#39;in kaçırdığı asıl kazanç:</b> ayırma <b>178,6 → 33,5 MB/sn</b> — T5 bunu &#34;tabanın %10,3&#39;ü&#34; diye elemişti, zaman olarak doğruydu ama ayırma bir <b>hız</b>tır ve telefonda karşılığı GC takılması + pildir. Kare kazancı kanıtlandı ama küçük: <b>%5,9-7,1</b>. <b>T6 (D-140, kapandı):</b> kullanıcı <i>&#34;kapı dışında izdiham oluyor, 100lerce npc birikiyor&#34;</i> dedi ve ölçüm aynı şeyi sayıyla gördü — 2 dakikada üçgen <b>+%80</b>, kare <b>+%31</b>, NPC 39 → 56. Kodda doğrulanan şüpheli: doğma tavanı <code>leaving</code>/WC durumlarını saymıyor, yani ekrandaki <b>toplam nüfusun tavanı yok</b>. Piyasa standardı araştırıldı (Restaurant Tycoon 2/3: &#34;uygun masa yoksa hiç doğma&#34;; kuramı Little yasası). Kök doğma tavanı değil çıkış çıktı: <code>leaving</code> ayrışmadan muaf tutuldu → 10 dk'da NPC <b>494 → 59</b>, kapı önü <b>475 → 11</b>; final koşu ölçülen kolu birebir verdi. <b>T7 (D-141, kapandı):</b> banket artık masayla <b>ortadan dışa</b> büyüyor, minder adaya <b>komple</b> geliyor (ada dolunca en düşük masa seviyesi: keten → bordo + sırt → yastık → pirinç biye + kapitone), ada başına tek mesh; Salon 3 pad&#39;inin çakışması kapandı; WC kabini elle çizildi. Bedel ölçüldü: Kat 1 <b>−%4,3</b>, eşikler aynı. <b>T8a (D-142, kapandı):</b> zincir sırası ve T3'ün fiyat kolları yürürlükteki oyunun üstünde ölçüldü — sim'in tabanının oyunun sıra kuralını (D-124) oynamadığı da bu sırada çıktı. 2. garson Salon 1'in sonuna (152. → 29. dk), garson 2'li tepsiyle başlıyor, seviye atlama ödül ekranı oldu (Seviye 5'ten itibaren son 60 sn'nin kazancı), yükseltme noktası yalnız kendi görevinde canlı. Kat 1 <b>−%7,7</b>, eşikler temiz; final taban ölçülen kolla parmak izine kadar aynı. <b>T8b (D-143, kapandı):</b> tezgâh sol duvardan 0,75 açıldı, çaycı ve bulaşıkçı arkaya geçti (0,60 en küçük yeterli paydı ama kafa duvara giriyordu); kirli leğende birikip 10 sn'de toptan yıkanıyor (kap başına süre yığın oluşturmuyordu), geç oyun −%3; Türk tost makinesi çizildi — hiçbir CC0 pakette pres tipi yok.",
+     "yapilan": 9,
      "toplam": 10,
      "kapi": "Kullanıcının gördüğü her kusur ya düzeltilmiş ya ölçülerek elenmiş olmalı",
      "durum": "now"
@@ -396,6 +396,12 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "gunluk": [
+  {
+   "tarih": "23.09.2026",
+   "etiket": "T8b — tezgâh arkası (D-143)",
+   "baslik": "En küçük yeterli pay <b>0,60</b> çıktı, seçilen <b>0,75</b> oldu",
+   "govde": "Adam 0,30'luk boşluğa sığmıyordu (gövdesi 0,56). Ölçüm 0,60'ı en küçük yeterli pay buldu ama karede kafası duvara giriyordu — 'en az' ile 'kaliteli' çatıştı, 0,75 ikisini de tutuyor. Hiçbir pay servisi düşürmedi.<br><br><b>Bulaşıkta sürpriz:</b> kap başına süreli yıkama leğende en fazla 2-4 kap biriktiriyor, yani kullanıcının istediği yığın ekranda hiç oluşmuyordu. Tarife uyan kol ölçüm sırasında eklendi: kirli birikir, 10 sn'de bir toptan yıkanır — yığın 4-7 kap, bedeli −%3.<br><br>Kısa koşunun '−%27 servis' işareti tek tohumlu gürültüydü; 4 tohumla kayboldu. Bekçi 6 denetim, 3 mutasyon kırmızı. Tost yeri (aynı tezgâh mı, ayrı modül mü) açık soru."
+  },
   {
    "tarih": "23.09.2026",
    "etiket": "T8a — zincir + T3 denge + nokta kapısı + seviye ₺ (D-142)",
@@ -486,25 +492,6 @@ h2{font-size:21px;font-weight:800}
     "<b>F2&#39;nin kusurunun AAB kardeşi</b> de kapatıldı: <code>apk-temizle</code> artık bundle çıktısını da siliyor",
     "Bekçi: <code>paket-f1</code> (19 den.) · <code>mutasyon-paket-f1</code> <b>18/18 kırmızı</b> · ilk koşuda <b>2 kaçtı</b>, delik gerçekti",
     "vitest <b>1292 ✓</b> · duman <b>45/45 ✓</b> · tsc temiz · imza doğrulandı (v2 · <code>CN=Tea House Tycoon</code>)"
-   ]
-  },
-  {
-   "tarih": "17.09.2026",
-   "etiket": "Faz R · 4. oturum (R4 — çevre sanatı — D-129) — Faz R KAPANDI",
-   "baslik": "Seçilen kol uygulanmadı; <b>kullanıcının cümlesi</b> uygulandı",
-   "govde": "On iki aday gerçek oyunun içinde, aynı ışıkla, üç kadrajdan çizildi ve kullanıcıya <b>metinle değil kareyle</b> soruldu. Zemin ve duvar gruplarının tamamı elendi (<i>&#34;şu anki haliyle kalsın&#34;</i>); tek seçilen kol <b>C2 — bahçe</b> oldu. Ama kullanıcı kolu seçerken kapsamını da değiştirdi: <i>&#34;alan olarak açmadığım her yer öyle olsun, açtıklarım zaten oynanabilir olacak.&#34;</i><br><br>Karar paketindeki C2 <b>binanın dışındaki kuşaktı</b>. İstenen şey daha geniş: bahçe <b>binanın ayak izinin tümleyeni</b> — kilitli alanlar zemin karesinin İÇİNDE ve onlar da bahçe; bant çizilmeden önce bandın yeri de bahçe. Böylece bahçe <code>areasOpen</code> ile <b>küçülüyor</b>: satın alınan her alan bahçeden düşüp oynanabilir zemine dönüyor. Çim, çit ve bitkilerin üçü de tek kaynaktan (<code>binaAyakIzi</code>) türüyor — güncellenecek ikinci liste yok.<br><br><b>Yeni yüzey eski kusuru miras alabilirdi.</b> Bu turun bulgusu &#34;düz yüzey bitmemiş okunuyor&#34;du; düz bir yeşil düzlem şikâyeti yeşile boyardı. Çim bu yüzden parça başına tonlanıyor ve bekçi bunu denetliyor.<br><br><b>Ve kaçan mutasyon her zaman delik göstermez.</b> İlk koşuda 4 mutasyon kaçtı; ikisi (M12 ve M13) aynı kuralı hedefliyordu ve <b>ikisi birden</b> kaçtı. Şüphe bekçide değil <b>kuralda</b>ydı: &#34;müşteri koridorunu boş bırak&#34; elemesi hiçbir <code>areasOpen</code> değerinde ateşlenmiyordu, çünkü kapı her zaman açık bir alanın ayak izinin içinde. Ateşlenemeyen kural koruma değil gürültü — silindi, yerine gerçek değişmez kondu.",
-   "maddeler": [
-    "<b>D-129:</b> zemin (Z1/Z2/Z3) ve duvar (D1/D2/D3) grupları <b>tamamen elendi</b>; tek kol C2, kapsamı kullanıcı genişletti",
-    "<b>Şikâyetin ağırlık merkezi:</b> ZEMİN karenin ort. <b>%59,6</b>&#39;sı (en yüksek %82,8) · DUVAR %8,0 · BOŞLUK %4,2 (en yüksek <b>%20,0</b>)",
-    "<b>&#34;Bitmemiş&#34; hissi sayıya döndü:</b> zemin sapma <b>1,39</b> / <b>11</b> ayrık renk ↔ yanındaki gltf yüzeyleri <b>27,6-39,3</b> / <b>144-372</b>",
-    "<b>Zeminin bütün değişkenliği ödünç:</b> gölge olmasa zemin tek renk — <code>parke</code> teması D-073&#39;ten beri <code>kind: flat</code>",
-    "<b>Üç kol sunulmadan elendi:</b> gökyüzü silueti (ufuk üstü boşluk <b>18/18 karede %0,0</b>) · sokak cephesine bahçe (<b>%1,6</b>) · vinyet",
-    "<b>Boşluk nerede:</b> sol <b>%53,1</b> · sağ %27,3 · arka %17,9 · ön <b>%1,6</b> → kuşak sokağa değil <b>yanlara</b>; P90 taşma <b>11,11 br</b>",
-    "<b>C2&#39;nin bedeli ölçüldü:</b> 67 nesnenin tamamı, düz çimenliğe göre karenin yalnız <b>%2,6&#39;sı</b> — ama o %2,6 siluet",
-    "<b>Araç kendini üç kez çürüttü:</b> duvarlar InstancedMesh olduğu için DUVAR payı sahte <b>%1,5</b> okunuyordu · tek eşikli kabuk kuralı ara duvarı kaçırıyordu · fark eşiği (24) ölçtüğü kolun genliğinden büyüktü",
-    "<b>Yolda kapanan dikiş:</b> kaldırım 19,90&#39;da bitip asfalt 20,00&#39;de başlıyordu — <b>0,10 br</b>&#39;lik çizgiden arka plan görünüyordu; ön kenara düşen 80 ışının <b>tamamı aynı taşmayı</b> verdiği için yakalandı",
-    "Bekçi: <code>bahce-r4</code> (21 den.) · <code>mutasyon-bahce-r4</code> <b>23/23 kırmızı</b> · ilk koşuda 4 kaçtı, <b>ikisi ÖLÜ KOD gösterdi</b>",
-    "vitest <b>1273 ✓</b> · duman <b>45/45 ✓</b> · tsc temiz · konsol hatası 0"
    ]
   }
  ],
@@ -760,7 +747,7 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "gunlukArsiv": {
-  "kart": 69,
+  "kart": 70,
   "ilk": "05.06 – 17.06.2026",
   "son": "17.09.2026",
   "yer": "memory-bank/arsiv/pano-gunluk.json"
