@@ -349,6 +349,22 @@ try {
     await page.waitForSelector('[data-testid="master-bar"]', { state: 'detached', timeout: 5000 });
     pass('Usta alınınca onay çubuğu kalktı');
 
+    // F4c: İLK Usta'dan sonra başlangıç paketi teklifi BİR KEZ çıkar; "Şimdi değil" kalıcı kapatır.
+    // Oyuncu Usta noktasındayken teklif SIRA BEKLER (eylem ortasında satış yok, `ekranKanali`):
+    // noktadan ayrılınca çıkar.
+    await page.evaluate(() => window.__park());
+    // Usta XP verir → seviye ekranı teklifin ÖNÜNDE (kanal önceliği); önce o alınır.
+    await page.waitForTimeout(1500);
+    await seviyeKapat();
+    await page.waitForSelector('[data-testid="baslangic-teklif"]', { timeout: 15000 });
+    pass('İlk Usta sonrası başlangıç paketi teklifi çıktı');
+    await tikla('[data-testid="teklif-kapat"]');
+    await page.waitForSelector('[data-testid="baslangic-teklif"]', { state: 'detached', timeout: 5000 });
+    await page.evaluate(() => window.__advanceTime(2));
+    await page.waitForTimeout(400);
+    if (!(await page.$('[data-testid="baslangic-teklif"]'))) pass('"Şimdi değil" teklifi kalıcı kapattı');
+    else fail('Teklif kapatıldı ama yeniden çıktı');
+
     // Hedefler panelindeki toplu sayaç güncellendi mi (plan §5: "Usta masalar 7/20")?
     await tikla('[data-testid="goals"]');
     await page.waitForSelector('[data-testid="usta-strip"]', { timeout: 5000 });
@@ -498,11 +514,21 @@ try {
     if (tek <= 75) pass(`Kare tavanı tutuyor (${tek.toFixed(0)} ≤ 75 kare/sn)`);
     else fail(`Kare tavanı delinmiş: ${tek.toFixed(0)} kare/sn`);
 
+    // F4c: mağaza 💎 vitrininde (Kıyafet) açılır; önizlemesi sahibin kendisi.
     await tikla('[data-testid="shop"]');
-    await page.waitForSelector('[data-testid="shop-preview"]', { timeout: 5000 });
+    await page.waitForSelector('[data-testid="vitrin-onizleme"]', { timeout: 5000 });
     const cift = await olc(1500);
     if (cift > tek * 1.4) pass(`Önizleme tuvali de sürülüyor (${tek.toFixed(0)}→${cift.toFixed(0)} kare/sn)`);
     else fail(`Önizleme tuvali çizmiyor — boş kalır (${tek.toFixed(0)}→${cift.toFixed(0)} kare/sn)`);
+
+    // F4c 💎 VİTRİNİ uçtan uca: çeşidi seç → tek düğmeyle al → 💎 düşer, sahip onu giyer.
+    await page.evaluate(() => window.__setState({ diamonds: 100 }));
+    await tikla('[data-testid="shop-card-outfit-yesil"]');
+    await tikla('[data-testid="shop-buy"]');
+    await page.waitForFunction(() => document.querySelector('[data-testid="shop-buy"]')?.textContent?.includes('Uygulandı'), null, { timeout: 5000 });
+    const vitrin = await page.evaluate(() => window.__game().diamonds);
+    if (vitrin === 40) pass('💎 vitrini: Kıyafet alındı ve giyildi (100→40)');
+    else fail(`💎 vitrini: kıyafet alımı yanlış (100→${vitrin})`);
     await tikla('[data-testid="shop-panel"] .sheet-back');
     await page.waitForSelector('[data-testid="shop-panel"]', { state: 'detached', timeout: 5000 });
   }

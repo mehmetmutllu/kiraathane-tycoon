@@ -163,7 +163,9 @@ describe('§K — karakter paneli oyunun gövdesini gösteriyor', () => {
     expect(PANEL).toMatch(/<KayActor[^>]*\stasiyor/);
     // Çapa ELLE yazılmış bir koordinata dönerse kırmızı yanar (tepsi ellerin 29 cm üstünde
     // kalıyordu — S16 ölçümü). Burada da kullanım denetlenir, import değil.
-    expect(PANEL).toMatch(/position=\{KAY_TEPSI_KAYMA\}/);
+    // F4c: çapa artık `tepsiKaymasi` (askılı tepsi sarkar) — o da `KAY_TEPSI_KAYMA`dan türer.
+    expect(PANEL).toMatch(/position=\{tepsiKaymasi\(/);
+    expect(oku('src/components/three/Player.tsx')).toMatch(/function tepsiKaymasi[\s\S]*?return KAY_TEPSI_KAYMA;/);
   });
 });
 
@@ -179,7 +181,8 @@ describe('§E — paneller ekranı dolduruyor', () => {
   });
 
   it('mağaza satılabilir bir sekmede açılıyor (kilitli sekmede değil)', () => {
-    expect(HUD).toMatch(/useState<'table' \| 'floor' \| 'wall'(?: \| 'paket')?>\(tableUnlocked \? 'table' : 'floor'\)/);
+    // F4c: Kıyafet sekmesi oyunun her anında satılabilir (klasikten ötesi 💎 ile) — hiç kilitli değil.
+    expect(HUD).toMatch(/useState<Sekme>\('outfit'\)/);
   });
 
   it('kilitli kart kendi boyunda — gövdeye yayılıp iç delik açmıyor', () => {

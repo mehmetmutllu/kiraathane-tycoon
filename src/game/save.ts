@@ -117,9 +117,11 @@ export interface SatinAlim {
   gunlukGun: number;
   /** Ödülü verilmiş son işlem kimlikleri — aynı işlem ikinci kez 💎 vermesin. */
   islenen: string[];
+  /** F4c: başlangıç paketi teklifi (ilk Usta'dan sonra) gösterildi mi — bir kez çıkar. */
+  teklif: boolean;
 }
 
-export const defaultSatinAlim = (): SatinAlim => ({ reklamsiz: false, baslangic: false, gunlukGun: -1, islenen: [] });
+export const defaultSatinAlim = (): SatinAlim => ({ reklamsiz: false, baslangic: false, gunlukGun: -1, islenen: [], teklif: false });
 
 export function defaultSettings(): SaveSettings {
   return { sound: true, music: true, notifications: true, soundVolume: 1, musicVolume: 1, golge: 'oto' };
@@ -232,6 +234,10 @@ export interface SaveData {
   /** GLOBAL masa teması id'si (mobilya minder+örtü rengi). */
   tableTheme: string;
   ownedCosmetics: string[];
+  /** F4c 💎 vitrini: sahibin kıyafeti + elindeki tepsi (GLOBAL). Additive — sürüm ARTMADI
+   *  (`defaultSave()` yayılımı eksik alanı 'klasik' ile doldurur, `satin` deseni). */
+  outfit: string;
+  trayLook: string;
   /** Karakter yükseltme kademeleri (v20): tepsi/mıknatıs/hız. Karakter seviyesi türetilir. */
   charUpgrades: CharUpgrades;
   /** Garson tepsi (v27/Y3) + bulaşıkçı leğen (v28) + personel hız (v29) kademeleri.
@@ -295,6 +301,8 @@ export function defaultSave(): SaveData {
     kitchenTheme: 'klasik',
     tableTheme: 'mavi',
     ownedCosmetics: [],
+    outfit: 'klasik',
+    trayLook: 'klasik',
     charUpgrades: defaultCharUpgrades(),
     waiterUpgrades: defaultWaiterUpgrades(),
     charPanelSeen: false,

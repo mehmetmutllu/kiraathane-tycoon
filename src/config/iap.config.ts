@@ -22,6 +22,7 @@ export const iapConfig = {
    * Vitrin kapıları (F4a kararı): başlangıç paketinin kozmetiği ve 💎'ın yeni harcama yeri (💎 kozmetik
    * vitrini) ayrı turda gelir. O gelene dek bu iki ürün kodda hazır ama mağazada GÖSTERİLMEZ —
    * harcanacak yeri olmayan 💎 ya da içi henüz olmayan paket satılmaz.
+   * F4c'de ikisi de AÇILDI: 💎'ın harcama yeri (Kıyafet/Tepsi) ve paketin kozmetiği (Kurucu) geldi.
    */
-  vitrin: { baslangic: false, elmas: false },
+  vitrin: { baslangic: true, elmas: true },
 } as const;

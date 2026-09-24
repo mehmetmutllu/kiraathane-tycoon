@@ -1867,3 +1867,32 @@
   inset: -7px;
 }
 
+
+/* F4c — başlangıç paketi teklifi: paketin İÇİ görünür (kurucu kıyafeti oyuncunun kendi
+   karakterinde), baskı dili yok; "Şimdi değil" ikincil ama aynı boyda. */
+.teklif-card {
+  width: min(92vw, 360px);
+}
+.teklif-card .preview-canvas {
+  height: 210px;
+}
+.teklif-icerik {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin: 2px 0 6px;
+}
+.teklif-icerik .odul-sat {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-game);
+  font-size: var(--p2);
+  font-weight: 800;
+}
+.teklif-not {
+  font-size: var(--p4);
+  color: var(--tx2);
+  text-align: center;
+}

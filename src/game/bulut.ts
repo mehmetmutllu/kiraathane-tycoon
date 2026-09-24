@@ -111,6 +111,8 @@ export function bulutlaBirlestir(bulut: SaveData, yerel: SaveData): SaveData {
       baslangic: a.baslangic || b.baslangic,
       gunlukGun: Math.max(a.gunlukGun, b.gunlukGun),
       islenen: [...new Set([...a.islenen, ...b.islenen])],
+      // Eski bulut kaydında alan yok (additive) — `!!` undefined'ı false sayar.
+      teklif: !!a.teklif || !!b.teklif,
     },
   };
 }

@@ -1135,7 +1135,9 @@ body,
 
 /* ---- Tema mağazası sekmeleri + çeşit kartları + 3D önizleme (5b) ---- */
 .shop-tabs {
-  display: flex;
+  /* F4c: altı sekme (Kıyafet/Tepsi eklendi) — tek satırda telefonda sığmıyor, 3×2 ızgara. */
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 6px;
   margin: 10px 0 12px;
 }
@@ -1234,9 +1236,11 @@ body,
 }
 .shop-chip {
   position: relative;
-  flex: 0 0 auto;
-  width: 58px;
-  height: 58px;
+  /* F4c: Kıyafet sekmesi yedi çeşit — 58 px'te telefonda şerit taşıyor ve ilk çip (Klasik)
+     kaydırmanın dışında kalıyordu. Çip 44 px'e kadar daralır, hepsi tek bakışta görünür. */
+  flex: 0 1 58px;
+  min-width: 44px;
+  aspect-ratio: 1;
   padding: 4px;
   border: 2.5px solid var(--ot);
   border-radius: var(--r2);

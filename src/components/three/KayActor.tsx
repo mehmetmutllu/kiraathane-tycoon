@@ -19,6 +19,8 @@ import { clone as skinKlon } from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { PALETTE } from '../../config/palette';
 import { govdeProfili, onlukParcasi, kumas, ONLUK_PARCALARI } from './onluk';
 import { kollariSiva, omuzHavlusu, HAVLU_KAYMA } from './patron';
+import { kiyafetParcalari } from './kiyafet';
+import { kiyafetGorunum, type KiyafetGorunum } from '../../config/kozmetik';
 import {
   KAY_KOK,
   KAY_KLIPLER,
@@ -204,7 +206,7 @@ function mat(renk: string) {
  * Kimlik parçalarını kemiğe takar. Ölçüler HAM rig biriminde (gövde 2,204 ham = 1,75 dünya);
  * ölçülen hatlar: baş mesh'i y 1,10…2,20 · gövde 0,38…1,24 · baş eni 0,86.
  */
-function kiyafetTak(kok: Object3D, kind: ActorKind) {
+function kiyafetTak(kok: Object3D, kind: ActorKind, gorunum?: KiyafetGorunum) {
   const kemikler = new Map<string, Bone>();
   kok.traverse((n) => {
     if ((n as Bone).isBone) kemikler.set(n.name, n as Bone);
@@ -219,7 +221,10 @@ function kiyafetTak(kok: Object3D, kind: ActorKind) {
     mesh.quaternion.copy(k.getWorldQuaternion(q).invert()); // kemiğin kendi dönüşünü geri al
   };
 
-  const kiyafet = KAY_KIYAFET[kind];
+  // Sahibin 💎 kıyafeti (F4c) rolün sabit kimlik parçalarının YERİNE geçer; kasket de ondan gelir.
+  const kiyafet = gorunum
+    ? { kasket: false, onluk: false, havlu: !!gorunum.havlu, sivaliKol: !!gorunum.sivaliKol }
+    : KAY_KIYAFET[kind];
   if (kiyafet.kasket) {
     // Kasket SABİT yükseklikte duramaz: her gövdenin saçı farklı yükseliyor (Ranger'ın saçı
     // 2,28'e, mankenin kafası 2,20'ye çıkıyor) ve sabit 2,06 saçın İÇİNDE kalıyordu — oyunda
@@ -260,7 +265,18 @@ function kiyafetTak(kok: Object3D, kind: ActorKind) {
       tak('upperarml', omuzHavlusu(), nokta);
     }
   }
-  if (kiyafet.sivaliKol) kollariSiva(kok);
+  if (kiyafet.sivaliKol) kollariSiva(kok, gorunum?.gomlek);
+  if (gorunum) {
+    const bas = new Box3();
+    kok.traverse((n) => {
+      const m = n as Mesh;
+      if (m.isMesh && m.visible && /head|skull/i.test(m.name)) bas.union(new Box3().setFromObject(m));
+    });
+    kiyafetParcalari(gorunum, govdeProfili(kok), tak, {
+      tepe: bas.isEmpty() ? 2.2 : bas.max.y,
+      yaricap: bas.isEmpty() ? 0.44 : ((bas.max.x - bas.min.x) / 2) * 0.98,
+    });
+  }
 }
 
 /**
@@ -315,13 +331,34 @@ export function useKayKlipler() {
   }, [dosyalar]);
 }
 
-export function KayActor({
+/**
+ * GÖVDE DEĞİŞİNCE AKTÖR YENİDEN KURULUR (F4c). Kıyafet değişince `govde` yeni bir iskeletle
+ * yeniden üretiliyor, ama `useAnimations`ın karıştırıcısı klip izlerini İLK iskeletin kemiklerine
+ * bağlayıp önbellekliyor — yeni gövde bind pozunda, yani T-pozunda donuyordu (vitrinde bir kıyafete
+ * dokununca ölçüldü). Anahtar karıştırıcıyı gövdeyle birlikte tazeler.
+ */
+export function KayActor(props: KayActorProps) {
+  return <KayActorGovde key={`${props.kind}|${props.kiyafet ?? ''}`} {...props} />;
+}
+
+type KayActorProps = {
+  kind: ActorKind;
+  hal?: KayHal;
+  tasiyor?: boolean;
+  kiyafet?: string;
+  children?: ReactNode;
+};
+
+function KayActorGovde({
   kind,
   hal,
   tasiyor = false,
+  kiyafet,
   children,
 }: {
   kind: ActorKind;
+  /** 💎 vitrini kıyafet kimliği (F4c) — yalnız sahip için verilir; yoksa rolün kendi kıyafeti. */
+  kiyafet?: string;
   hal?: KayHal;
   /** Elinde bir şey var mı — üst gövde `KLIP.tut`a geçer, `children` ELE takılır. */
   tasiyor?: boolean;
@@ -329,6 +366,7 @@ export function KayActor({
   children?: ReactNode;
 }) {
   const { scene } = useGLTF(`${KAY_KOK}${KAY_MODEL[kind]}.glb`);
+  const gorunum = kiyafet ? kiyafetGorunum(kiyafet) : undefined;
   const klipler = useKayKlipler();
   const ref = useRef<Group>(null);
 
@@ -344,12 +382,12 @@ export function KayActor({
       }
       m.castShadow = true;
       const e = PARCA_RENK.find(([d]) => d.test(m.name));
-      if (e) m.material = mat(e[1]);
+      if (e) m.material = mat(gorunum ? (/leg/i.test(m.name) ? gorunum.pantolon : gorunum.gomlek) : e[1]);
     });
     kafaKucult(o);
-    kiyafetTak(o, kind);
+    kiyafetTak(o, kind, gorunum);
     return o;
-  }, [scene, kind]);
+  }, [scene, kind, gorunum]);
 
   const { actions } = useAnimations(klipler, ref);
 

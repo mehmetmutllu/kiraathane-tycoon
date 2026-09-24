@@ -1213,6 +1213,28 @@ export const economyConfig = {
       { id: 'zumrut', label: 'Zümrüt Yeşili', cost: 16_000, color: '#1f6f50' },
       { id: 'altin', label: 'Altın Varak', cost: 30_000, color: '#d4af37' },
     ],
+    /**
+     * 💎 VİTRİNİ (F4c): sahibin kıyafeti + elindeki tepsi GLOBAL, 💎 ile alınır. Adaylar render edilip
+     * seçildi (`tools/vitrin-adaylari.html`, kullanıcı 2026-09-24). Görünüm tanımı `kozmetik.ts`'te.
+     * `paket` dolu olan ürün 💎 ile satılmaz; o paketi alan sahip olur (kurucu = başlangıç paketi).
+     * FİYATLAR TASLAK — kullanıcı fiyatı ayrı oturuma bıraktı; oynanışa etkisi yok, 💎'ın harcama yeri.
+     */
+    outfits: [
+      { id: 'klasik', label: 'Klasik Çaycı', diamonds: 0 },
+      { id: 'kurucu', label: 'Kurucu', diamonds: 0, paket: 'baslangic' },
+      { id: 'yesil', label: 'Kıraathane Yeleği', diamonds: 60 },
+      { id: 'sef', label: 'Şef Garson', diamonds: 60 },
+      { id: 'yazlik', label: 'Yazlık', diamonds: 60 },
+      { id: 'kislik', label: 'Kışlık', diamonds: 60 },
+      { id: 'altin', label: 'Altın Yelek', diamonds: 150 },
+    ],
+    trays: [
+      { id: 'klasik', label: 'Klasik Tepsi', diamonds: 0 },
+      { id: 'bakir', label: 'Bakır Tepsi', diamonds: 40 },
+      { id: 'emaye', label: 'Kırmızı Emaye', diamonds: 40 },
+      { id: 'aski', label: 'Gümüş Askılı', diamonds: 80 },
+      { id: 'altin', label: 'Altın Yaldız', diamonds: 100 },
+    ],
   },
 
 } as const;

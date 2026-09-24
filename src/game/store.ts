@@ -41,6 +41,7 @@ import {
   type ReklamSayaci,
   type SatinAlim,
 } from './save';
+import { vitrinSahip, vitrinUrunu, type VitrinTuru } from './vitrin';
 import { reklamsizAyarla } from './ads';
 import type { Islem, Sahiplik } from './iap';
 
@@ -271,6 +272,8 @@ export function kayitVerisi(s: GameState): SaveData {
     tableTheme: s.tableTheme,
     kitchenTheme: s.kitchenTheme,
     ownedCosmetics: [...s.ownedCosmetics],
+    outfit: s.outfit,
+    trayLook: s.trayLook,
     charUpgrades: { ...s.charUpgrades },
     waiterUpgrades: { ...s.waiterUpgrades },
     charPanelSeen: s.charPanelSeen,
@@ -454,6 +457,9 @@ export interface GameState {
    */
   kabuk: KabukKipi;
   ownedCosmetics: string[];
+  /** F4c 💎 vitrini (additive): sahibin kıyafeti + tepsi görünümü. Giyilen = `gecerliKiyafet`. */
+  outfit: string;
+  trayLook: string;
   /** Karakter yükseltme kademeleri (persist v20): tepsi/mıknatıs/hız. Karakter seviyesi türetilir. */
   charUpgrades: CharUpgrades;
   /** Garson tepsi yükseltme kademeleri (persist v27/Y3): çay garsonları ortak + tostçu ayrı. */
@@ -540,6 +546,10 @@ export interface GameState {
    * false), sahip olunan tema ücretsiz yeniden seçilir. Başarıda anında kaydedilir.
    */
   buyCosmetic: (kind: 'floor' | 'wall' | 'table' | 'kitchen', id: string, area: number) => boolean;
+  /** F4c: 💎 vitrini — sahip değilse 💎 düşer (yetmezse/paket ürünüyse false), sahipse giyer. */
+  buyGemCosmetic: (kind: VitrinTuru, id: string) => boolean;
+  /** F4c: başlangıç paketi teklifi kapandı — bir daha çıkmaz. */
+  baslangicTeklifKapat: () => void;
   /**
    * Karakter özelliği satın al (v20, karakter paneli): cüzdan yeterliyse kademe +1 (yetmezse/max'taysa
    * false). Başarıda anında kaydedilir; charStat görevi varsa sonraki tick'te tamamlanır.
@@ -680,6 +690,8 @@ export const useGame = create<GameState>((set, get) => ({
   kitchenTheme: 'klasik',
   kabuk: KABUK_VARSAYILAN,
   ownedCosmetics: [],
+  outfit: 'klasik',
+  trayLook: 'klasik',
   charUpgrades: defaultCharUpgrades(),
   waiterUpgrades: defaultWaiterUpgrades(),
   charPanelSeen: false,
@@ -862,6 +874,8 @@ export const useGame = create<GameState>((set, get) => ({
       tableTheme: save.tableTheme ?? 'mavi',
       kitchenTheme: save.kitchenTheme ?? 'klasik',
       ownedCosmetics: [...save.ownedCosmetics],
+      outfit: save.outfit ?? 'klasik',
+      trayLook: save.trayLook ?? 'klasik',
       charUpgrades,
       waiterUpgrades,
       charPanelSeen: save.charPanelSeen,
@@ -1095,7 +1109,9 @@ export const useGame = create<GameState>((set, get) => ({
     const s = get();
     const r = applyPurchase(s.satin, islem.islem, islem.urun);
     if (!r) return null;
-    set({ satin: r.satin, diamonds: s.diamonds.add(r.diamonds) });
+    // Başlangıç paketi YENİ alındıysa kurucu kıyafeti hemen giyilir — paketin görünen karşılığı.
+    const kurucu = r.satin.baslangic && !s.satin.baslangic;
+    set({ satin: r.satin, diamonds: s.diamonds.add(r.diamonds), ...(kurucu ? { outfit: 'kurucu' } : {}) });
     reklamsizAyarla(r.satin.reklamsiz);
     get().saveNow();
     return r.diamonds;
@@ -1250,6 +1266,29 @@ export const useGame = create<GameState>((set, get) => ({
     set({ wallet, ownedCosmetics, [arrKey]: arr });
     get().saveNow();
     return true;
+  },
+
+  buyGemCosmetic: (kind, id) => {
+    const s = get();
+    const urun = vitrinUrunu(kind, id);
+    if (!urun) return false;
+    let diamonds = s.diamonds;
+    let ownedCosmetics = s.ownedCosmetics;
+    if (!vitrinSahip(s, kind, id)) {
+      if (urun.paket || diamonds.lt(urun.diamonds)) return false;
+      diamonds = diamonds.sub(urun.diamonds);
+      ownedCosmetics = [...ownedCosmetics, `${kind}:${id}`];
+    }
+    set({ diamonds, ownedCosmetics, ...(kind === 'outfit' ? { outfit: id } : { trayLook: id }) });
+    get().saveNow();
+    return true;
+  },
+
+  baslangicTeklifKapat: () => {
+    const s = get();
+    if (s.satin.teklif) return;
+    set({ satin: { ...s.satin, teklif: true } });
+    get().saveNow();
   },
 
   // Karakter özelliği satın al (v20 — panel butonundan; mekânsal pad değil, kullanıcı onaylı tasarım).

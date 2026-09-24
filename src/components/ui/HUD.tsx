@@ -42,7 +42,9 @@ import {
   BasinIcon,
 } from './icons';
 import { Sheet } from './Sheet';
-import { CharacterPanel } from './CharacterPanel';
+import { CharacterPanel, SahipOnizleme } from './CharacterPanel';
+import { baslangicTeklifiGoster, vitrinSahip, vitrinUrunleri, vitrinUrunu, type VitrinTuru } from '../../game/vitrin';
+import { kiyafetPulu, tepsiPulu } from '../../config/kozmetik';
 import { TableThemePreview } from './TableThemePreview';
 import { DioramaPreview } from './DioramaPreview';
 import './hud.css';
@@ -149,6 +151,8 @@ export function HUD() {
   // D8: oyuncu bir Usta noktasının yanında mı? Sahne katmanı yazar (yakınlık `useFrame`te ölçülür).
   const nearMaster = useGame((s) => s.nearMaster);
   const levelUp = useGame((s) => s.levelUp);
+  const teklifHazir = useGame((s) => iapConfig.vitrin.baslangic && baslangicTeklifiGoster(s));
+  const baslangicTeklifKapat = useGame((s) => s.baslangicTeklifKapat);
   const claimLevelUp = useGame((s) => s.claimLevelUp);
   // G-60: görev geçiş penceresi (kutlama + boşluk) — ipucular bu pencerede sıra bekler.
   const questPhase = useGame((s) => s.questPhase);
@@ -178,7 +182,9 @@ export function HUD() {
     karakterIpucuHazir: !!charQuestActive && !charPanelSeen,
     tepsiIpucuHazir: tepsiAni && !trayTipSeen,
     seviyeVar: levelUp != null,
+    baslangicTeklifHazir: teklifHazir,
   });
+  const teklif = kanal === 'teklif-baslangic';
   const showOffline = kanal === 'cevrimdisi';
   const bulasikOgretme = kanal === 'ogretme-bulasik';
   const spotlight = kanal === 'ipucu-karakter';
@@ -205,6 +211,7 @@ export function HUD() {
         if (bulasikOgretme) markWashTipSeen();
         else if (spotlight) markCharPanelSeen();
         else if (traySpot) markTrayTipSeen();
+        else if (teklif) baslangicTeklifKapat();
       } else if (Capacitor.isNativePlatform()) void CapApp.minimizeApp();
     };
   });
@@ -607,6 +614,8 @@ export function HUD() {
           claimTestid="level-up-ok"
         />
       )}
+
+      {teklif && <BaslangicTeklifi onClose={baslangicTeklifKapat} />}
 
       {videoAcik && <VideoKarti onClose={() => setVideoAcik(false)} />}
 
@@ -1312,6 +1321,47 @@ function useOdulluHazir(): boolean {
 
 /** ORTAK ÖDÜL EKRANI (plan §9): başlık · ödül · [Al] · [▶ İzle, 2× al].
  *  Reklam hazır değilse ikinci buton pasif görünür ama KAYBOLMAZ (D-039 kalıbı). */
+/**
+ * BAŞLANGIÇ PAKETİ TEKLİFİ (F4c · D-152 açık kalemi) — ilk Usta'dan sonra BİR KEZ. Paketin içi
+ * ekranda: 💎 miktarı + kurucu kıyafeti oyuncunun kendi karakterinde. Geri sayım, "son fırsat",
+ * indirim baskısı YOK (monetization.md §2); "Şimdi değil" eşit ağırlıkta, paket Mağaza'da durur.
+ */
+function BaslangicTeklifi({ onClose }: { onClose: () => void }) {
+  useSyncExternalStore(satinAlmaAbone, satinAlmaSurumu);
+  const satinAlimIsle = useGame((s) => s.satinAlimIsle);
+  const trayLook = useGame((s) => s.trayLook);
+  const urun = iapConfig.urun.baslangic;
+  const fiyat = urunFiyati(urun);
+  const [bekle, setBekle] = useState(false);
+  const al = async () => {
+    setBekle(true);
+    const r = await satinAl(urun);
+    if (r) satinAlimIsle(r);
+    setBekle(false);
+    if (r) onClose();
+  };
+  return (
+    <div className="modal-backdrop" data-testid="baslangic-teklif">
+      <div className="modal-card reward-card teklif-card">
+        <div className="reward-title">Başlangıç Paketi</div>
+        <SahipOnizleme kiyafet="kurucu" tepsi={trayLook} />
+        <div className="teklif-icerik">
+          <span className="odul-sat">
+            <GemIcon size={24} /> {economyConfig.iap.starterDiamonds}
+          </span>
+          <span className="teklif-not">+ Kurucu kıyafeti: bordo yelek ve fes. Yalnız bu pakette.</span>
+        </div>
+        <button className="sheet-cta" data-testid="teklif-al" disabled={!fiyat || bekle} onClick={() => void al()}>
+          {fiyat ?? 'Mağaza hazır değil'}
+        </button>
+        <button className="sheet-cta ad" data-testid="teklif-kapat" onClick={onClose}>
+          Şimdi değil
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function RewardModal({
   testid,
   title,
@@ -1530,6 +1580,8 @@ function Paketler() {
   );
 }
 
+type Sekme = VitrinTuru | 'table' | 'floor' | 'wall' | 'paket';
+
 function ShopPanel({ onClose }: { onClose: () => void }) {
   const areasOpen = useGame((s) => s.areasOpen);
   const tables = useGame((s) => s.tables);
@@ -1540,6 +1592,11 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
   const ownedCosmetics = useGame((s) => s.ownedCosmetics);
   const wallet = useGame((s) => s.wallet);
   const buyCosmetic = useGame((s) => s.buyCosmetic);
+  const diamonds = useGame((s) => s.diamonds);
+  const outfit = useGame((s) => s.outfit);
+  const trayLook = useGame((s) => s.trayLook);
+  const satinBaslangic = useGame((s) => s.satin.baslangic);
+  const buyGemCosmetic = useGame((s) => s.buyGemCosmetic);
   // Masa teması kilidi: 3 salon + tüm açık masalar max (kullanıcı kararı). Kilitliyse Masa sekmesi
   // satın alma yerine koşulu açıklayan kilit panelini gösterir.
   const tableUnlocked = tableThemeUnlocked({ areasOpen, tables, tableLevels });
@@ -1552,18 +1609,23 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
    * mağazayı açtığında satın alınabilir hiçbir şey görmüyordu. Kilitli sekme duruyor
    * (koşulu anlatması gerekiyor), yalnız varsayılan sekme satılabilir olana kayıyor.
    */
-  const [tab, setTab] = useState<'table' | 'floor' | 'wall' | 'paket'>(tableUnlocked ? 'table' : 'floor');
+  // F4c: mağaza 💎 vitrininde (Kıyafet) açılır — orası oyunun HER anında satılabilir bir şey gösterir.
+  const [tab, setTab] = useState<Sekme>('outfit');
   // Zemin/duvar salon-başı satılır: hangi salona bakıldığı bir SEÇİM, ayrı bir satın alma değil.
   const [zone, setZone] = useState(0);
   const maxedTables = tableLevels.slice(0, tables).filter((l) => l >= tableSoftMaxLevel()).length;
   // Sekme başına ÖNİZLENEN çeşit (vitrin bunu gösterir). Varsayılan = o an uygulanmış tema.
-  const [sel, setSel] = useState<{ table: string; floor: string; wall: string }>(() => ({
+  const [sel, setSel] = useState<{ outfit: string; tray: string; table: string; floor: string; wall: string }>(() => ({
+    outfit,
+    tray: trayLook,
     table: tableTheme,
     floor: floorThemeByArea[0] ?? economyConfig.cosmetics.floorThemes[0].id,
     wall: wallThemeByArea[0] ?? economyConfig.cosmetics.wallThemes[0].id,
   }));
 
-  const TABS: { k: 'table' | 'floor' | 'wall' | 'paket'; label: string }[] = [
+  const TABS: { k: Sekme; label: string }[] = [
+    { k: 'outfit', label: 'Kıyafet' },
+    { k: 'tray', label: 'Tepsi' },
     { k: 'table', label: 'Masa' },
     { k: 'floor', label: 'Zemin' },
     { k: 'wall', label: 'Duvar' },
@@ -1578,6 +1640,21 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
   const secili = (() => {
     if (tab === 'paket') return null;
     const id = sel[tab];
+    if (tab === 'outfit' || tab === 'tray') {
+      const u = vitrinUrunu(tab, id);
+      if (!u) return null;
+      const durum = { ownedCosmetics, satin: { baslangic: satinBaslangic } };
+      return {
+        id,
+        label: u.label,
+        cost: u.diamonds,
+        owned: vitrinSahip(durum, tab, id),
+        applied: (tab === 'outfit' ? outfit : trayLook) === id && vitrinSahip(durum, tab, id),
+        alan: 0,
+        elmas: true,
+        paket: u.paket,
+      };
+    }
     if (tab === 'table') {
       const t = economyConfig.cosmetics.tableThemes.find((x) => x.id === id);
       if (!t) return null;
@@ -1591,7 +1668,10 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
     const owned = t.cost === 0 || ownedCosmetics.includes(`${tab}:${id}:z${zn}`);
     return { id, label: t.label, cost: t.cost, owned, applied, alan: zn };
   })();
-  const afford = !!secili && (secili.owned || wallet.toNumber() >= secili.cost);
+  const elmasli = !!secili && 'elmas' in secili;
+  const paketUrunu = !!secili && 'paket' in secili && !!secili.paket && !secili.owned;
+  const bakiye = elmasli ? diamonds.toNumber() : wallet.toNumber();
+  const afford = !!secili && !paketUrunu && (secili.owned || bakiye >= secili.cost);
 
   // Seçim şeridi: renk pulu + "uygulanmış" rozeti. Ad ve fiyat şeritte DEĞİL, altındaki satırda —
   // aynı bilgiyi iki yere yazmak şeridi kalabalıklaştırıyor ve pulu küçültüyordu.
@@ -1614,6 +1694,15 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
   );
 
   const renderStrip = () => {
+    if (tab === 'outfit' || tab === 'tray') {
+      const uygulanan = tab === 'outfit' ? outfit : trayLook;
+      return vitrinUrunleri(tab).map((u) => {
+        const [a, b] = (tab === 'outfit' ? kiyafetPulu : tepsiPulu)(u.id);
+        return chip(u.id, `shop-card-${tab}-${u.id}`, `linear-gradient(135deg, ${a} 0 55%, ${b} 55% 100%)`, sel[tab] === u.id, uygulanan === u.id, () =>
+          setSel((p) => ({ ...p, [tab]: u.id })),
+        );
+      });
+    }
     if (tab === 'table') {
       return economyConfig.cosmetics.tableThemes.map((t) =>
         chip(t.id, `shop-card-table-${t.id}`, t.color, sel.table === t.id, tableTheme === t.id, () =>
@@ -1641,7 +1730,7 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
   };
 
   return (
-    <Sheet title={tab === 'paket' ? 'Paketler' : 'Dekor Mağazası'} testid="shop-panel" onClose={onClose}>
+    <Sheet title={tab === 'paket' ? 'Paketler' : 'Mağaza'} testid="shop-panel" onClose={onClose}>
       <div className="shop-card">
         <div className="shop-tabs">
           {TABS.map(({ k, label }) => (
@@ -1685,10 +1774,19 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
           </div>
         ) : (
           <>
-            {tab === 'table' ? <TableThemePreview id={sel.table} /> : <DioramaPreview kind={tab} id={sel[tab]} />}
+            {tab === 'outfit' || tab === 'tray' ? (
+              <SahipOnizleme
+                kiyafet={tab === 'outfit' ? sel.outfit : outfit}
+                tepsi={tab === 'tray' ? sel.tray : trayLook}
+              />
+            ) : tab === 'table' ? (
+              <TableThemePreview id={sel.table} />
+            ) : (
+              <DioramaPreview kind={tab} id={sel[tab]} />
+            )}
 
             {/* Salon şeridi — zemin/duvar salon-başı satılır; hangi salona baktığın bir SEÇİM. */}
-            {tab !== 'table' && areasOpen > 1 && (
+            {(tab === 'floor' || tab === 'wall') && areasOpen > 1 && (
               <div className="shop-zones" data-testid="shop-zones">
                 {Array.from({ length: areasOpen }, (_, z) => (
                   <button
@@ -1713,15 +1811,19 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
                     ? 'Şu an uygulanmış'
                     : secili.owned
                       ? 'Sahipsin'
-                      : `${fmt(secili.cost)} ₺`}
+                      : paketUrunu
+                        ? 'Başlangıç Paketi ile gelir'
+                        : elmasli
+                          ? `${fmt(secili.cost)} elmas`
+                          : `${fmt(secili.cost)} ₺`}
                 </span>
               </div>
             )}
             {/* B12 (T9d): alım sönükse nedeni yazar. */}
-            {secili && !secili.owned && !afford && (
+            {secili && !secili.owned && !afford && !paketUrunu && (
               <span className="eksik shop-eksik" data-testid="eksik">
-                <CoinIcon size={12} />
-                {fmt(Math.ceil(secili.cost - wallet.toNumber()))} eksik
+                {elmasli ? <GemIcon size={12} /> : <CoinIcon size={12} />}
+                {fmt(Math.ceil(secili.cost - bakiye))} eksik
               </span>
             )}
           </>
@@ -1733,8 +1835,13 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
         <button
           className={`shop-buy${secili.applied ? ' sel' : ''}`}
           data-testid="shop-buy"
-          disabled={secili.applied || !afford}
-          onClick={() => tab !== 'paket' && buyCosmetic(tab, secili.id, secili.alan)}
+          disabled={secili.applied || (paketUrunu ? !iapConfig.vitrin.baslangic : !afford)}
+          onClick={() => {
+            // Paket ürünü (kurucu) 💎 ile satılmaz: aynı düğme oyuncuyu paketin kendisine götürür.
+            if (paketUrunu) setTab('paket');
+            else if (tab === 'outfit' || tab === 'tray') buyGemCosmetic(tab, secili.id);
+            else if (tab !== 'paket') buyCosmetic(tab, secili.id, secili.alan);
+          }}
         >
           {secili.applied ? (
             <>
@@ -1742,9 +1849,11 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
             </>
           ) : secili.owned ? (
             'Uygula'
+          ) : paketUrunu ? (
+            'Paketlere Git'
           ) : (
             <>
-              Satın Al · {fmt(secili.cost)} <CoinIcon size={18} />
+              Satın Al · {fmt(secili.cost)} {elmasli ? <GemIcon size={18} /> : <CoinIcon size={18} />}
             </>
           )}
         </button>

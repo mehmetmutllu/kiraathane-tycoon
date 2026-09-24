@@ -40,9 +40,9 @@ export const SIVAMA_ESIGI = 0.5;
  * aynı Ranger gövdesini kullanıyor. Klonlanmasaydı patronun sıvalı kolu bütün Ranger
  * müşterilerine de bulaşırdı — sessiz, yaygın ve ancak ekran görüntüsüyle görülür bir kusur.
  */
-export function kollariSiva(kok: Object3D) {
+export function kollariSiva(kok: Object3D, gomlekRengi: string = PALETTE.shirt) {
   const ten = new Color(PALETTE.kayTen);
-  const gomlek = new Color(PALETTE.shirt);
+  const gomlek = new Color(gomlekRengi);
   kok.traverse((n) => {
     const m = n as SkinnedMesh;
     if (!m.isSkinnedMesh || !/arm/i.test(m.name)) return;

@@ -2,7 +2,7 @@
  * BEKÇİ — F4a satın alımlar (D-152 · `docs/iap-raporu-f4a.md`).
  * Başlangıç 100 💎 (B100) · paketler 25/60/150 (250'lik talebin içinde) · Reklamları Kaldır geçişliyi
  * kaldırır + günde 10 💎 · aynı işlem iki kez ödül vermez · başlangıç 💎'ı bir kez · sıfırlama satın
- * alımı silmez · vitrin 💎 kozmetik turuna dek kapalı · cihazda anahtarsız sahte arka uç YOK.
+ * alımı silmez · vitrin F4c'de açıldı · cihazda anahtarsız sahte arka uç YOK.
  */
 import { readFileSync } from 'node:fs';
 import { beforeEach, describe, expect, it } from 'vitest';
@@ -43,9 +43,9 @@ describe('ölçülen sayılar config\'te (D-152)', () => {
     expect(U.elmas.length).toBe(C.iap.diamondPacks.length);
     U.elmas.forEach((u, i) => expect(purchaseGrant(u)?.diamonds).toBe(C.iap.diamondPacks[i]));
   });
-  it('vitrin kapalı: başlangıç ve elmas 💎 kozmetik turuna dek görünmez', () => {
-    expect(iapConfig.vitrin.baslangic).toBe(false);
-    expect(iapConfig.vitrin.elmas).toBe(false);
+  it("vitrin F4c'de AÇILDI: 💎'ın harcama yeri (Kıyafet/Tepsi) ve paketin kozmetiği (Kurucu) geldi", () => {
+    expect(iapConfig.vitrin.baslangic).toBe(true);
+    expect(iapConfig.vitrin.elmas).toBe(true);
   });
 });
 

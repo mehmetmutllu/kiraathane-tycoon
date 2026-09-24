@@ -4811,3 +4811,17 @@ satın alım yerelden · sıfırlama bulutu da sıfırlar · başarım durumdan 
 Kayıt görüntüsü tek yerde (`kayitVerisi`), bulut kaydı yerelle aynı göç yolundan (`kayitCoz`). saveVersion artmadı.
 **Bekçi:** `tests/play-games-f4b.test.ts` 25 · `tools/mutasyon-play-games-f4b.mjs` 18/18 · emülatörde açılış + Ayarlar
 (`docs/gorsel/f4b/`). Kullanıcı adımları: `docs/play-games-kurulum.md`.
+
+## D-154 · 💎 vitrini (F4c-1): Kıyafet + Tepsi 💎 ile · Kurucu = başlangıç paketi · teklif ilk Usta'dan sonra bir kez (2026-09-24)
+
+**Karar (kullanıcı, aday karelerinden — `tools/vitrin-adaylari.html`, artifact TYJTkxPJsVD8c3yEu1h4AR):** ₺ temalarıyla TEK
+mağaza (sekmeler Kıyafet · Tepsi · Masa · Zemin · Duvar · Paketler). Kurucu = K4 bordo yelek + fes, YALNIZ paketle (fes başka
+üründe yok). Vitrin: yeşil · şef · yazlık · kışlık · altın yelek; tepsi bakır · emaye · gümüş askılı (elden ASILI) · altın.
+**Fiyatlar TASLAK** (60/150 · 40/80/100 💎) — kullanıcı fiyatı ayrı oturuma bıraktı; oynanışa etkisi yok, ölçüm turu yok.
+**Kurallar:** sahiplik türer (💎 ürünü `ownedCosmetics`, kurucu `satin.baslangic` — iade → klasiğe düşer) · 💎 bir kez düşer ·
+paket alınınca kurucu giyilir · teklif ekran kanallarının EN SONUNDA (Usta/seviye/ipucu/panel önce), geri sayım/baskı yok ·
+kayıt additive (saveVersion artmadı) · bulut `teklif`i yerelden korur. `iapConfig.vitrin` iki kapısı AÇILDI.
+**Bekçi:** `tests/vitrin-f4c.test.ts` 25 · `tools/mutasyon-vitrin-f4c.mjs` 14/14 · duman 58/58 · kareler `docs/gorsel/ss/f4c-*`.
+**Sıra kilidi `olcum-yok` (bilerek):** `economy.config.ts`'e yalnız ürün listesi + TASLAK 💎 fiyat girdi; tick/₺ akışına
+etkisi yok, fiyat turu ölçümlü yapılacak (kullanıcı ertelendi).
+**Açık:** yelek oyun kamerasında tepsinin arkasında kalıyor (yanlardan okunuyor; şapkalılar net) · F4c-2 tabela + dekor.

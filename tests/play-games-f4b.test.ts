@@ -115,7 +115,7 @@ describe('çakışma kuralı: daha ileri kazanır', () => {
     const r = bulutlaBirlestir(bulut, yerel);
     expect(r.lifetime).toBe('900');
     expect(r.settings.music).toBe(false);
-    expect(r.satin).toEqual({ reklamsiz: true, baslangic: true, gunlukGun: 5, islenen: ['a', 'b'] });
+    expect(r.satin).toEqual({ reklamsiz: true, baslangic: true, gunlukGun: 5, islenen: ['a', 'b'], teklif: false });
   });
 });
 

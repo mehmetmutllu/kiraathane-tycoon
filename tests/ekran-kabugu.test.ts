@@ -91,7 +91,7 @@ describe('ekran kabuğu — K3 (D-106)', () => {
     }
     // Ham modal kabuğu yalnız GERÇEK modallerin hakkı — ödül ekranı + sıfırlama onayı (C5 · T9d,
     // `window.confirm`in yerini aldı) — panellerin değil.
-    expect([...yorumsuz(oku(HUD)).matchAll(/className="modal-backdrop"/g)].length).toBe(2);
+    expect([...yorumsuz(oku(HUD)).matchAll(/className="modal-backdrop"/g)].length, "ödül + sıfırlama onayı + başlangıç teklifi (F4c)").toBe(3);
     expect(yorumsuz(oku(CHAR))).not.toContain('modal-backdrop');
   });
 

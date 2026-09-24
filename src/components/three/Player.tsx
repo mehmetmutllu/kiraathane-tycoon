@@ -1,11 +1,132 @@
 import { useRef } from 'react';
-import type { Group } from 'three';
+import { Quaternion, Vector3, type Group } from 'three';
 import { useGame } from '../../game/store';
 import { useActorTransform } from './actorTransform';
 import { PALETTE } from '../../config/palette';
 import { trayCapacityFor } from '../../config/economy.config';
 import { KAY_TEPSI_KAYMA } from '../../config/actor';
 import { KayActor } from './KayActor';
+import { tepsiGorunum, type TepsiGorunum } from '../../config/kozmetik';
+import { gecerliKiyafet, gecerliTepsi } from '../../game/vitrin';
+
+/** Askılı tepsinin halkası tabanın bu kadar üstünde — tepsi elden bu kadar aşağı sarkar (F4c). */
+export const ASKI_HALKA_Y = 0.5;
+
+/**
+ * Tepsinin ELE göre çapası (S16 `KAY_TEPSI_KAYMA`). Askılı tepsi halkasından tutulur: taban halka
+ * yüksekliği kadar aşağıda sarkar. Oyun ve karakter paneli AYNI fonksiyondan okur.
+ */
+export function tepsiKaymasi(tepsi: string): [number, number, number] {
+  if (tepsiGorunum(tepsi).tip !== 'aski') return KAY_TEPSI_KAYMA;
+  return [KAY_TEPSI_KAYMA[0], KAY_TEPSI_KAYMA[1] - ASKI_HALKA_Y, KAY_TEPSI_KAYMA[2]];
+}
+
+const metalMat = { metalness: 0.55, roughness: 0.35 } as const;
+
+/** Askı kolu: tabanın kenarından (açı a, yarıçap r) halkaya uzanan çubuk. */
+function askiKolu(a: number, rx: number, rz: number) {
+  const alt = new Vector3(Math.cos(a) * rx, 0.02, Math.sin(a) * rz);
+  const ust = new Vector3(0, ASKI_HALKA_Y, 0);
+  const donus = new Quaternion().setFromUnitVectors(new Vector3(0, 1, 0), ust.clone().sub(alt).normalize());
+  return { orta: alt.clone().lerp(ust, 0.5), donus, boy: alt.distanceTo(ust) };
+}
+
+/**
+ * TEPSİ TABANI (F4c 💎 vitrini). Ölçü ızgaradan gelir (kapasite kadar büyür); yuvarlak tepsiler
+ * ızgaranın kutusuna oturan ovale çizilir. Askılı tepsi üç kolla halkaya bağlanır ve elden ASILI taşınır.
+ */
+function TepsiTabani({ g, w, d, cx, cz }: { g: TepsiGorunum; w: number; d: number; cx: number; cz: number }) {
+  const m = g.metal ? metalMat : {};
+  if (g.tip === 'kutu') {
+    return (
+      <mesh castShadow position={[cx, 0, cz]}>
+        <boxGeometry args={[w, 0.04, d]} />
+        <meshStandardMaterial color={g.renk} {...m} />
+      </mesh>
+    );
+  }
+  // Yuvarlak tepsi ızgaranın kutusuna OVAL oturur: daire ızgaradan derin kalıp gövdeye giriyordu
+  // (F4c karesi — tepsinin arka yarısı karnın içindeydi). Kalınlık ölçeklenmesin diye yalnız z.
+  const r = w / 2 + 0.01;
+  const oz = (d / 2 + 0.01) / r;
+  const kollar = g.tip === 'aski' ? [0, 1, 2].map((i) => (i / 3) * Math.PI * 2 + Math.PI / 2) : [];
+  return (
+    <group position={[cx, 0, cz]}>
+      <group scale={[1, 1, oz]}>
+        <mesh castShadow>
+          <cylinderGeometry args={[r, r * 0.93, 0.03, 24]} />
+          <meshStandardMaterial color={g.renk} {...m} />
+        </mesh>
+        <mesh position={[0, 0.02, 0]} rotation={[Math.PI / 2, 0, 0]}>
+          <torusGeometry args={[r, 0.016, 6, 28]} />
+          <meshStandardMaterial color={g.kenar ?? g.renk} {...metalMat} />
+        </mesh>
+        {g.desen &&
+          Array.from({ length: 10 }, (_, i) => {
+            const a = (i / 10) * Math.PI * 2;
+            return (
+              <mesh key={i} position={[Math.cos(a) * (r - 0.05), 0.017, Math.sin(a) * (r - 0.05)]} rotation={[0, a + Math.PI / 4, 0]}>
+                <boxGeometry args={[0.045, 0.005, 0.045]} />
+                <meshStandardMaterial color={g.desen} />
+              </mesh>
+            );
+          })}
+      </group>
+      {kollar.map((a) => {
+        const k = askiKolu(a, r, r * oz);
+        return (
+          <mesh key={a} position={k.orta} quaternion={k.donus}>
+            <cylinderGeometry args={[0.008, 0.008, k.boy, 6]} />
+            <meshStandardMaterial color={g.renk} {...metalMat} />
+          </mesh>
+        );
+      })}
+      {g.tip === 'aski' && (
+        <mesh position={[0, ASKI_HALKA_Y, 0]}>
+          <torusGeometry args={[0.06, 0.012, 6, 16]} />
+          <meshStandardMaterial color={g.renk} {...metalMat} />
+        </mesh>
+      )}
+    </group>
+  );
+}
+
+/** Dolu çay bardağı: klasikte düz silindir, vitrin tepsilerinde ince belli + tabak. */
+function CayBardagi({ g, position }: { g: TepsiGorunum; position: [number, number, number] }) {
+  const cay = { color: '#c0392b', roughness: 0.5, emissive: '#7a1f17', emissiveIntensity: 0.25 } as const;
+  if (!g.belli) {
+    return (
+      <mesh castShadow position={[position[0], 0.1, position[2]]}>
+        <cylinderGeometry args={[0.05, 0.04, 0.14, 8]} />
+        <meshStandardMaterial {...cay} />
+      </mesh>
+    );
+  }
+  return (
+    <group position={[position[0], 0.02, position[2]]}>
+      {g.tabak && (
+        <mesh position={[0, 0.008, 0]}>
+          <cylinderGeometry args={[0.07, 0.06, 0.014, 12]} />
+          <meshStandardMaterial color={g.tabak} {...(g.tabak === g.kenar ? metalMat : {})} />
+        </mesh>
+      )}
+      <mesh castShadow position={[0, 0.045, 0]}>
+        <cylinderGeometry args={[0.034, 0.041, 0.06, 10]} />
+        <meshStandardMaterial {...cay} />
+      </mesh>
+      <mesh castShadow position={[0, 0.115, 0]}>
+        <cylinderGeometry args={[0.049, 0.034, 0.08, 10]} />
+        <meshStandardMaterial {...cay} />
+      </mesh>
+      {g.kenar && (
+        <mesh position={[0, 0.155, 0]} rotation={[Math.PI / 2, 0, 0]}>
+          <torusGeometry args={[0.048, 0.006, 5, 14]} />
+          <meshStandardMaterial color={g.kenar} {...metalMat} />
+        </mesh>
+      )}
+    </group>
+  );
+}
 
 // Çaycı karakter v2 (2026-06-11 kullanıcı isteği: "kollar bacaklar falan güzel olsun"): PARÇALI
 // gövde (Faz 6 animasyon iskeletine hazırlık — her uzuv ayrı mesh). AYRI bacaklar + ayakkabılar,
@@ -108,6 +229,7 @@ export function CupTray({
   food = 0,
   dirtyFood = 0,
   cap = 6,
+  gorunum = 'klasik',
 }: {
   tea: number;
   dirty: number;
@@ -115,7 +237,10 @@ export function CupTray({
   /** Kirli TABAK (tost bulaşığı; turu-5 m.11 — bardak değil yayvan tabak çizilir). */
   dirtyFood?: number;
   cap?: number;
+  /** 💎 vitrini tepsi kimliği (F4c) — yalnız sahibin tepsisi; garson/panel klasikte kalır. */
+  gorunum?: string;
 }) {
+  const g = tepsiGorunum(gorunum);
   const total = tea + food + dirty + dirtyFood;
   if (total <= 0) return null;
   const colSpacing = 0.16;
@@ -125,13 +250,13 @@ export function CupTray({
   return (
     <group position={[0, 1.0, 0.45]}>
       {/* tepsi tabanı (kapasitenin ızgarasını taşıyacak boyut; ızgaranın gerçek merkezine oturur) */}
-      <mesh
-        castShadow
-        position={[((cols - 1) / 2 - 1) * colSpacing, 0, ((rows - 1) / 2 - 0.5) * rowSpacing]}
-      >
-        <boxGeometry args={[cols * colSpacing + 0.1, 0.04, rows * rowSpacing + 0.14]} />
-        <meshStandardMaterial color="#8d6e63" />
-      </mesh>
+      <TepsiTabani
+        g={g}
+        w={cols * colSpacing + 0.1}
+        d={rows * rowSpacing + 0.14}
+        cx={((cols - 1) / 2 - 1) * colSpacing}
+        cz={((rows - 1) / 2 - 0.5) * rowSpacing}
+      />
       {Array.from({ length: total }).map((_, i) => {
         // Sıra: çaylar (kırmızı) → tostlar (kızarmış dilim, M3) → kirli bardaklar (gri) →
         // kirli tabaklar (yayvan disk); aynı ızgara paylaşılır.
@@ -165,15 +290,11 @@ export function CupTray({
             </group>
           );
         }
+        if (!isDirty) return <CayBardagi key={i} g={g} position={[px, 0, pz]} />;
         return (
           <mesh key={i} castShadow position={[px, 0.1, pz]}>
             <cylinderGeometry args={[0.05, 0.04, 0.14, 8]} />
-            <meshStandardMaterial
-              color={isDirty ? '#8d8276' : '#c0392b'}
-              roughness={isDirty ? 0.9 : 0.5}
-              emissive={isDirty ? '#000000' : '#7a1f17'}
-              emissiveIntensity={isDirty ? 0 : 0.25}
-            />
+            <meshStandardMaterial color="#8d8276" roughness={0.9} />
           </mesh>
         );
       })}
@@ -197,6 +318,8 @@ export function Player() {
   const carriedDirty = useGame((s) => s.carriedDirty);
   const carriedDirtyFood = useGame((s) => s.carriedDirtyFood);
   const trayTier = useGame((s) => s.charUpgrades.tray);
+  const kiyafet = useGame(gecerliKiyafet);
+  const tepsi = useGame(gecerliTepsi);
   const outerRef = useRef<Group>(null);
   const ref = useRef<Group>(null);
   /** Elinde bir şey var mı: temiz ürün ya da toplanmış kirli. Taşıma pozunu bu tetikler. */
@@ -215,9 +338,16 @@ export function Player() {
             ortasından alır ve taşırken üst gövde `Holding_A`ya geçer. Eskiden tepsi gövdenin
             yanında SABİT bir noktadaydı ve kollar boşta sallanıyordu (ölçüm: çapa y 0,953,
             eller 0,66 — tepsi ellerin 29 cm üstünde, göğse yapışık). */}
-        <KayActor kind="owner" tasiyor={eldeVar}>
-          <group position={KAY_TEPSI_KAYMA}>
-            <CupTray tea={tray} food={trayFood} dirty={carriedDirty} dirtyFood={carriedDirtyFood} cap={trayCapacityFor(trayTier)} />
+        <KayActor kind="owner" kiyafet={kiyafet} tasiyor={eldeVar}>
+          <group position={tepsiKaymasi(tepsi)}>
+            <CupTray
+              tea={tray}
+              food={trayFood}
+              dirty={carriedDirty}
+              dirtyFood={carriedDirtyFood}
+              cap={trayCapacityFor(trayTier)}
+              gorunum={tepsi}
+            />
           </group>
         </KayActor>
       </group>

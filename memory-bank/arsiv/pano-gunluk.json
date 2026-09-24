@@ -6,6 +6,12 @@
  "gunluk": [
   {
    "tarih": "23.09.2026",
+   "etiket": "T8b — tezgâh arkası (D-143)",
+   "baslik": "En küçük yeterli pay <b>0,60</b> çıktı, seçilen <b>0,75</b> oldu",
+   "govde": "Adam 0,30'luk boşluğa sığmıyordu (gövdesi 0,56). Ölçüm 0,60'ı en küçük yeterli pay buldu ama karede kafası duvara giriyordu — 'en az' ile 'kaliteli' çatıştı, 0,75 ikisini de tutuyor. Hiçbir pay servisi düşürmedi.<br><br><b>Bulaşıkta sürpriz:</b> kap başına süreli yıkama leğende en fazla 2-4 kap biriktiriyor, yani kullanıcının istediği yığın ekranda hiç oluşmuyordu. Tarife uyan kol ölçüm sırasında eklendi: kirli birikir, 10 sn'de bir toptan yıkanır — yığın 4-7 kap, bedeli −%3.<br><br>Kısa koşunun '−%27 servis' işareti tek tohumlu gürültüydü; 4 tohumla kayboldu. Bekçi 6 denetim, 3 mutasyon kırmızı. Tost yeri (aynı tezgâh mı, ayrı modül mü) açık soru."
+  },
+  {
+   "tarih": "23.09.2026",
    "etiket": "T8a — zincir + T3 denge + nokta kapısı + seviye ₺ (D-142)",
    "baslik": "Sim oyunun sıra kuralını <b>oynamıyormuş</b>; düzelince taban 6,05 sa",
    "govde": "Ölçüm aracı yürürlükteki oyunu kurarken bir kusur buldu: sim masa yükseltmesini serbest sırayla alıyordu, oyunda D-124'ten beri tek hedef var. Kat 1 %6,7 fazla görünüyordu. 22 kolun hepsi doğru taban üstünde koştu.<br><br><b>Seçilen:</b> 2. garson Salon 1'in sonunda ₺800 (₺1.600'da kendi 30 dk'lık beklemesini doğuruyordu) · garson 2'li tepsi, tavan 4 · tepsi ₺30 · 4. masa ₺250 · seviye tabanı 90 · seviye ₺'si Seviye 5'ten (kapısız hâli ilk alımı 22 → 3 sn'ye indiriyordu) · yükseltme noktası görev kapılı.<br><br><b>Uygulanan kod ölçülen kolun kendisi:</b> final taban commit #1'in PK2 satırını parmak izine kadar verdi. Bardak havuzu bağlamıyor çıktı; T6'nın '42 bardak, temiz 0' ölçümü araç hatasıymış (dünyada 22 bardak vardı). 2. garson pad'inin ilk yeri karede garsonun altında kaldı, taşındı. Mutasyon 6/6, duman 50/50."

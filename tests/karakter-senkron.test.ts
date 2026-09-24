@@ -288,7 +288,7 @@ describe('S15 · kafa ölçeği TELAFİSİZ (D-113)', () => {
 
   it('kafa yalnız `head` KEMİĞİNDEN küçültülür ve kıyafetten ÖNCE — kasket onunla küçülsün', () => {
     expect(KAYNAK_ACTOR).toMatch(/n\.name === 'head'\) n\.scale\.setScalar\(KAY_KAFA_OLCEK\)/);
-    expect(KAYNAK_ACTOR.indexOf('kafaKucult(o)')).toBeLessThan(KAYNAK_ACTOR.indexOf('kiyafetTak(o, kind)'));
+    expect(KAYNAK_ACTOR.indexOf('kafaKucult(o)')).toBeLessThan(KAYNAK_ACTOR.indexOf('kiyafetTak(o, kind'));
   });
 
   it('`head` ölçek izi sökülür VE sökmek güvenli (kullanılan kliplerde ölçek tam 1,0)', () => {

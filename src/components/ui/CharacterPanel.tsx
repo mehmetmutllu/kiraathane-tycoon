@@ -20,9 +20,9 @@ import {
   dishSpeedNextCost,
   type CharStat,
 } from '../../config/economy.config';
-import { CupTray } from '../three/Player';
+import { CupTray, tepsiKaymasi } from '../three/Player';
+import { gecerliKiyafet, gecerliTepsi } from '../../game/vitrin';
 import { KayActor } from '../three/KayActor';
-import { KAY_TEPSI_KAYMA } from '../../config/actor';
 import { FixedCam, SalonLights, FloorPatch, WallBack } from './SalonSlice';
 import { PREVIEW_GL } from '../../config/palette';
 import { CoinIcon, TrayIcon, BasinIcon, MagnetIcon, BootIcon, ToIcon } from './icons';
@@ -54,11 +54,14 @@ import { Sheet } from './Sheet';
  * `handslot` kemiğinin ortasından alır (S16 · D-114). Panelde satılan şey tepsi kapasitesi
  * olduğu için tepsinin GÖRÜNMESİ ekranın işi.
  */
-function Onizleme({ kind, cap, dirty = 0, food = false }: {
+function Onizleme({ kind, cap, dirty = 0, food = false, kiyafet, tepsi }: {
   kind: 'owner' | 'waiter' | 'dishwasher';
   cap: number;
   dirty?: number;
   food?: boolean;
+  /** Sahibin 💎 kıyafeti ve tepsisi (F4c) — panelde oyunda giyilenle aynı görünsün. */
+  kiyafet?: string;
+  tepsi?: string;
 }) {
   const sway = useRef<Group>(null);
   const trayG = useRef<Group>(null);
@@ -80,9 +83,9 @@ function Onizleme({ kind, cap, dirty = 0, food = false }: {
   });
   return (
     <group ref={sway}>
-      <KayActor kind={kind} tasiyor>
-        <group ref={trayG} position={KAY_TEPSI_KAYMA}>
-          <CupTray tea={food ? 0 : cap - dirty} food={food ? cap : 0} dirty={dirty} cap={cap} />
+      <KayActor kind={kind} kiyafet={kiyafet} tasiyor>
+        <group ref={trayG} position={tepsiKaymasi(tepsi ?? 'klasik')}>
+          <CupTray tea={food ? 0 : cap - dirty} food={food ? cap : 0} dirty={dirty} cap={cap} gorunum={tepsi} />
         </group>
       </KayActor>
     </group>
@@ -301,6 +304,8 @@ export function CharacterPanel({ onClose, ilkSekme = 'player' }: { onClose: () =
   const floorThemeByArea = useGame((s) => s.floorThemeByArea);
   const wallThemeByArea = useGame((s) => s.wallThemeByArea);
   const floorId = floorThemeByArea[0] ?? 'parke';
+  const kiyafet = useGame(gecerliKiyafet);
+  const tepsi = useGame(gecerliTepsi);
   const wallId = wallThemeByArea[0] ?? 'krem';
   const [secili, setTab] = useState<Tab>(ilkSekme);
   const cash = wallet.toNumber();
@@ -375,7 +380,7 @@ export function CharacterPanel({ onClose, ilkSekme = 'player' }: { onClose: () =
             <SalonLights />
             <FloorPatch floorId={floorId} checkerHalf={2} />
             <WallBack wallId={wallId} z={-1.55} width={7} />
-            {tab === 'player' && <Onizleme kind="owner" cap={cap} />}
+            {tab === 'player' && <Onizleme kind="owner" cap={cap} kiyafet={kiyafet} tepsi={tepsi} />}
             {tab === 'waiter' && waiterHired && (
               <Onizleme kind="waiter" cap={waiterTrayCapacityFor(waiterUpgrades.tray)} />
             )}
@@ -441,5 +446,29 @@ export function CharacterPanel({ onClose, ilkSekme = 'player' }: { onClose: () =
         {tab === 'dish' && <DishTab />}
       </div>
     </Sheet>
+  );
+}
+
+/**
+ * 💎 VİTRİN ÖNİZLEMESİ (F4c) — mağazanın Kıyafet/Tepsi sekmesi. Karakter panelinin AYNI sahnesi
+ * (oyunun kamerası, ışığı, zemini): vitrinde gördüğün kıyafet salonda göreceğinle birebir.
+ */
+export function SahipOnizleme({ kiyafet, tepsi }: { kiyafet: string; tepsi: string }) {
+  const floorId = useGame((s) => s.floorThemeByArea[0] ?? 'parke');
+  const wallId = useGame((s) => s.wallThemeByArea[0] ?? 'krem');
+  const cap = useGame((s) => trayCapacityFor(s.charUpgrades.tray));
+  return (
+    <div className="shop-preview" data-testid="vitrin-onizleme">
+      <div className="preview-canvas">
+        <Canvas dpr={[1, 1.5]} gl={PREVIEW_GL} frameloop="never">
+          <KareTavani />
+          <FixedCam d={2.6} ty={1.02} />
+          <SalonLights />
+          <FloorPatch floorId={floorId} checkerHalf={2} />
+          <WallBack wallId={wallId} z={-1.55} width={7} />
+          <Onizleme kind="owner" cap={Math.min(cap, 3)} kiyafet={kiyafet} tepsi={tepsi} />
+        </Canvas>
+      </div>
+    </div>
   );
 }

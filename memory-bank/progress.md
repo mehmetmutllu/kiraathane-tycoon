@@ -114,7 +114,7 @@ Bütçe düzeltmelerinin tarihçesi (73 → 121) ve bitmiş fazların tam anlat�
   · F3b: ödüllü ödülü — 2× seviye/günlük/kısa yokluk · Usta günde 1 · video hakkı oranlı · Kat 1 −%4,5 · D-150 · `docs/odullu-raporu-f3b.md` · kalan: cihaz turu (gerçek dolgu/UMP) + gerçek AdMob kimliği
 - ✅ **F4 — satın alımlar (RevenueCat)** *(tur adı F4a)* · başlangıç 100 💎 · paketler 25/60/150 (vitrin kapalı) · Reklamları Kaldır + günlük 10 💎 · geri yükle · D-152 · `docs/iap-raporu-f4a.md` · 💎 talebi 250 tavan bulundu
 - ✅ **F7 — Play Games: bulut kaydı + başarımlar (XP)** *(tur adı F4b)* · kendi native eklentimiz (PGS v2) · daha ileri kayıt kazanır · 19 başarım / 1000 XP ödülsüz · kimlik girilene dek KAPALI · D-153 · `docs/play-games-kurulum.md` · kalan: Console kurulumu + gerçek cihazda giriş/bulut turu
-- ⏳ **F8 — 💎 kozmetik vitrini + başlangıç paketinin kozmetiği** *(tur adı F4c)* (D-152: elmas paketinin harcama yeri; adaylar render edilip seçtirilir) · fiyatlar ayrı oturum
+- 🔧 **F8 — 💎 kozmetik vitrini + başlangıç paketinin kozmetiği** *(tur adı F4c)* · F4c-1 ✅ Kıyafet/Tepsi 💎 · Kurucu (K4) paketle · teklif ilk Usta sonrası · D-154 · fiyat TASLAK · kalan F4c-2: tabela + dekor (yılbaşı paketi geri)
 - ⏳ **F5 — mağaza vitrini + uyum** …
 - ✅ **F6 — açılış ekranı + ekran yönü + yatay/tablet HUD** (F1b iki tur + tur 3) …
 

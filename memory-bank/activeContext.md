@@ -5,30 +5,27 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-24 — F4c 💎 vitrini: adaylar SEÇİLDİ, uygulama sırada)
+## ŞU AN (2026-09-24 — F4c-1 BİTTİ · D-154; sıradaki F4c-2 tabela + dekor)
 
 ```
 SORU            : F4c — 💎 kozmetik vitrini: ne satılır + başlangıç paketinin özel kozmetiği
-ÖLÇÜLECEK KOLLAR: yok (denge dosyasına dokunmaz; fiyatlar ayrı oturum). Tabela görünürlüğü ölçülecek (C)
-SAYILAR         : — · adaylar `tools/vitrin-adaylari.html` · kareler `docs/gorsel/ss/f4c-aday-*.png`
-KARAR           : ₺ temalarıyla TEK vitrin · 4 tür · kurucu = K4 bordo yelek+fes · liste aşağıda
-UYGULAMA        : F4c-1 (vitrin + kıyafet + tepsi + kurucu + başlangıç tetiği) → F4c-2 (tabela + dekor köşesi)
-BEKÇİ           : —
+ÖLÇÜLECEK KOLLAR: yok (denge dosyasına dokunmaz; fiyat TASLAK, ayrı oturum)
+SAYILAR         : — · adaylar `tools/vitrin-adaylari.html` · oyun kareleri `tools/shot-f4c.mjs` → `docs/gorsel/ss/f4c-*`
+KARAR           : D-154 — tek mağaza · kurucu K4 (paketle) · kıyafet K2 K5 K7 K8 K10 · tepsi T2 T3 T4 T7
+UYGULAMA        : vitrin.ts · kozmetik.ts · kiyafet.ts (profil yelek) · CupTray görünüm + askı · teklif kanalı
+BEKÇİ           : `vitrin-f4c.test.ts` 25 + 14/14 mutasyon · duman 58/58 · vitest 1604
 ```
-Seçilen (kullanıcı + Claude, artifact https://claude.ai/artifact/TYJTkxPJsVD8c3yEu1h4AR):
-- **K** kurucu K4 · vitrin K2 K5 K7 K8 K10 (K3 elendi: fes kurucuya özel)
-- **T** T3 gümüş askılı (elden ASILI tutuş gerekir) · T4 altın · T2 bakır · T7 emaye
-- **C** C2 C4 C7 C8 — önce oyun kamerasında görünürlük ölçümü
-- **D** D1 radyo · D2 saat · D3 semaver · D5 kanarya · D6 gramofon · D10 tablo · D7a koltuk · D7b lamba (ayrı)
-- **Y** yılbaşı paketi geri (`git checkout 13738b5^ -- public/assets/models/kaykit-holiday-bits`): büyük koltuk
-  4 renk (tek ürün, ÖLÇEK KÜÇÜLECEK) + yuvarlak halı. `asset-olu-yuk.test` src'de referans ister.
-- Dekor yerleşimi önerisi: salon başına sabit "süs köşesi" (yürüme yolu bozulmaz) — F4c-2'de onaylat.
 
 ## ⏭️ SIRADAKİ ADIM
 
-**F4c-1:** vitrin ekranı (₺ temaları + 💎 ürünler tek yerde) · sahip kıyafeti seçimi (KayActor) · tepsi
-görünümü (CupTray; askılı tutuş) · K4 yalnız başlangıç paketiyle · başlangıç paketi tetiği (ilk Usta'dan
-sonra bir kez) · kayıt: saveVersion + migrasyon. Sonra **F4c-2** · sonra **F5** mağaza + G-89 (EN SON).
+**F4c-2 (aynı F8 kalemi):** önce **tabela görünürlüğü ölçülür** (oyun kamerasında cephe kaç px?) → C2 C4 C7 C8 ·
+**dekor süs köşesi** yerleşimi kullanıcıya onaylatılır (salon başına sabit köşe öneriyoruz) → D1 radyo · D2 saat · D3 semaver ·
+D5 kanarya · D6 gramofon · D10 tablo · D7a koltuk · D7b lamba (ayrı) + yılbaşı paketi geri (`git checkout 13738b5^ --
+public/assets/models/kaykit-holiday-bits`): büyük koltuk 4 renk (ÖLÇEK KÜÇÜLECEK) + yuvarlak halı; `asset-olu-yuk.test`
+src'de referans ister. Sonra **F5** mağaza + G-89 (EN SON). Aday sayfası: https://claude.ai/artifact/TYJTkxPJsVD8c3yEu1h4AR
+
+- **Sonraki oturumda sor:** 💎 fiyatları (TASLAK 60/150 kıyafet · 40/80/100 tepsi) ayrı fiyat oturumunda.
+- **Görsel açık:** yelek oyun kamerasında tepsinin arkasında kalıyor (yanlardan okunuyor) — kullanıcı oynayınca bakılsın.
 
 ## AÇIK KALEMLER
 - **Play Games (kullanıcı):** `docs/play-games-kurulum.md` adımları → proje kimliği `strings.xml` + 19 başarım kimliği

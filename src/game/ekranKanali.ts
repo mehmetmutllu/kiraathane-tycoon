@@ -35,7 +35,15 @@
  */
 
 /** Ekranı kesen kanallar. `null` = ekran serbest. */
-export type EkranKanali = 'cevrimdisi' | 'usta' | 'seviye' | 'ogretme-bulasik' | 'ipucu-karakter' | 'ipucu-tepsi' | null;
+export type EkranKanali =
+  | 'cevrimdisi'
+  | 'usta'
+  | 'seviye'
+  | 'ogretme-bulasik'
+  | 'ipucu-karakter'
+  | 'ipucu-tepsi'
+  | 'teklif-baslangic'
+  | null;
 
 export interface EkranGirdisi {
   /** Çevrimdışı kazanç var ve henüz kapatılmadı. */
@@ -56,6 +64,8 @@ export interface EkranGirdisi {
   karakterIpucuHazir: boolean;
   /** Tepsi ipucunun kendi koşulları sağlandı (tepside ürün var, ipucu hiç görülmedi). */
   tepsiIpucuHazir: boolean;
+  /** F4c: başlangıç paketi teklifi bekliyor (ilk Usta'dan sonra, bir kez — `vitrin.baslangicTeklifiGoster`). */
+  baslangicTeklifHazir?: boolean;
 }
 
 export function ekranKanali(g: EkranGirdisi): EkranKanali {
@@ -69,6 +79,9 @@ export function ekranKanali(g: EkranGirdisi): EkranKanali {
   if (g.bulasikOgretmeHazir) return 'ogretme-bulasik';
   if (g.karakterIpucuHazir) return 'ipucu-karakter';
   if (g.tepsiIpucuHazir) return 'ipucu-tepsi';
+  // SATIŞ TEKLİFİ EN SONDA: oyunu öğreten her şey önce gelir, eylem ortasında asla çıkmaz
+  // (panel/bildirim/kutlama sırasında yukarıdaki kapı onu da bekletir). monetization.md §2.
+  if (g.baslangicTeklifHazir) return 'teklif-baslangic';
   return null;
 }
 
