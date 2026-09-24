@@ -5,34 +5,18 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-24 — F4c-1 BİTTİ · D-154; sıradaki F4c-2 tabela + dekor)
+## ŞU AN (2026-09-24 — F4c-2 adım 2 ÖLÇ bitti · karar paketi bekliyor)
 
-```
-SORU            : F4c — 💎 kozmetik vitrini: ne satılır + başlangıç paketinin özel kozmetiği
-ÖLÇÜLECEK KOLLAR: yok (denge dosyasına dokunmaz; fiyat TASLAK, ayrı oturum)
-SAYILAR         : — · adaylar `tools/vitrin-adaylari.html` · oyun kareleri `tools/shot-f4c.mjs` → `docs/gorsel/ss/f4c-*`
-KARAR           : D-154 — tek mağaza · kurucu K4 (paketle) · kıyafet K2 K5 K7 K8 K10 · tepsi T2 T3 T4 T7
-UYGULAMA        : vitrin.ts · kozmetik.ts · kiyafet.ts (profil yelek) · CupTray görünüm + askı · teklif kanalı
-BEKÇİ           : `vitrin-f4c.test.ts` 25 + 14/14 mutasyon · duman 58/58 · vitest 1604
-```
-
+\
 ## ⏭️ SIRADAKİ ADIM
 
-**F4c-2 (aynı F8 kalemi) — kullanıcı 2026-09-24 kapanışta istedi:**
-1. **Dekoru HARİTA ÜZERİNDE göster:** aday dekorları salonun bugünkü planında (üstten harita + oyun kadrajı)
-   nereye oturacaklarıyla çiz. **DÜZENİ DEĞİŞTİRME** — masa/tezgâh/duvar/yol yerinde kalır; dekor boş yerlere
-   sığar. Önce göster, onay al, sonra kod.
-2. **KUSUR (kullanıcı):** aday karelerindeki dekorlar **duvarla birleşiyor** (duvar objeleri duvara gömülü,
-   dolap/raf arka duvara giriyor — `tools/vitrin-adaylari.html` dekor sayfası). Uygulamada her obje duvar
-   yüzünden PAYLA durmalı; çakışma ölçülüp bekçiye yazılır (gövde kutusu ∩ duvar = 0).
-3. Tabela: önce oyun kamerasında görünürlük ölçülür (cephe kaç px?) → C2 C4 C7 C8.
-4. Dekor listesi: D1 radyo · D2 saat · D3 semaver · D5 kanarya · D6 gramofon · D10 tablo · D7a koltuk · D7b lamba
-   (ayrı) + yılbaşı paketi geri (`git checkout 13738b5^ -- public/assets/models/kaykit-holiday-bits`): büyük koltuk
-   4 renk (ÖLÇEK KÜÇÜLECEK) + yuvarlak halı; `asset-olu-yuk.test` src'de referans ister.
-Sonra **F5** mağaza + G-89 (EN SON). Aday sayfası: https://claude.ai/artifact/TYJTkxPJsVD8c3yEu1h4AR
-
-- **Sonraki oturumda sor:** 💎 fiyatları (TASLAK 60/150 kıyafet · 40/80/100 tepsi) ayrı fiyat oturumunda.
-- **Görsel açık:** yelek oyun kamerasında tepsinin arkasında kalıyor (yanlardan okunuyor) — kullanıcı oynayınca bakılsın.
+**Karar paketi (kullanıcı):** harita sayfası + 3 soru → sonra UYGULA: yuvalar e veri olarak,
+modeller, vitrin sekmesi, bekçi, en az 2 mutasyon. Yılbaşı paketi diske geri alındı ama COMMIT'LENMEDİ
+( src referansı ister) — commit #2'de koda bağlanınca girer.
+- **Ek bulgu B5:** bugünkü konsol/TV ünitesi de çıtaya 0,04 gömülü ( gövde yüzünde) — aynı turda düzeltilebilir.
+- Tabela: cephe görünürlük ölçümü hâlâ yapılmadı (C2 C4 C7 C8) — F4c-2'nin ikinci yarısı.
+- **Sonraki oturumda sor:** 💎 fiyatları (TASLAK) ayrı fiyat oturumunda. Yelek-tepsi görünürlüğü oynarken.
+Sonra **F5** mağaza + G-89 (EN SON).
 
 ## AÇIK KALEMLER
 - **Play Games (kullanıcı):** `docs/play-games-kurulum.md` adımları → proje kimliği `strings.xml` + 19 başarım kimliği

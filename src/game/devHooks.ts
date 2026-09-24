@@ -12,6 +12,7 @@ import { collectionMult } from './goals';
 import { toastCizilir } from './rules';
 import { dailyViews } from './dailyQuests';
 import { D } from './decimal';
+import { izdusur } from './cameraView';
 import { reklamDurumu, reklamSaatiKaydir } from './ads';
 import { economyConfig, levelProgress, charLevel, lavaboVisitChance, lavaboFee, lavaboIncomePerCustomer, type CharStat } from '../config/economy.config';
 import type { SaveStats } from './save';
@@ -84,6 +85,8 @@ declare global {
     __fayans?: (karo: 'kucuk' | 'buyuk', renk: 'siyahbeyaz' | 'kahve') => string;
     __devCam?: (opts: { fov?: number; distMul?: number }) => void;
     __zaman?: (kat: number) => number;
+    /** Dünya noktalarının takip kamerasındaki NDC izdüşümü (F4c-2 dekor yuvası kareleri). */
+    __izdusur?: (pts: [number, number, number][]) => ([number, number] | null)[];
   }
 }
 
@@ -424,6 +427,8 @@ export function installDevHooks(): void {
     useSandbox.getState().set({ timeScale: Math.max(0, kat) });
     return kat;
   };
+
+  window.__izdusur = (pts) => pts.map(([x, y, z]) => izdusur(x, y, z));
 
   window.__setState = (patch) => {
     // Para alanları Decimal'dir; tarayıcı konsolundan/duman testinden düz sayı gelirse sarmalanır

@@ -60,3 +60,11 @@ export function hedefEkranda(x: number, z: number, y = 0.6): boolean {
   const nz = (pv[2] * x + pv[6] * y + pv[10] * z + pv[14]) / w;
   return nz > -1 && nz < 1 && Math.abs(nx) <= 1 && Math.abs(ny) <= 1;
 }
+
+/** Dünya noktasının NDC izdüşümü (x,y ∈ [−1,1]; kamera arkasındaysa null). DEV ölçüm kareleri için. */
+export function izdusur(x: number, y: number, z: number): [number, number] | null {
+  if (!cameraView.hazir) return null;
+  const w = pv[3] * x + pv[7] * y + pv[11] * z + pv[15];
+  if (w < 1e-6) return null;
+  return [(pv[0] * x + pv[4] * y + pv[8] * z + pv[12]) / w, (pv[1] * x + pv[5] * y + pv[9] * z + pv[13]) / w];
+}
