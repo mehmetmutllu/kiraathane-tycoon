@@ -95,6 +95,8 @@ interface Ayar {
    *  dejenere bir sıfır satırı üretiyordu. Şartsız satır (`e6X`) hem KANALIN takılı olduğunu
    *  kanıtlar hem de kanalın ÜST sınırını verir. */
   tavanSarti: boolean;
+  /** F4a: t=0'da bir kez eklenen 💎 (satın alınmış paket). Yoksa kol birebir aynıdır. */
+  pesinElmas?: number;
 }
 
 /**
@@ -111,7 +113,8 @@ function kolGovdesi(a: Ayar): () => UstaKol {
   return () => {
     kayitSifirla();
     const akis = kademeAkisi();
-    let elmas = 0;
+    let elmas = a.pesinElmas ?? 0;
+    sonKazanilan += elmas;
     let servisUsta = false;
     let ustaMasaSayisi = 0;
     let ustaPersonelSayisi = 0;
@@ -325,6 +328,24 @@ export const USTA_KOLLARI: Record<string, UstaKolTanim> = {
     })),
     yaz: (v) => (v <= 0 ? 'kapalı'
       : `×${C.master.tipMult} · ${C.master.diamondCost} 💎 · ${C.dailyQuests.diamondsPerDay}/gün`),
+  },
+
+  /* eIAP — F4a: eUYG + t=0'da PEŞİN 💎 (satın alınmış paket). Doz = 💎; 0 = eUYG'nin birebiri.
+   *        ÜST SINIR: paket oyunun ilk saniyesinde alınmış sayılır ve 💎 uygun olduğu an harcanır. */
+  eIAP: {
+    ad: 'eIAP',
+    ne: 'UYGULANAN kol + t=0 peşin 💎 (satın alınmış paket)',
+    birim: '💎',
+    taban: 0,
+    dozlar: [0, 50, 100, 250, 1_000_000],
+    fabrika: (doz) => kolGovdesi({
+      ...VARSAYILAN,
+      etki: C.master.tipMult,
+      fiyat: C.master.diamondCost,
+      gunluk: C.dailyQuests.diamondsPerDay,
+      pesinElmas: doz,
+    }),
+    yaz: (doz) => doz + ' 💎 peşin',
   },
 
   /* e5 — GÜNLÜK GÖREV ARZI. MODEL SINIRI ①: 12 sa yarım gündür, bu kolun tick tablosundaki

@@ -5,21 +5,24 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-24 — F3 KAPANDI · D-149 altyapı + D-150 ödüllü; sıradaki F4 IAP)
+## ŞU AN (2026-09-24 — F4a IAP turu AÇIK · adım 2 ÖLÇ)
 
 ```
-SORU            : (a) F3 kararlarını koda indir · (b) F3b: ödüllü videonun ödülü ne?
-ÖLÇÜLECEK KOLLAR: (b) S2 · H2 · V60/V200/V120 · SV · SV2 (sim) · O0/O1/O2 (defter) · E/U/Ug (💎 defteri)
-SAYILAR         : `docs/odullu-raporu-f3b.md` §Bulgular — SV2 −%4,5 · SV −%8,0 · hedef 💎 2× kuyruk 0 gün · U1 0,71 gün/Usta
-KARAR           : D-149 (altyapı, D-144 ②) · D-150 (üçü de önerilen: 2× seviye/günlük/kısa yokluk · U1 · V60)
-UYGULAMA        : ads.ts + ads.config.ts · rewarded bloğu · store ödül yolları · VideoKarti · ödül ₺'si izden çıktı
-BEKÇİ           : `reklam-f3.test.ts` 19 + 10/10 · `odullu-f3b.test.ts` 20 + 11/11 · duman 54/54 · kareler `docs/gorsel/f3b/`
+SORU            : F4a — satın alımlar: başlangıç paketi kaç 💎 · elmas paketi neye harcanır · tempo satılıyor mu?
+ÖLÇÜLECEK KOLLAR: §1 sim B0/B50/B100/B250/P∞ (peşin 💎 → Kat 1) · §2 defter: 💎 talebi vs paket boyu (E0/U1/IAP oyuncusu)
+SAYILAR         : `docs/iap-raporu-f4a.md` §Bulgular — B50 −%2,4 · B100 −%4,5 · B250 −%6,8 · P∞ −%7,0 · 💎 talebi 250 tavan
+KARAR           : (dolacak)
+UYGULAMA        : (dolacak) — iskelet: iap.ts (RevenueCat, anahtar yoksa test kipi) · ürün tanımı config'te · geri yükle
+BEKÇİ           : (dolacak)
 ```
+
+**Kullanıcı kararları (2026-09-24, başlangıç onayı):** pazara göre fiyat (mağazada, kodda değil; fiyat ayrı oturum) ·
+RevenueCat hesabı açılacak (kod önce test kipi) · başlangıç paketi = 💎 + yalnız o pakette olan kozmetik, tempo yok,
+geri sayım yok, ilk Usta'dan sonra bir kez gösterilir · **F4b = Play Games: bulut kaydı + başarımlar (XP)** — iş yükü sorun değil.
 
 ## ⏭️ SIRADAKİ ADIM
 
-**F4 — IAP (RevenueCat)**: "Reklamları Kaldır" (geçişliyi kaldırır, ödüllüye dokunmaz, +10 💎/gün — D-040) · elmas paketleri ·
-başlangıç paketi. `ads.ts`e "reklamsız" bayrağı F4'te bağlanır (geçişli kuralına tek koşul). Sonra F5 mağaza + G-89 (EN SON).
+F4a ölç → commit #1 → karar paketi. Sonra F4b (Play Games) → F5 mağaza + G-89 (EN SON).
 
 ## AÇIK KALEMLER
 - **Cihaz turu (F3):** gerçek dolgu · UMP formu AB'de açılıyor mu · reklam sırasında WebView sesi · R8 altında SDK'nın kendi yansıması.

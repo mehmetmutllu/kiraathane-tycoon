@@ -1,0 +1,48 @@
+=== F4a — SATIN ALIMLAR: peşin 💎 → Kat 1 (sim) · 💎 talebi ve paket boyu (defter) ===
+
+economy.config.ts DOSYASI DEĞİŞMEDİ — peşin 💎 sim kancasıyla (usta-kollari eIAP) uygulanır.
+Taban = yürürlükteki oyun, reklamsız: seviye ₺ 1× · Usta eUYG · HRE yığını · masa sırası A.
+ÜST SINIR: paket t=0'da alınmış, 💎 Usta uygun olduğu an harcanıyor.
+
+--- §1 PEŞİN 💎 → KAT 1 (Normal profil · dKat1 tabana göre · eleme eşiği %7) ---
+kol  | KAT1 sa | dKat1  | HÜKÜM ideal | GÖZLEM normal | Usta alımı (12 sa) | ilk Usta sa
+----------------------------------------------------------------------------------------
+T0   |    5.58 |  +0.0% |    0 · 17.1 |      1 · 30.5 |                  5 |        1.31
+B50  |    5.45 |  -2.4% |    0 · 16.5 |      1 · 29.4 |                  7 |        1.31
+B100 |    5.33 |  -4.5% |    0 · 15.9 |      1 · 28.5 |                  9 |        1.31
+B250 |    5.20 |  -6.8% |    0 · 14.7 |      1 · 26.3 |                 14 |        1.31
+P∞   |    5.19 |  -7.0% |    0 · 14.7 |      1 · 26.3 |                 14 |        1.31
+Kollar:
+  T0   taban: reklamsız, paket yok (B0 = peşin 0, birebir)
+  B50  peşin 50 💎 (2 Usta)
+  B100 peşin 100 💎 (4 Usta)
+  B250 peşin 250 💎 (10 Usta — hedeflerin toplamı kadar)
+  P∞   sınırsız 💎 (her Usta uygun olduğu an alınır)
+Parmak izi: taban 38fd43d5 · B50 dcd13edd · B100 4adc503d · B250 69dc2455 · P∞ 6cc5dd15
+
+--- §2 💎 TALEBİ (Usta 20 masa × 25 💎 = 500 · hedeflerden 250 · günlük 10) ---
+Diğer 💎 harcaması: yok (kozmetik ₺ ile · diamondExtendHours tanımlı ama hiçbir yerde kullanılmıyor).
+kalan talep = o gün hâlâ bir şeye harcanabilecek 💎 (gün 0 = Kat 1 sonu, masalar tavanda).
+oyuncu |  gün 0 |  gün 1 |  gün 3 |  gün 7 | gün 14 | talep biter
+-----------------------------------------------------------------
+E0     |    250 |    240 |    220 |    180 |    110 | 25,0 gün
+U1     |    250 |    215 |    145 |      5 |      0 | 7,1 gün
+K      |    250 |    230 |    190 |    110 |      0 | 12,5 gün
+
+--- §2b PAKET BOYU: gün g'de alınan P 💎 paketin İŞE YARAYAN / ÖLÜ kısmı ---
+işe yarar = min(P, kalan talep) · ölü = P − işe yarar (bugün harcanacak yer yok) · kısaltır = kuyruğu kaç gün öne çeker
+oyuncu | gün |              25 💎 |              60 💎 |             150 💎 |             300 💎 |             600 💎
+---------------------------------------------------------------------------------------------------------------------
+E0     |   0 |    25/0 ölü · 2,5g |    60/0 ölü · 6,0g |  150/0 ölü · 15,0g | 250/50 ölü · 25,0g | 250/350 ölü · 25,0g
+E0     |   3 |    25/0 ölü · 2,5g |    60/0 ölü · 6,0g |  150/0 ölü · 15,0g | 220/80 ölü · 22,0g | 220/380 ölü · 22,0g
+U1     |   0 |    25/0 ölü · 0,7g |    60/0 ölü · 1,7g |   150/0 ölü · 4,3g |  250/50 ölü · 7,1g | 250/350 ölü · 7,1g
+U1     |   3 |    25/0 ölü · 0,7g |    60/0 ölü · 1,7g |   145/5 ölü · 4,1g | 145/155 ölü · 4,1g | 145/455 ölü · 4,1g
+K      |   0 |    25/0 ölü · 1,3g |    60/0 ölü · 3,0g |   150/0 ölü · 7,5g | 250/50 ölü · 12,5g | 250/350 ölü · 12,5g
+K      |   3 |    25/0 ölü · 1,3g |    60/0 ölü · 3,0g |   150/0 ölü · 7,5g | 190/110 ölü · 9,5g | 190/410 ölü · 9,5g
+Oyuncular:
+  E0     reklam izlemez, satın almaz
+  U1     her gün Usta videosunu izler (D-150)
+  K      Reklamları Kaldır aldı (+10 💎/gün), video izlemez
+MODEL SINIRI: Kat 1 bitmeden masalar tavanda değil → gün 0 talebi, Usta'nın gerçekten açıldığı anın ÜST sınırı.
+
+✓ Damgalar temiz (tam koşu).
