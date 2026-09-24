@@ -4840,3 +4840,13 @@ yanlış modülden undefined, döngüler boştu; boş küme koruması eklendi) �
 **Sıra kilidi `karma-commit` (bilerek):** commit #1 (fc80214) araç + ham çıktı + rapor, karar BOŞ; commit #2 final TAM
 koşunun çıktısını kodla birlikte taşıyor (protokolün "final tam koşu" adımı) — araç bunu ayırt edemiyor.
 **Açık:** tabela (cephe görünürlüğü ölçülmedi) · dikey telefonda yan duvar eşyası köşeye yürüyünce okunuyor.
+
+## D-156 · Tabela (F4c-3): alınlığı dolduran büyük tabela, üstünde oyuncunun kafe adı · 💎 cephe yok · yükleniyor "Tea House Tycoon" (2026-09-25)
+
+**Karar (kullanıcı, karar sayfasından — artifact 1Q5yzv5wykx5Md1RBYbx6q):** tabela K2 (5,0 × 0,55, lento/kordonun önünde), bedava.
+Yazı = oyuncunun girişte verdiği kafe adı (bir kez sorulur, eski kayıtlara da bir kez; varsayılan "Köşe Kıraathanesi";
+≤ 20 harf; Ayarlar'dan ücretsiz). Yükleniyor ekranı + sayfa başlığı "Tea House Tycoon" (simge adı D-130 aynı).
+**Belirleyici sayı:** cephe dikey telefonda oyun süresinin %4,6'sında ekranda, 3. Salon'da %0,7 → 💎 ile satılan cephe
+oyunda görünmez. Eski tabelanın yarısı lento/kordon arkasında, harf 7,7 px; K2'de harf 12,2 px.
+**Kurallar:** ad kutusu ekran kanallarının EN ÖNÜNDE · kayıt `kafeAdi` additive (null = sorulmadı) · sıfırlama yeniden sordurur.
+**Bekçi:** `tests/tabela-f4c3.test.ts` 19 · mutasyon 4/11 (bellek yüzünden yarıda) · duman 65/65 · vitest 1645 · `docs/tabela-raporu-f4c3.md`.

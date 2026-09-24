@@ -1896,3 +1896,48 @@
   color: var(--tx2);
   text-align: center;
 }
+
+/* KAFE ADI KUTUSU (F4c-3 · D-156): klavye açılınca kart görünür kalsın diye ekranın üst yarısında. */
+.kafe-adi-perde {
+  align-items: flex-start;
+  padding-top: max(14vh, 64px);
+  z-index: 40;
+}
+.kafe-adi-girdi {
+  width: min(100%, 300px);
+  box-sizing: border-box;
+  padding: 11px 14px;
+  border: 3px solid var(--ot);
+  border-radius: var(--r1);
+  background: var(--oyuk);
+  color: var(--tx);
+  font-family: var(--font-game);
+  font-size: var(--p4);
+  font-weight: 800;
+  text-align: center;
+  outline: none;
+}
+.kafe-adi-girdi:focus-visible {
+  border-color: var(--ac);
+}
+.kafe-adi-sayac {
+  margin: 4px 0 2px;
+  font-size: var(--p1);
+  color: var(--tx2);
+  font-variant-numeric: tabular-nums;
+}
+.kafe-adi-degistir {
+  max-width: 55%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 6px 12px;
+  border: 2px solid var(--ot);
+  border-radius: var(--r1);
+  background: linear-gradient(180deg, var(--kart), var(--kart2));
+  color: var(--tx);
+  font-family: var(--font-game);
+  font-size: var(--p2);
+  font-weight: 800;
+  cursor: pointer;
+}

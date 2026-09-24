@@ -58,6 +58,32 @@ try {
   if (init.tables === 1) pass('Başlangıç: 1 masa');
   else fail(`Başlangıç masa sayısı 1 değil: ${init.tables}`);
 
+  // F4c-3 (D-156): yeni oyunda KAFE ADI bir kez sorulur (her şeyden önce); yazarken WASD yürütmez,
+  // "Tamam" adı kayda ve tabelaya yazar. Yükleniyor ekranında oyunun adı.
+  const baslik = await page.title();
+  if (baslik === 'Tea House Tycoon') pass('Sayfa başlığı oyunun adı (Tea House Tycoon)');
+  else fail(`Sayfa başlığı: ${baslik}`);
+  const adKutusu = await page.waitForSelector('[data-testid="kafe-adi"]', { timeout: 5000 }).catch(() => null);
+  if (adKutusu && init.kafeAdi === null) pass('Yeni oyunda kafe adı kutusu açıldı');
+  else fail(`Kafe adı kutusu yok (kafeAdi=${JSON.stringify(init.kafeAdi)})`);
+  if (adKutusu) {
+    await page.fill('[data-testid="kafe-adi-girdi"]', '');
+    await page.type('[data-testid="kafe-adi-girdi"]', 'dddd Çınar Kahvesi');
+    const yazarken = await page.evaluate(() => window.__game());
+    if (Math.abs(yazarken.player[0] - init.player[0]) < 0.05) pass('Ad yazılırken WASD oyuncuyu yürütmedi');
+    else fail(`Ad yazılırken oyuncu yürüdü (x ${init.player[0]}→${yazarken.player[0]})`);
+    await page.fill('[data-testid="kafe-adi-girdi"]', '  Çınar   Kahvesi  ');
+    await page.click('[data-testid="kafe-adi-tamam"]');
+    await page.waitForTimeout(200);
+    const adSonra = await page.evaluate(() => window.__game().kafeAdi);
+    const kayitAd = await page.evaluate(() => {
+      try { return JSON.parse(localStorage.getItem('kiraathane.save')).kafeAdi; } catch { return null; }
+    });
+    if (adSonra === 'Çınar Kahvesi' && kayitAd === 'Çınar Kahvesi' && !(await page.$('[data-testid="kafe-adi"]')))
+      pass('Kafe adı kaydedildi ve kutu kapandı (Çınar Kahvesi)');
+    else fail(`Kafe adı: store=${adSonra} kayıt=${kayitAd}`);
+  }
+
   // Klavye hareketi: D tuşu ile +x
   await page.keyboard.down('d');
   await page.waitForTimeout(600);
@@ -428,6 +454,21 @@ try {
   // edilmese de motor testleri yeşil kalırdı.
   await tikla('[data-testid="gear"]');
   await page.waitForSelector('[data-testid="menu"]', { timeout: 3000 });
+  // F4c-3 (D-156): kafe adı Ayarlar'dan değişir; Vazgeç eskisini bırakır.
+  await tikla('[data-testid="set-kafe-adi"]');
+  await page.waitForSelector('[data-testid="kafe-adi"]', { timeout: 3000 });
+  await page.fill('[data-testid="kafe-adi-girdi"]', 'Vazgeçilen Ad');
+  await page.click('[data-testid="kafe-adi-vazgec"]');
+  const vazgecAd = await page.evaluate(() => window.__game().kafeAdi);
+  await tikla('[data-testid="set-kafe-adi"]');
+  await page.fill('[data-testid="kafe-adi-girdi"]', 'Köprübaşı Çay Evi');
+  await page.click('[data-testid="kafe-adi-tamam"]');
+  await page.waitForTimeout(150);
+  const yeniAd = await page.evaluate(() => window.__game().kafeAdi);
+  const satirAd = await page.$eval('[data-testid="set-kafe-adi"]', (el) => el.textContent);
+  if (vazgecAd === 'Çınar Kahvesi' && yeniAd === 'Köprübaşı Çay Evi' && satirAd === 'Köprübaşı Çay Evi')
+    pass('Ayarlar: kafe adı değişti, Vazgeç eskisini bıraktı');
+  else fail(`Ayarlar kafe adı: vazgeç=${vazgecAd} yeni=${yeniAd} satır=${satirAd}`);
   const sesKaydirici = await page.$('[data-testid="set-sound-vol"]');
   const muzikKaydirici = await page.$('[data-testid="set-music-vol"]');
   if (sesKaydirici && muzikKaydirici) pass('Ayarlarda ses ve müzik SEVİYE kaydırıcıları var');

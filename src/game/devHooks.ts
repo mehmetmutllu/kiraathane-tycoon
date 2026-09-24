@@ -124,6 +124,8 @@ export function installDevHooks(): void {
       stations: s.stations,
       areasOpen: s.areasOpen,
       // F4c-2: salonda ÇİZİLEN 💎 dekor (sahip + yuvasında + yuvası açık) — duman testi buradan okur.
+      // F4c-3 (D-156): kafenin adı (null = hiç sorulmadı) — duman ad kutusunu buradan sınar.
+      kafeAdi: s.kafeAdi,
       dekor: gorunenDekor({ dekor: s.dekor, ownedCosmetics: s.ownedCosmetics, satin: s.satin, areasOpen: s.areasOpen }).map((d) => d.id),
       // B2: kat TEK servis noktasından döner → "zone başına ocak/personel" anlık görüntüsü kalktı,
       // yerine tek `service` nesnesi geldi (testler ve duman testi buradan okur).

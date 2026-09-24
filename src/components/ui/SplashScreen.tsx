@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useProgress } from '@react-three/drei';
+import { OYUN_ADI } from '../../game/kafeAdi';
 
 // Açılış yükleme ekranı (talimat #2/#3): asset (KayKit gltf + atlas) yüklenene kadar sahneyi örter →
 // greybox→model "pop"u ve ilk-kare FPS sıçraması GÖRÜNMEZ. drei useProgress GLTFLoader ilerlemesini izler.
@@ -72,7 +73,7 @@ export function SplashScreen() {
   return (
     <div className={`splash${done ? ' splash--out' : ''}`} aria-hidden={done}>
       <div className="splash__glow" />
-      <div className="splash__title">Köşe Kıraathanesi</div>
+      <div className="splash__title">{OYUN_ADI}</div>
       <div className="splash__bar">
         <div className="splash__fill" style={{ width: `${done ? 100 : pct}%` }} />
       </div>

@@ -41,6 +41,7 @@ import {
   type ReklamSayaci,
   type SatinAlim,
 } from './save';
+import { KAFE_ADI_VARSAYILAN, kafeAdiOku, kafeAdiTemizle } from './kafeAdi';
 import { dekorAcik, dekorDegistir, vitrinSahip, vitrinUrunu, type DekorYerlesim, type VitrinTuru } from './vitrin';
 import { reklamsizAyarla } from './ads';
 import type { Islem, Sahiplik } from './iap';
@@ -275,6 +276,7 @@ export function kayitVerisi(s: GameState): SaveData {
     outfit: s.outfit,
     trayLook: s.trayLook,
     dekor: { ...s.dekor },
+    kafeAdi: s.kafeAdi,
     charUpgrades: { ...s.charUpgrades },
     waiterUpgrades: { ...s.waiterUpgrades },
     charPanelSeen: s.charPanelSeen,
@@ -463,6 +465,8 @@ export interface GameState {
   trayLook: string;
   /** F4c-2 💎 dekor: yuva → duran ürün. Çizilen = `gorunenDekor` (sahiplik + yuva açık). */
   dekor: DekorYerlesim;
+  /** F4c-3 (D-156): kafenin adı (tabela). `null` = hiç sorulmadı → açılışta ad kutusu. */
+  kafeAdi: string | null;
   /** Karakter yükseltme kademeleri (persist v20): tepsi/mıknatıs/hız. Karakter seviyesi türetilir. */
   charUpgrades: CharUpgrades;
   /** Garson tepsi yükseltme kademeleri (persist v27/Y3): çay garsonları ortak + tostçu ayrı. */
@@ -554,6 +558,8 @@ export interface GameState {
   buyGemCosmetic: (kind: VitrinTuru, id: string) => boolean;
   /** F4c: başlangıç paketi teklifi kapandı — bir daha çıkmaz. */
   baslangicTeklifKapat: () => void;
+  /** F4c-3 (D-156): kafeye ad ver (girişte ya da Ayarlar'dan). Boş → varsayılan ad. */
+  kafeAdiKoy: (ad: string) => void;
   /**
    * Karakter özelliği satın al (v20, karakter paneli): cüzdan yeterliyse kademe +1 (yetmezse/max'taysa
    * false). Başarıda anında kaydedilir; charStat görevi varsa sonraki tick'te tamamlanır.
@@ -697,6 +703,7 @@ export const useGame = create<GameState>((set, get) => ({
   outfit: 'klasik',
   trayLook: 'klasik',
   dekor: {},
+  kafeAdi: null,
   charUpgrades: defaultCharUpgrades(),
   waiterUpgrades: defaultWaiterUpgrades(),
   charPanelSeen: false,
@@ -882,6 +889,7 @@ export const useGame = create<GameState>((set, get) => ({
       outfit: save.outfit ?? 'klasik',
       trayLook: save.trayLook ?? 'klasik',
       dekor: { ...(save.dekor ?? {}) },
+      kafeAdi: kafeAdiOku(save.kafeAdi),
       charUpgrades,
       waiterUpgrades,
       charPanelSeen: save.charPanelSeen,
@@ -1293,6 +1301,11 @@ export const useGame = create<GameState>((set, get) => ({
     });
     get().saveNow();
     return true;
+  },
+
+  kafeAdiKoy: (ad) => {
+    set({ kafeAdi: kafeAdiTemizle(ad) || KAFE_ADI_VARSAYILAN });
+    get().saveNow();
   },
 
   baslangicTeklifKapat: () => {

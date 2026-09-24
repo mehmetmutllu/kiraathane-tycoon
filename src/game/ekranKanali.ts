@@ -20,6 +20,8 @@
  * TEK değer döndürüyor. (`visiblePads` deseni — çizen de karar veren de aynı çağrıyı yapar.)
  *
  * ## Sıranın gerekçesi
+ *   0. **kafe adı** (F4c-3 · D-156) — hiç sorulmadıysa her şeyden önce, bir kez: oyuncu dükkânına
+ *      ad verir (eski kayıt da güncellemeden sonra bir kez görür). Çevrimdışı kazanç ondan sonra gelir.
  *   1. **çevrimdışı** — oyunun ilk karesi; oyuncu daha hiçbir şey yapmadı, ilk gördüğü bu olmalı.
  *   2. **usta** — oyuncunun KENDİ eylemiyle (noktada durarak) istediği onay; 💎 harcaması.
  *   3. **ipucular** — öğretici. Panel açıkken, bir bildirim ekrandayken ya da görev kutlaması
@@ -36,6 +38,7 @@
 
 /** Ekranı kesen kanallar. `null` = ekran serbest. */
 export type EkranKanali =
+  | 'kafe-adi'
   | 'cevrimdisi'
   | 'usta'
   | 'seviye'
@@ -46,6 +49,8 @@ export type EkranKanali =
   | null;
 
 export interface EkranGirdisi {
+  /** Kafenin adı hiç sorulmadı (kayıtta `kafeAdi` null). */
+  kafeAdiSorulacak?: boolean;
   /** Çevrimdışı kazanç var ve henüz kapatılmadı. */
   cevrimdisiVar: boolean;
   /** Oyuncu bir Usta noktasında bekledi ve modali kapatmadı. */
@@ -69,6 +74,7 @@ export interface EkranGirdisi {
 }
 
 export function ekranKanali(g: EkranGirdisi): EkranKanali {
+  if (g.kafeAdiSorulacak) return 'kafe-adi';
   if (g.cevrimdisiVar) return 'cevrimdisi';
   if (g.ustaVar) return 'usta';
   // İpucular SIRA BEKLER: panel açıkken, bildirim ekrandayken ya da kutlama sürerken çıkmazlar.
@@ -86,16 +92,17 @@ export function ekranKanali(g: EkranGirdisi): EkranKanali {
 }
 
 /** A4 (T9c · D-147): Android geri tuşunun o anki eylemi. */
-export type GeriEylemi = 'cevrimdisi' | 'usta' | 'panel' | 'seviye' | 'ipucu' | 'kucult';
+export type GeriEylemi = 'kafe-adi' | 'cevrimdisi' | 'usta' | 'panel' | 'seviye' | 'ipucu' | 'kucult';
 
 /**
  * GERİ TUŞU — üstte ne varsa onu kapatır; hiçbiri yoksa uygulamayı KÜÇÜLTÜR (kapatmaz).
  * Eskiden dinleyici yoktu: panel açıkken geri → uygulama kapanıyordu (T9b A4). Sıra ekranın çizim
  * sırasıdır: kanal önceliği (`ekranKanali`) paneli ancak çevrimdışı/Usta'nın altına koyar, ipucular
- * ve seviye ekranı panelin altında sıra bekler. Ödül ekranlarında geri = "Al" (₺ kaybolmaz).
+ * ve seviye ekranı panelin altında sıra bekler. Ödül ekranlarında geri = "Al" (₺ kaybolmaz); ad
+ * kutusunda geri = kutudaki adla "Tamam" (boşsa varsayılan ad).
  */
 export function geriTusu(kanal: EkranKanali, panelAcik: boolean): GeriEylemi {
-  if (kanal === 'cevrimdisi' || kanal === 'usta') return kanal;
+  if (kanal === 'kafe-adi' || kanal === 'cevrimdisi' || kanal === 'usta') return kanal;
   if (panelAcik) return 'panel';
   if (kanal === 'seviye') return 'seviye';
   if (kanal != null) return 'ipucu';

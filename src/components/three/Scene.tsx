@@ -9,6 +9,7 @@ import { masterId, masterCost, masterUnlockedForTable, dishStationVisible, cardQ
 import { SceneLights } from './lights';
 import { devPerfKol } from '../../game/devPerf';
 import { KARE_TAVANI_FPS } from '../../game/kareTavani';
+import { Tabela } from './Tabela';
 import { KareTavani } from './KareTavani';
 import { cihazSinifiOku, cihazSinifiYaz, golgeAcikMi, sinifBelirle, ISINMA_KARE, ORNEK_KARE } from '../../game/cihazSinifi';
 import { dwellState, ustaKaresi } from '../../game/dwell';
@@ -1220,16 +1221,8 @@ function Street() {
             <boxGeometry args={[TENTE.w, 0.26, 0.05]} />
             <meshStandardMaterial color={PALETTE.awningStripe} />
           </mesh>
-          {/* ALINLIK TABELASI — maketin kendi kuralı: tente lentonun ALTINDAN çıkar, bu şerit
-              kapanmasın. Ölçüm doğruladı: tentenin duvar YÜZÜNDEKİ yüksekliği 2,64 ≈ lento 2,65. */}
-          <mesh castShadow position={[e[0], 2.92, z1 + 0.3]}>
-            <boxGeometry args={[3.4, 0.34, 0.06]} />
-            <meshStandardMaterial color={PALETTE.awning} />
-          </mesh>
-          <mesh position={[e[0], 2.72, z1 + 0.31]}>
-            <boxGeometry args={[3.4, 0.05, 0.06]} />
-            <meshStandardMaterial color={PALETTE.awningStripe} />
-          </mesh>
+          {/* ALINLIK TABELASI (F4c-3 · D-156): alınlığı dolduran levha, lento/kordonun ÖNÜNDE; kafe adı yazar. */}
+          <Tabela x={e[0]} />
           {/* bahçe masaları (kapının iki yanı, kaldırımda) + tabureler */}
           {[-2.3, 2.3].map((dx) => (
             <group key={dx} position={[e[0] + dx, 0, z1 + 1.15]}>

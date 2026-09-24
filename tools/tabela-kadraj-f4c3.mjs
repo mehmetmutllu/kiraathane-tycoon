@@ -18,8 +18,9 @@ const KOK = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PORT = Number(process.env.BAK_PORT ?? 5243);
 const OUT = 'docs/gorsel/ss';
 const PADS = 'table2 table3 waiter table4 waiter2 zone2 z2table2 z2table3 dishwasher z2table4 zone3 z3table2 z3table3 z3table4 waiter3 lavabo z3table5 z3table6 z3table7 z3table8 z3table9 z3table10 z3table11 z3table12'.split(' ');
-// Tabela — Scene.tsx Street (alınlık): 3,4 × 0,34 @ y 2,92, yüz z = 17,5 + 0,3 + 0,03.
-const T = { y: 2.92, w: 3.4, h: 0.34, z: 17.83 };
+// Tabela: `olcum-tabela-f4c3.ts` K0'ı `streetLook.TABELA`dan türetip f4c3-kollar.json'a yazar (tek kaynak).
+const K0 = JSON.parse(readFileSync(`${OUT}/f4c3-kollar.json`, 'utf8')).find((k) => k.kod === 'K0');
+const T = { y: K0.y, w: K0.w, h: K0.h, z: K0.z };
 const koseler = (dx) => [
   [dx - T.w / 2, T.y - T.h / 2, T.z], [dx + T.w / 2, T.y - T.h / 2, T.z],
   [dx - T.w / 2, T.y + T.h / 2, T.z], [dx + T.w / 2, T.y + T.h / 2, T.z],
@@ -50,7 +51,7 @@ async function ortuculer(sayfa) {
       if (!o.isMesh || o.isSkinnedMesh || !o.visible) return;
       for (let a = o; a; a = a.parent) if (!a.visible) return;
       const p = o.geometry.parameters ?? {};
-      if (p.width === 3.4 && (p.height === 0.34 || p.height === 0.05)) return; // tabela + şeridi
+      if (o.userData.tabela) return; // tabelanın kendisi (D-156: `Tabela.tsx` işaretler)
       if (p.width === 6.4) return; // tente + fırfır
       const n = o.isInstancedMesh ? o.count : 1;
       for (let i = 0; i < n; i++) {
@@ -77,10 +78,10 @@ async function macentaSay(sayfa, derinlik) {
   await sayfa.evaluate((derinlik) => {
     const { scene } = window.__three;
     scene.traverse((o) => {
-      const p = o.isMesh ? o.geometry.parameters ?? {} : {};
-      if (p.width === 3.4 && p.height === 0.34) {
+      if (o.isMesh && o.userData.tabela) {
         if (!o.userData.asil) o.userData.asil = o.material;
-        const m = o.userData.asil.clone();
+        const asil = Array.isArray(o.userData.asil) ? o.userData.asil[4] : o.userData.asil;
+        const m = asil.clone();
         m.color?.set?.('#ff00ff');
         m.emissive?.set?.('#ff00ff');
         m.emissiveIntensity = 1;
@@ -89,7 +90,7 @@ async function macentaSay(sayfa, derinlik) {
         m.depthTest = derinlik;
         m.toneMapped = false;
         // Yalnız ÖN yüz (+z, BoxGeometry grup 4) boyanır; öteki yüzler çizilmez — üst yüz (0,06) paydaya girmesin.
-        const gizli = o.userData.asil.clone();
+        const gizli = asil.clone();
         gizli.visible = false;
         o.material = [gizli, gizli, gizli, gizli, m, gizli];
         o.renderOrder = derinlik ? 0 : 999;
@@ -154,6 +155,7 @@ async function kolKareleri() {
   sayfa.on('pageerror', (e) => hatalar.push(String(e.message)));
   await sayfa.goto(`http://127.0.0.1:${PORT}/`, { waitUntil: 'networkidle' });
   await sayfa.waitForFunction(() => typeof window.__three === 'object' && typeof window.__teleport === 'function', null, { timeout: 30000 });
+  await sayfa.evaluate(() => window.__setState({ kafeAdi: 'Köşe Kıraathanesi' }));
   await sayfa.waitForTimeout(2500);
   for (const [kAd, x, z] of [['dogus', -8.5, 13.4], ['kapi', -8.5, 16.2]]) {
     await sayfa.evaluate(([x, z]) => window.__teleport(x, z), [x, z]);
@@ -166,9 +168,9 @@ async function kolKareleri() {
         const { scene } = window.__three;
         scene.getObjectByName('f4c3-kol')?.removeFromParent();
         scene.traverse((o) => {
-          const p = o.isMesh ? o.geometry.parameters ?? {} : {};
-          if (p.width === 3.4 && (p.height === 0.34 || p.height === 0.05)) o.visible = kol.kod === 'K0';
+          if (o.isMesh && o.userData.tabela) o.visible = kol.kod === 'K0';
         });
+        if (kol.kod === 'K0') return; // K0 = oyundaki gerçek tabela (D-156), üstüne levha konmaz
         const saydam = kol.kod === 'K3' || kol.kod === 'K5';
         const W = 1024;
         const H = Math.round((W * kol.h) / kol.w);
@@ -229,6 +231,7 @@ try {
     sayfa.on('console', (m) => m.type() === 'error' && hatalar.push(m.text()));
     await sayfa.goto(`http://127.0.0.1:${PORT}/`, { waitUntil: 'networkidle' });
     await sayfa.waitForFunction(() => typeof window.__izdusur === 'function' && typeof window.__setState === 'function', null, { timeout: 30000 });
+    await sayfa.evaluate(() => window.__setState({ kafeAdi: 'Köşe Kıraathanesi' })); // D-156 ad kutusu kareyi örtmesin
     await sayfa.waitForTimeout(3000);
     // HUD'un opak kutuları: arka planı/görseli olan ya da yazı taşıyan yaprak öğeler. Tuval ve tam
     // ekranı kaplayan kapsayıcılar sayılmaz (onlar tıklamayı geçirir, sahneyi örtmez).

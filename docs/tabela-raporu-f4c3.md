@@ -51,6 +51,28 @@ sayımıyla en fazla 0,028 farklı. Yolda iki araç hatası bulundu ve düzeltil
 **Kareler (dikey telefon, kapı önü ve doğuş noktası):** `f4c3-kol-{K0,K1,K2,K3,K4,K4e,K5}-{kapi,dogus}.png` (C2 renginde).
 Gerçek HUD'la: `f4c3-kadraj-{dikey,yatay,tablet}-*.png`.
 
-## §Karar
+## §Karar (D-156 · kullanıcı 2026-09-25)
 
-(boş — karar paketinden sonra doldurulur)
+Karar sayfası: https://claude.ai/artifact/1Q5yzv5wykx5Md1RBYbx6q
+
+1. **Tabela = K2, alınlığı dolduran büyük tabela** (5,0 × 0,55, lento ve kordonun önünde). Bedava. 💎 ile cephe satılmaz.
+   Soru 2 (renk) bu yüzden kapandı.
+2. **Tabelada oyuncunun verdiği kafe adı yazar.** Ad girişte bir kez sorulur, eski kayıtlara da güncellemeden sonra
+   bir kez sorulur. Kutuda "Köşe Kıraathanesi" hazır gelir. En fazla 20 harf. Ayarlar'dan ücretsiz değişir.
+3. **Yükleniyor ekranında ve sayfa başlığında oyunun adı: "Tea House Tycoon".** Cihaz simgesinin adı (D-130) değişmedi.
+
+## Uygulama
+
+| Kalem | Yer |
+|---|---|
+| Tabela geometrisi (tek kaynak) | `streetLook.TABELA` · `ALINLIK_ORTUCU_ON_Z` · `tabelaFontPx` |
+| Çizim (ad dokusu, uzun adda harf küçülür) | `components/three/Tabela.tsx` |
+| Ad kuralları | `game/kafeAdi.ts` (temizle · 20 harf · `tr` büyük harf · `OYUN_ADI`) |
+| Kayıt | `kafeAdi: string \| null` additive (null = hiç sorulmadı), saveVersion artmadı |
+| Sıra | `ekranKanali` → `kafe-adi` her şeyin önünde; geri tuşu taslağı kaydeder |
+| Arayüz | `KafeAdiKutusu.tsx` (ilk / düzenle) · Ayarlar "Kafenin adı" · yazarken WASD yürütmez |
+| Bekçi | `tests/tabela-f4c3.test.ts` 19 test · duman 65/65 (ad kutusu + WASD + Ayarlar adımları) · vitest 1645 |
+| Ölçüm aracı | K0 artık `streetLook.TABELA`dan okunuyor (final koşuda K0 = K2 olmalı) |
+
+**Açık (sonraki oturum):** mutasyon sınavı 4/11'de sistem belleği azaldığı için durdu (4/4 yakalandı; yarıda
+kalan M5 kaynağa elle geri yazıldı, kaynak temiz). Kalan 7 mutasyon ve final TAM koşu yapılmadı.

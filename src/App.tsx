@@ -70,6 +70,8 @@ export default function App() {
       useGame.getState().setKeyboardInput(x / mag, z / mag);
     };
     const down = (e: KeyboardEvent) => {
+      // Yazı kutusunda (kafe adı) WASD oyuncuyu yürütmesin.
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
       if (KEY_MAP[e.code]) {
         pressed.add(e.code);
         apply();

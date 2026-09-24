@@ -241,6 +241,8 @@ export interface SaveData {
   /** F4c-2 💎 dekor: yuva → o yuvada duran ürün (sahiplik `ownedCosmetics`te). Additive — sürüm ARTMADI
    *  (`derinBirlestir` eksik alanı {} ile doldurur, sözlüğün anahtarlarını korur). */
   dekor: Record<string, string>;
+  /** F4c-3 (D-156): kafenin adı — tabelada yazar. `null` = hiç sorulmadı (açılışta bir kez sorulur). Additive. */
+  kafeAdi: string | null;
   /** Karakter yükseltme kademeleri (v20): tepsi/mıknatıs/hız. Karakter seviyesi türetilir. */
   charUpgrades: CharUpgrades;
   /** Garson tepsi (v27/Y3) + bulaşıkçı leğen (v28) + personel hız (v29) kademeleri.
@@ -307,6 +309,7 @@ export function defaultSave(): SaveData {
     outfit: 'klasik',
     trayLook: 'klasik',
     dekor: {},
+    kafeAdi: null,
     charUpgrades: defaultCharUpgrades(),
     waiterUpgrades: defaultWaiterUpgrades(),
     charPanelSeen: false,

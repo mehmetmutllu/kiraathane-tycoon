@@ -96,6 +96,8 @@ export const PALETTE = {
   // Sokak
   awning: '#2e6b4f', // kıraathane tentesi (koyu yeşil)
   awningStripe: '#e6d7b8',
+  tabela: '#6b4a2e', // alınlık tabelası ahşabı (F4c-3 · D-156, kullanıcının gördüğü C2 karesi)
+  tabelaYazi: '#f4ead2',
   planter: '#7a5230',
   plant: '#3f7d44',
   outdoorTable: '#8d6e63',

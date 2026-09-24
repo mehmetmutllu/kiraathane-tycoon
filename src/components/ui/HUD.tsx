@@ -49,6 +49,8 @@ import { DekorOnizleme } from './DekorOnizleme';
 import { TableThemePreview } from './TableThemePreview';
 import { DioramaPreview } from './DioramaPreview';
 import './hud.css';
+import { KafeAdiKutusu } from './KafeAdiKutusu';
+import { KAFE_ADI_VARSAYILAN } from '../../game/kafeAdi';
 import { cihazSinifiOku, golgeAcikMi } from '../../game/cihazSinifi';
 
 /** Oran → yüzde etiketi (0,004 → "+%0,4"). Gelir bonusu tek biçimde yazılsın diye TEK yerde. */
@@ -136,6 +138,11 @@ export function HUD() {
   const [sheet, setSheet] = useState<Sheet>(null);
   // C5 (T9d): sıfırlama onayı OYUNUN kutusunda — `window.confirm` Capacitor'da çıplak sistem penceresiydi.
   const [sifirlaSor, setSifirlaSor] = useState(false);
+  // F4c-3 (D-156): kafe adı — `null` = hiç sorulmadı (açılış kanalı); Ayarlar'dan düzenleme ayrı kip.
+  const kafeAdi = useGame((s) => s.kafeAdi);
+  const kafeAdiKoy = useGame((s) => s.kafeAdiKoy);
+  const [adDuzenle, setAdDuzenle] = useState(false);
+  const [adTaslak, setAdTaslak] = useState(kafeAdi ?? KAFE_ADI_VARSAYILAN);
   // F3b (D-150) · G-57: video hakkı kartı. Düğme seviye ₺'si ile AYNI kapıdan açılır (Sv 5): ödül
   // "son dakikanın kazancı" olduğundan ona bağlansaydı oyuncu durunca düğme kaybolup geri gelirdi.
   const [videoAcik, setVideoAcik] = useState(false);
@@ -174,6 +181,7 @@ export function HUD() {
    */
   const gecisPenceresi = questInTransition({ questPhase });
   const kanal = ekranKanali({
+    kafeAdiSorulacak: kafeAdi === null,
     cevrimdisiVar: offlineEarned > 0,
     ustaVar: nearMaster != null,
     panelAcik: sheet != null,
@@ -201,10 +209,12 @@ export function HUD() {
   const geri = useRef<() => void>(() => {});
   useEffect(() => {
     geri.current = () => {
+      if (adDuzenle) return setAdDuzenle(false);
       if (sifirlaSor) return setSifirlaSor(false);
       if (videoAcik) return setVideoAcik(false);
       const eylem = geriTusu(kanal, sheet != null);
-      if (eylem === 'cevrimdisi') claimOffline();
+      if (eylem === 'kafe-adi') kafeAdiKoy(adTaslak);
+      else if (eylem === 'cevrimdisi') claimOffline();
       else if (eylem === 'usta') closeMaster();
       else if (eylem === 'panel') setSheet(null);
       else if (eylem === 'seviye') claimLevelUp();
@@ -237,6 +247,7 @@ export function HUD() {
 
   const onReset = () => {
     setSifirlaSor(false);
+    setAdTaslak(KAFE_ADI_VARSAYILAN); // sıfırlamadan sonra ad yeniden sorulur; taslak eski adla kalmasın
     sogumaSifirla();
     setSheet(null);
     hardReset();
@@ -528,6 +539,19 @@ export function HUD() {
           }}
         >
           <div className="sheet-pad">
+            <div className="setting-row">
+              <span className="setting-label">Kafenin adı</span>
+              <button
+                className="kafe-adi-degistir"
+                data-testid="set-kafe-adi"
+                onClick={() => {
+                  setAdTaslak(kafeAdi ?? KAFE_ADI_VARSAYILAN);
+                  setAdDuzenle(true);
+                }}
+              >
+                {kafeAdi ?? KAFE_ADI_VARSAYILAN}
+              </button>
+            </div>
             <SettingRow label="Ses" value={settings.sound} onChange={(v) => setSetting('sound', v)} testid="set-sound" />
             <SettingSlider
               label="Ses seviyesi"
@@ -619,6 +643,19 @@ export function HUD() {
       {teklif && <BaslangicTeklifi onClose={baslangicTeklifKapat} />}
 
       {videoAcik && <VideoKarti onClose={() => setVideoAcik(false)} />}
+
+      {(kanal === 'kafe-adi' || adDuzenle) && (
+        <KafeAdiKutusu
+          kip={adDuzenle ? 'duzenle' : 'ilk'}
+          taslak={adTaslak}
+          onTaslak={setAdTaslak}
+          onKaydet={() => {
+            kafeAdiKoy(adTaslak);
+            setAdDuzenle(false);
+          }}
+          onVazgec={() => setAdDuzenle(false)}
+        />
+      )}
 
       {/* ───────── OFFLINE KAZANÇ (ortak ödül ekranı kalıbı) ───────── */}
       {showOffline && (

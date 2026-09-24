@@ -5,28 +5,28 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-25 — F4c-3 tabela: ÖLÇÜM; karar paketi bekliyor)
+## ŞU AN (2026-09-25 — F4c-3 tabela: KOD GİRDİ · D-156; doğrulama yarım)
 
 ```
-SORU            : F4c-3 — cephe (tabela + tente) oyun kamerasında ne zaman, ne boyda görünüyor; 💎 cephe
-                  temasının yazısı nereye konursa okunur?
-ÖLÇÜLECEK KOLLAR: yazı yüzeyi K0 bugün · K1 öne · K2 alınlığı doldur · K3 tente üstü · K4/K4e çatı · K5 fırfır
-                  + renk adayları C2 C4 C7 C8 karşıtlığı — docs/tabela-raporu-f4c3.md
-SAYILAR         : cephe ekranda dikey %4,6 (3. Salon %0,7) · bugünkü tabela harfi 7,7 px, yarısı lento/kordon
-                  arkasında · K4e 18,8 px / K3 24,7 px ama okunur süre hiçbir kolda > %0,1 — rapor §Bulgular
-KARAR           : (karar paketi)
-UYGULAMA        : (yalnız seçilen kol)
-BEKÇİ           : (—)
+SORU            : F4c-3 — cephe oyun kamerasında ne zaman, ne boyda görünüyor; yazı nereye konursa okunur?
+ÖLÇÜLECEK KOLLAR: K0 bugün · K1 öne · K2 alınlığı doldur · K3 tente üstü · K4/K4e çatı · K5 fırfır · renk C2-C8
+SAYILAR         : cephe ekranda dikey %4,6 (3. Salon %0,7) · eski tabela harf 7,7 px, yarısı örtülü · K2 12,2 px
+KARAR           : D-156 — K2 bedava + oyuncunun kafe adı (girişte bir kez, Ayarlar'dan, ≤ 20) · 💎 cephe yok ·
+                  yükleniyor "Tea House Tycoon"
+UYGULAMA        : streetLook.TABELA · Tabela.tsx · game/kafeAdi.ts · KafeAdiKutusu.tsx · ekranKanali kafe-adi
+BEKÇİ           : tabela-f4c3.test.ts 19 · duman 65/65 · vitest 1645 · mutasyon 4/11 (bellek yüzünden yarıda) · final tam koşu YOK
 ```
 
 ## ⏭️ SIRADAKİ ADIM
 
-**F4c-3 tabela (F8'in son kalemi):** önce oyun kamerasında cephenin görünürlüğü ölçülür (kaç px, hangi anda
-ekranda) → C2 C4 C7 C8 adayları (`tools/vitrin-adaylari.html?sayfa=tabela`) → karar → uygulama. Sonra **F5** mağaza + G-89 (EN SON).
+**F4c-3'ü kapat:** `node tools/mutasyon-tabela-f4c3.mjs` (11 mutasyon, ~15 dk; makine yavaş, açık uygulama azken) →
+`node tools/tabela-kadraj-f4c3.mjs` + `KARE=kollar …` (kareler yeni tabelayla) → `OLCUM=tam npx tsx tools/olcum-tabela-f4c3.ts
+> docs/olcum-tabela-f4c3.txt` (final: K0 = K2 sayıları çıkmalı) → rapora final tablo → kareleri kullanıcıya göster
+(tabelada ad, ad kutusu, Ayarlar satırı). Sonra **F5** mağaza + G-89 (EN SON).
 - **Sonraki oturumda sor:** 💎 fiyatları (kıyafet/tepsi/dekor hepsi TASLAK) ayrı fiyat oturumunda.
 - **Görsel açık (kullanıcı oynayınca):** yelek tepsinin arkasında · dikey telefonda yan duvar dekoru köşeye yürüyünce okunuyor ·
-  "Kaldır" düğmesi satın al yeşilinde (nötr mü olmalı?).
-- Duman bir kez "İzle, 2× al" adımında zaman aşımı verdi (3 koşu temiz) — tekrar ederse bakılsın.
+  "Kaldır" düğmesi satın al yeşilinde (nötr mü olmalı?) · yeni tabela + ad kutusu henüz gözle bakılmadı.
+- Öteki kare araçları (shot-*.mjs) taze oyunda ad kutusuna takılabilir: `__setState({ kafeAdi: '…' })` ile geçilir.
 
 ## AÇIK KALEMLER
 - **Play Games (kullanıcı):** `docs/play-games-kurulum.md` adımları → proje kimliği `strings.xml` + 19 başarım kimliği

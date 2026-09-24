@@ -40,7 +40,7 @@ import { economyConfig as C } from '../src/config/economy.config';
 import { CAMERA_LOOK_Y } from '../src/config/actor';
 import { CAMERA_FOCUS_MUL, CAMERA_FOV, CAMERA_ZOOM_OUT_MUL, cameraDistance } from '../src/config/camera';
 import { cameraViewYaz, izdusur } from '../src/game/cameraView';
-import { STREET_Z0, TENTE } from '../src/components/three/streetLook';
+import { STREET_Z0, TABELA, TENTE } from '../src/components/three/streetLook';
 
 const DT = 0.1;
 const SURE_SN = KISA ? 20 * 60 : 6 * 3600;
@@ -280,7 +280,9 @@ const FIRFIR_Y = TENTE.y - (TENTE.d / 2) * TS - 0.14;
 const FIRFIR_Z = TENTE.z + (TENTE.d / 2) * TC + 0.025;
 
 /** Bugünkü cephe: tabela (`Scene.tsx` Street, alınlık) + tente üst yüzü + fırfır. Renk adayları üçünü de boyuyor. */
-const TABELA_BUGUN = dik('K0', 'bugün: alınlık tabelası 3,4 × 0,34, lento/kordon arasında', 2.92, STREET_Z0 + 0.3 + 0.03, 3.4, 0.34);
+/** K0 = OYUNDAKİ tabela (`streetLook.TABELA`, D-156'dan beri K2'nin geometrisi). Commit #1'in K0'ı (3,4 × 0,34,
+ *  lento/kordon arasında) raporun taban tablosunda; K1 onun öne alınmış hâli olarak listede kalır. */
+const TABELA_BUGUN = dik('K0', `oyundaki tabela (D-156): ${TABELA.w} × ${TABELA.h}, z ${TABELA.z}`, TABELA.y, TABELA.z + TABELA.d / 2, TABELA.w, TABELA.h);
 const TENTE_YUZ = tenteLevha('tente', 'tente üst yüzü (duvar önü)', TENTE_LZ0, TENTE.d / 2, TENTE.w);
 const FIRFIR = dik('fırfır', 'fırfır', FIRFIR_Y, FIRFIR_Z, TENTE.w, 0.26);
 

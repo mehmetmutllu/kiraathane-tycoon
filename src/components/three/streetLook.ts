@@ -140,6 +140,40 @@ export const tenteYuzY = (): number => TENTE.y + (TENTE.z - STREET_Z0) * Math.si
 export const tenteOnY = (): number => TENTE.y - (TENTE.d / 2) * Math.sin(TENTE.rotX);
 
 // ---------------------------------------------------------------------------------------------
+//  ALINLIK TABELASI (F4c-3 · D-156 — kullanıcı kararı: "alınlığı dolduran büyük tabela", K2)
+// ---------------------------------------------------------------------------------------------
+/**
+ * Alınlığı (lento 2,65 … üst kordon 3,20) dolduran levha; üstünde oyuncunun verdiği kafe adı yazar.
+ * Eskisi 3,4 × 0,34'tü, lento ile kordonun ARASINDAYDI ve ikisi de yüzünün 6 cm önüne uzandığı için
+ * oyun kamerasından yarısı örtülüyordu (rapor B4); yazı konsa büyük harf 7,7 px olurdu (B5).
+ * Yeni levha örtücülerin ÖNÜNDE (arka yüzü `z − d/2` > 17,89), eni lentonunki kadar: harf 12,2 px (B8).
+ * Ölçüm: `tools/olcum-tabela-f4c3.ts` bu sabiti okur (K0 = bugünkü tabela).
+ */
+export const TABELA = {
+  w: 5.0,
+  h: 0.55,
+  d: 0.06,
+  y: 2.925,
+  z: STREET_Z0 + 0.45,
+} as const;
+/** Lento ve üst kordonun sokağa uzandığı en ön z (`Scene` giriş bloğu: duvar + 0,22 + 0,34/2). */
+export const ALINLIK_ORTUCU_ON_Z = 17.89;
+/** Aday dokusunun yazı oranları (tarayıcıda `measureText` ile ölçüldü, rapor B6):
+ *  büyük harf = 0,427 × levha boyu · yazı levha eninin en fazla %78,7'sini doldurur. */
+export const TABELA_YAZI = { harfBoy: 0.427, doluluk: 0.787, font: '700 {px}px Georgia, "Noto Serif", serif' } as const;
+
+/**
+ * Tuvalde yazının font boyu (px): büyük harf levha boyunun `harfBoy`u olsun, ama yazı eninin
+ * `doluluk`unu aşmasın — uzun adda harf küçülür, taşmaz. `harf100`/`en100`: 100 px fontta
+ * ölçülen büyük harf yüksekliği ve yazı eni (tarayıcı `measureText`i verir).
+ */
+export function tabelaFontPx(harf100: number, en100: number, tuvalEn: number, tuvalBoy: number): number {
+  const boydan = (TABELA_YAZI.harfBoy * tuvalBoy * 100) / Math.max(1e-6, harf100);
+  const enden = (TABELA_YAZI.doluluk * tuvalEn * 100) / Math.max(1e-6, en100);
+  return Math.min(boydan, enden);
+}
+
+// ---------------------------------------------------------------------------------------------
 //  KALDIRIM MOBİLYASI
 // ---------------------------------------------------------------------------------------------
 
