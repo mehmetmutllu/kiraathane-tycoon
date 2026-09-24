@@ -450,6 +450,26 @@ try {
     await page.waitForTimeout(200);
   }
 
+  // F3 GEÇİŞLİ C1′ (D-144): soğuma KURAR, panel kapanışı PATLATIR. Mantık bekçisi kuralı sınıyor
+  // (`tests/reklam-f3.test.ts`); burada sınanan KABLO: HUD'un panel kapanışı gerçekten reklam
+  // katmanına ulaşıyor mu. Tarayıcıda sahte arka uç çalışır, sayaç `__ads` kancasından okunur.
+  const adPaneliAcKapa = async () => {
+    await tikla('[data-testid="gear"]');
+    await page.waitForSelector('[data-testid="menu"]', { timeout: 3000 });
+    await page.keyboard.press('Escape');
+    await page.waitForTimeout(200);
+    return page.evaluate(() => window.__ads.durum());
+  };
+  const ad0 = await page.evaluate(() => window.__ads.saat(0));
+  if (ad0.kuruldu) pass('Reklam katmanı kuruldu (tarayıcıda sahte arka uç)');
+  else fail('Reklam katmanı kurulmadı');
+  await page.evaluate(() => window.__ads.saat(180_000));
+  const ad1 = await adPaneliAcKapa();
+  const ad2 = await adPaneliAcKapa();
+  if (ad1.gecisli === ad0.gecisli + 1 && ad2.gecisli === ad1.gecisli)
+    pass(`Geçişli: soğuma dolunca panel kapanışı 1 reklam, hemen sonraki kapanış 0 (${ad0.gecisli}→${ad1.gecisli}→${ad2.gecisli})`);
+  else fail(`Geçişli kuralı tarayıcıda tutmadı (${ad0.gecisli}→${ad1.gecisli}→${ad2.gecisli})`);
+
   /*
    * KARE-HIZI TAVANI (K-A · D-136) — üç denetim, üçü de SAYIYLA.
    *

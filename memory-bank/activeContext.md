@@ -5,21 +5,23 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-24 — T9d KAPANDI · D-148; Faz T bitti, sıradaki Faz F)
+## ŞU AN (2026-09-24 — F3 tur 2 AÇIK: reklam altyapısı uygulaması + F3b ödüllü ekonomi)
 
 ```
-SORU            : D-146 arayüz/metin kalemleri + q_tost5 elle kaç dk?
-ÖLÇÜLECEK KOLLAR: q_tost5 — V0 yalnız oyuncu 5 · V3 yalnız oyuncu 3 · V1 herkes 5 (aktif) · V1a herkes 5 (AFK)
-SAYILAR         : `docs/tost-raporu-t9d.md` §Bulgular — V0 5,1 dk (1,4-8,9) · V3 2,7 · V1 2,0 · V1a 1,9
-KARAR           : D-148 — V3 (3 tost; öneri V0'dı) · masa etiketi "Sv 2" kalır
-UYGULAMA        : K2 fmt · B1 B2 B4 B7 B8 B9 B11 B12 B13 · K1 günlük bant · K3 Harika! · K6 Çaycı/Seviye · C3 · K9 · C5
-BEKÇİ           : `tests/arayuz-t9d.test.ts` 26 test · `tools/mutasyon-arayuz-t9d.mjs` 10/10 · kareler `docs/gorsel/t9d/`
+SORU            : (a) F3 tur 1 kararlarını koda indir — A1 eklenti · SDK sabit · R8 açık · çocuk bayrakları + UMP ·
+                  mock katman · geçişli C1′ (soğuma 3 dk kurar, panel kapanışı patlatır, ödülden sonra asla) · banner YOK
+                  (b) F3b: ödüllü videonun ÖDÜLÜ ne — "İzle, 2× al" hangi ödülleri katlar, Usta kaç reklam?
+ÖLÇÜLECEK KOLLAR: (a) teknik, D-144 + `reklam-raporu-f3.md` §Kollar — ölçüm yapıldı, varyant yok
+                  (b) `economy.config.ts`e dokunur → varyant kapısı: kollar ölçüm sırasında yazılır
+SAYILAR         : (a) `docs/reklam-raporu-f3.md` §B/§E · (b) `docs/odullu-raporu-f3b.md` §Bulgular (açılacak)
+KARAR           : (a) D-144 ② → uygulandı D-149 ✅ · (b) karar paketi
+UYGULAMA        : (a) önce, kod + bekçi + mutasyon · (b) yalnız seçilen kol
+BEKÇİ           : (a) `tests/reklam-f3.test.ts` 19 · `tools/mutasyon-reklam-f3.mjs` 10/10 · duman 53/53 · (b) açılacak
 ```
 
 ## ⏭️ SIRADAKİ ADIM
 
-**Faz F — F3 reklam (AdMob, karar C1′ 3 dk verildi, `docs/reklam-raporu-f3.md`)** → F4 IAP → F5 mağaza + G-89 görsel/video (EN SON).
-F3'te bağlanacak pasif yerler: ödül ekranı "İzle, 2× al" (yalnız katlanacak ödül varken çizilir, D-148 K3) · Usta "İzle".
+~~(a) altyapı~~ ✅ D-149 → **(b) F3b ölçüm** → commit #1 → karar paketi → uygula → F4 IAP → F5 mağaza + G-89 (EN SON).
 Bildirimler anahtarı Faz F'de bildirim gelince geri döner (`settings.notifications` kayıtta duruyor).
 
 ## AÇIK KALEMLER

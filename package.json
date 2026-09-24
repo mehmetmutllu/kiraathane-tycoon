@@ -20,6 +20,7 @@
     "yayin": "npm run build && npx cap sync android && node tools/apk-temizle.mjs && cd android && .\\gradlew.bat assembleRelease bundleRelease"
   },
   "dependencies": {
+    "@capacitor-community/admob": "8.1.0",
     "@capacitor/android": "^8.4.0",
     "@capacitor/app": "^8.1.1",
     "@capacitor/cli": "^8.4.0",

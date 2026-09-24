@@ -12,6 +12,7 @@ import { collectionMult } from './goals';
 import { toastCizilir } from './rules';
 import { dailyViews } from './dailyQuests';
 import { D } from './decimal';
+import { reklamDurumu, reklamSaatiKaydir } from './ads';
 import { economyConfig, levelProgress, charLevel, lavaboVisitChance, lavaboFee, lavaboIncomePerCustomer, type CharStat } from '../config/economy.config';
 import type { SaveStats } from './save';
 import type { Vec3 } from './types';
@@ -49,6 +50,8 @@ declare global {
     __fillDaily?: (id: string) => Record<string, unknown>;
     /** Anlık render bütçesi (FPS Tier 2): { fps, calls, tris }. PerfProbe 0.5sn'de bir günceller. */
     __perf?: () => PerfSnapshot;
+    /** Reklam katmanı (F3): sayaçlar + soğuma; `saat(ms)` soğumayı beklemeden ileri alır. */
+    __ads?: { durum: () => ReturnType<typeof reklamDurumu>; saat: (ms: number) => ReturnType<typeof reklamDurumu> };
     __olcum?: {
       ac: () => void;
       kapat: () => void;
@@ -386,6 +389,13 @@ export function installDevHooks(): void {
   };
 
   window.__perf = () => ({ ...perf });
+  window.__ads = {
+    durum: reklamDurumu,
+    saat: (ms) => {
+      reklamSaatiKaydir(ms);
+      return reklamDurumu();
+    },
+  };
 
   window.__kabuk = (kip) => {
     useGame.getState().setKabuk(kip);

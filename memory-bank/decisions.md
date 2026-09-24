@@ -4749,3 +4749,15 @@ B1 ipucunda gezinme karartmanın üstünde · B2 tepsi ipucu yalnız o ürünü 
 B9 bildirim yığına binmez, iki satır · B12 "X eksik" · B13 dokunma kabuğu 44 px, gezinme etiketi 13 px · K1 hat sonu günlük bant ·
 K3 Sv 2-4 tek "Harika!" · K6 "Çaycı"/"Seviye" · C3 cümle düzeni ("Yükselt", "Sv 2" — harf sayısı aynı, tetik değişmedi) ·
 K9 "Bildirimler" kalktı (ayar kayıtta) · C5 sıfırlama onayı oyunun kutusunda. Bekçi `tests/arayuz-t9d.test.ts` · 10/10 mutasyon.
+
+---
+
+## D-149 · F3 reklam altyapısı koda indi: A1 + C1′ 3 dk + çocuk kipi, banner yok (2026-09-24)
+
+**Karar:** D-144 ② + `reklam-raporu-f3.md` §Kollar uygulandı. `@capacitor-community/admob` 8.1.0 · SDK 25.4.0/UMP 4.0.0
+sabit · R8 açık · çocuk bayrakları + G + npa · AAID ve Privacy Sandbox izinleri manifestten çıkarıldı (§3 çocuk-güvenli).
+Geçişli: soğuma 3 dk (açılıştan başlar) kurar, panel kapanışı patlatır; panelde ödül alındıysa o kapanış reklamsız.
+Kural `ads.ts` `gecisliUygun`; ayarlar `ads.config.ts` (kapıya tabi değil). "İzle, 2× al" `onClaim`den ayrıldı.
+**Sayı:** APK 11,24 MiB (R8 açık) · köprü sınıfı korundu · duman 53/53 · 10/10 mutasyon.
+**Bırakılan:** ödüllü videonun ödülü → F3b (varyant kapısı). Cihazda dolgu/UMP/ses → cihaz turu.
+

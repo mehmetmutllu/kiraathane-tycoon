@@ -204,7 +204,8 @@ describe('cihaz dili adi secer', () => {
 
 describe('kabugun degismeyen sartlari', () => {
   it('tek izin INTERNET', () => {
-    const izinler = [...manifest.matchAll(/uses-permission android:name="([^"]+)"/g)].map((m) => m[1]);
+    // `tools:node="remove"` bir izin İSTEMEZ, kütüphanenin eklediğini çıkarır (F3: AAID).
+    const izinler = [...manifest.matchAll(/uses-permission android:name="([^"]+)"(?!\s+tools:node="remove")/g)].map((m) => m[1]);
     expect(izinler).toEqual(['android.permission.INTERNET']);
   });
 

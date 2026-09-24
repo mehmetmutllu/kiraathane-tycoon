@@ -305,10 +305,36 @@ test etmek hesabın askıya alınma sebebidir). Gerçek kimlik geldiğinde tek d
 
 ## KARAR
 
-_(BOŞ — karar paketi sunulduktan sonra doldurulur · D-084 sıra kilidi)_
+**Ürün çatalları (kullanıcı, 2026-09-17 → D-144 ②, 2026-09-23):**
+- **Q2 → B0, kalıcı:** banner yok (*"banner istemiyorum uygulamada"*).
+- **Q1 → C1′ (önerilen C0 değil):** geçişli VAR ama ödül ekranının arkasında değil. Soğuma 3 dk reklamı
+  **kurar**, panel kapanışı **patlatır**. Oyun açılışından itibaren ilk 3 dk reklam yok. Panelde ödül
+  alındıysa o kapanış reklamsız. C1 (offline "Al"dan sonra) reddedildi: *"ala bastıktan sonra gelmesin"*.
+
+**Teknik çatallar (§Kollar'daki gerekçeyle):** A1 · SDK sabit · R8 açık · "2× al" ayrı yol.
 
 ---
 
-## UYGULAMA
+## UYGULAMA (F3 tur 2 · D-149 · 2026-09-24)
 
-_(BOŞ)_
+| kalem | nerede |
+|---|---|
+| A1 `@capacitor-community/admob` **8.1.0** (tam sürüm) | `package.json` |
+| `play-services-ads` **25.4.0** · UMP **4.0.0** sabit (`25.4.+` yalnız 25.4.0'a çözülüyordu; 25.5.0 çıkmış, dinamik kalsa ilk yükseltmede sessizce kayardı) | `android/variables.gradle` |
+| test uygulama kimliği · AAID + üç Privacy Sandbox izni `tools:node="remove"` | `AndroidManifest.xml` |
+| çocuk bayrakları + G derecesi + `npa` + UMP rıza formu (gerekirse) | `src/config/ads.config.ts` · `src/game/ads.ts` |
+| C1′ kuralı saf fonksiyon `gecisliUygun` · panel kapanışı HUD'dan · panel içi ödül bayrağı | `ads.ts` · `HUD.tsx` |
+| tarayıcı/test = sahte arka uç; SDK kurulamazsa oyun reklamsız sürer | `ads.ts` |
+| reklam ekrandayken görünürlük değişimi çevrimdışı sayılmaz | `App.tsx` |
+| §D kusuru: "İzle, 2× al" artık `onIzle` — `onClaim`e bağlı değil; `onIzle` verilmeyen yerde pasif | `HUD.tsx` |
+
+**Yayın derlemesi (R8 açık, gerçek imzalı):** APK **11.788.307 B** (§B `com-r8` 11.818.573 B'nin −30 KB'ı —
+AAID/Sandbox çıkınca) · AAB 13.462.262 B · `mapping.txt`: `com.getcapacitor.community.admob.AdMob` **korundu**.
+Birleşik manifest izinleri: INTERNET · ACCESS_NETWORK_STATE · WAKE_LOCK · FOREGROUND_SERVICE · (dinamik alıcı).
+
+**Bekçi:** `tests/reklam-f3.test.ts` 19 test · `tools/mutasyon-reklam-f3.mjs` **10/10** (ilk koşu 9/10: M5 kaçtı →
+ödül bayrağı iki yerde iniyordu, tek yere indirildi) · duman 53/53 (+2: kurulum · 0→1→1 kapanış).
+Bekçi ayrıca gerçek bir kusur buldu: kurulum hatasında önceki arka uç yerinde kalıyordu.
+
+**Açık, cihaz turuna:** gerçek dolgu, UMP formunun AB'de açılışı, reklam sırasında WebView sesi.
+**Açık, F3b'ye:** ödüllü düğmelerin ÖDÜLÜ (`economy.config.ts` → varyant kapısı). Düğmeler bugün pasif.

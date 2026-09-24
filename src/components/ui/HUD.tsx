@@ -7,6 +7,7 @@ import { masterCost, toastCizilir, questInTransition, type QuestView } from '../
 import { ekranKanali, geriTusu, tepsiIpucuZamani } from '../../game/ekranKanali';
 import { Capacitor } from '@capacitor/core';
 import { App as CapApp } from '@capacitor/app';
+import { odulAlindi, panelKapandi, sogumaSifirla } from '../../game/ads';
 import { screenPointer } from '../../game/screenPointer';
 import { fmt } from '../../game/decimal';
 import { SAVE_VERSION } from '../../game/save';
@@ -208,8 +209,18 @@ export function HUD() {
     };
   }, []);
 
+  // F3 geçişli C1′ (D-144): panel KAPANIŞI reklamı patlatır (soğuma dolduysa). Sekmeden sekmeye
+  // geçmek kapanış değildir; kural ve soğuma `ads.ts`te.
+  const oncekiSheet = useRef<Sheet>(null);
+  useEffect(() => {
+    const onceki = oncekiSheet.current;
+    oncekiSheet.current = sheet;
+    if (onceki != null && sheet == null) void panelKapandi();
+  }, [sheet]);
+
   const onReset = () => {
     setSifirlaSor(false);
+    sogumaSifirla();
     setSheet(null);
     hardReset();
   };
@@ -899,6 +910,7 @@ function QuestsSheet({ onClose }: { onClose: () => void }) {
           claimTestid="daily-reward-ok"
           onClaim={() => {
             claimDailyQuest(gunOdul.id);
+            odulAlindi();
             setGunOdul(null);
           }}
         />
@@ -1133,6 +1145,7 @@ function GoalsSheet({ onClose }: { onClose: () => void }) {
           claimTestid="goal-reward-ok"
           onClaim={() => {
             claimGoal(odul.id);
+            odulAlindi();
             setOdul(null);
           }}
         />
@@ -1153,7 +1166,7 @@ function RewardModal({
   bonusLabel = 'Kalıcı gelir',
   onClaim,
   claimTestid,
-  adReady = false,
+  onIzle,
 }: {
   testid: string;
   title: string;
@@ -1169,7 +1182,9 @@ function RewardModal({
   bonusLabel?: string;
   onClaim: () => void;
   claimTestid: string;
-  adReady?: boolean;
+  /** Ödüllü video izlendi → katlı ödül. "Al"dan AYRI yol (F3 §D: düğme eskiden `onClaim`i çağırıp
+   *  "2× al" deyip 1× veriyordu). Verilmezse düğme pasif çizilir ama kaybolmaz (D-039 kalıbı). */
+  onIzle?: () => void;
 }) {
   /** Ödül SATIRLARI — her ödül kendi elemanı. Liste burada kuruluyor ki "+" ayıracı ancak
    *  GERÇEKTEN iki ödül varken çizilsin (tek ödüllü offline ekranı sarkık bir artı taşımasın). */
@@ -1256,7 +1271,12 @@ function RewardModal({
           {katlanir ? 'Al' : 'Harika!'}
         </button>
         {katlanir && (
-          <button className={`sheet-cta ad${adReady ? '' : ' off'}`} disabled={!adReady} onClick={onClaim}>
+          <button
+            className={`sheet-cta ad${onIzle ? '' : ' off'}`}
+            data-testid={`${testid}-izle`}
+            disabled={!onIzle}
+            onClick={onIzle}
+          >
             <PlayAdIcon size={18} /> İzle, 2× al
           </button>
         )}

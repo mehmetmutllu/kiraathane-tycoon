@@ -5,6 +5,7 @@ import { Joystick } from './components/ui/Joystick';
 import { SplashScreen } from './components/ui/SplashScreen';
 import { useGame } from './game/store';
 import { sesiBagla } from './game/audioBridge';
+import { reklamBaslat, reklamEkranda } from './game/ads';
 
 const KEY_MAP: Record<string, [number, number]> = {
   KeyW: [0, -1],
@@ -39,6 +40,8 @@ export default function App() {
   useEffect(() => {
     if (IS_PROTO) return;
     useGame.getState().init();
+    // F3: reklam SDK'sı + rıza (UMP). Başarısız olursa oyun reklamsız devam eder.
+    void reklamBaslat();
     // Hile kancaları (__game/__addMoney/__setState...) yalnız geliştirmede yüklenir.
     if (import.meta.env.DEV) void import('./game/devHooks').then((m) => m.installDevHooks());
 
@@ -81,7 +84,9 @@ export default function App() {
     window.addEventListener('beforeunload', onHide);
     // A3 (T9c): mobilde en sık yol arka plandan SICAK dönüş — sayfa yeniden yüklenmez, `init`
     // çalışmaz; çevrimdışı gelir dönüşte ayrıca sayılır.
+    // Tam ekran reklam WebView'u gizler — o süre "arka plan" değil, çevrimdışı gelir sayılmaz.
     const onVisibility = () => {
+      if (reklamEkranda()) return;
       if (document.visibilityState === 'hidden') useGame.getState().arkaPlanaGec();
       else useGame.getState().onPlanaDon();
     };
