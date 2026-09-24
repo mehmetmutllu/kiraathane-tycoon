@@ -79,15 +79,20 @@ export default function App() {
     window.addEventListener('keyup', up);
     window.addEventListener('blur', blur);
     window.addEventListener('beforeunload', onHide);
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'hidden') onHide();
-    });
+    // A3 (T9c): mobilde en sık yol arka plandan SICAK dönüş — sayfa yeniden yüklenmez, `init`
+    // çalışmaz; çevrimdışı gelir dönüşte ayrıca sayılır.
+    const onVisibility = () => {
+      if (document.visibilityState === 'hidden') useGame.getState().arkaPlanaGec();
+      else useGame.getState().onPlanaDon();
+    };
+    document.addEventListener('visibilitychange', onVisibility);
 
     return () => {
       window.removeEventListener('keydown', down);
       window.removeEventListener('keyup', up);
       window.removeEventListener('blur', blur);
       window.removeEventListener('beforeunload', onHide);
+      document.removeEventListener('visibilitychange', onVisibility);
       sesiCoz();
     };
   }, []);

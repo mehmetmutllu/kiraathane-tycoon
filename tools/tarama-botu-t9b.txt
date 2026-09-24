@@ -26,7 +26,7 @@ async () => {
     if (tgt && tgt.type === 'waiterTray') { if (s.buyWaiterTray()) log.push({ t: bot.t, ev: 'panel:waiterTray' }); }
     if (tgt && tgt.type === 'waiterSpeed') { if (s.buyWaiterSpeed()) log.push({ t: bot.t, ev: 'panel:waiterSpeed' }); }
     // 2) görev hedefi (pad / yükseltme noktası) — parası yetiyorsa
-    let focus = q ? R.questFocusPos(tgt, s.tableLevels, s.tables, s.areasOpen, q.area ?? 0) : null;
+    let focus = q ? R.questFocusPos(tgt, s.tableLevels, s.tables, s.areasOpen, q.area ?? 0, R.tableUpgradeTarget(R.gateOf(s))) : null;
     if (tgt && (tgt.type === 'tableLevel' || tgt.type === 'tablesAtLevel')) { const lt = S.tableUpgradeTarget(s); if (lt != null && S.LAYOUT.tables[lt]) { const sp = S.LAYOUT.tables[lt].upgradeSpot; if (!focus || Math.hypot(sp[0]-focus[0], sp[2]-focus[2]) > 0.05) { if (!bot.okSapma) bot.okSapma = []; if (bot.okSapma.length < 50) bot.okSapma.push({ t: Math.round(bot.t), q: q.id, live: lt }); } focus = sp; } }
     const standTypes = ['pad', 'stationLevel', 'lavaboLevel', 'tableLevel', 'tablesAtLevel'];
     if (focus && standTypes.includes(tgt.type) && trayN === 0 && dirtyN === 0) {

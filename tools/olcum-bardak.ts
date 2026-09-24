@@ -369,7 +369,7 @@ function kosu(sn: Senaryo, kip: Kip, dt: number, vr: Varyant = VARYANT_YOK): Son
         let reach = C.cups.collectRadius * 0.7;
         if (yeniKilit === 'servis') {
           hedef = servisHedefi!.pos;
-          reach = C.serving.serveRadius * 0.7;
+          reach = 1.6 * 0.7; // eski `serving.serveRadius` (K5/D-147'de kalktı) — botun varış menzili
           hedefDish = -1;
         } else if (yeniKilit === 'yika') {
           hedef = place.dish;

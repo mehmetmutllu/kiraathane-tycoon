@@ -4,7 +4,9 @@ import { claimableGoals, collectionBonus, goalViewsForPanel, type GoalView } fro
 import { dailyViews, claimableDailyCount, type DailyQuestView } from '../../game/dailyQuests';
 import { dailyCountersOf } from '../../game/store';
 import { masterCost, toastCizilir, questInTransition } from '../../game/rules';
-import { ekranKanali } from '../../game/ekranKanali';
+import { ekranKanali, geriTusu } from '../../game/ekranKanali';
+import { Capacitor } from '@capacitor/core';
+import { App as CapApp } from '@capacitor/app';
 import { screenPointer } from '../../game/screenPointer';
 import { fmt } from '../../game/decimal';
 import { SAVE_VERSION } from '../../game/save';
@@ -107,7 +109,7 @@ export function HUD() {
   const focusDish = useGame((s) => s.focusDish);
   const camZoomOut = useGame((s) => s.camZoomOut);
   const toggleCamZoomOut = useGame((s) => s.toggleCamZoomOut);
-  const [offlineSeen, setOfflineSeen] = useState(false);
+  const claimOffline = useGame((s) => s.claimOffline);
   const [sheet, setSheet] = useState<Sheet>(null);
   // Ayarlar künyesi (E3 · S23) — oyuncunun kendi geçmişi, ekranın boş kalan altını doldurur.
   const stats = useGame((s) => s.stats);
@@ -124,10 +126,9 @@ export function HUD() {
   const claimLevelUp = useGame((s) => s.claimLevelUp);
   // G-60: görev geçiş penceresi (kutlama + boşluk) — ipucular bu pencerede sıra bekler.
   const questPhase = useGame((s) => s.questPhase);
-  // G-14: kapatılan Usta modali, oyuncu O MASADAN uzaklaşana kadar geri açılmaz. D-094'ün
-  // "modal her geçişte ekranı keser" endişesinin karşılığı bu — modal geldi, tuzağı gelmedi.
-  const [masterKapali, setMasterKapali] = useState<string | null>(null);
-  if (!nearMaster && masterKapali !== null) setMasterKapali(null);
+  // G-14 · K4: kapatılan Usta modali, oyuncu O NOKTADAN çıkıp yeniden basana kadar açılmaz
+  // (kilit store'da — `closeMaster` · `dwell.ustaKaresi`).
+  const closeMaster = useGame((s) => s.closeMaster);
 
   const lvl = levelProgress(xp);
   const questPct = quest && quest.total != null ? Math.min(100, ((quest.cur ?? 0) / quest.total) * 100) : null;
@@ -142,8 +143,8 @@ export function HUD() {
    */
   const gecisPenceresi = questInTransition({ questPhase });
   const kanal = ekranKanali({
-    cevrimdisiVar: offlineEarned > 0 && !offlineSeen,
-    ustaVar: nearMaster != null && masterKapali !== nearMaster,
+    cevrimdisiVar: offlineEarned > 0,
+    ustaVar: nearMaster != null,
     panelAcik: sheet != null,
     bildirimVar: toastCizilir(notice),
     gecisPenceresi,
@@ -161,6 +162,33 @@ export function HUD() {
     markCharPanelSeen();
     setSheet('char');
   };
+
+  // A4 (T9c): Android geri tuşu — üstteki ekranı kapatır, yoksa uygulamayı küçültür (`geriTusu`).
+  // Web'de Escape aynı işi görür (dev/duman). Dinleyici bir kez bağlanır, eylem her render tazelenir.
+  const geri = useRef<() => void>(() => {});
+  useEffect(() => {
+    geri.current = () => {
+      const eylem = geriTusu(kanal, sheet != null);
+      if (eylem === 'cevrimdisi') claimOffline();
+      else if (eylem === 'usta') closeMaster();
+      else if (eylem === 'panel') setSheet(null);
+      else if (eylem === 'seviye') claimLevelUp();
+      else if (eylem === 'ipucu') {
+        if (bulasikOgretme) markWashTipSeen();
+        else if (spotlight) markCharPanelSeen();
+        else if (traySpot) markTrayTipSeen();
+      } else if (Capacitor.isNativePlatform()) void CapApp.minimizeApp();
+    };
+  });
+  useEffect(() => {
+    const esc = (e: KeyboardEvent) => { if (e.key === 'Escape') geri.current(); };
+    window.addEventListener('keydown', esc);
+    const dinleyici = Capacitor.isNativePlatform() ? CapApp.addListener('backButton', () => geri.current()) : null;
+    return () => {
+      window.removeEventListener('keydown', esc);
+      void dinleyici?.then((d) => d.remove());
+    };
+  }, []);
 
   const onReset = () => {
     if (window.confirm('Oyunu sıfırla? Bu cihazdaki tüm ilerleme silinecek.')) {
@@ -295,7 +323,7 @@ export function HUD() {
           Usta'ya uygulanmamıştı. Tetiğin KENDİSİ de ayrıca düzeltildi (Scene: dwell artık
           yüklemede değil, oyuncu bir kez hareket ettikten sonra dolar). */}
       {kanal === 'usta' && nearMaster && (
-        <UstaModal id={nearMaster} onClose={() => setMasterKapali(nearMaster)} />
+        <UstaModal id={nearMaster} onClose={closeMaster} />
       )}
 
       {/* ───────── ALT BANT: AKTİF ADIM (Tek Odak) ───────── */}
@@ -502,7 +530,7 @@ export function HUD() {
           testid="offline"
           title="Sen yokken kıraathane çalıştı"
           amount={Math.floor(offlineEarned)}
-          onClaim={() => setOfflineSeen(true)}
+          onClaim={claimOffline}
           claimTestid="offline-ok"
         />
       )}

@@ -1,6 +1,6 @@
 # T9c — MASAYA SERVİS TETİĞİ (K5 · B6)
 
-> Karar: _(commit #2'de dolar)_
+> Karar: **D-147** (2026-09-24) — G7: servis masanın gövdesinden, pay `cups.collectReach` (0,70)
 > Araç: `tools/olcum-servis-t9c.ts` → `docs/olcum-servis-t9c.txt` (tam koşu, damgalar temiz).
 > Commit #1 denge dosyasına dokunmadı; kollar formülle ölçüldü, `tick.ts` değişmedi.
 
@@ -68,4 +68,12 @@ süresinde < 0,3 br/servis mertebesinde. Rapora sayı olarak girmedi.
 
 ## §Karar
 
-(boş — karar paketinden sonra dolar)
+**G7 (kullanıcı 2026-09-24, D-147).** `tick.ts` serveSystem: `atTableBody(…, cups.collectReach)`;
+`serving.serveRadius` config'ten kalktı (tek kullanıcısı buydu). Kirli kap ve servis artık AYNI
+tetik: masaya değen oyuncu çayı bırakır ve kirliyi alır.
+
+**Final tam koşu** (`docs/olcum-servis-t9c.txt`, `OYUN (tick)` satırı — oyunun kendi çağrısı, kaynaktan
+damgalı): iki dünyada da G7 ile birebir (servis %100 · kör 0 · alan 7,4 / 30,6 br² · sızıntı 0).
+
+**Bekçi:** `tests/mantik-t9c.test.ts` §K5 — köşe durağı (merkeze > 1,6) servis eder, payın 0,1 ötesi
+etmez. Mutasyon ①: eski merkez dairesi → köşe testi düşer. ② pay 0,50 → köşe testi düşer.

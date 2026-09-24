@@ -392,8 +392,8 @@ export const economyConfig = {
      * noktasından dar olamaz.
      */
     pickupReach: 0.7,
-    /** Oyuncunun masaya çay bırakma yakınlığı. */
-    serveRadius: 1.6,
+    // Masaya çay bırakma tetiği K5'te (D-147) merkez dairesinden (`serveRadius` 1,6) masa gövdesine
+    // taşındı ve payı kirli kap toplamanın payıdır: `cups.collectReach` (tek sayı, iki tetik).
   },
 
   /**

@@ -131,6 +131,8 @@ import {
   questView,
   questCounterValue,
   questFocusPos,
+  tableUpgradeTarget,
+  gateOf,
   computeOfflineEarned,
   type ActiveSpot,
   type GameNotice,
@@ -161,6 +163,7 @@ export {
   tableUpgradeUnlocked,
   tableUpgradeUnlockedIn,
   tableUpgradeTarget,
+  gateOf,
   tableSoftMaxLevel,
   tableNextCost,
   tableThemeUnlocked,
@@ -340,6 +343,8 @@ export interface GameState {
    *  kaydedilmez. Sahne katmanı `useFrame` içinde hesaplar ve yalnız hedef DEĞİŞİNCE yazar
    *  (oyuncu konumuna abone olmak HUD'u saniyede 60 kez yeniden çizerdi). */
   nearMaster: string | null;
+  /** K4: oyuncunun KAPATTIĞI Usta noktası — o noktadan çıkana kadar yeniden dolmaz (GEÇİCİ). */
+  ustaKapali: string | null;
   /** Sıradaki görevin index'i (persist; >= quests.length ⇒ görev hattı bitti). */
   questIndex: number;
   /** Aktif sayaç görevinin başlangıç sayaç değeri (persist; delta hedefi tabanı). */
@@ -397,6 +402,8 @@ export interface GameState {
   /** Genel-bakış zoom'u (transient): HUD kamera butonu AÇIKKEN kamera uzaklaşır (salonu görmek için). */
   camZoomOut: boolean;
   offlineEarned: number;
+  /** T9c/A3: arka plana geçiş anı (epoch ms, transient). Sıcak dönüşte çevrimdışı gelir buradan sayılır. */
+  gizlendiAt: number | null;
   // Dahili
   spawnTimer: number;
   /** Spawn round-robin ALAN imleci (transient): grup dağılımı alanlar arası adil olsun. */
@@ -426,6 +433,8 @@ export interface GameState {
   claimDailyQuest: (id: string) => boolean;
   /** Sahne katmanı çağırır: oyuncunun menzilindeki Usta noktası (yoksa `null`). */
   setNearMaster: (id: string | null) => void;
+  /** K4: Usta penceresi kapatıldı → nokta, oyuncu çıkıp yeniden basana kadar kilitli. */
+  closeMaster: () => void;
   toggleCamZoomOut: () => void;
   setKabuk: (kip: KabukKipi) => void;
   /** Ayar değiştir (ayarlar modalı) — anında kaydedilir. */
@@ -462,7 +471,41 @@ export interface GameState {
   /** G-63: bulaşık öğretme kartı kapatıldı (bir daha çıkmaz; anında kaydedilir). */
   markWashTipSeen: () => void;
   saveNow: () => void;
+  /** T9c/A3: sayfa gizlendi (arka plan) → anı tut + kaydet. */
+  arkaPlanaGec: () => void;
+  /** T9c/A3: sayfa yeniden görünür → yeniden yüklenmeden dönüşte de çevrimdışı gelir (init ile aynı hesap). */
+  onPlanaDon: () => void;
+  /** Çevrimdışı ödül ekranı kapatıldı (₺ zaten cüzdanda; ekran bir sonraki dönüşe kadar çıkmaz). */
+  claimOffline: () => void;
   hardReset: () => void;
+}
+
+/** A7: kayıttaki bekleyen seviye ödülü — bozuksa yok say (ödül ekranı çöp göstermesin). */
+function gecerliLevelUp(v: unknown): LevelUpOdul | null {
+  const o = v as Partial<LevelUpOdul> | null;
+  if (!o || typeof o !== 'object') return null;
+  const sayi = (x: unknown) => typeof x === 'number' && Number.isFinite(x);
+  if (!sayi(o.level) || !sayi(o.amount) || !sayi(o.carryBefore) || !sayi(o.carryAfter) || o.amount! <= 0) return null;
+  return { level: o.level!, amount: o.amount!, carryBefore: o.carryBefore!, carryAfter: o.carryAfter! };
+}
+
+/** Bu süreden kısa yokluk çevrimdışı sayılmaz (sn). */
+const CEVRIMDISI_ESIK_SN = 30;
+
+/**
+ * Çevrimdışı gelir — soğuk açılış (`init`) ve sıcak dönüş (`onPlanaDon`) AYNI hesabı kullanır (A3).
+ * B2: tek servis tüm masaları besler → tek oran. Offline'ın iki kelepçesi (rateMult + sıradaki pad'in
+ * oranı) `computeOfflineEarned`de → "yokken zone bitmez". D-090: koleksiyon çarpanı da görülür —
+ * görmezse oyuncu oyunu KAPATARAK topladığı bonusu kaybederdi.
+ */
+function cevrimdisiGelir(
+  s: { tables: number; tableLevels: number[]; stationLevels: number[]; lavaboLevel: number; goalsClaimed: string[]; padsDone: string[] },
+  elapsed: number,
+): number {
+  let tipTotal = 0;
+  for (let i = 0; i < s.tables; i++) tipTotal += C.tables.tipBase * (s.tableLevels[i] ?? 0);
+  const rate = incomeRate(s.tables, s.stationLevels[THE_SERVICE], tipTotal, s.lavaboLevel, collectionMult(s.goalsClaimed));
+  return computeOfflineEarned(rate, elapsed, s.padsDone);
 }
 
 export const useGame = create<GameState>((set, get) => ({
@@ -509,6 +552,7 @@ export const useGame = create<GameState>((set, get) => ({
   mastersOwned: [],
   daily: defaultDaily(),
   nearMaster: null,
+  ustaKapali: null,
   questIndex: 0,
   questBase: 0,
   questPhase: 'active',
@@ -532,6 +576,7 @@ export const useGame = create<GameState>((set, get) => ({
   camBekleyen: null,
   camZoomOut: false,
   offlineEarned: 0,
+  gizlendiAt: null,
   spawnTimer: 1,
   spawnArea: 0,
   saveTimer: SAVE_INTERVAL,
@@ -579,18 +624,14 @@ export const useGame = create<GameState>((set, get) => ({
     let wallet = D(save.wallet);
     let lifetime = D(save.lifetime);
     let offlineEarned = 0;
-    if (elapsed > 30) {
-      // B2: tek servis tüm masaları besler → tek oran (eski "açık servislerin toplamı" döngüsü kalktı).
-      let tipTotal = 0;
-      for (const t of world.tables) tipTotal += C.tables.tipBase * (save.tableLevels[t.index] ?? 0);
-      // B4: offline oran lavabo kolunu da sayar (oyuncu yokken de istif kabarır). Offline'ın iki
-      // kelepçesi (rateMult + sıradaki pad'in oranı) değişmedi → "yokken zone bitmez" kuralı durur.
+    if (elapsed > CEVRIMDISI_ESIK_SN) {
+      // B4: offline oran lavabo kolunu da sayar (oyuncu yokken de istif kabarır).
       const lavLevel = roomOpen(world, 'lavabo') ? Math.min(Math.max(save.lavaboLevel ?? 1, 1), lavaboMaxLevel()) : 0;
-      // D-090: çevrimdışı oran da koleksiyon çarpanını görür — görmezse oyuncu oyunu KAPATARAK
-      // topladığı bonusu kaybederdi ve "hedef topla" ile "oyunu açık bırak" birbiriyle yarışırdı.
-      const rate = incomeRate(world.tables.length, stationLevels[THE_SERVICE], tipTotal, lavLevel,
-        collectionMult(save.goalsClaimed ?? []));
-      offlineEarned = computeOfflineEarned(rate, elapsed, save.padsDone);
+      offlineEarned = cevrimdisiGelir(
+        { tables: world.tables.length, tableLevels: save.tableLevels, stationLevels, lavaboLevel: lavLevel,
+          goalsClaimed: save.goalsClaimed ?? [], padsDone: save.padsDone },
+        elapsed,
+      );
       wallet = wallet.add(offlineEarned);
       lifetime = lifetime.add(offlineEarned);
     }
@@ -670,7 +711,7 @@ export const useGame = create<GameState>((set, get) => ({
       activeSpot: null,
       notice: null,
       noticeQueue: [],
-  levelUp: null,
+      levelUp: gecerliLevelUp(save.levelUp),
   gelirIzi: [],
   gelirIziT: 0,
       // revealSeen baseline: yüklemede ZATEN açık olan özellikler bildirilmiş sayılır (yeniden yükleme spam'ı yok).
@@ -942,6 +983,8 @@ export const useGame = create<GameState>((set, get) => ({
     if (get().nearMaster !== id) set({ nearMaster: id });
   },
 
+  closeMaster: () => set({ ustaKapali: get().nearMaster, nearMaster: null }),
+
   // Görev barına dokununca: kamera aktif görevin hedefine kayar (kullanıcı onboarding isteği).
   /**
    * G-63 — BULAŞIK TEZGÂHINA ODAKLAN. Öğretme kartı açılırken çağrılır: kullanıcı *"oraya birden
@@ -959,7 +1002,7 @@ export const useGame = create<GameState>((set, get) => ({
     const s = get();
     if (s.questIndex >= C.quests.length) return;
     const q = C.quests[s.questIndex];
-    const p = questFocusPos(q.target, s.tableLevels, s.tables, s.areasOpen, q.area ?? 0);
+    const p = questFocusPos(q.target, s.tableLevels, s.tables, s.areasOpen, q.area ?? 0, tableUpgradeTarget(gateOf(s)));
     if (p) set({ camFocus: { pos: [p[0], p[1], p[2]], ttl: CAM_FOCUS_TTL } });
   },
 
@@ -1136,14 +1179,45 @@ export const useGame = create<GameState>((set, get) => ({
     get().saveNow();
   },
 
+  arkaPlanaGec: () => {
+    set({ gizlendiAt: Date.now() });
+    get().saveNow();
+  },
+
+  onPlanaDon: () => {
+    const s = get();
+    if (s.gizlendiAt == null) return;
+    const elapsed = Math.max(0, (Date.now() - s.gizlendiAt) / 1000);
+    set({ gizlendiAt: null });
+    if (elapsed <= CEVRIMDISI_ESIK_SN) return;
+    const kazanc = cevrimdisiGelir({ ...s, goalsClaimed: s.goalsClaimed ?? [] }, elapsed);
+    if (kazanc <= 0) return;
+    const lifetime = s.lifetime.add(kazanc);
+    // D8 sırası (init ile aynı): gün dönümü çevrimdışı gelirden SONRA — gece kazanılan ₺ bugünün
+    // "kazan" görevini bedavaya doldurmasın. Gün değişmediyse `tick` zaten dokunmaz.
+    const gun = dayIndex(Date.now());
+    const daily = s.daily.day === gun
+      ? s.daily
+      : rollDaily(s.daily, gun, dailyContextOf(s), dailyCountersOf({ stats: s.stats, lifetime }));
+    set({ wallet: s.wallet.add(kazanc), lifetime, offlineEarned: kazanc, daily });
+    get().saveNow();
+  },
+
+  claimOffline: () => set({ offlineEarned: 0 }),
+
   saveNow: () => {
     const s = get();
+    // K8 (D-146): yerdeki para kayıtta cüzdandadır — uygulama kapanınca yanmasın. Canlı durumda
+    // paralar yerde kalır (toplama oyunun döngüsü); yalnız YAZILAN cüzdan onları içerir. Kayıt
+    // yüklenince yerde para yoktur → çift sayım olmaz.
+    let yerde = 0;
+    for (const c of s.coins) yerde += c.value;
     // D-015: tables/stations/hasWaiter KAYDEDİLMEZ — yüklemede padsDone'dan türetilir.
     writeSave({
       ...defaultSave(),
-      wallet: s.wallet.toString(),
+      wallet: s.wallet.add(yerde).toString(),
       diamonds: s.diamonds.toString(),
-      lifetime: s.lifetime.toString(),
+      lifetime: s.lifetime.add(yerde).toString(),
       stationLevels: [...s.stationLevels],
       tableLevels: [...s.tableLevels],
       lavaboLevel: s.lavaboLevel,
@@ -1174,6 +1248,8 @@ export const useGame = create<GameState>((set, get) => ({
       charPanelSeen: s.charPanelSeen,
       trayTipSeen: s.trayTipSeen,
       washTipSeen: s.washTipSeen,
+      // A7: alınmamış ₺'li seviye ödülü kayda gider (ekran açıkken kapanırsa yanmasın).
+      levelUp: s.levelUp && s.levelUp.amount > 0 ? { ...s.levelUp } : null,
       lastSaved: Date.now(),
     });
   },

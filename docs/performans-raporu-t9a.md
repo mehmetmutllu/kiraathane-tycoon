@@ -42,23 +42,29 @@ Devralınan üç girdi:
   T5'in N2'si YOLU tutuyordu (bayatlar); bu kol ÇAĞRIYI tutuyor (bayatlayamaz). Ölçümle de sınandı:
   örneklenen parmak izi (`5cbc3445`) + tam durum dökümü (23.606 bayt, `cmp`) iki kolda aynı.
 
-### A′ — Tarayıcı (telefon profili, ABBA, aynı sayfa)
+### A′ — Tarayıcı (telefon ÖYKÜNMESİ, ABBA, aynı sayfa)
 
 `docs/olcum-nav-ab-t9a-telefon.txt` (TAM · 412×915 @ 2,625 · CPU 4× kısık · gölge AÇIK · ABBA × 5 blok ×
-6 sn). **Denetim kolu TEMİZ** (çizim ms +2,7 · gölge +1,7 · çağrı +1,9 · üçgen +0,8 · NPC 0 — hepsi
+6 sn). **Telefon öykünmesi:** masaüstü GPU (RTX 3060, KISILMADI) + CPU 4× kısma — gerçek cihaz değil.
+**Denetim kolu TEMİZ** (çizim ms +2,7 · gölge +1,7 · çağrı +1,9 · üçgen +0,8 · NPC 0 — hepsi
 eşik içinde); kol damgası 20/20 · konsol hatası 0. Oran okunur, mutlak ms bağlamdır.
 
 | kalem | üretim | N2-kesin | oran / fark |
 |---|---|---|---|
-| nav ms/kare | 13,56 | 3,27 | **×0,24** |
+| nav ms/kare | 13,45 | 3,27 | **×0,243** |
 | nav ms/çağrı | 0,735 | 0,167 | ×0,23 |
-| karenin işi | 45,3 ms | 35,6 ms | **−%21,4** |
-| fps | 20,4 | 25,7 | +%26 |
-| nav'ın kare payı | %29,9 | %9,2 | |
+| karenin işi | 44,75 ms | 35,25 ms | **−%21,2** |
+| fps | 20,3 | 25,5 | +%25 |
+| nav'ın kare payı | %30,0 | %9,3 | |
+
+> **K10 düzeltmesi (T9c · D-146):** tablo ilk yazıldığında araç çift sayıda dilimin ÜST ortasını
+> alıyordu (−%21,4 · ×0,24 · fps 20,4 → 25,7). Sayılar aynı ham JSON'dan iki ortanın ortalamasıyla
+> yeniden hesaplandı; sonuç ve D-145 kararı değişmedi.
 
 Node ×0,07 → tarayıcı ×0,24: kazanç kareye YANSIYOR, ama node kadar değil (T5'te tarayıcı ×1,02 ile
-hiç yansımamıştı). Fark beklenen: önbellek anahtarı her çağrıda bir dizge üretir ve çağrıların bir
-kısmı yeni hücreye düşer — tarayıcıda karenin geri kalanı (çizim ~26 ms + gölge ~12 ms) sabit kalır.
+hiç yansımamıştı). Eşik (≤ 0,25) YÖNÜ doğrular, büyüklüğü değil: tarayıcı oranı node'unkinin 3,4
+katı. Farkın açıklaması "anahtar dizgesi ayırması" OLAMAZ — veri önbellekte çağrı başı DAHA AZ ayırma
+gösteriyor (18,9 < 22,8 KB); açık kalan: çağrıların bir kısmının yeni hücreye düşmesi.
 Masaüstü koşusu alınmadı (T6b'de masaüstü damgası iki kez kırmızıydı; telefon profili darboğazın
 olduğu yer).
 

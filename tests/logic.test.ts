@@ -86,6 +86,7 @@ import {
   servicePlace,
   boxDist2D,
   atServiceBody,
+  atTableBody,
   tableHalfFor,
   BAND,
   BAND_SHELL,
@@ -460,7 +461,11 @@ describe('park noktası (Faz A3) — testlerin "uzağa park et" niyeti YERLEŞİ
         `park noktası ${areasOpen} alanda tezgâhın gövde tetiğinde olmamalı`,
       ).toBe(false);
     }
-    expect(clear).toBeGreaterThan(economyConfig.serving.serveRadius);
+    // K5 (D-147): masaya servis de gövde payı → park noktası hiçbir masanın servis tetiğinde değil.
+    for (let i = 0; i < 4; i++) {
+      const pp = parkSpot(1, 4);
+      expect(atTableBody(pp[0], pp[2], i, economyConfig.cups.collectReach), `park noktası masa ${i} servisinde`).toBe(false);
+    }
     expect(clear).toBeGreaterThan(PAD_RADIUS);
     expect(clear).toBeGreaterThan(attractRadiusFor(0));
     // Nokta oynanabilir alanın içinde ve mobilyaya girmiyor (oyuncu kelepçesi onu kaydırmamalı).
@@ -1350,12 +1355,16 @@ describe('yerleşim — yürüme döngüsü zorlanır (D-017 §1, çakışma yok
     return Math.hypot(a[0] - b[0], a[2] - b[2]);
   }
   it('hiçbir masa ocağın çay-alma + servis dairelerinin BİRLEŞİĞİNDE değil (tek noktada çay-al+servis imkânsız)', () => {
-    // H1/O3: çay alma tetiği tezgâhın GÖVDESİNDEN pay. Tek noktadan hem alıp hem servis
-    // yapılamaması için tezgâh KUTUSUNUN masaya uzaklığı iki menzilin toplamını aşmalı.
+    // H1/O3: çay alma tetiği tezgâhın GÖVDESİNDEN pay; K5 (D-147): servis de masanın gövdesinden
+    // pay. Tek noktadan hem alıp hem servis yapılamaması için iki KUTU arası mesafe iki payı aşmalı.
     const sp = SP();
-    const minSep = economyConfig.serving.pickupReach + economyConfig.serving.serveRadius;
-    for (const t of LAYOUT.tables) {
-      expect(boxDist2D(t.table[0], t.table[2], sp.station, sp.half)).toBeGreaterThan(minSep);
+    const minSep = economyConfig.serving.pickupReach + economyConfig.cups.collectReach;
+    for (let i = 0; i < LAYOUT.tables.length; i++) {
+      const t = LAYOUT.tables[i];
+      const h = tableHalfFor(i);
+      const dx = Math.max(0, Math.abs(t.table[0] - sp.station[0]) - h[0] - sp.half[0]);
+      const dz = Math.max(0, Math.abs(t.table[2] - sp.station[2]) - h[1] - sp.half[1]);
+      expect(Math.hypot(dx, dz)).toBeGreaterThan(minSep);
     }
   });
   it('hiçbir masa bulaşığın yıkama + kirli-toplama dairelerinin BİRLEŞİĞİNDE değil (tek noktada kirli-al+yıka imkânsız)', () => {

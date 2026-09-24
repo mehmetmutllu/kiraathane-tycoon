@@ -72,7 +72,7 @@ Dosyaları her anlamlı adımdan sonra da güncelle.
 
 ## Komutlar
 - Geliştirme: `npm run dev` · Build: `npm run build` · Test: `npm run test` ·
-  Duman (tarayıcı, 41 denetim): `npm run duman` — sunucuyu kendi kaldırır; port doluysa
+  Duman (tarayıcı, 51 denetim): `npm run duman` — sunucuyu kendi kaldırır; port doluysa
   `DUMAN_PORT=4000 npm run duman`, üretim derlemesi için `DUMAN_MOD=preview` ·
   Ekonomi simülasyon: `npx tsx tools/simulate.ts`
 - Devam: `/kiraathane-devam` veya "kıraathane-devam" → kaldığım yerden.

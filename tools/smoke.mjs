@@ -439,8 +439,16 @@ try {
     else fail(`Kapalı durum yanlış (disabled=${kapali}, seviye=${sonra && sonra.soundVolume})`);
     await tikla('[data-testid="set-sound"]'); // geri aç
   }
-  await tikla('[data-testid="menu"] .sheet-back');
+  // A4 (T9c · D-147): GERİ = üstteki paneli kapatır. Web'de Escape, Android'de geri tuşu aynı
+  // `geriTusu` kararından geçer; burada sınanan şey kablonun gerçek tarayıcıda bağlı olduğu.
+  await page.keyboard.press('Escape');
   await page.waitForTimeout(200);
+  if (!(await page.$('[data-testid="menu"]'))) pass('Geri (Escape) açık paneli kapattı');
+  else {
+    fail('Geri (Escape) paneli kapatmadı');
+    await tikla('[data-testid="menu"] .sheet-back');
+    await page.waitForTimeout(200);
+  }
 
   /*
    * KARE-HIZI TAVANI (K-A · D-136) — üç denetim, üçü de SAYIYLA.

@@ -22,6 +22,10 @@ G9 govde+0,90  |    0 | four  |         300 |   100.0 |       0 |     3.87 |    
 G9 govde+0,90  |    1 | four  |         300 |   100.0 |       0 |     3.87 |        0.00 |       2.08
 G9 govde+0,90  |    2 | four  |         300 |   100.0 |       0 |     3.91 |        0.00 |       2.08
 G9 govde+0,90  |    3 | four  |         300 |   100.0 |       0 |     3.91 |        0.00 |       2.08
+OYUN (tick)    |    0 | four  |         300 |   100.0 |       0 |     1.83 |        0.00 |       1.88
+OYUN (tick)    |    1 | four  |         300 |   100.0 |       0 |     1.83 |        0.00 |       1.88
+OYUN (tick)    |    2 | four  |         300 |   100.0 |       0 |     1.87 |        0.00 |       1.88
+OYUN (tick)    |    3 | four  |         300 |   100.0 |       0 |     1.87 |        0.00 |       1.88
 
 ### ozet — erken (1 salon)
 kol            | servis% (yanasik yon) | kor yon | kor masa | alan br2 | sizinti br2 | sizintili masa | en uzak br
@@ -30,6 +34,7 @@ G5 govde+0,50  |                  77.3 |     272 |        4 |      0.7 |        
 G7 govde+0,70  |                 100.0 |       0 |        0 |      7.4 |        0.00 |              0 |       1.88
 G8 govde+0,80  |                 100.0 |       0 |        0 |     11.3 |        0.00 |              0 |       1.98
 G9 govde+0,90  |                 100.0 |       0 |        0 |     15.6 |        0.00 |              0 |       2.08
+OYUN (tick)    |                 100.0 |       0 |        0 |      7.4 |        0.00 |              0 |       1.88
 gereken pay (yanasik duraklarin kutuya en uzagi): 0.672 br
 
 ## gec (3 salon) — 20 masa
@@ -134,6 +139,26 @@ G9 govde+0,90  |   16 | deuce |         285 |   100.0 |       0 |     2.74 |    
 G9 govde+0,90  |   17 | deuce |         285 |   100.0 |       0 |     2.74 |        0.00 |       1.64
 G9 govde+0,90  |   18 | deuce |         285 |   100.0 |       0 |     2.74 |        0.00 |       1.64
 G9 govde+0,90  |   19 | deuce |         285 |   100.0 |       0 |     2.74 |        0.00 |       1.64
+OYUN (tick)    |    0 | four  |         300 |   100.0 |       0 |     1.83 |        0.00 |       1.88
+OYUN (tick)    |    1 | four  |         300 |   100.0 |       0 |     1.83 |        0.00 |       1.88
+OYUN (tick)    |    2 | four  |         300 |   100.0 |       0 |     1.87 |        0.00 |       1.88
+OYUN (tick)    |    3 | four  |         300 |   100.0 |       0 |     1.87 |        0.00 |       1.88
+OYUN (tick)    |    4 | four  |         300 |   100.0 |       0 |     1.87 |        0.00 |       1.88
+OYUN (tick)    |    5 | four  |         300 |   100.0 |       0 |     1.83 |        0.00 |       1.88
+OYUN (tick)    |    6 | four  |         300 |   100.0 |       0 |     1.90 |        0.00 |       1.88
+OYUN (tick)    |    7 | four  |         300 |   100.0 |       0 |     1.87 |        0.00 |       1.88
+OYUN (tick)    |    8 | deuce |         285 |   100.0 |       0 |     1.31 |        0.00 |       1.43
+OYUN (tick)    |    9 | deuce |         285 |   100.0 |       0 |     1.31 |        0.00 |       1.43
+OYUN (tick)    |   10 | deuce |         285 |   100.0 |       0 |     1.31 |        0.00 |       1.43
+OYUN (tick)    |   11 | deuce |         285 |   100.0 |       0 |     1.31 |        0.00 |       1.43
+OYUN (tick)    |   12 | deuce |         285 |   100.0 |       0 |     1.31 |        0.00 |       1.43
+OYUN (tick)    |   13 | deuce |         285 |   100.0 |       0 |     1.31 |        0.00 |       1.43
+OYUN (tick)    |   14 | deuce |         285 |   100.0 |       0 |     1.31 |        0.00 |       1.43
+OYUN (tick)    |   15 | deuce |         285 |   100.0 |       0 |     1.31 |        0.00 |       1.43
+OYUN (tick)    |   16 | deuce |         285 |   100.0 |       0 |     1.31 |        0.00 |       1.43
+OYUN (tick)    |   17 | deuce |         285 |   100.0 |       0 |     1.31 |        0.00 |       1.43
+OYUN (tick)    |   18 | deuce |         285 |   100.0 |       0 |     1.31 |        0.00 |       1.43
+OYUN (tick)    |   19 | deuce |         285 |   100.0 |       0 |     1.31 |        0.00 |       1.43
 
 ### ozet — gec (3 salon)
 kol            | servis% (yanasik yon) | kor yon | kor masa | alan br2 | sizinti br2 | sizintili masa | en uzak br
@@ -142,4 +167,5 @@ G5 govde+0,50  |                  74.6 |    1480 |       20 |      3.4 |        
 G7 govde+0,70  |                 100.0 |       0 |        0 |     30.6 |        0.00 |              0 |       1.88
 G8 govde+0,80  |                 100.0 |       0 |        0 |     46.9 |        0.00 |              0 |       1.98
 G9 govde+0,90  |                 100.0 |       0 |        0 |     64.0 |        0.00 |              0 |       2.08
+OYUN (tick)    |                 100.0 |       0 |        0 |     30.6 |        0.00 |              0 |       1.88
 gereken pay (yanasik duraklarin kutuya en uzagi): 0.672 br

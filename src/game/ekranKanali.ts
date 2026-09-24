@@ -71,3 +71,20 @@ export function ekranKanali(g: EkranGirdisi): EkranKanali {
   if (g.tepsiIpucuHazir) return 'ipucu-tepsi';
   return null;
 }
+
+/** A4 (T9c · D-147): Android geri tuşunun o anki eylemi. */
+export type GeriEylemi = 'cevrimdisi' | 'usta' | 'panel' | 'seviye' | 'ipucu' | 'kucult';
+
+/**
+ * GERİ TUŞU — üstte ne varsa onu kapatır; hiçbiri yoksa uygulamayı KÜÇÜLTÜR (kapatmaz).
+ * Eskiden dinleyici yoktu: panel açıkken geri → uygulama kapanıyordu (T9b A4). Sıra ekranın çizim
+ * sırasıdır: kanal önceliği (`ekranKanali`) paneli ancak çevrimdışı/Usta'nın altına koyar, ipucular
+ * ve seviye ekranı panelin altında sıra bekler. Ödül ekranlarında geri = "Al" (₺ kaybolmaz).
+ */
+export function geriTusu(kanal: EkranKanali, panelAcik: boolean): GeriEylemi {
+  if (kanal === 'cevrimdisi' || kanal === 'usta') return kanal;
+  if (panelAcik) return 'panel';
+  if (kanal === 'seviye') return 'seviye';
+  if (kanal != null) return 'ipucu';
+  return 'kucult';
+}

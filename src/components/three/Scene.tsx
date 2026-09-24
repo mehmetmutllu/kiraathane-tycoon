@@ -2,7 +2,7 @@ import { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from 
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Vector3, BufferGeometry, BoxGeometry, Float32BufferAttribute, DoubleSide, MeshStandardMaterial, Object3D, type Group, type InstancedMesh, type PerspectiveCamera } from 'three';
 import { cameraViewYaz } from '../../game/cameraView';
-import { useGame, questFocusPos, LAYOUT, LAVABO, BAND, BAND_SHELL, FLOOR_HALF, wallSpans, servicePlace, stationSoftMaxLevel, stationUpgradeCostAt, stationUpgradeUnlocked, tableSoftMaxLevel, tableUpgradeTarget, tableNextCost, openServices, doorX as doorAt, entranceAt, BANKET, WAITER_STATION, waiterStationOpen } from '../../game/store';
+import { useGame, questFocusPos, LAYOUT, LAVABO, BAND, BAND_SHELL, FLOOR_HALF, wallSpans, servicePlace, stationSoftMaxLevel, stationUpgradeCostAt, stationUpgradeUnlocked, tableSoftMaxLevel, tableUpgradeTarget, gateOf, tableNextCost, openServices, doorX as doorAt, entranceAt, BANKET, WAITER_STATION, waiterStationOpen } from '../../game/store';
 import { economyConfig, lavaboUpgradeCost } from '../../config/economy.config';
 import { areaOfTable, THE_SERVICE } from '../../game/world';
 import { masterId, masterCost, masterUnlockedForTable, dishStationVisible, cardQuestIndex, upgradeSpotLiveNow } from '../../game/rules';
@@ -11,13 +11,13 @@ import { devPerfKol } from '../../game/devPerf';
 import { KARE_TAVANI_FPS } from '../../game/kareTavani';
 import { KareTavani } from './KareTavani';
 import { cihazSinifiOku, cihazSinifiYaz, golgeAcikMi, sinifBelirle, ISINMA_KARE, ORNEK_KARE } from '../../game/cihazSinifi';
-import { dwellState } from '../../game/dwell';
+import { dwellState, ustaKaresi } from '../../game/dwell';
 import { Bahce } from './Bahce';
 import { GroundMarker } from './GroundMarker';
 // Etiketler ve işaret yarıçapı `markerFrame`ten gelir: çerçeve genişliği YAZIDAN çözülüyor
 // ve aynı çerçeveyi `tick.ts` tetik olarak test ediyor (D-121). Buraya düz metin yazmak
 // çizilen kutu ile tetikleyen kutuyu sessizce ayırır — S24'ün kapattığı kusur tam buydu.
-import { ETIKET_LAVABO, ETIKET_SERVIS, MASA_ISARET_R, masaEtiketi } from '../../game/markerFrame';
+import { ETIKET_LAVABO, ETIKET_SERVIS, ETIKET_USTA, MASA_ISARET_R, masaEtiketi } from '../../game/markerFrame';
 import { FloorPattern } from './floorPattern';
 import { DOOR, SOVE_W, WALL_H, WALL_T_BODY, WallPanels, type WallSlab } from './wallPanel';
 import { BAND_SHELL_RUNS, WALL_M, WALL_RUNS, pencereBosluklari, wallPieces } from './wallLook';
@@ -97,7 +97,7 @@ function QuestPointer() {
     // atlıyor, kart hâlâ biten görevi yazıyordu (D-038'in dört kanalı ayrışıyordu).
     const qi = cardQuestIndex(g);
     const def = qi < economyConfig.quests.length ? economyConfig.quests[qi] : null;
-    const target = g.quest && def ? questFocusPos(def.target, g.tableLevels, g.tables, g.areasOpen, def.area ?? 0) : null;
+    const target = g.quest && def ? questFocusPos(def.target, g.tableLevels, g.tables, g.areasOpen, def.area ?? 0, tableUpgradeTarget(gateOf(g))) : null;
     if (!target) {
       screenPointer.active = false;
       activeStep.has = false;
@@ -665,9 +665,6 @@ function TableUpgradeMarkers() {
  * onayı HUD'un alt bandı alır (`MasterBar`). Yakınlık `useFrame` içinde ölçülür ve store'a
  * yalnız hedef DEĞİŞİNCE yazılır — oyuncu konumuna abone olmak HUD'u 60 fps yeniden çizerdi.
  */
-const MASTER_REACH = 1.9;
-/** Modalin açılması için oyuncunun noktada durması gereken süre (sn) — kullanıcı: "1 2 sn". */
-const USTA_BEKLEME = 1.1;
 /** Bu hızın altı "duruyor" sayılır (br/sn). Joystick'in ölü bölgesinden yüksek, yürüyüşten düşük. */
 const DURMA_HIZI = 0.35;
 
@@ -704,13 +701,8 @@ function TableMasterSpots() {
    */
   const kuruldu = useRef(false);
   useFrame((_, dt) => {
-    const p = useGame.getState().player;
-    let en: string | null = null;
-    let enYakin = MASTER_REACH * MASTER_REACH;
-    for (const a of adaylar) {
-      const d2 = (p[0] - a.pos[0]) ** 2 + (p[2] - a.pos[2]) ** 2;
-      if (d2 <= enYakin) { enYakin = d2; en = a.id; }
-    }
+    const g = useGame.getState();
+    const p = g.player;
 
     // G-14 ② — MODAL YAKLAŞINCA DEĞİL, DURUNCA AÇILIR (kullanıcı 2026-09-09).
     // Yalnız yakınlık yeterli sayılınca oyuncu masanın yanından geçerken bile modal açılıyordu.
@@ -721,15 +713,14 @@ function TableMasterSpots() {
     if (hiz >= DURMA_HIZI) kuruldu.current = true; // G-79 ②: ilk hareket kolu kurar
     const duruyor = kuruldu.current && hiz < DURMA_HIZI;
 
-    if (en && duruyor) dwellState.p = Math.min(1, dwellState.p + dt / USTA_BEKLEME);
-    else if (en) dwellState.p = 0;
-    else dwellState.p = 0;
-    dwellState.id = en;
+    // K4: tetik ÇİZİLEN çerçeve, kapatılan nokta çıkılana kadar kilitli (`ustaKaresi`).
+    const k = ustaKaresi(adaylar, p[0], p[2], duruyor, dt, { p: dwellState.p, kapali: g.ustaKapali });
+    dwellState.p = k.p;
+    dwellState.id = k.id;
+    if (k.kapali !== g.ustaKapali) useGame.setState({ ustaKapali: k.kapali });
 
     // React'e yalnız EŞİK geçilince dokunulur — her kare setState = 60 render/sn.
-    const acik = en != null && dwellState.p >= 1;
-    const hedef = acik ? en : null;
-    if (hedef !== son.current) { son.current = hedef; setNearMaster(hedef); }
+    if (k.acik !== son.current) { son.current = k.acik; setNearMaster(k.acik); }
   });
 
   const fiyat = masterCost();
@@ -743,13 +734,13 @@ function TableMasterSpots() {
           // G-11: "Usta" yazısı kalktı — söz her yerde aynı, kimliği 💎 pulu taşıyor.
           // G-14 ②: biçim öteki yükseltme noktalarıyla AYNI (kullanıcı: "yuvarlak yapma").
           // Tek fark dolumun kaynağı: ₺ değil BEKLEME, ve rengi yeşil — dolunca modal açılır.
-          label="YÜKSELT"
+          label={ETIKET_USTA}
           arrow
           sub={String(fiyat)}
           pip="gem"
           tint="#4fc3f7"
           dwellId={a.id}
-          radius={0.6}
+          radius={MASA_ISARET_R}
           afford={yeter}
         />
       ))}

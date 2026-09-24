@@ -4707,7 +4707,7 @@ Sayfa: https://claude.ai/artifact/KeoLC7rpqJXgVGdRCPvwkd
 önbelleklenir, varsayılan AÇIK. Çıktı birebir aynı olduğu için ürün çatalı değil (D-139'un N1c emsali).
 g1 kolu D-142'den sonra bayattı (hattı tıkıyor, "iyileşme" sahteydi); doğru tanımla ölçüte etkisi yok → elendi.
 **Belirleyici sayı:** tick'in %96'sı nav · node tick 4,06 → 0,40 ms (×10,1; final ×11,6) · telefon tarayıcısı
-nav ×0,24, kare işi −%21,4, fps 20,4 → 25,7 · g1 üç dozda da İdealize 1 / Normal 3 aşan (taban aynı).
+nav ×0,243, kare işi −%21,2, fps 20,3 → 25,5 (K10/T9c ortanca düzeltmesi; ilk yazım −%21,4) · g1 üç dozda da İdealize 1 / Normal 3 aşan (taban aynı).
 **Araç (D-144 ⑤):** sıra kilidi geriye bakış + §Karar-boş dikiş; 8 yanlış pozitifin 7'si kapandı. Lint 77 → 0.
 **Bekçi:** `tests/nav-onbellek-t9a.test.ts` 5/5 mutasyon · `sira-kilidi` 3/3. `docs/performans-raporu-t9a.md`.
 
@@ -4724,3 +4724,15 @@ kazanılanı gösteren "Harika!" · Usta noktası pad gibi (üstünde durunca) �
 T9a A/B aracı düzeltilir (kare işi −%21,4 → −%21,2, "telefon öykünmesi").
 **Sıra:** T9c mantık/kilit → T9d arayüz/metin → Faz F.
 
+
+## D-147 · T9c mantık/kilit düzeltmeleri + servis gövdeden (K5 = G7) (2026-09-24)
+
+**K5 ölçüldü** (`docs/servis-raporu-t9c.md`): merkez 1,60 dörtlü masada yanaşık yönlerin %69,3'ü (köşe kör);
+köşeyi kapatan en küçük pay 0,672 → **G7 seçildi: servis masa gövdesinden, pay `cups.collectReach` 0,70**
+(kirli toplama ile tek tetik; %100, sızıntı 0). `serving.serveRadius` kalktı.
+**Onaylı düzeltmeler (D-146):** A1 `serveTost` sayacı (hat 30/50 kilidi açıldı) · A2 masa görevinde ok CANLI masada
+(`tableUpgradeTarget`) · A4 geri tuşu (`@capacitor/app`; üstteki ekranı kapatır, yoksa küçültür) · A3 sıcak dönüşte çevrimdışı gelir (soğuk açılışla aynı hesap) · A5 yeni sürümlü kayıt
+okunur, YAZILMAZ (kilit) · A6 kayıt varsayılanla DERİN birleşir · A7 ₺'li seviye ödülü kayda girer · D2 gün yalnız
+ileri döner · D6 işe yaramayan tepsi tezgâha iade · K4 Usta = çizilen çerçeve + kapatınca çıkana dek kilit ·
+K7 günlük hedef gün başında sabit · K8 yerdeki para kayıtta cüzdanda · K10 A/B ortancası (−%21,2) + "öykünme" etiketi.
+**Ertelendi:** q_tost5'in elle süresi (garsonlar tostu önce kapıyor) T9d'de ölçülür. Bekçi `tests/mantik-t9c.test.ts`.

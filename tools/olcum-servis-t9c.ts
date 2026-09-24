@@ -35,11 +35,15 @@ import {
   hitsSolid,
   tableHalfFor,
   boxDist2D,
+  atTableBody,
   type Solid,
 } from '../src/game/layout.ts';
 import { MAX_AREAS } from '../src/game/world.ts';
 import { economyConfig as C } from '../src/config/economy.config.ts';
 import { KIP, KISA, damga, damgaOzeti, kipBandi } from './olcum-lib.ts';
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const HUCRE = KISA ? 0.05 : 0.02;
 const YON = KISA ? 120 : 360;
@@ -51,8 +55,13 @@ const EN_UZAK = 4.0;
  * yaklaşır — kullanıcının "köşeden servis olmuyor"u tam bu duraklardır.
  */
 
-const TABAN_R = C.serving.serveRadius;
-damga('taban yaricapi config 1.6', Math.abs(TABAN_R - 1.6) < 1e-9, `serveRadius=${TABAN_R}`);
+/** TABAN — K5 ÖNCESİ hâl. Uygulama `serving.serveRadius`i config'ten kaldırdı (D-147); taban satırı
+ *  raporun "önce" sütunudur ve sonradan kaymamalıdır (H1 aracının `MASA_TABAN` deseni). */
+const TABAN_R = 1.6;
+
+/** FİNAL: oyunun GERÇEK tetiği — `tick.ts` serveSystem'in çağrısı kaynaktan doğrulanır (damga). */
+const tickKaynak = readFileSync(path.join(path.dirname(fileURLToPath(import.meta.url)), '../src/game/tick.ts'), 'utf8');
+const OYUN_GOVDE = /atTableBody\(player\[0\], player\[2\], n\.tableIndex, C\.cups\.collectReach\)/.test(tickKaynak);
 
 type Kol = { ad: string; tetik: (x: number, z: number, i: number) => boolean };
 const govde = (pay: number) => (x: number, z: number, i: number) =>
@@ -63,6 +72,9 @@ const KOLLAR: Kol[] = [
   { ad: 'G7 govde+0,70', tetik: govde(C.cups.collectReach) },
   { ad: 'G8 govde+0,80', tetik: govde(0.8) },
   { ad: 'G9 govde+0,90', tetik: govde(0.9) },
+  ...(OYUN_GOVDE
+    ? [{ ad: 'OYUN (tick)', tetik: (x: number, z: number, i: number) => atTableBody(x, z, i, C.cups.collectReach) }]
+    : []),
 ];
 damga('G7 = collectReach 0.70', Math.abs(C.cups.collectReach - 0.7) < 1e-9, `collectReach=${C.cups.collectReach}`);
 
@@ -206,6 +218,10 @@ for (const d of DUNYALAR.slice(0, KISA ? 1 : DUNYALAR.length)) {
   }
   console.log(`gereken pay (yanasik duraklarin kutuya en uzagi): ${gereken.toFixed(3)} br`);
   damga(`yanasik yon var (${d.ad})`, [...toplam.values()][0].yanasik > d.tables * 10, `${[...toplam.values()][0].yanasik}`);
+  if (OYUN_GOVDE) {
+    const o = toplam.get('OYUN (tick)')!, g7 = toplam.get('G7 govde+0,70')!;
+    damga(`oyun tetigi = G7 (${d.ad})`, o.ok === g7.ok && o.alan === g7.alan && o.sizinti === g7.sizinti, 'OYUN != G7');
+  }
   damga(`varyant etkili (${d.ad})`, toplam.get('S0 merkez 1,60')!.alan !== toplam.get('G7 govde+0,70')!.alan, 'S0 = G7');
 }
 damgaOzeti();

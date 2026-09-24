@@ -37,6 +37,10 @@ export interface DailyState {
   base: Record<string, number>;
   /** Bugün ödülü ALINMIŞ görev kimlikleri. */
   claimed: string[];
+  /** K7 (D-146): hedefler gün başında SABİTLENİR (kimlik → hedef). Eskiden her karede masa
+   *  sayısından türüyordu: "20 çay" 20/20 dolmuşken masa açınca 22 olup "ilerliyor"a dönüyordu.
+   *  Eski kayıtta yok → o gün türetilen hedefle devam eder (additive, sürüm ARTMAZ). */
+  targets?: Record<string, number>;
 }
 
 export const defaultDaily = (): DailyState => ({ day: -1, ids: [], base: {}, claimed: [] });
@@ -152,14 +156,19 @@ export function rollDaily(
   ctx: DailyContext,
   counters: DailyCounters,
 ): DailyState {
-  if (prev && prev.day === day) return prev;
+  // D2 (T9c): gün yalnız İLERİ döner. Saati geri alan oyuncu yeni set + boş `claimed` alıyor,
+  // aynı günün 💎'unu tekrar topluyordu (sert para). Geri gidişte bugünkü set aynen kalır.
+  if (prev && prev.day >= day) return prev;
   const ids = pickIds(day, availableTemplates(ctx), C.dailyQuests.count);
   const base: Record<string, number> = {};
+  const targets: Record<string, number> = {};
   for (const id of ids) {
     const t = templateOf(id);
-    if (t) base[id] = counters[t.metric] ?? 0;
+    if (!t) continue;
+    base[id] = counters[t.metric] ?? 0;
+    targets[id] = targetOf(t, ctx.tables);
   }
-  return { day, ids, base, claimed: [] };
+  return { day, ids, base, claimed: [], targets };
 }
 
 /**
@@ -175,7 +184,7 @@ export function dailyViews(daily: DailyState, tables: number, counters: DailyCou
   daily.ids.forEach((id, i) => {
     const t = templateOf(id);
     if (!t) return;
-    const target = targetOf(t, tables);
+    const target = daily.targets?.[id] ?? targetOf(t, tables);
     const cur = Math.max(0, Math.floor((counters[t.metric] ?? 0) - (daily.base[id] ?? 0)));
     out.push({
       id,

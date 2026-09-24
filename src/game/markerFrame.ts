@@ -96,3 +96,6 @@ export const servisCercevesi = (): Cerceve => markerFrame(ETIKET_SERVIS, ISARET_
 export const masaCercevesi = (seviye: number): Cerceve => markerFrame(masaEtiketi(seviye), MASA_ISARET_R, true);
 export const padCercevesi = (label: string): Cerceve => markerFrame(label, ISARET_R, false);
 export const lavaboCercevesi = (): Cerceve => markerFrame(ETIKET_LAVABO, ISARET_R, false);
+/** K4: Usta noktası masa noktasının biçimiyle aynı (G-14 ②) — tetik de aynı dikdörtgen. */
+export const ETIKET_USTA = 'YÜKSELT';
+export const ustaCercevesi = (): Cerceve => markerFrame(ETIKET_USTA, MASA_ISARET_R, true);

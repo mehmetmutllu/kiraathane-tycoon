@@ -830,6 +830,9 @@ function serveSystem(c: TickCtx): void {
     }
   }
   // Bekleyen masaya yaklaşınca tepsiden ÜRÜN bırak → müşteri içmeye/yemeye başlar (toplu servis).
+  // K5 (T9c · D-147): tetik masanın GÖVDESİNDEN, kirli kap toplamayla AYNI pay. Eskiden masa
+  // MERKEZİNDEN 1,6 br daireydi; dörtlü masanın köşesine dayanan oyuncu merkeze ~1,86 br'de
+  // kalıyor, çay bırakılmıyordu (yanaşık yönlerin %69,3'ü — docs/servis-raporu-t9c.md).
   // B2: müşterinin istediği ürün ARTIK MÜŞTERİNİN KENDİSİNDE (n.product) — eskiden masasının
   // bölgesinden okunuyordu. Tepside O ürün yoksa servis OLMAZ (çayla tost müşterisi doyurulamaz).
   if (tray > 0 || trayFood > 0) {
@@ -838,7 +841,7 @@ function serveSystem(c: TickCtx): void {
       if (n.state !== 'waitingForTea') continue;
       const wantsFood = n.product === 'tost';
       if (wantsFood ? trayFood <= 0 : tray <= 0) continue;
-      if (dist2D(player, LAYOUT.tables[n.tableIndex].table) < C.serving.serveRadius) {
+      if (atTableBody(player[0], player[2], n.tableIndex, C.cups.collectReach)) {
         n.state = 'drinking';
         n.timer = C.npc.eatTime;
         if (wantsFood) trayFood -= 1;
@@ -999,7 +1002,9 @@ function waiterSystem(c: TickCtx): void {
         }
       }
     } else if (
-      w.tray + w.trayFood < wTrayCap && waiting.length > 0 && !demlemeKilidi &&
+      // D6 (T9c): tepsi DOLU ama bekleyenlerin hiçbiri o ürünü istemiyorsa (2 çay taşıyan garson,
+      // yalnız tost bekleyenler) garson eskiden yeni bir çay müşterisi gelene dek boşta kalıyordu.
+      (w.tray + w.trayFood < wTrayCap || !waiting.some(canServe)) && waiting.length > 0 && !demlemeKilidi &&
       (w.dirtyCarry ?? 0) + (w.dirtyCarryFood ?? 0) === 0
     ) {
       if (w.claim != null) { claimed.delete(w.claim); w.claim = undefined; } // yüklemeye dönen üstlenmez
@@ -1007,6 +1012,9 @@ function waiterSystem(c: TickCtx): void {
       if (navStep(w.pos, place.pickup, wStep, navGrid, REACH_PICKUP, player, obstacles)) {
         // Talep sırası: en acil bekleyenin ürünü önce; kalan yere diğer üründen doldurur.
         const order = [...waiting].sort((a, b) => a.timer - b.timer).map((n) => n.product);
+        // D6: kimsenin istemediği ürün tezgâha GERİ konur (bardağıyla — korunum değişmez).
+        if (!order.includes('tea') && w.tray > 0) { ready.tea += w.tray; w.tray = 0; }
+        if (!order.includes('tost') && w.trayFood > 0) { ready.tost += w.trayFood; w.trayFood = 0; }
         for (const prod of [...order, 'tea' as const, 'tost' as const]) {
           const free = wTrayCap - w.tray - w.trayFood;
           if (free <= 0) break;
@@ -1550,7 +1558,7 @@ function questSystem(c: TickCtx): void {
           // charStat görevi + spotlight bekliyorsa kamera panı İPTAL — ekranda tek yönlendirme (spotlight).
           c.camFocus = null;
         } else {
-          const fp = questFocusPos(q.target, tableLevels, out.tables.length, out.areasOpen, q.area ?? 0);
+          const fp = questFocusPos(q.target, tableLevels, out.tables.length, out.areasOpen, q.area ?? 0, tableUpgradeTarget({ ...c.padGate, tableLevels }));
           if (fp) requestFocus(fp, 2); // charStat'ta 3D hedef yok → kamera sıçramaz (buton efekti yönlendirir)
         }
       }

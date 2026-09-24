@@ -105,6 +105,26 @@ export function levelRewardAmount(level: number, sonKazanc: number): number {
  *
  * Döner: canlı masanın GLOBAL indeksi, ya da alınacak masa yükseltmesi kalmadıysa `null`.
  */
+/** Oyun durumundan kapı görüntüsü (görev odağı · A2). `tick` kendi `padGate`ini kurar. */
+export function gateOf(s: {
+  padsDone: string[];
+  tables: number;
+  stationLevels: number[];
+  lifetime: { toNumber(): number };
+  tableLevels: number[];
+  stats: SaveStats;
+}): GateState {
+  return {
+    padsDone: s.padsDone,
+    tables: s.tables,
+    stationLevel: s.stationLevels[0],
+    lifetime: s.lifetime.toNumber(),
+    waiterServed: s.stats.waiterServed,
+    waiterServedByService: s.stats.waiterServedByService,
+    tableLevels: s.tableLevels,
+  };
+}
+
 export function tableUpgradeTarget(g: GateState): number | null {
   const levels = g.tableLevels ?? [];
   const max = tableSoftMaxLevel();
@@ -577,6 +597,7 @@ export function questCounterValue(target: QuestTarget, stats: SaveStats): number
     case 'serveTea':
       // ALAN'lı hedef (v23): yalnız o alandaki el servisi sayılır ("Yeni salonda 5 çay" gerçek olsun).
       return target.area != null ? stats.teasServedByArea[target.area] ?? 0 : stats.teasServed;
+    case 'serveTost': return stats.tostServed;
     case 'collectCoin': return stats.coinsCollected;
     case 'washDish': return stats.dishesWashed;
     default: return null;
@@ -665,6 +686,10 @@ export function questFocusPos(
   tables: number,
   areasOpen: number,
   area = 0,
+  /** T9c/A2: O AN CANLI masa (`tableUpgradeTarget`). Masa görevinde ok/kamera buraya bakar — canlı
+   *  nokta "başladığını bitir" kuralıyla tavana kadar aynı masada kalır; ilk-eksik masaya bakan ok
+   *  boş zemini gösteriyordu. Verilmezse (eski çağıran) ilk-eksik masa. */
+  hedefMasa?: number | null,
 ): RVec3 | null {
   const a = Math.min(Math.max(area, 0), MAX_AREAS - 1);
   // B3-1: servisin YERİ areasOpen'a bağlı (3. Alan açılınca arka banda taşınır) → hedef noktalar
@@ -681,6 +706,7 @@ export function questFocusPos(
     case 'lavaboLevel': return LAVABO.spot; // oda açılınca pad'in yerini yükseltme noktası alır
     case 'tableLevel':
     case 'tablesAtLevel': {
+      if (hedefMasa != null && hedefMasa < tables) return LAYOUT.tables[hedefMasa].upgradeSpot;
       // O alandan başlayarak hedef seviyenin ALTINDAKİ ilk açık masanın yükseltme noktası
       // (tablesAtLevel v27: oyuncuyu gerçekten yükseltilecek masaya götürür).
       const goal = target.type === 'tablesAtLevel' ? target.level : tableSoftMaxLevel();
@@ -692,7 +718,8 @@ export function questFocusPos(
     }
     // serveTea → o alanın OCAĞI/TEZGÂHI (2026-06-12 telefon feedback: salon ortası boştu —
     // özellikle yeni açılan salonda kamera "hiçbir şeye" bakıyordu); collectCoin → masa bölgesi ortası.
-    case 'serveTea': return sp.station;
+    case 'serveTea':
+    case 'serveTost': return sp.station;
     default: {
       // B3-1: alanlar eş olmadığından "şablon + sıra kaydırması" kalktı — alanın KENDİ merkezi.
       const ab = LAYOUT.areaBounds[a];

@@ -52,9 +52,13 @@ const f1 = (n) => (Math.round(n * 10) / 10).toFixed(1).replace('.', ',');
 const f2 = (n) => (Math.round(n * 100) / 100).toFixed(2).replace('.', ',');
 const f3 = (n) => (Math.round(n * 1000) / 1000).toFixed(3).replace('.', ',');
 const tr = (n) => Math.round(n).toLocaleString('tr-TR');
+/** K10 (D-146): çift uzunlukta İKİ ORTANIN ortalaması. Eskiden üst orta alınıyordu (10 dilimde
+ *  6.) → kare işi 44,75/35,25 yerine 45,3/35,6 okundu, kazanç −%21,4 yazıldı (doğrusu −%21,2). */
 const ortanca = (a) => {
   const s = [...a].sort((x, y) => x - y);
-  return s.length ? s[Math.floor(s.length / 2)] : 0;
+  const n = s.length;
+  if (!n) return 0;
+  return n % 2 ? s[(n - 1) / 2] : (s[n / 2 - 1] + s[n / 2]) / 2;
 };
 
 function padKimlikleri() {
@@ -278,6 +282,10 @@ async function main() {
     yaz('='.repeat(78));
     yaz('T9a NAV ONBELLEK A/B (tarayici) · kip=' + rapor.kip + ' · ' + rapor.tarih);
     yaz('GPU: ' + surucu);
+    // K10: "telefon" etiketi gerçek cihaz okutuyordu — bu MASAÜSTÜ GPU + CPU kısması öykünmesidir.
+    yaz('Cihaz: ' + (CPU_KISMA > 1
+      ? 'telefon OYKUNMESI — masaustu GPU (kisilmadi) + CPU x' + CPU_KISMA + ' kisma; gercek cihaz DEGIL'
+      : 'masaustu, kisma yok'));
     yaz('Kadraj: ' + TELEFON.width + 'x' + TELEFON.height + ' @ dpr ' + TELEFON.deviceScaleFactor
       + ' · CPU ' + (CPU_KISMA === 1 ? 'KISILMADI (olcum denetimi)' : CPU_KISMA + 'x kisik'));
     yaz('Golge: ' + (golgeAcik ? 'ACIK' : 'KAPALI') + ' (istenen: ' + GOLGE + ') — TUM KOLLARDA AYNI');
@@ -370,8 +378,11 @@ async function main() {
     yaz('  toplam cagri   : uretim ' + tr(toplam(A, 'navN')) + ' · onbellek ' + tr(toplam(B, 'navN')));
     yaz('  nav ms/CAGRI   : uretim ' + f3(navCagri.a) + ' · onbellek ' + f3(navCagri.b) + '  → onbellek/uretim = x' + f2(oranCagri));
     yaz('  nav ms/KARE    : uretim ' + f2(navKare.a) + ' · onbellek ' + f2(navKare.b) + '  → onbellek/uretim = x' + f2(oranKare));
-    yaz('  NODE (T9a perf, nav ms/kare): x' + f2(0.281 / 3.912) + ' → tarayici '
-      + (oranKare <= 0.25 ? 'DOGRULUYOR' : oranKare <= 0.6 ? 'KISMEN dogruluyor' : 'DOGRULAMIYOR'));
+    // K10: eşik YÖNÜ söyler; büyüklük farkı ayrıca basılır (0,24 "doğruluyor" iken node 3,4 kat keskindi).
+    const nodeOran = 0.281 / 3.912;
+    yaz('  NODE (T9a perf, nav ms/kare): x' + f2(nodeOran) + ' → tarayici YONU '
+      + (oranKare < 1 ? 'dogruluyor' : 'DOGRULAMIYOR') + ' · buyukluk: tarayici/node = '
+      + f1(oranKare / nodeOran) + ' kat');
     yaz();
 
     yaz('§4 KARE — kolun kareye yansiyani');
@@ -391,11 +402,12 @@ async function main() {
       + '  → onbellek/uretim = x' + f2(ayirma.a > 0 ? ayirma.b / ayirma.a : 0));
     yaz('  cagri basi       : uretim ' + f1(ayirmaCagri.a) + ' KB · onbellek ' + f1(ayirmaCagri.b) + ' KB'
       + '   (onbellek anahtari her cagrida bir dizge uretir)');
+    // K10: yorum cümlesi sabit metindi ve veriyle çelişiyordu (önbellek DAHA AZ ayırdığı hâlde
+    // "anahtar dizgesi ayırması" anlatılıyordu). Artık işaret veriden okunur.
     const ayirmaFark = ayirmaCagri.b - ayirmaCagri.a;
-    yaz('  → fark ' + f1(ayirmaFark) + ' KB/cagri. Bu ayirma GERCEKTEN oluyor; '
-      + 'tarayicinin cagri-ici olcumunde gorunmuyor olmasi, bedelinin (GC) o araligin DISINDA');
-    yaz('    kaldigi anlamina gelir — yani kol node un gosterdigi kadar ucuzlatmasa da');
-    yaz('    ayirma yukunu gercekten kaldiriyor.');
+    yaz('  → fark ' + f1(ayirmaFark) + ' KB/cagri: ' + (ayirmaFark > 0
+      ? 'onbellek cagri basi DAHA COK ayiriyor — anahtar dizgesinin bedeli atlanan aramadan buyuk.'
+      : 'onbellek cagri basi DAHA AZ ayiriyor — atlanan yol aramasinin ayirmasi anahtar dizgesinden buyuk.'));
     yaz();
 
     rapor.dilimler = olcumler;

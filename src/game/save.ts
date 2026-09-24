@@ -8,6 +8,7 @@ import {
   type WaiterUpgrades,
 } from '../config/economy.config';
 import { activeQuestIndex, completedQuestIds } from './questProgress';
+import type { LevelUpOdul } from './rules';
 
 /**
  * KAYIT ŞEMASI SÜRÜMÜ. Bir denge sayısı değil, bu dosyanın kendi kavramı — bu yüzden
@@ -214,6 +215,9 @@ export interface SaveData {
    * Mekanik (kirli bardak) ile GÖREV aynı anda doğuyordu; arada öğretme yoktu.
    */
   washTipSeen: boolean;
+  /** T9c/A7: alınmamış seviye ödülü (yalnız ₺ > 0 iken). Ekran açıkken uygulama kapanırsa ödül
+   *  yanıyordu; yüklemede ekran geri gelir. Additive → sürüm ARTMADI (`washTipSeen` deseni). */
+  levelUp: LevelUpOdul | null;
   lastSaved: number; // epoch ms
 }
 
@@ -258,6 +262,7 @@ export function defaultSave(): SaveData {
     charPanelSeen: false,
     trayTipSeen: false,
     washTipSeen: false,
+    levelUp: null,
     lastSaved: Date.now(),
   };
 }
@@ -343,6 +348,45 @@ function migrateV31(raw: Record<string, unknown>): Record<string, unknown> | nul
   };
 }
 
+/**
+ * T9c/A6 — kaydı varsayılanla DERİN birleştirir. Yüzeysel `...` iç alanları kurtarmıyordu: eksik
+ * `stats.waiterServedByService` her karede TypeError, `padsDone: null` init'te çöküş (beyaz ekran).
+ * Kural: nesne → anahtar anahtar iner (kayıttaki fazla anahtarlar korunur — `padFills` gibi
+ * sözlükler); dizi → kayıttaki dizi ya da varsayılan; ilkel → tür tutuyorsa kayıt, tutmuyorsa
+ * varsayılan (sayı ↔ dizge Decimal alanları için çevrilir). Varsayılanı `null` olan alan kaydı
+ * olduğu gibi alır (anlamını okuyan doğrular).
+ */
+export function derinBirlestir(def: unknown, raw: unknown): unknown {
+  if (raw === undefined) return def;
+  if (def === null || def === undefined) return raw;
+  if (Array.isArray(def)) return Array.isArray(raw) ? raw : def;
+  if (typeof def === 'object') {
+    if (raw === null || typeof raw !== 'object' || Array.isArray(raw)) return def;
+    const out: Record<string, unknown> = { ...(def as Record<string, unknown>) };
+    for (const [k, v] of Object.entries(raw as Record<string, unknown>)) {
+      out[k] = k in out ? derinBirlestir(out[k], v) : v;
+    }
+    return out;
+  }
+  if (typeof def === 'number') {
+    const n = typeof raw === 'string' ? Number(raw) : raw;
+    return typeof n === 'number' && Number.isFinite(n) ? n : def;
+  }
+  if (typeof def === 'string' && typeof raw === 'number' && Number.isFinite(raw)) return String(raw);
+  return typeof raw === typeof def ? raw : def;
+}
+
+/**
+ * T9c/A5 — YAZMA KİLİDİ. Kayıt bu paketten DAHA YENİ sürümle yazılmışsa (eski APK'ya geri dönüş)
+ * eskiden `resetKeepingSettings` ilerlemeyi siliyor, 2 sn sonra periyodik kayıt da yeni kaydın
+ * üstüne yazıyordu. Artık kayıt en iyi çabayla okunur ve bu oturumda DİSKE YAZILMAZ — yeni sürüm
+ * yüklendiğinde kayıt olduğu gibi durur. Kilidi yalnız bilinçli sıfırlama (`clearSave`) açar.
+ */
+let yazmaKilidi = false;
+export function kayitKilitli(): boolean {
+  return yazmaKilidi;
+}
+
 export function loadSave(): SaveData {
   try {
     const raw = localStorage.getItem(KEY);
@@ -350,22 +394,23 @@ export function loadSave(): SaveData {
     const parsed = JSON.parse(raw) as Record<string, unknown>;
     // Ayarlar HER yolda birleştirilir: yüzeysel yayılım eski kaydın eksik ayar alanlarını
     // `undefined` bırakırdı ve göç bunu yakalayamazdı (sürüm zaten güncel). Bkz. `ayarlariBirlestir`.
-    const ayarla = (d: SaveData): SaveData => ({ ...d, settings: ayarlariBirlestir(d.settings) });
-    if (parsed.saveVersion === SAVE_VERSION) {
-      return ayarla({ ...defaultSave(), ...(parsed as object) } as SaveData);
-    }
+    const ayarla = (d: Record<string, unknown>): SaveData => {
+      const b = derinBirlestir(defaultSave(), d) as SaveData;
+      return { ...b, saveVersion: SAVE_VERSION, settings: ayarlariBirlestir(d.settings) };
+    };
+    yazmaKilidi = typeof parsed.saveVersion === 'number' && parsed.saveVersion > SAVE_VERSION;
+    if (parsed.saveVersion === SAVE_VERSION || yazmaKilidi) return ayarla(parsed);
     // Göç zinciri ADIM ADIM: her göç bir sonraki sürümü üretir (v31 → v33 → v34, v32 → v33 → v34).
     let d: Record<string, unknown> | null = parsed;
     for (const goc of [migrateV31, migrateV32, migrateV33]) d = (d && goc(d)) ?? d;
-    return d && d.saveVersion === SAVE_VERSION
-      ? ayarla({ ...defaultSave(), ...(d as object) } as SaveData)
-      : resetKeepingSettings(parsed);
+    return d && d.saveVersion === SAVE_VERSION ? ayarla(d) : resetKeepingSettings(parsed);
   } catch {
     return defaultSave();
   }
 }
 
 export function writeSave(data: SaveData): void {
+  if (yazmaKilidi) return;
   try {
     localStorage.setItem(KEY, JSON.stringify({ ...data, lastSaved: Date.now() }));
   } catch {
@@ -374,6 +419,7 @@ export function writeSave(data: SaveData): void {
 }
 
 export function clearSave(): void {
+  yazmaKilidi = false;
   try {
     localStorage.removeItem(KEY);
   } catch {
