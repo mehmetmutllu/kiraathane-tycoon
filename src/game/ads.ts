@@ -54,7 +54,7 @@ export function sahteArkaUc(): ReklamArkaUcu {
 }
 
 async function admobArkaUcu(): Promise<ReklamArkaUcu> {
-  const { AdMob, AdmobConsentStatus, MaxAdContentRating, InterstitialAdPluginEvents, RewardAdPluginEvents } =
+  const { AdMob, AdmobConsentStatus, InterstitialAdPluginEvents, RewardAdPluginEvents } =
     await import('@capacitor-community/admob');
   const test = adsConfig.test;
   /** `show*` çağrısı reklam AÇILINCA döner; oyun reklam KAPANANA dek beklemeli. */
@@ -72,18 +72,14 @@ async function admobArkaUcu(): Promise<ReklamArkaUcu> {
   };
   return {
     kur: async () => {
-      await AdMob.initialize({
-        initializeForTesting: test,
-        tagForChildDirectedTreatment: adsConfig.cocuk.tagForChildDirectedTreatment,
-        tagForUnderAgeOfConsent: adsConfig.cocuk.tagForUnderAgeOfConsent,
-        maxAdContentRating: MaxAdContentRating[adsConfig.cocuk.maxAdContentRating],
-      });
-      // UMP (GDPR/GDPR-K): rıza gerekiyorsa Google'ın kendi formu. Yaş etiketi rıza isteğine de gider.
-      const bilgi = await AdMob.requestConsentInfo({ tagForUnderAgeOfConsent: adsConfig.cocuk.tagForUnderAgeOfConsent });
+      // D-151: SDK'ya kısıt bayrağı verilmez — içerik AdMob panelinden yönetiliyor (ads.config.ts).
+      await AdMob.initialize({ initializeForTesting: test });
+      // UMP (GDPR): rıza gerekiyorsa Google'ın kendi formu — AB/UK'de rızasız reklam hiç gelmez.
+      const bilgi = await AdMob.requestConsentInfo();
       if (bilgi.status === AdmobConsentStatus.REQUIRED && bilgi.isConsentFormAvailable) await AdMob.showConsentForm();
     },
     gecisliHazirla: async () => {
-      await AdMob.prepareInterstitial({ adId: adsConfig.birim.gecisli, isTesting: test, npa: true });
+      await AdMob.prepareInterstitial({ adId: adsConfig.birim.gecisli, isTesting: test });
       return true;
     },
     gecisliGoster: async () => {
@@ -92,7 +88,7 @@ async function admobArkaUcu(): Promise<ReklamArkaUcu> {
       return true;
     },
     odulluHazirla: async () => {
-      await AdMob.prepareRewardVideoAd({ adId: adsConfig.birim.odullu, isTesting: test, npa: true });
+      await AdMob.prepareRewardVideoAd({ adId: adsConfig.birim.odullu, isTesting: test });
       return true;
     },
     odulluGoster: async () => {

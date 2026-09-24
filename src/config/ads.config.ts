@@ -19,10 +19,9 @@ export const adsConfig = {
    * ödül ekranının ardından reklam gelmez (kullanıcı: "ala bastıktan sonra gelmesin").
    */
   gecisli: { sogumaSn: 180 },
-  /** Çocuk-güvenli / sınırlı veri (monetization.md §3). AAID izni manifestten ayrıca çıkarıldı. */
-  cocuk: {
-    tagForChildDirectedTreatment: true,
-    tagForUnderAgeOfConsent: true,
-    maxAdContentRating: 'General',
-  },
+  /*
+   * SDK tarafında KISIT YOK (D-151, kullanıcı kararı): çocuk işareti · yaş etiketi · içerik derecesi ·
+   * kişiselleştirilmemiş reklam zorlaması yazılmaz. Reklam içeriği AdMob panelindeki engelleme
+   * ayarlarıyla yönetilir; koda buradan kısıt eklenmez. Rıza formu (UMP) kısıt değil yasal ön koşul.
+   */
 } as const;

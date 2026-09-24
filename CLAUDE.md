@@ -55,11 +55,12 @@ src/components/ui/     HUD, joystick
 - **Tek stil kilidi:** Quaternius/Kenney (CC0). Karışık sanatçı yasak.
 - **Lisans:** belirsiz hiçbir asset commit'lenmez. Manifest: `public/assets/README.md`.
 
-## Monetizasyon kuralları (etik + çocuk-güvenli — zorunlu)
+## Monetizasyon kuralları (etik — zorunlu)
 - Interstitial sadece doğal aralarda, sıklık-sınırlı, eylem ortasında asla.
 - Rewarded hep opsiyonel, ilerleme için zorunlu değil (yalnız hızlandırır).
 - "Reklamları Kaldır" IAP'si ödüllüye dokunmaz. Gerçek parayla loot-box YOK.
-- Reklam SDK'sı çocuğa-yönelik/sınırlı-veri modunda. Detay: `docs/monetization.md`.
+- Reklam SDK'sına kısıt bayrağı konmaz (çocuk işareti, içerik derecesi, npa); içerik AdMob panelindeki
+  engellemeyle yönetilir (D-151). Rıza formu (UMP) kalır. Detay: `docs/monetization.md`.
 
 ## Oturum bitirme protokolü ("oturumu bitir" denince veya anlamlı parça bitince)
 1. `progress.md` + `activeContext.md` güncelle.

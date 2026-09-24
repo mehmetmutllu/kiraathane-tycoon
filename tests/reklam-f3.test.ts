@@ -1,7 +1,7 @@
 /**
  * BEKÇİ — F3 reklam altyapısı (D-144 · `docs/reklam-raporu-f3.md`).
  * Geçişli C1′: soğuma 3 dk KURAR, panel kapanışı PATLATIR, ödülden sonra ASLA · banner YOK ·
- * çocuk-güvenli bayraklar · SDK sabit sürüm · "2× al" düğmesi "Al"dan ayrı yol.
+ * SDK'da kısıt yok (D-151) · SDK sabit sürüm · "2× al" düğmesi "Al"dan ayrı yol.
  */
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
@@ -104,10 +104,12 @@ describe('reklam katmanı akışı (sahte arka uç)', () => {
 });
 
 describe('yapılandırma bekçileri', () => {
-  it('çocuk-güvenli bayraklar açık, içerik derecesi G', () => {
-    expect(adsConfig.cocuk.tagForChildDirectedTreatment).toBe(true);
-    expect(adsConfig.cocuk.tagForUnderAgeOfConsent).toBe(true);
-    expect(adsConfig.cocuk.maxAdContentRating).toBe('General');
+  it('SDK kısıt bayrağı almıyor — içerik AdMob panelinden (D-151)', () => {
+    const kod = oku('src/game/ads.ts') + oku('src/config/ads.config.ts');
+    for (const bayrak of ['tagForChildDirectedTreatment:', 'tagForUnderAgeOfConsent:', 'maxAdContentRating:', 'npa:'])
+      expect(kod, bayrak).not.toContain(bayrak);
+    // Rıza formu kısıt değil yasal ön koşul: kalmalı.
+    expect(oku('src/game/ads.ts')).toContain('requestConsentInfo');
   });
 
   it('eklenti A1, tam sürüm sabit', () => {
@@ -121,16 +123,13 @@ describe('yapılandırma bekçileri', () => {
     expect(g).toMatch(/userMessagingPlatformVersion = '\d+\.\d+\.\d+'/);
   });
 
-  it('manifest: uygulama kimliği var, AAID izni çıkarılıyor', () => {
+  it('manifest: uygulama kimliği var, reklam izinleri çıkarılmıyor (D-151)', () => {
     const m = oku('android/app/src/main/AndroidManifest.xml');
     expect(m).toContain('com.google.android.gms.ads.APPLICATION_ID');
-    expect(m).toMatch(/permission\.AD_ID"\s+tools:node="remove"/);
-    for (const izin of ['ACCESS_ADSERVICES_AD_ID', 'ACCESS_ADSERVICES_ATTRIBUTION', 'ACCESS_ADSERVICES_TOPICS'])
-      expect(m, izin).toMatch(new RegExp(`permission\\.${izin}"\\s+tools:node="remove"`));
+    expect(m).not.toContain('tools:node="remove"');
     // Birleştirici bozuk XML'de derlemeyi durdurur; eklemede bir kez çift kapanış kaçtı.
     expect(m.match(/<application\s/g)?.length).toBe(1);
     expect(m.match(/<\/application>/g)?.length).toBe(1);
-    expect(m).toContain('xmlns:tools="http://schemas.android.com/tools"');
   });
 
   it('banner hiçbir yerde çağrılmıyor (kalıcı karar)', () => {

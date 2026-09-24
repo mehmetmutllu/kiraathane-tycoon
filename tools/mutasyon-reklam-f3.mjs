@@ -2,7 +2,7 @@
  * mutasyon-reklam-f3.mjs — F3 reklam bekçisinin MUTASYON SINAVI (D-144 · D-149).
  *
  * Geçişli kuralına (soğuma · ödül bayrağı · açılış), arka uç sağlamlığına ve yapılandırmaya
- * (çocuk bayrağı · SDK sabit sürüm · AAID · 2× düğmesi) bilerek kusur sokulur;
+ * (kısıt bayrağının geri gelmesi · SDK sabit sürüm · reklam izni · 2× düğmesi) bilerek kusur sokulur;
  * `tests/reklam-f3.test.ts` düşmelidir. Gövde `mutasyon-arayuz-t9d.mjs`ten.
  *
  * Koşu:  node tools/mutasyon-reklam-f3.mjs
@@ -56,11 +56,11 @@ const MUTASYONLAR = [
     ne: 'tek odul sonraki tum kapanislari da reklamsiz yapar (ya da tersi)',
   },
   {
-    ad: 'M6 cocuk bayragi kapali',
-    dosya: 'src/config/ads.config.ts',
-    bul: 'tagForChildDirectedTreatment: true,',
-    koy: 'tagForChildDirectedTreatment: false,',
-    ne: 'monetization.md 3 ihlali',
+    ad: 'M6 cocuk bayragi geri geldi',
+    dosya: 'src/game/ads.ts',
+    bul: 'await AdMob.initialize({ initializeForTesting: test });',
+    koy: 'await AdMob.initialize({ initializeForTesting: test, tagForChildDirectedTreatment: true });',
+    ne: 'D-151 ihlali: CPM duser, kisit AdMob panelinde olmaliydi',
   },
   {
     ad: 'M7 SDK surumu yine dinamik',
@@ -70,11 +70,11 @@ const MUTASYONLAR = [
     ne: 'iki derleme iki farkli SDK alabilir',
   },
   {
-    ad: 'M8 AAID izni geri geliyor',
+    ad: 'M8 reklam kimligi izni yine cikariliyor',
     dosya: 'android/app/src/main/AndroidManifest.xml',
-    bul: 'permission.AD_ID" tools:node="remove"',
-    koy: 'permission.AD_ID"',
-    ne: 'cocuk-guvenli kipte reklam kimligi okunur',
+    bul: '<uses-permission android:name="android.permission.INTERNET" />',
+    koy: '<uses-permission android:name="android.permission.INTERNET" />\n    <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove" />',
+    ne: 'hedefleme kapanir, CPM duser (D-151)',
   },
   {
     ad: 'M9 2x dugmesi yine Al in islevi',

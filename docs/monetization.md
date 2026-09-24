@@ -40,12 +40,15 @@ Yeniden değerlendirme koşulu: B4'ten sonra 20 dk'yı aşan tek bir alım kalı
 - Kurallar: net fiyat, **manipülatif desen yok**, geri sayım/sahte kıtlık baskısı yok,
   **gerçek parayla loot-box / kumar mekaniği YOK**.
 
-## 3. Çocuk-güvenliği (zorunlu)
-- Bu türü çocuklar oynar → reklam SDK'sı **çocuğa-yönelik / sınırlı-veri** modunda
-  yapılandırılır (kişiselleştirilmemiş reklam, yaşa uygun içerik filtresi).
-- AdMob: `tagForChildDirectedTreatment` + `tagForUnderAgeOfConsent`; içerik derecesi G.
-- Yayın (Faz 8) görevleri: mağaza **aile politikaları**, **COPPA** (ABD) ve
-  **GDPR-K** (AB çocuk) uyumu, gizlilik politikası, veri toplama beyanı.
+## 3. Reklam içeriği ve veri (D-151 — kullanıcı kararı, 2026-09-24)
+- **SDK tarafında kısıt YOK:** `tagForChildDirectedTreatment`, `tagForUnderAgeOfConsent`,
+  `maxAdContentRating`, `npa` yazılmaz; reklam kimliği ve Privacy Sandbox izinleri manifestten çıkarılmaz.
+  Gerekçe: bu dördü birlikte CPM'i belirgin düşürüyor (kullanıcının başka uygulamada yaşadığı sorun).
+- **İçerik kısıtı AdMob panelinde:** kategori/reklamveren engelleme kullanıcı tarafından orada yönetilir.
+  Koda kendiliğinden kısıt eklenmez.
+- **Rıza formu (UMP) kalır:** kısıt değil yasal ön koşul; AB/UK'de rızasız reklam gelmez.
+- Yayın (F5) görevleri: Play Console **hedef kitle beyanı** bu kurulumla tutarlı olmalı
+  (13 yaş altını hedef kitleye eklemek Aile politikası şartlarını getirir), gizlilik politikası, veri güvenliği beyanı.
 
 ## 4. Teknik (Faz 5)
 - Reklam: Capacitor AdMob eklentisi (güncel/bakımlı olan doğrulanacak — örn. @capgo/capacitor-admob).

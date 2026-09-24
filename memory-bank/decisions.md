@@ -4776,3 +4776,15 @@ Sabit 200 ₺ geç oyunda eriyor. U∞ kuyruğu 1 günde bitiriyor; U1 0,71 gün
 **Sıra kilidi uyarısı (karma-commit, `26c16c6`) — biçim sapması, sıra uyuldu:** commit #1 `70e83df`+`61b4fff` karar-boş
 push'landı, paket sonra geldi. Rapor başlığı `## KARAR` yazılmıştı; araç `§Karar` arıyor → imza tanınmadı. Başlık düzeltildi
 (`reklam-raporu-f3.md` de aynı biçimde, dokunulmadı: o turun kodu D-149'da denge dosyasına dokunmadı).
+
+---
+
+## D-151 · Reklam SDK'sında kısıt yok — içerik AdMob panelinden (2026-09-24, D-149'un çocuk kipini geri alır)
+
+**Karar (kullanıcı):** *"her şeyi aç … kısıtlamaları zaten admob üzerinden reklam engelleme ile yapıyorum, kafana göre
+kısıt koyma."* Kalktı: çocuk işareti · yaş etiketi · içerik derecesi G · `npa` zorlaması · manifestten AD_ID ve
+Privacy Sandbox izinlerinin çıkarılması. Kaldı: UMP rıza formu (yasal ön koşul) · geçişli C1′ 3 dk (D-144).
+**Gerekçe:** dördü birlikte CPM'i belirgin düşürüyor; kullanıcı aynı sorunu başka uygulamada G derecesiyle yaşadı.
+`monetization.md` §3 ve `CLAUDE.md` güncellendi. Açık kalem: Play Console hedef kitle beyanı (F5).
+**Bekçi:** `tests/reklam-f3.test.ts` bayrakların GERİ GELMESİNİ yakalar · 10/10 mutasyon.
+
