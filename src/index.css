@@ -781,6 +781,14 @@ body,
   font-style: normal;
   color: var(--ok);
 }
+.eksik {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: var(--p2);
+  font-weight: 800;
+  color: var(--uyari);
+}
 .char-buy {
   pointer-events: auto;
   display: flex;
@@ -1269,6 +1277,10 @@ body,
   border: 2.5px solid var(--ot);
   border-radius: var(--r2);
   background: linear-gradient(180deg, var(--kart), var(--kart2));
+}
+.shop-eksik {
+  align-self: flex-end;
+  margin: 4px 4px 0 0;
 }
 .shop-name-row b {
   font-size: var(--p4);

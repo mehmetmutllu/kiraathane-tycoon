@@ -169,9 +169,9 @@ describe('S24 · çerçeve TEK yerde hesaplanır', () => {
   });
 
   it('8 · etiket üreticileri gerçekten seviye/sabit taşır', () => {
-    expect(masaEtiketi(0)).toBe('SV 1');
-    expect(masaEtiketi(11)).toBe('SV 12');
-    expect(ETIKET_SERVIS).toBe('YÜKSELT');
+    expect(masaEtiketi(0)).toBe('Sv 1');
+    expect(masaEtiketi(11)).toBe('Sv 12');
+    expect(ETIKET_SERVIS).toBe('Yükselt');
     expect(ETIKET_LAVABO.length).toBeGreaterThan(0);
   });
 });

@@ -89,8 +89,9 @@ describe('ekran kabuğu — K3 (D-106)', () => {
       expect(kod, `${ekran} Sheet kabuğunu kullanmıyor`).toContain(`testid="${ekran}"`);
       expect(kod, `${ekran} kendi kabuğunu kuruyor`).not.toContain(`data-testid="${ekran}"`);
     }
-    // Ham modal kabuğu yalnız GERÇEK modalin hakkı (ödül ekranı) — panellerin değil.
-    expect([...yorumsuz(oku(HUD)).matchAll(/className="modal-backdrop"/g)].length).toBe(1);
+    // Ham modal kabuğu yalnız GERÇEK modallerin hakkı — ödül ekranı + sıfırlama onayı (C5 · T9d,
+    // `window.confirm`in yerini aldı) — panellerin değil.
+    expect([...yorumsuz(oku(HUD)).matchAll(/className="modal-backdrop"/g)].length).toBe(2);
     expect(yorumsuz(oku(CHAR))).not.toContain('modal-backdrop');
   });
 
@@ -183,8 +184,8 @@ describe('ekran kabuğu — K3 (D-106)', () => {
     // metni `tick.ts` de okuyor (etiket uzunluğu çerçeve genişliğine, o da tetiğe giriyor).
     // Bu yüzden denetim kaynak metnine değil DAVRANIŞA bakar: üretilen yazı seviyeyi taşıyor mu
     // ve Scene gerçekten o üreticiyi mi çağırıyor.
-    expect(masaEtiketi(0)).toBe('SV 1');
-    expect(masaEtiketi(11)).toBe('SV 12');
+    expect(masaEtiketi(0)).toBe('Sv 1');
+    expect(masaEtiketi(11)).toBe('Sv 12');
     const kod = yorumsuz(oku(SCENE));
     expect(kod, 'masa noktası seviyeyi taşımalı').toMatch(/label=\{masaEtiketi\(lvl\)\}/);
   });

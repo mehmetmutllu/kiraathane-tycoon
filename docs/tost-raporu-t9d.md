@@ -1,6 +1,7 @@
 # T9d — `q_tost5` ELLE SÜRESİ (D-147 ertelemesi)
 
 > Araç: `tools/olcum-tost-t9d.ts` → `docs/olcum-tost-t9d.txt` (tam koşu, 3 tohum, damgalar temiz).
+> Karar: **D-148** (2026-09-24) — V3: hedef 5 → 3 tost. Final tam koşu `docs/olcum-tost-t9d-final.txt` (V3 2,7 dk, damgalar temiz).
 > Commit #1 denge dosyasına dokunmadı; kollar aynı koşudan ve AFK koşusundan okundu, `tick.ts`e dikiş yok.
 
 ## §0 Soru
@@ -56,4 +57,12 @@ takılıyor. Bu yüzden süreler insanın ÜST sınırına yakın okunmalı.
 
 ## §Karar
 
-(boş — karar paketinde)
+**V3 (kullanıcı 2026-09-24, D-148).** `economy.config.ts`: `q_tost5` hedefi `serveTost` 5 → **3**, başlık
+"3 tost servis et". Kimlik `q_tost5` KALDI (kayıt sözleşmesi, D-088). Sayaç yine yalnız oyuncunun tostunu
+sayıyor: görev oyuncuya iş vermeye devam ediyor (V1 elendi, Bulgu 4). Öneri V0'dı (5 kalsın); kullanıcı
+saçılmayı (Bulgu 5) kısaltmayı seçti: en kötü tohum 8,9 → 3,9 dk.
+
+**Final tam koşu** (`docs/olcum-tost-t9d-final.txt`, D-148 yürürlükte): V3 **2,7 dk** (1,3 – 3,9), damgalar
+temiz. İlk üç tost görev bitmeden verildiği için sayı taban koşusuyla aynı. V0 satırı 5,4 dk'ya kaydı
+(4,8 / 1,4 / 9,9), çünkü görev 3'te bitince hat ilerliyor; artık yürürlükte olmayan kol.
+Bekçi `tests/arayuz-t9d.test.ts` (q_tost5 bloğu) · mutasyon M10 (`tools/mutasyon-arayuz-t9d.mjs`).

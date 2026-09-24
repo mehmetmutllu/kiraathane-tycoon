@@ -59,9 +59,9 @@ function yerlesim(label: string, r: number) {
 
 /** Oyunda gerçekten çizilen ok taşıyan işaretler (`Scene.tsx` çağrı yerleri). */
 const ISARETLER = [
-  { label: 'YÜKSELT', r: 0.85 }, // servis noktası (varsayılan yarıçap)
-  { label: 'SV 2', r: 0.6 }, // masa yükseltme noktası
-  { label: 'YÜKSELT', r: 0.6 }, // Usta noktası
+  { label: 'Yükselt', r: 0.85 }, // servis noktası (varsayılan yarıçap)
+  { label: 'Sv 2', r: 0.6 }, // masa yükseltme noktası
+  { label: 'Yükselt', r: 0.6 }, // Usta noktası
 ];
 
 describe('§O — yükseltme oku kendi bloğunun içinde', () => {

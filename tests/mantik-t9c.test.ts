@@ -66,10 +66,11 @@ describe('A1 — görev hattında bitmeyen görev yok', () => {
   it('q_tost5: tost sayacı görev tabanından DELTA ilerler', () => {
     const t = C.quests.find((q) => q.id === 'q_tost5')!.target as QuestTarget;
     const ctx = bosBaglam();
-    ctx.stats = { ...ctx.stats, tostServed: 7 };
+    // T9d (D-148): hedef 5 → 3 tost.
+    ctx.stats = { ...ctx.stats, tostServed: 5 };
     ctx.questBase = 3;
     expect(questTargetMet(t, ctx)).toBe(false);
-    ctx.stats = { ...ctx.stats, tostServed: 8 };
+    ctx.stats = { ...ctx.stats, tostServed: 6 };
     expect(questTargetMet(t, ctx)).toBe(true);
   });
 });

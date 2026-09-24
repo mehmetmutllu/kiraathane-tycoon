@@ -3,7 +3,7 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { KareTavani } from '../three/KareTavani';
 import type { Group } from 'three';
 import { useGame } from '../../game/store';
-import { fmt, D } from '../../game/decimal';
+import { fmt, sayi } from '../../game/decimal';
 import {
   charLevel,
   charValue,
@@ -89,13 +89,27 @@ function Onizleme({ kind, cap, dirty = 0, food = false }: {
   );
 }
 
+/**
+ * B12 (T9d · D-146): sönük alım NEDENİNİ söyler. Eskiden parası yetmeyen düğme yalnız griydi; oyuncu
+ * "neden basılmıyor"u sayıdan çıkarmak zorundaydı. Satırın altında kalan tutar yazar.
+ */
+function Eksik({ cost, cash }: { cost: number | null; cash: number }) {
+  if (cost == null || cash >= cost) return null;
+  return (
+    <span className="eksik" data-testid="eksik">
+      <CoinIcon size={12} />
+      {fmt(Math.ceil(cost - cash))} eksik
+    </span>
+  );
+}
+
 const STAT_ROWS: { stat: CharStat; name: string; unit: string; icon: React.ReactNode }[] = [
   { stat: 'tray', name: 'Tepsi', unit: 'bardak', icon: <TrayIcon size={34} /> },
   { stat: 'magnet', name: 'Para Mıknatısı', unit: 'alan', icon: <MagnetIcon size={34} /> },
   { stat: 'speed', name: 'Hareket Hızı', unit: 'hız', icon: <BootIcon size={34} /> },
 ];
 
-type Tab = 'player' | 'waiter' | 'dish';
+export type Tab = 'player' | 'waiter' | 'dish';
 
 // Garson sekmesi içeriği: tepsi yükseltme satırı. Sekme yalnız garson tutulunca ÇİZİLİR
 // (turu-5 m.7: kilitli sekme hiç görünmez), o yüzden burada kilit dalı yok.
@@ -134,6 +148,7 @@ function WaiterTab() {
               </>
             )}
           </span>
+          <Eksik cost={cost} cash={cash} />
         </span>
         {cost != null ? (
           <button
@@ -143,11 +158,11 @@ function WaiterTab() {
             onClick={() => buyWaiterTray()}
           >
             <CoinIcon size={16} />
-            {fmt(D(cost))}
+            {fmt(cost)}
           </button>
         ) : (
           <span className="char-max" data-testid="waiter-buy">
-            MAX
+            Son seviye
           </span>
         )}
       </div>
@@ -158,12 +173,13 @@ function WaiterTab() {
           <span className="char-stat-val" data-testid="waiter-speed-val">
             {spdCost != null ? (
               <>
-                {spd} <i><ToIcon /> {spdNext}</i> hız
+                {sayi(spd)} <i><ToIcon /> {sayi(spdNext)}</i> hız
               </>
             ) : (
-              <>{spd} hız</>
+              <>{sayi(spd)} hız</>
             )}
           </span>
+          <Eksik cost={spdCost} cash={cash} />
         </span>
         {spdCost != null ? (
           <button
@@ -173,11 +189,11 @@ function WaiterTab() {
             onClick={() => buyWaiterSpeed()}
           >
             <CoinIcon size={16} />
-            {fmt(D(spdCost))}
+            {fmt(spdCost)}
           </button>
         ) : (
           <span className="char-max" data-testid="waiter-speed-buy">
-            MAX
+            Son seviye
           </span>
         )}
       </div>
@@ -216,6 +232,7 @@ function DishTab() {
               <>{cap} bardak</>
             )}
           </span>
+          <Eksik cost={cost} cash={cash} />
         </span>
         {cost != null ? (
           <button
@@ -225,11 +242,11 @@ function DishTab() {
             onClick={() => buyDishCarry()}
           >
             <CoinIcon size={16} />
-            {fmt(D(cost))}
+            {fmt(cost)}
           </button>
         ) : (
           <span className="char-max" data-testid="waiter-buy-dish">
-            MAX
+            Son seviye
           </span>
         )}
       </div>
@@ -240,12 +257,13 @@ function DishTab() {
           <span className="char-stat-val" data-testid="waiter-speed-val-dish">
             {spdCost != null ? (
               <>
-                {spd} <i><ToIcon /> {spdNext}</i> hız
+                {sayi(spd)} <i><ToIcon /> {sayi(spdNext)}</i> hız
               </>
             ) : (
-              <>{spd} hız</>
+              <>{sayi(spd)} hız</>
             )}
           </span>
+          <Eksik cost={spdCost} cash={cash} />
         </span>
         {spdCost != null ? (
           <button
@@ -255,11 +273,11 @@ function DishTab() {
             onClick={() => buyDishSpeed()}
           >
             <CoinIcon size={16} />
-            {fmt(D(spdCost))}
+            {fmt(spdCost)}
           </button>
         ) : (
           <span className="char-max" data-testid="waiter-speed-buy-dish">
-            MAX
+            Son seviye
           </span>
         )}
       </div>
@@ -270,7 +288,9 @@ function DishTab() {
   );
 }
 
-export function CharacterPanel({ onClose }: { onClose: () => void }) {
+/** `ilkSekme`: B4 (T9d) — garson görevi paneli GARSON sekmesinde açar. Oyuncu sekmesinde de "Tepsi"
+ *  satırı var; görev "garson tepsisi" derken panel oyuncununkinde açılınca yanlış alım yapılıyordu. */
+export function CharacterPanel({ onClose, ilkSekme = 'player' }: { onClose: () => void; ilkSekme?: Tab }) {
   const wallet = useGame((s) => s.wallet);
   const charUpgrades = useGame((s) => s.charUpgrades);
   const waiterUpgrades = useGame((s) => s.waiterUpgrades);
@@ -282,7 +302,7 @@ export function CharacterPanel({ onClose }: { onClose: () => void }) {
   const wallThemeByArea = useGame((s) => s.wallThemeByArea);
   const floorId = floorThemeByArea[0] ?? 'parke';
   const wallId = wallThemeByArea[0] ?? 'krem';
-  const [tab, setTab] = useState<Tab>('player');
+  const [secili, setTab] = useState<Tab>(ilkSekme);
   const cash = wallet.toNumber();
   const cap = trayCapacityFor(charUpgrades.tray);
   const lvl = charLevel(charUpgrades);
@@ -290,8 +310,11 @@ export function CharacterPanel({ onClose }: { onClose: () => void }) {
   const dishHired =
     padsDone.includes('dishwasher') || padsDone.includes('z2dishwasher') || padsDone.includes('z3dishwasher');
   // turu-5 m.7: tutulmamış karakterin sekmesi HİÇ çizilmez (kilitli mesaj yerine).
+  // İstenen sekme tutulmamış karakterinse (bozuk kayıt/erken görev) Oyuncu'ya düşer.
+  const tab: Tab =
+    (secili === 'waiter' && !waiterHired) || (secili === 'dish' && !dishHired) ? 'player' : secili;
   const tabs: { id: Tab; label: string }[] = [
-    { id: 'player', label: 'Oyuncu' },
+    { id: 'player', label: 'Çaycı' },
     ...(waiterHired ? [{ id: 'waiter' as Tab, label: 'Garson' }] : []),
     ...(dishHired ? [{ id: 'dish' as Tab, label: 'Bulaşıkçı' }] : []),
   ];
@@ -304,7 +327,7 @@ export function CharacterPanel({ onClose }: { onClose: () => void }) {
     >
       <div className="char-card">
         <div className="char-head">
-          <span className="char-lvl" data-testid="char-level" title="Karakter seviyesi">
+          <span className="char-lvl" data-testid="char-level" title="Çaycı seviyesi">
             {/* Karakter madalyonu — D-108: aksan disk + koyu kontur + içinde karakter.
                 Eskiden 48'lik kutuya 24 ızgaralı bir tepsi çiziliyordu ve köşeye sıkışıyordu. */}
             <svg width="34" height="34" viewBox="0 0 24 24" aria-hidden>
@@ -383,14 +406,15 @@ export function CharacterPanel({ onClose }: { onClose: () => void }) {
                     <span className="char-stat-val" data-testid={`char-val-${stat}`}>
                       {next != null ? (
                         <>
-                          {cur} <i><ToIcon /> {next}</i> {unit}
+                          {sayi(cur)} <i><ToIcon /> {sayi(next)}</i> {unit}
                         </>
                       ) : (
                         <>
-                          {cur} {unit}
+                          {sayi(cur)} {unit}
                         </>
                       )}
                     </span>
+                    <Eksik cost={cost} cash={cash} />
                   </span>
                   {cost != null ? (
                     <button
@@ -400,11 +424,11 @@ export function CharacterPanel({ onClose }: { onClose: () => void }) {
                       onClick={() => buyCharUpgrade(stat)}
                     >
                       <CoinIcon size={16} />
-                      {fmt(D(cost))}
+                      {fmt(cost)}
                     </button>
                   ) : (
                     <span className="char-max" data-testid={`char-buy-${stat}`}>
-                      MAX
+                      Son seviye
                     </span>
                   )}
                 </div>

@@ -206,6 +206,14 @@ export function trayCapacity(tier?: number): number {
  * HUD kendi başına sayı hesaplamaz: D3 öncesi `GoalsSheet` bunu içinde yapıyordu ve eşikleri de
  * kendi tutuyordu, yani hedefler ölçüm aracının göremediği bir yerde yaşıyordu.
  */
+/**
+ * B11 (T9d · D-146): EKRANDA görünen cüzdan. Çevrimdışı ₺ yüklemede cüzdana YAZILIR (kapatılırsa
+ * kaybolmasın — A7'nin dersi), ama ödül ekranı açıkken üst şerit onu henüz göstermez: "Al" basılınca
+ * sayı büyür. Eskiden şerit ödülü zaten içeriyordu ve "Al" hiçbir şey eklemiyor gibi görünüyordu.
+ */
+export const gorunenCuzdan = (s: { wallet: Decimal; offlineEarned: number }): Decimal =>
+  s.offlineEarned > 0 ? Decimal.max(0, s.wallet.sub(s.offlineEarned)) : s.wallet;
+
 export function goalMetricsOf(s: {
   stats: { teasServed: number; waiterServed: number; dishesWashed: number };
   padsDone: readonly string[];

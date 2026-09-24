@@ -3,6 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import { CylinderGeometry, MeshStandardMaterial, Object3D, type InstancedMesh } from 'three';
 import { useGame } from '../../game/store';
+import { fmt } from '../../game/decimal';
 
 // FPS (turu-5 m.13): geometry + material TÜM coin'lerde PAYLAŞIMLI (modül seviyesi). FPS Tier 2
 // (2026-06-13): tüm coin'ler TEK InstancedMesh'te → eskiden her coin ayrı draw-call (yerde ~215 →
@@ -28,7 +29,7 @@ function MoneyFloater({ x, z, value, onDone }: { x: number; z: number; value: nu
   return (
     <group position={[x, 1.3, z]}>
       <Html center distanceFactor={9} pointerEvents="none" zIndexRange={[5, 0]}>
-        <div className="floater">+{value}</div>
+        <div className="floater">+{fmt(value)}</div>
       </Html>
     </group>
   );

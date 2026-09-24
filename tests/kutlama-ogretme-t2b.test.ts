@@ -203,7 +203,7 @@ describe('G-64 · spotlight artık KONUŞUYOR', () => {
     expect(k).toMatch(/data-testid="char-tip"/);
     // Cümle görev başlığını TEKRARLAMAZ: kare (`t2b-3`) ilk hâlde aynı hedefi iki kez yazıyordu
     // (kartta ve bandın içinde). Kart NEREDE yapılacağını söyler, NE yapılacağını bant söyler.
-    expect(k).toMatch(/Bu yükseltme <u>Karakter<\/u> sekmesinde/);
+    expect(k).toMatch(/Bu yükseltme <u>Çaycı<\/u> sekmesinde/);
     expect(k).not.toMatch(/char-tip[\s\S]{0,200}\{quest\?\.title/);
   });
 

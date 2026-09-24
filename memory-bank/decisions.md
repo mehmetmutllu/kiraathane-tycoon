@@ -4736,3 +4736,16 @@ okunur, YAZILMAZ (kilit) · A6 kayıt varsayılanla DERİN birleşir · A7 ₺'l
 ileri döner · D6 işe yaramayan tepsi tezgâha iade · K4 Usta = çizilen çerçeve + kapatınca çıkana dek kilit ·
 K7 günlük hedef gün başında sabit · K8 yerdeki para kayıtta cüzdanda · K10 A/B ortancası (−%21,2) + "öykünme" etiketi.
 **Ertelendi:** q_tost5'in elle süresi (garsonlar tostu önce kapıyor) T9d'de ölçülür. Bekçi `tests/mantik-t9c.test.ts`.
+
+
+## D-148 · T9d arayüz/metin düzeltmeleri + q_tost5 = 3 tost (2026-09-24)
+
+**q_tost5 ölçüldü** (`docs/tost-raporu-t9d.md`): elle 5 tost ort. 5,1 dk ama 1,4–8,9 saçılıyor (garsonlar hazır tostu kapıyor);
+garsonunki de sayılırsa AFK 1,9 dk (görev anlamsızlaşır, elendi). **Kullanıcı V3'ü seçti: hedef 3** (ort. 2,7 · en kötü 3,9 dk;
+öneri 5'ti). Kimlik `q_tost5` kalır. Masa etiketi "Sv 2" kalır (oyuncu "Seviye"siyle konum ayırıyor).
+**Onaylı düzeltmeler (D-146):** K2 para tek biçimleyici `fmt` (tr "6.042" · "1,2 Mn", aşağı yuvarlar; dil `OYUN_DILI`) ·
+B7 çok-adımlı görevde "1/2" · B8 bant = zemin kalanı · B11 çevrimdışı ₺ "Al"dan sonra görünür (cüzdana yine yüklemede yazılır) ·
+B1 ipucunda gezinme karartmanın üstünde · B2 tepsi ipucu yalnız o ürünü isteyen kalmayınca · B4 garson görevi Garson sekmesinde ·
+B9 bildirim yığına binmez, iki satır · B12 "X eksik" · B13 dokunma kabuğu 44 px, gezinme etiketi 13 px · K1 hat sonu günlük bant ·
+K3 Sv 2-4 tek "Harika!" · K6 "Çaycı"/"Seviye" · C3 cümle düzeni ("Yükselt", "Sv 2" — harf sayısı aynı, tetik değişmedi) ·
+K9 "Bildirimler" kalktı (ayar kayıtta) · C5 sıfırlama onayı oyunun kutusunda. Bekçi `tests/arayuz-t9d.test.ts` · 10/10 mutasyon.

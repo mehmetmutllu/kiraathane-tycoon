@@ -88,3 +88,24 @@ export function geriTusu(kanal: EkranKanali, panelAcik: boolean): GeriEylemi {
   if (kanal != null) return 'ipucu';
   return 'kucult';
 }
+
+/**
+ * B2 (T9d · D-146): TEPSİ İPUCUNUN ANI. Eskiden koşul yalnız "tepside ürün var"dı ve ipucu İLK
+ * servisin ortasında ekranı karartıyordu: "Çayı müşteriye götür" görevi başlarken "Müşteri
+ * kalmadıysa tepsini boşaltabilirsin" — görevle çelişik, kutu servis edilecek masanın üstünde.
+ * İpucu cümlesinin kendisi koşulu söylüyor: elindeki ürünü isteyen müşteri KALMADIYSA. Yolda gelen
+ * (`toTable`) müşteri de sayılır — oturunca o ürünü isteyecek. İlk servis yapılmadan hiç çıkmaz.
+ */
+export function tepsiIpucuZamani(s: {
+  tray: number;
+  trayFood: number;
+  teasServed: number;
+  npcs: readonly { state: string; product: string }[];
+}): boolean {
+  if (s.tray + s.trayFood <= 0 || s.teasServed < 1) return false;
+  return !s.npcs.some(
+    (n) =>
+      (n.state === 'toTable' || n.state === 'waitingForTea') &&
+      (n.product === 'tost' ? s.trayFood > 0 : s.tray > 0),
+  );
+}

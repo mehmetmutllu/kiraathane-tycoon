@@ -847,7 +847,7 @@ function serveSystem(c: TickCtx): void {
         if (wantsFood) trayFood -= 1;
         else tray -= 1;
         stats.teasServed += 1;
-        if (wantsFood) stats.tostServed += 1; // "5 tost servis et" görevi (B2: alan sayacı değil)
+        if (wantsFood) stats.tostServed += 1; // "3 tost servis et" görevi (B2: alan sayacı değil)
         // Alan sayacı: hangi ALANDA servis verdiği (alanlı serveTea görevleri için) — ürünle ilgisi yok.
         const a = areaOfTable(n.tableIndex);
         stats.teasServedByArea[a] = (stats.teasServedByArea[a] ?? 0) + 1;

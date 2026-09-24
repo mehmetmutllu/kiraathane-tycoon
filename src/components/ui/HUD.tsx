@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
-import { useGame, goalMetricsOf, tableThemeUnlocked, tableSoftMaxLevel } from '../../game/store';
+import { useGame, goalMetricsOf, tableThemeUnlocked, tableSoftMaxLevel, gorunenCuzdan } from '../../game/store';
 import { claimableGoals, collectionBonus, goalViewsForPanel, type GoalView } from '../../game/goals';
 import { dailyViews, claimableDailyCount, type DailyQuestView } from '../../game/dailyQuests';
 import { dailyCountersOf } from '../../game/store';
-import { masterCost, toastCizilir, questInTransition } from '../../game/rules';
-import { ekranKanali, geriTusu } from '../../game/ekranKanali';
+import { masterCost, toastCizilir, questInTransition, type QuestView } from '../../game/rules';
+import { ekranKanali, geriTusu, tepsiIpucuZamani } from '../../game/ekranKanali';
 import { Capacitor } from '@capacitor/core';
 import { App as CapApp } from '@capacitor/app';
 import { screenPointer } from '../../game/screenPointer';
@@ -53,6 +53,16 @@ const oranYuzde = (oran: number): string =>
   `%${(oran * 100).toLocaleString('tr-TR', { maximumFractionDigits: 1 })}`;
 
 /**
+ * B8 (T9d · D-146): pad görevinde bant ZEMİNLE AYNI tutarı yazar — kalan (maliyet − dolum).
+ * Eskiden bant toplamı (9.950), zemin kalanı (4.200) gösteriyordu. Pad dışı görevde maliyet aynen.
+ */
+function gorevTutari(q: QuestView, padFills: Record<string, number>): number | null {
+  if (q.cost == null) return null;
+  if (q.target.type !== 'pad') return q.cost;
+  return Math.max(0, Math.ceil(q.cost - (padFills[q.target.id] ?? 0)));
+}
+
+/**
  * HUD — arayüz v2 (plan §9 bilgi mimarisi; docs/plan-kat1-yayin.html).
  *
  *   ÜST ŞERİT   İtibar madalyonu + çubuğu · ₺ · 💎 · ayar
@@ -95,6 +105,7 @@ export function HUD() {
     return () => clearTimeout(t);
   }, [questBitti]);
   const focusQuest = useGame((s) => s.focusQuest);
+  const padFills = useGame((s) => s.padFills);
   const hardReset = useGame((s) => s.hardReset);
   const charPanelSeen = useGame((s) => s.charPanelSeen);
   const markCharPanelSeen = useGame((s) => s.markCharPanelSeen);
@@ -102,6 +113,10 @@ export function HUD() {
   const trayFood = useGame((s) => s.trayFood);
   const emptyTray = useGame((s) => s.emptyTray);
   const trayTipSeen = useGame((s) => s.trayTipSeen);
+  // Boolean seçilir (dizi değil): müşteri listesi her karede yenilenir, HUD yalnız cevap değişince çizer.
+  const tepsiAni = useGame((s) =>
+    tepsiIpucuZamani({ tray: s.tray, trayFood: s.trayFood, teasServed: s.stats.teasServed, npcs: s.npcs }),
+  );
   const markTrayTipSeen = useGame((s) => s.markTrayTipSeen);
   // G-63: bulaşık öğretme kartı — mekanik ile görev aynı anda doğuyordu, arada öğretme yoktu.
   const washTipSeen = useGame((s) => s.washTipSeen);
@@ -111,6 +126,8 @@ export function HUD() {
   const toggleCamZoomOut = useGame((s) => s.toggleCamZoomOut);
   const claimOffline = useGame((s) => s.claimOffline);
   const [sheet, setSheet] = useState<Sheet>(null);
+  // C5 (T9d): sıfırlama onayı OYUNUN kutusunda — `window.confirm` Capacitor'da çıplak sistem penceresiydi.
+  const [sifirlaSor, setSifirlaSor] = useState(false);
   // Ayarlar künyesi (E3 · S23) — oyuncunun kendi geçmişi, ekranın boş kalan altını doldurur.
   const stats = useGame((s) => s.stats);
   const lifetime = useGame((s) => s.lifetime);
@@ -150,7 +167,7 @@ export function HUD() {
     gecisPenceresi,
     bulasikOgretmeHazir: quest?.target.type === 'washDish' && !washTipSeen,
     karakterIpucuHazir: !!charQuestActive && !charPanelSeen,
-    tepsiIpucuHazir: tray + trayFood > 0 && !trayTipSeen,
+    tepsiIpucuHazir: tepsiAni && !trayTipSeen,
     seviyeVar: levelUp != null,
   });
   const showOffline = kanal === 'cevrimdisi';
@@ -168,6 +185,7 @@ export function HUD() {
   const geri = useRef<() => void>(() => {});
   useEffect(() => {
     geri.current = () => {
+      if (sifirlaSor) return setSifirlaSor(false);
       const eylem = geriTusu(kanal, sheet != null);
       if (eylem === 'cevrimdisi') claimOffline();
       else if (eylem === 'usta') closeMaster();
@@ -191,10 +209,9 @@ export function HUD() {
   }, []);
 
   const onReset = () => {
-    if (window.confirm('Oyunu sıfırla? Bu cihazdaki tüm ilerleme silinecek.')) {
-      setSheet(null);
-      hardReset();
-    }
+    setSifirlaSor(false);
+    setSheet(null);
+    hardReset();
   };
 
   return (
@@ -204,7 +221,7 @@ export function HUD() {
         <button
           className="rep"
           data-testid="level"
-          title="İtibar"
+          title="Seviye"
           onClick={() => setSheet('goals')}
         >
           <span className="rep-medal">
@@ -224,7 +241,7 @@ export function HUD() {
         <div className="purse">
           <div className="cur" data-testid="wallet">
             <CoinIcon size={34} />
-            <span className="cur-val">{fmt(wallet)}</span>
+            <span className="cur-val">{fmt(gorunenCuzdan({ wallet, offlineEarned }))}</span>
           </div>
           <div className="cur gem" data-testid="diamonds">
             <GemIcon size={26} />
@@ -241,7 +258,7 @@ export function HUD() {
       <EdgeArrow onClick={focusQuest} />
 
       {/* ───────── SAĞ KENAR: genel bakış + tepsiyi boşalt ───────── */}
-      <div className="side-stack">
+      <div className={`side-stack${traySpot ? ' spot-acik' : ''}`}>
         <button
           className={`round-btn${camZoomOut ? ' on' : ''}`}
           data-testid="cam-zoom"
@@ -305,7 +322,7 @@ export function HUD() {
               {/* TAM SAYI: oto-toplama toplamı kesirli geliyordu ve "273.3333" Türkçe okumada
                   binlik ayracı gibi görünüyordu (kullanıcı: *"273k para toplanmış gibi
                   gözüküyor"*). Para zaten kuruşsuz sunuluyor; burada da yuvarlanır. */}
-              <CoinIcon size={16} />+{Math.round(notice.reward)}
+              <CoinIcon size={16} />+{fmt(notice.reward)}
             </span>
           )}
         </div>
@@ -355,17 +372,17 @@ export function HUD() {
                 </span>
               </span>
             ) : quest.cost != null ? (
-              <span className="band-sub">
+              <span className="band-sub" data-testid="quest-cost">
                 <CoinIcon size={15} />
-                {quest.cost.toLocaleString('tr-TR')}
+                {fmt(gorevTutari(quest, padFills) ?? 0)}
               </span>
             ) : (
-              <span className="band-sub dim">{charQuestActive ? 'Karakter panelinden al' : 'Hedefe git'}</span>
+              <span className="band-sub dim">{charQuestActive ? 'Çaycı panelinden al' : 'Hedefe git'}</span>
             )}
           </span>
           {quest.reward != null && (
             <span className="band-reward" data-testid="quest-reward">
-              <CoinIcon size={14} />+{quest.reward}
+              <CoinIcon size={14} />+{fmt(quest.reward)}
             </span>
           )}
           <span className="band-go">
@@ -378,10 +395,15 @@ export function HUD() {
             <span className="band-title">Görev hattı tamamlandı — kıraathane senin.</span>
           </span>
         </div>
-      ) : null}
+      ) : (
+        <GunlukBant onClick={() => setSheet('quests')} />
+      )}
 
       {/* ───────── ALT NAV ───────── */}
-      <nav className="botnav">
+      {/* B1 (T9d): ipucu açıkken alt gezinme KARARTMANIN ÜSTÜNE çıkar. Eskiden sekmenin kendi z'si
+          (36) gezinmenin katmanından (13) kaçamıyordu: ilk dokunuş karartmaya gidip yalnız onu
+          kapatıyor, panel ikinci dokunuşta açılıyordu. */}
+      <nav className={`botnav${spotlight ? ' spot-acik' : ''}`}>
         {/* G-62: görev tamamlanınca Görevler sekmesi kendini gösterir. Bayrak kutlama
             penceresinin KENDİSİ (0,5 + 0,8 sn) — yeni bir sayaç/zamanlayıcı eklenmedi. */}
         <NavTab
@@ -413,7 +435,7 @@ export function HUD() {
         />
         <NavTab
           id="char"
-          label="Karakter"
+          label="Çaycı"
           icon={<CharIcon size={25} />}
           active={sheet === 'char'}
           bang={charQuestActive}
@@ -437,7 +459,7 @@ export function HUD() {
       {spotlight && (
         <div className="char-tip" data-testid="char-tip">
           <b>Buradan yükselt</b>
-          Bu yükseltme <u>Karakter</u> sekmesinde — dokun ve satın al.
+          Bu yükseltme <u>Çaycı</u> sekmesinde — dokun ve satın al.
         </div>
       )}
 
@@ -445,9 +467,21 @@ export function HUD() {
       {sheet === 'quests' && <QuestsSheet onClose={() => setSheet(null)} />}
       {sheet === 'goals' && <GoalsSheet onClose={() => setSheet(null)} />}
       {sheet === 'shop' && <ShopPanel onClose={() => setSheet(null)} />}
-      {sheet === 'char' && <CharacterPanel onClose={() => setSheet(null)} />}
+      {sheet === 'char' && (
+        <CharacterPanel
+          onClose={() => setSheet(null)}
+          ilkSekme={quest?.target.type === 'waiterTray' || quest?.target.type === 'waiterSpeed' ? 'waiter' : 'player'}
+        />
+      )}
       {sheet === 'settings' && (
-        <Sheet title="Ayarlar" testid="menu" onClose={() => setSheet(null)}>
+        <Sheet
+          title="Ayarlar"
+          testid="menu"
+          onClose={() => {
+            setSifirlaSor(false);
+            setSheet(null);
+          }}
+        >
           <div className="sheet-pad">
             <SettingRow label="Ses" value={settings.sound} onChange={(v) => setSetting('sound', v)} testid="set-sound" />
             <SettingSlider
@@ -465,12 +499,8 @@ export function HUD() {
               onChange={(v) => setSetting('musicVolume', v)}
               testid="set-music-vol"
             />
-            <SettingRow
-              label="Bildirimler"
-              value={settings.notifications}
-              onChange={(v) => setSetting('notifications', v)}
-              testid="set-notifications"
-            />
+            {/* K9 (T9d · D-146): "Bildirimler" anahtarı KALKTI — hiçbir yer okumuyordu (işlevsiz anahtar
+                güven kırar). Ayar kayıtta duruyor (şema değişmedi); bildirim Faz F'de gelince geri döner. */}
             {/* GÖLGELER (F2 · D-125). Varsayılan 'oto': cihaz sınıfı karar verir
                 (`game/cihazSinifi.ts`). Anahtara DOKUNULDUĞU an tercih açık hâle gelir ve
                 ölçümü ezer — güçlü telefonda kapatmak da, zayıfta açık tutmak da oyuncunun
@@ -496,16 +526,30 @@ export function HUD() {
             <div className="kunye" data-testid="kunye">
               <div><span>Kayıt şeması</span><b>v{SAVE_VERSION}</b></div>
               <div><span>Toplam kazanç</span><b>{fmt(lifetime)} ₺</b></div>
-              <div><span>Servis edilen çay</span><b>{stats.teasServed + stats.waiterServed}</b></div>
-              <div><span>Yıkanan bulaşık</span><b>{stats.dishesWashed}</b></div>
+              <div><span>Servis edilen çay</span><b>{fmt(stats.teasServed + stats.waiterServed)}</b></div>
+              <div><span>Yıkanan bulaşık</span><b>{fmt(stats.dishesWashed)}</b></div>
               <div><span>Açılan nokta</span><b>{padsDone.length}</b></div>
             </div>
             <div className="sheet-foot-note">
               Kayıt bu cihazda tutulur — sunucu yok. Oyunu sıfırlarsan geri alınamaz.
             </div>
-            <button className="danger-btn" data-testid="reset" onClick={onReset}>
-              <ResetIcon size={17} /> Oyunu Sıfırla
+            <button className="danger-btn" data-testid="reset" onClick={() => setSifirlaSor(true)}>
+              <ResetIcon size={17} /> Oyunu sıfırla
             </button>
+            {sifirlaSor && (
+              <div className="modal-backdrop" data-testid="reset-confirm" onClick={() => setSifirlaSor(false)}>
+                <div className="modal-card reward-card" onClick={(e) => e.stopPropagation()}>
+                  <div className="reward-title">Oyunu sıfırla?</div>
+                  <p className="onay-metin">Bu cihazdaki tüm ilerleme silinecek. Geri alınamaz.</p>
+                  <button className="danger-btn" data-testid="reset-yes" onClick={onReset}>
+                    <ResetIcon size={17} /> Evet, sıfırla
+                  </button>
+                  <button className="sheet-cta" data-testid="reset-no" onClick={() => setSifirlaSor(false)}>
+                    Vazgeç
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </Sheet>
       )}
@@ -535,6 +579,61 @@ export function HUD() {
         />
       )}
     </div>
+  );
+}
+
+/**
+ * K1 (T9d · D-146) — HAT SONU: ALT BANTTA GÜNLÜK GÖREV. Hat bitince bant kalkıyordu ve oyuncuya
+ * hiçbir yön kalmıyordu (T9b B3). Artık kutlama bandının (5 sn) yerini günün İLK bitmemiş görevi
+ * alır; toplanabilir olan öne geçer. Üçü de alınınca "yenileri yarın". Dokununca Görevler açılır —
+ * sahnede işaret YOK (D8 kuralı: günlük görev panelde bekler, Tek Odak'ı bölmez).
+ * Kat 2 gelince hat yeniden uzar ve bant görev adımına döner.
+ */
+function GunlukBant({ onClick }: { onClick: () => void }) {
+  const stats = useGame((s) => s.stats);
+  const lifetime = useGame((s) => s.lifetime);
+  const tables = useGame((s) => s.tables);
+  const daily = useGame((s) => s.daily);
+  const gunler = dailyViews(daily, tables, dailyCountersOf({ stats, lifetime }));
+  const g = gunler.find((x) => x.state === 'claimable') ?? gunler.find((x) => x.state !== 'claimed');
+  if (!g) {
+    return (
+      <button className="band done" data-testid="daily-band" data-state="bitti" onClick={onClick}>
+        <span className="band-photo">
+          <CheckBadge size={26} />
+        </span>
+        <span className="band-body">
+          <span className="band-kicker">BUGÜN</span>
+          <span className="band-title">Bugünkü görevleri tamamladın — yenileri yarın</span>
+        </span>
+      </button>
+    );
+  }
+  const hazir = g.state === 'claimable';
+  return (
+    <button className={`band${hazir ? ' done' : ''}`} data-testid="daily-band" data-state={g.state} onClick={onClick}>
+      <span className="band-photo">{hazir ? <CheckBadge size={26} /> : <QuestListIcon size={30} />}</span>
+      <span className="band-body">
+        <span className="band-kicker">GÜNLÜK GÖREV</span>
+        <span className="band-title">{g.label}</span>
+        {hazir ? (
+          <span className="band-sub done-sub">Ödülünü al</span>
+        ) : (
+          <span className="band-track">
+            <span className="band-fill" style={{ width: `${Math.min(100, (g.cur / g.target) * 100)}%` }} />
+            <span className="band-count">
+              {fmt(g.cur)}/{fmt(g.target)}
+            </span>
+          </span>
+        )}
+      </span>
+      <span className="band-reward">
+        <GemIcon size={14} />+{g.diamonds}
+      </span>
+      <span className="band-go">
+        <ChevronIcon size={18} />
+      </span>
+    </button>
   );
 }
 
@@ -707,6 +806,12 @@ function UstaModal({ id, onClose }: { id: string; onClose: () => void }) {
             İzle
           </button>
         </div>
+        {!yeter && (
+          <span className="eksik" data-testid="eksik">
+            <GemIcon size={12} />
+            {fmt(fiyat - Math.floor(diamonds.toNumber()))} eksik
+          </span>
+        )}
       </div>
     </div>
   );
@@ -716,6 +821,7 @@ function QuestsSheet({ onClose }: { onClose: () => void }) {
   const questIndex = useGame((s) => s.questIndex);
   const quest = useGame((s) => s.quest);
   const focusQuest = useGame((s) => s.focusQuest);
+  const padFills = useGame((s) => s.padFills);
   const all = economyConfig.quests;
   const done = all.slice(0, Math.min(questIndex, all.length));
   const upcoming = all.slice(questIndex + 1, questIndex + 4);
@@ -747,8 +853,8 @@ function QuestsSheet({ onClose }: { onClose: () => void }) {
             <span className="goal-top">
               <b>{g.label}</b>
               <span className="goal-num">
-                {g.cur.toLocaleString('tr-TR')}
-                <i>/{g.target.toLocaleString('tr-TR')}</i>
+                {fmt(g.cur)}
+                <i>/{fmt(g.target)}</i>
               </span>
             </span>
             <span className="goal-track">
@@ -827,18 +933,18 @@ function QuestsSheet({ onClose }: { onClose: () => void }) {
             ) : quest.cost != null ? (
               <span className="band-sub">
                 <CoinIcon size={16} />
-                {quest.cost.toLocaleString('tr-TR')}
+                {fmt(gorevTutari(quest, padFills) ?? 0)}
               </span>
             ) : null}
           </span>
           {quest.reward != null && (
             <span className="qbig-reward">
-              <CoinIcon size={16} />+{quest.reward}
+              <CoinIcon size={16} />+{fmt(quest.reward)}
             </span>
           )}
         </button>
       ) : (
-        <div className="sheet-empty">Görev hattı tamamlandı. Kıraathane tamamen senin.</div>
+        <div className="sheet-empty">Görev hattı tamamlandı — kıraathane senin.</div>
       )}
 
       {upcoming.length > 0 && (
@@ -870,7 +976,7 @@ function QuestsSheet({ onClose }: { onClose: () => void }) {
                   <span className="qrow-title">{q.title}</span>
                   {q.reward != null && (
                     <span className="qrow-reward">
-                      <CoinIcon size={13} />+{q.reward}
+                      <CoinIcon size={13} />+{fmt(q.reward)}
                     </span>
                   )}
                 </li>
@@ -929,7 +1035,7 @@ function GoalsSheet({ onClose }: { onClose: () => void }) {
           <i>{lvl.level}</i>
         </span>
         <span className="rep-hero-body">
-          <b>İtibar {lvl.level}</b>
+          <b>Seviye {lvl.level}</b>
           <span className="rep-bar wide">
             <span className="rep-fill" style={{ width: `${Math.min(100, (lvl.cur / lvl.need) * 100)}%` }} />
             <span className="rep-text">
@@ -937,7 +1043,7 @@ function GoalsSheet({ onClose }: { onClose: () => void }) {
             </span>
           </span>
           <small>
-            Her hedef itibarını yükseltir · itibar bonusu{' '}
+            Her hedef seviyeni yükseltir · seviye bonusu{' '}
             {yuzde(reputationCarryMult(lvl.level) - 1)} servis hızı
             {bonus > 0 ? ` · koleksiyon bonusu ${yuzde(bonus)} gelir` : ''}.
           </small>
@@ -985,8 +1091,8 @@ function GoalsSheet({ onClose }: { onClose: () => void }) {
                   {g.categoryName} <i className="goal-tier">{g.tier + 1}/5</i>
                 </b>
                 <span className="goal-num">
-                  {g.cur.toLocaleString('tr-TR')}
-                  <i>/{g.target.toLocaleString('tr-TR')}</i>
+                  {fmt(g.cur)}
+                  <i>/{fmt(g.target)}</i>
                 </span>
               </span>
               <span className="goal-track">
@@ -1073,7 +1179,7 @@ function RewardModal({
       key: 'para',
       icerik: (
         <>
-          <CoinIcon size={30} /> +{amount.toLocaleString('tr-TR')}
+          <CoinIcon size={30} /> +{fmt(amount)}
         </>
       ),
     });
@@ -1116,6 +1222,12 @@ function RewardModal({
     });
   }
 
+  /* K3 (T9d · D-146): ikiye katlanacak bir ödül yoksa (Sv 2-4: yalnız servis hızı) "Al" + "İzle, 2×"
+     boş bir vaatti — 0 ₺'nin iki katı. O ekran kazanılanı BÜYÜK gösterir ve tek "Harika!" ile kapanır.
+     ₺ EKLENMEDİ: Sv 5 kapısı ölçülü (`zincir-raporu-t8a` Bulgu 8). */
+  const katlanir = amount > 0 || diamonds > 0;
+  const tekSatir = satirlar.length === 1;
+
   return (
     <div className="modal-backdrop" data-testid={testid}>
       <div className="modal-card reward-card">
@@ -1135,17 +1247,19 @@ function RewardModal({
                 +
               </span>
             ) : null,
-            <span className={`odul-sat${satir.ikiKat ? ' iki-kat' : ''}`} key={satir.key}>
+            <span className={`odul-sat${satir.ikiKat ? ' iki-kat' : ''}${tekSatir && satir.ikiKat ? ' tek' : ''}`} key={satir.key}>
               {satir.icerik}
             </span>,
           ])}
         </div>
         <button className="sheet-cta" data-testid={claimTestid} onClick={onClaim}>
-          Al
+          {katlanir ? 'Al' : 'Harika!'}
         </button>
-        <button className={`sheet-cta ad${adReady ? '' : ' off'}`} disabled={!adReady} onClick={onClaim}>
-          <PlayAdIcon size={18} /> İzle, 2× al
-        </button>
+        {katlanir && (
+          <button className={`sheet-cta ad${adReady ? '' : ' off'}`} disabled={!adReady} onClick={onClaim}>
+            <PlayAdIcon size={18} /> İzle, 2× al
+          </button>
+        )}
       </div>
     </div>
   );
@@ -1305,7 +1419,7 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
                 {areasOpen}/{MAX_AREAS}
               </span>
               <span className={maxedTables >= tables && tables > 0 ? 'req done' : 'req'}>
-                {maxedTables >= tables && tables > 0 ? <TickIcon size={12} /> : <DotIcon size={12} />} Max
+                {maxedTables >= tables && tables > 0 ? <TickIcon size={12} /> : <DotIcon size={12} />} Son seviye
                 masa {maxedTables}/{tables}
               </span>
             </div>
@@ -1340,9 +1454,16 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
                     ? 'Şu an uygulanmış'
                     : secili.owned
                       ? 'Sahipsin'
-                      : `${secili.cost.toLocaleString('tr-TR')} ₺`}
+                      : `${fmt(secili.cost)} ₺`}
                 </span>
               </div>
+            )}
+            {/* B12 (T9d): alım sönükse nedeni yazar. */}
+            {secili && !secili.owned && !afford && (
+              <span className="eksik shop-eksik" data-testid="eksik">
+                <CoinIcon size={12} />
+                {fmt(Math.ceil(secili.cost - wallet.toNumber()))} eksik
+              </span>
             )}
           </>
         )}
@@ -1364,7 +1485,7 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
             'Uygula'
           ) : (
             <>
-              Satın Al · {secili.cost.toLocaleString('tr-TR')} <CoinIcon size={18} />
+              Satın Al · {fmt(secili.cost)} <CoinIcon size={18} />
             </>
           )}
         </button>

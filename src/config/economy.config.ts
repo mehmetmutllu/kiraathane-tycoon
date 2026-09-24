@@ -837,7 +837,9 @@ export const economyConfig = {
     { id: 'q_z3table3', kicker: 'SALON 3', title: 'Salon 3: 3. Masayı aç', target: { type: 'pad', id: 'z3table3' }, area: 2, reward: 200 },
     // TOST: bir salondan değil, tezgâhın L5'inden gelir.
     { id: 'q_tost', kicker: 'TOST SACI', title: 'Tost sacını kur', target: { type: 'stationLevel', level: 5 }, reward: 500 },
-    { id: 'q_tost5', kicker: 'TOST', title: '5 tost servis et', target: { type: 'serveTost', count: 5 }, reward: 300 },
+    // T9d (D-148): 5 → 3. Elle ölçüldü: 5 tost ort. 5,1 dk ama 1,4-8,9 dk saçılıyor (garsonlar hazır
+    // tostu önce kapıyor); 3 tost ort. 2,7 dk, en kötü 3,9. Kimlik `q_tost5` KALIR (kayıt sözleşmesi, D-088).
+    { id: 'q_tost5', kicker: 'TOST', title: '3 tost servis et', target: { type: 'serveTost', count: 3 }, reward: 300 },
     { id: 'q_z3table4', kicker: 'SALON 3', title: 'Salon 3: 4. Masayı aç', target: { type: 'pad', id: 'z3table4' }, area: 2, reward: 350 },
     // T8a (D-142): garson 2'li başlıyor (`waiter.trayBase`) → eski 1. kademe görevi (`q_waiterTray1`)
     // hattan çıktı; bu görev artık İLK kademeyi ister. Kimlik korunur: kaydın konumu değişmez.

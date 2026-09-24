@@ -14,6 +14,7 @@ import { cihazSinifiOku, cihazSinifiYaz, golgeAcikMi, sinifBelirle, ISINMA_KARE,
 import { dwellState, ustaKaresi } from '../../game/dwell';
 import { Bahce } from './Bahce';
 import { GroundMarker } from './GroundMarker';
+import { fmt } from '../../game/decimal';
 // Etiketler ve işaret yarıçapı `markerFrame`ten gelir: çerçeve genişliği YAZIDAN çözülüyor
 // ve aynı çerçeveyi `tick.ts` tetik olarak test ediyor (D-121). Buraya düz metin yazmak
 // çizilen kutu ile tetikleyen kutuyu sessizce ayırır — S24'ün kapattığı kusur tam buydu.
@@ -573,7 +574,7 @@ function StationUpgradeSpots() {
       // KONUM anlatır (mekânsal tycoon). Eskiden 'Çay Yükselt' / 'Tezgâhı Yükselt' ayrımı vardı.
       label={ETIKET_SERVIS}
       arrow
-      sub={String(remaining)}
+      sub={fmt(remaining)}
       pip="coin"
       tint="#ffce54"
       progress={upgradeFills[THE_SERVICE] / cost}
@@ -640,7 +641,7 @@ function TableUpgradeMarkers() {
                söylüyor. `feedback_upgrade_legibility`in istediği ÇOKLU sinyalin sayı kanalı. */
             label={masaEtiketi(lvl)}
             arrow
-            sub={String(remaining)}
+            sub={fmt(remaining)}
             pip="coin"
             tint="#ffce54"
             radius={MASA_ISARET_R}
@@ -1136,7 +1137,7 @@ function LavaboFront() {
         <GroundMarker
           pos={LAVABO.spot}
           label={ETIKET_LAVABO}
-          sub={String(remaining)}
+          sub={fmt(remaining)}
           pip="coin"
           tint="#ffce54"
           progress={fill / cost}

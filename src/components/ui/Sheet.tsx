@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { useGame } from '../../game/store';
+import { useGame, gorunenCuzdan } from '../../game/store';
 import { fmt } from '../../game/decimal';
 import { BackIcon, CoinIcon, GemIcon } from './icons';
 
@@ -31,6 +31,7 @@ export function Sheet({
 }) {
   const wallet = useGame((s) => s.wallet);
   const diamonds = useGame((s) => s.diamonds);
+  const offlineEarned = useGame((s) => s.offlineEarned);
   return (
     <div className="modal-backdrop screen-backdrop" data-testid={testid}>
       <div className="modal-card screen">
@@ -42,7 +43,7 @@ export function Sheet({
           <span className="screen-purse">
             <span className="screen-cur">
               <CoinIcon size={18} />
-              <b>{fmt(wallet)}</b>
+              <b>{fmt(gorunenCuzdan({ wallet, offlineEarned }))}</b>
             </span>
             <span className="screen-cur">
               <GemIcon size={16} />

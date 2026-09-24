@@ -649,9 +649,24 @@ export interface QuestView {
   done?: boolean;
 }
 
+/**
+ * B7 (T9d · D-146): çok-adımlı DURUM görevinin ilerlemesi ("2 masayı Seviye 3'e çıkar" → 1/2).
+ * Eskiden yalnız sayaç görevlerinde sayı vardı; bu görevler kartta "Hedefe git" yazıyordu.
+ * Sayım `questTargetMet`in `tablesAtLevel` dalıyla AYNI kümeden — kart ile bitiş ayrışamaz.
+ */
+function questStepProgress(target: QuestTarget, ctx: QuestCtx): { cur: number; total: number } | null {
+  if (target.type !== 'tablesAtLevel' || target.count < 2) return null;
+  const lvls = target.area != null
+    ? ctx.tableLevels.slice(areaTableStart(target.area), areaTableStart(target.area + 1))
+    : ctx.tableLevels;
+  const cur = lvls.filter((l) => (l ?? 0) >= target.level).length;
+  return { cur: Math.min(cur, target.count), total: target.count };
+}
+
 export function questView(q: QuestDef, ctx: QuestCtx): QuestView {
   const counter = questCounterValue(q.target, ctx.stats);
   const count = counter != null ? (q.target as { count: number }).count : null;
+  const adim = counter == null ? questStepProgress(q.target, ctx) : null;
   const pad =
     q.target.type === 'pad'
       ? (C.pads as readonly PadDef[]).find((p) => p.id === (q.target as { id: string }).id)
@@ -670,8 +685,8 @@ export function questView(q: QuestDef, ctx: QuestCtx): QuestView {
     kicker: q.kicker,
     title: q.title,
     target: q.target,
-    cur: counter != null && count != null ? Math.max(0, Math.min(count, counter - ctx.questBase)) : null,
-    total: count,
+    cur: counter != null && count != null ? Math.max(0, Math.min(count, counter - ctx.questBase)) : adim?.cur ?? null,
+    total: count ?? adim?.total ?? null,
     cost: pad ? pad.cost : charCost,
     reward: q.reward ?? null,
   };

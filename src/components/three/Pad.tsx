@@ -1,6 +1,7 @@
 import { useGame, LAYOUT, visiblePads } from '../../game/store';
 import { cardQuestIndex } from '../../game/rules';
 import { GroundMarker } from './GroundMarker';
+import { fmt } from '../../game/decimal';
 
 // EKRANDA TEK PAD (quest sistemi, 2026-06-09): yalnız aktif görevin pad'i çizilir (visiblePads —
 // tick'teki dolum mantığıyla AYNI kaynak). Renk: personel (hire*) mavi, masa açılışı yeşil.
@@ -33,7 +34,7 @@ export function Pad() {
             key={pad.id}
             pos={LAYOUT.padPos[pad.id]}
             label={pad.label}
-            sub={String(remaining)}
+            sub={fmt(remaining)}
             pip="coin"
             tint={isHire ? '#42a5f5' : '#43d17a'}
             progress={fill / pad.cost}

@@ -5,40 +5,37 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-24 — T9c KAPANDI · D-147; sıradaki T9d)
+## ŞU AN (2026-09-24 — T9d KAPANDI · D-148; Faz T bitti, sıradaki Faz F)
 
 ```
-SORU            : T9b'nin mantık/kilit bulguları (A · D · K4 · K5 · K7 · K8 · K10) + K5 servis payı kaç br?
-ÖLÇÜLECEK KOLLAR: K5 — S0 merkez 1,60 · G5/G7/G8/G9 gövde + 0,50/0,70/0,80/0,90
-SAYILAR         : `docs/servis-raporu-t9c.md` §Bulgular — S0 %69,3 (köşe kör) · G7 %100, sızıntı 0 · alt sınır 0,672
-KARAR           : D-147 — G7 (pay = cups.collectReach); q_tost5 elle süresi T9d'de ölçülür
-UYGULAMA        : A1-A7 D2 D6 K4 K5 K7 K8 K10 (serveRadius config'ten kalktı · A4 = @capacitor/app + duman denetimi)
-BEKÇİ           : `tests/mantik-t9c.test.ts` 23 test · mutasyonla doğrulanan: A1 A2 A4 A6 D2 D6 K4 K8 · K5 (iki); A3 A5 A7 K7 yalnız testle
+SORU            : D-146 arayüz/metin kalemleri + q_tost5 elle kaç dk?
+ÖLÇÜLECEK KOLLAR: q_tost5 — V0 yalnız oyuncu 5 · V3 yalnız oyuncu 3 · V1 herkes 5 (aktif) · V1a herkes 5 (AFK)
+SAYILAR         : `docs/tost-raporu-t9d.md` §Bulgular — V0 5,1 dk (1,4-8,9) · V3 2,7 · V1 2,0 · V1a 1,9
+KARAR           : D-148 — V3 (3 tost; öneri V0'dı) · masa etiketi "Sv 2" kalır
+UYGULAMA        : K2 fmt · B1 B2 B4 B7 B8 B9 B11 B12 B13 · K1 günlük bant · K3 Harika! · K6 Çaycı/Seviye · C3 · K9 · C5
+BEKÇİ           : `tests/arayuz-t9d.test.ts` 26 test · `tools/mutasyon-arayuz-t9d.mjs` 10/10 · kareler `docs/gorsel/t9d/`
 ```
 
 ## ⏭️ SIRADAKİ ADIM
 
-**T9d — arayüz/metin düzeltmeleri** (D-146): B1 karakter görevinde ilk dokunuş · B2 tepsi ipucu ilk servis ortasında ·
-B3/K1 hat sonu günlük kartı · B4 garson sekmesi · B7 çok-adımlı sayaç · B8 bant/zemin tutarı · B9 bildirim taşması ·
-B11 çevrimdışı "Al" (₺ şu an ekran açılırken ekleniyor) · B12 pasif neden · B13 dokunma hedefleri · C/K2 para biçimi ·
-K3 Sv 2-4 ekranı · K6 "Çaycı"/"Seviye" · K9 bildirim anahtarı · **q_tost5 elle süresi ölçümü** (garsonlar tostu önce
-kapıyor — uzunsa seçenek getir). Sonra **Faz F**.
+**Faz F — F3 reklam (AdMob, karar C1′ 3 dk verildi, `docs/reklam-raporu-f3.md`)** → F4 IAP → F5 mağaza + G-89 görsel/video (EN SON).
+F3'te bağlanacak pasif yerler: ödül ekranı "İzle, 2× al" (yalnız katlanacak ödül varken çizilir, D-148 K3) · Usta "İzle".
+Bildirimler anahtarı Faz F'de bildirim gelince geri döner (`settings.notifications` kayıtta duruyor).
 
 ## AÇIK KALEMLER
-- **Seviye ekranının "İzle, 2× al"ı** pasif — F3 (reklam) kararına bağlı.
+- **"İzle, 2× al"** pasif — F3'te bağlanır (Sv 2-4 ekranında artık çizilmiyor, D-148).
 - **C kolu ölçülmedi:** "tavan + çıkış payı" (T6). **G-82…G-91**: `docs/geribildirim-oyun-testi-2026-09-21.md`.
 - **F3 (AdMob) kararı VERİLDİ: C1′ 3 dk** (2026-09-23), uygulama Faz F'de (`docs/reklam-raporu-f3.md`). YouTube Playables
   mağaza yayınından SONRA (adaptör; dış URL yasak: Draco gstatic + troika jsdelivr kapatılmalı).
-- **`gunluk-gorev.test.ts` 💎 tavanı testi** tam pakette bir kez 10 sn süre aşımına düştü (tek başına ve ikinci koşuda
-  yeşil) — yük altında yavaş; tekrar ederse süre sınırı/boyut ele alınır.
+- **Çevrimdışı ₺ para dili:** "Al" artık görünen sayıyı büyütüyor ama sayma animasyonu yok (juice, F sonrası cila).
 - **T2a tipi yanlış pozitif** sıra kilidinde kalıyor: `tick.ts`e ölçümsüz MANTIK değişikliği `olcum-yok` sayılır (davranış parmak izi ister).
 
 ## SONRAKİ TURLAR (kullanıcı onaylı sıra)
 1. ~~T6 commit #2~~ ✅ · ~~tarayıcı kayma ölçümü~~ ✅
 2. ~~T7 — banket + pad + WC kabini~~ ✅ D-141
 3. ~~T8a — zincir + T3 denge~~ ✅ D-142 · ~~T8b — tezgâh arkası~~ ✅ D-143 (F kapandı: A)
-4. ~~T9a — performans + kod~~ ✅ D-145 · ~~T9b — oynanış taraması~~ ✅ D-146 · ~~T9c mantık~~ ✅ D-147 · **T9d arayüz** ← buradan
-5. **Faz F — F3 reklam · F4 IAP · F5 mağaza + G-89 store görseli/videosu (EN SON)**
+4. ~~T9a — performans + kod~~ ✅ D-145 · ~~T9b — oynanış taraması~~ ✅ D-146 · ~~T9c mantık~~ ✅ D-147 · ~~T9d arayüz~~ ✅ D-148
+5. **Faz F — F3 reklam · F4 IAP · F5 mağaza + G-89 store görseli/videosu (EN SON)** ← buradan
 
 ---
 

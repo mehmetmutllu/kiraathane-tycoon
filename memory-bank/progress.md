@@ -11,7 +11,7 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/artifact/1Y8JNb3MckS3EhfSXJKKRs
 Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (elle sayı yazılmaz).
 
-**Oturum bütçesi (TOPLAM 125 · YAPILAN 120 · %96):**
+**Oturum bütçesi (TOPLAM 125 · YAPILAN 121 · %97):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -28,8 +28,8 @@ Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (ell
 | | H oynanış düzeltmeleri | 2/2 ✅ |
 | | **R geri bildirim turları (2026-09-16)** | **4/4 ✅** |
 | | **F paketleme ve yayın** | **3/6** 🔧 |
-| | **T tur serisi (geri bildirim + performans)** | **12/13** 🔧 |
-| **Program toplam** | | **92/97** |
+| | **T tur serisi (geri bildirim + performans)** | **13/13 ✅** |
+| **Program toplam** | | **93/97** |
 
 Bütçe düzeltmelerinin tarihçesi (73 → 121) ve bitmiş fazların tam anlatısı: `memory-bank/arsiv/progress-tamamlanan.md`.
 
@@ -114,7 +114,7 @@ Bütçe düzeltmelerinin tarihçesi (73 → 121) ve bitmiş fazların tam anlat�
 - ⏳ **F5 — mağaza vitrini + uyum** …
 - ✅ **F6 — açılış ekranı + ekran yönü + yatay/tablet HUD** (F1b iki tur + tur 3) …
 
-## Faz T — TUR SERİSİ: GERİ BİLDİRİM + PERFORMANS (12/13) 🔧
+## Faz T — TUR SERİSİ: GERİ BİLDİRİM + PERFORMANS (13/13) ✅
 - ✅ **T1 — onarım (G-78/79/77/69/70):** …
 - ✅ **T2 — görev akışı · iki tur (T2a mantık D-134 · T2b görsel D-135)**
 - ✅ **T4 — performans (G-80): şarj kanadı uygulandı, kasma kanadı T5'e devredildi.** …
@@ -128,7 +128,7 @@ Bütçe düzeltmelerinin tarihçesi (73 → 121) ve bitmiş fazların tam anlat�
 - ✅ **T9 — performans + kod: N2-kesin yol önbelleği (tick ×10, birebir) · g1 elendi (eski iyileşme sahteydi) · sıra kilidi düzeldi · lint 0 · D-145** *(tur adı T9a)* · telefon öykünmesi kare işi −%21,2 · `docs/performans-raporu-t9a.md` · vitest 1446
 - ✅ **T11 — oynanış taraması: 34 bulgu, hat 30/50'de KİLİT (`q_tost5`) · D-146** *(tur adı T9b)* · `docs/tarama-raporu-t9b.md` · kod yazılmadı
 - ✅ **T12 — mantık/kilit: q_tost5 kilidi açıldı · ok canlı masada · sıcak dönüş çevrimdışı · kayıt kilidi+derin birleştirme · Usta pad gibi · servis gövdeden (K5=G7) · D-147** *(tur adı T9c)* · köşe servisi %69,3 → %100 · `docs/servis-raporu-t9c.md`
-- ⏳ **T13 — arayüz/metin düzeltmeleri** *(tur adı T9d)* (D-146: B · C · K1 · K2 · K3 · K6 · K9) + q_tost5 elle süresi ölçümü
+- ✅ **T13 — arayüz/metin: para tek biçim · hat sonu günlük bant · Sv 2-4 "Harika!" · Çaycı/Seviye · ipucu/bildirim/dokunma düzeltmeleri · q_tost5 = 3 tost · D-148** *(tur adı T9d)* · elle 5 tost ort. 5,1 dk → 3 tost 2,7 dk · `docs/tost-raporu-t9d.md` · 10/10 mutasyon
 
 ## Kullanıcı geri bildirimleri
 G-01…G-91 tam listesi + kullanıcının kendi cümleleri: `docs/geribildirim-oyun-testi-<tarih>.md` (09-09 · 09-16 · 09-17 · 09-18 · 09-21). Turlara dağılımı Faz T'de.

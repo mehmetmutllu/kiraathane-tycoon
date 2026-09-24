@@ -16,8 +16,8 @@
  * tepsiyi boşaltır (oyunun kendi düğmesi, `emptyTray`).
  *
  * KOLLAR (kod YAZILMADAN, aynı koşudan ve AFK koşusundan okunur — tick'e dikiş yok):
- *   V0  bugün: yalnız OYUNCUNUN tostu sayılır, hedef 5
- *   V3  yalnız oyuncunun tostu, hedef 3
+ *   V0  eski (D-148 öncesi): yalnız OYUNCUNUN tostu sayılır, hedef 5
+ *   V3  yürürlük (D-148): yalnız oyuncunun tostu, hedef 3
  *   V1  HER tost sayılır (garson dahil), hedef 5 — oyuncu aktif
  *   V1a HER tost sayılır, hedef 5 — oyuncu AFK (parkta): görevin kendiliğinden bitme süresi
  *
@@ -213,8 +213,8 @@ for (let i = 0; i < TOHUMLAR.length; i++) {
 }
 console.log('');
 console.log('§KOLLAR (ortalama, dk)');
-console.log(`V0  bugün — yalnız oyuncunun tostu, 5 : ${dk(ort(elle.map((x) => x.oyuncuTost[4])))}`);
-console.log(`V3  yalnız oyuncunun tostu, 3        : ${dk(ort(elle.map((x) => x.oyuncuTost[2])))}`);
+console.log(`V0  eski — yalnız oyuncunun tostu, 5  : ${dk(ort(elle.map((x) => x.oyuncuTost[4])))}`);
+console.log(`V3  D-148 — yalnız oyuncunun tostu, 3: ${dk(ort(elle.map((x) => x.oyuncuTost[2])))}`);
 console.log(`V1  her tost sayılır, 5 (oyuncu aktif): ${dk(ort(elle.map((x) => x.herTost[4])))}`);
 console.log(`V1a her tost sayılır, 5 (oyuncu AFK)  : ${dk(ort(afk.map((x) => x.herTost[4])))}`);
 console.log('');

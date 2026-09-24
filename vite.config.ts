@@ -18,5 +18,8 @@ export default defineConfig({
     // `tests/` klasörü de bulunuyordu ve `npm run test` her şeyi İKİ KEZ çalıştırıyordu
     // (2026-09-07: 277 yerine 556 test). Worktree kendi kökünde test çalıştırır, buradan değil.
     exclude: ['**/node_modules/**', '**/dist/**', '**/.claude/worktrees/**'],
+    // Tam pakette (73 dosya paralel) ağır testler 5 sn varsayılanına takılıyordu — üç turda üç ayrı
+    // test (günlük 💎 tavanı · sıra kilidi git · nav 3.000 sorgu), hepsi tek başına yeşil (T9d).
+    testTimeout: 20_000,
   },
 })

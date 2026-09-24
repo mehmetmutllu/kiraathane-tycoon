@@ -190,9 +190,18 @@ describe('ekonomi yükseltme formülleri', () => {
 
 describe('sayı biçimlendirme', () => {
   it('eşikleri doğru biçimler', () => {
+    // K2 (T9d · D-146): küsurat yok · < 1 Mn tam + yerel binlik · ≥ 1 Mn yerel kısaltma, tek ondalık.
     expect(fmt(D(150))).toBe('150');
-    expect(fmt(D(1500))).toBe('1.5K');
-    expect(fmt(D(1_000_000))).toBe('1M');
+    expect(fmt(D(1500))).toBe('1.500');
+    expect(fmt(D(6042.9))).toBe('6.042');
+    expect(fmt(D(999_999.9))).toBe('999.999');
+    expect(fmt(D(1_000_000))).toBe('1 Mn');
+    expect(fmt(D(1_299_999))).toBe('1,2 Mn');
+    expect(fmt(D(999_990_000))).toBe('999,9 Mn');
+    expect(fmt(D(2.5e9))).toBe('2,5 Mr');
+    expect(fmt(D(-1500))).toBe('-1.500');
+    expect(fmt(6042, 'en')).toBe('6,042');
+    expect(fmt(1_250_000, 'en')).toBe('1.2M');
   });
 });
 
