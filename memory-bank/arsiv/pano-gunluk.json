@@ -2,8 +2,20 @@
  "not": "İlerleme panosunun ESKİ oturum kartları. Pano her turda büyüyordu (67 kart / 219 KB) ve yayını canlı sürümün tamamının okunmasını şart koştuğu için tur başına maliyeti ARTIYORDU — okunanın neredeyse tamamı bir daha bakılmayacak arşivdi. Projenin kendi kuralı buraya da uygulandı (eski anlatı → arsiv/). Pano son 8 turu gösterir; öncesi burada ve git geçmişinde durur.",
  "kaynak": "docs/pano/ilerleme-panosu.html",
  "tasindi": "2026-09-24",
- "kart": 75,
+ "kart": 77,
  "gunluk": [
+  {
+   "tarih": "23.09.2026",
+   "etiket": "T8a — zincir + T3 denge + nokta kapısı + seviye ₺ (D-142)",
+   "baslik": "Sim oyunun sıra kuralını <b>oynamıyormuş</b>; düzelince taban 6,05 sa",
+   "govde": "Ölçüm aracı yürürlükteki oyunu kurarken bir kusur buldu: sim masa yükseltmesini serbest sırayla alıyordu, oyunda D-124'ten beri tek hedef var. Kat 1 %6,7 fazla görünüyordu. 22 kolun hepsi doğru taban üstünde koştu.<br><br><b>Seçilen:</b> 2. garson Salon 1'in sonunda ₺800 (₺1.600'da kendi 30 dk'lık beklemesini doğuruyordu) · garson 2'li tepsi, tavan 4 · tepsi ₺30 · 4. masa ₺250 · seviye tabanı 90 · seviye ₺'si Seviye 5'ten (kapısız hâli ilk alımı 22 → 3 sn'ye indiriyordu) · yükseltme noktası görev kapılı.<br><br><b>Uygulanan kod ölçülen kolun kendisi:</b> final taban commit #1'in PK2 satırını parmak izine kadar verdi. Bardak havuzu bağlamıyor çıktı; T6'nın '42 bardak, temiz 0' ölçümü araç hatasıymış (dünyada 22 bardak vardı). 2. garson pad'inin ilk yeri karede garsonun altında kaldı, taşındı. Mutasyon 6/6, duman 50/50."
+  },
+  {
+   "tarih": "23.09.2026",
+   "etiket": "T7 — banket ortadan büyür · ada tek kademe · WC kabini (D-141)",
+   "baslik": "Minder artık <b>parça parça değil</b>, adaya bir anda geliyor",
+   "govde": "Kullanıcı karar paketindeki üç görünüş kolunun yerine kendi kuralını verdi: <i>&#34;önce banketler uzasın, sonra minder; yarısında var yarısında yok olmasın&#34;</i>. Kural buna göre kuruldu: ada dolmadan çıplak ahşap sedir, dolunca adadaki <b>en düşük</b> masa seviyesi. Dolmayı beklemek şart, yoksa yeni açılan L0 masa bütün minderleri geri alırdı.<br><br><b>Çizim tek mesh:</b> onlarca parça (kaide, çerçeveli pano, uç kolu, minder, kapitone) köşe rengiyle birleşti — ölçümün 24 → 88 çağrı riski 2'ye indi. <b>WC:</b> KayKit'in panelli oda kapısı söküldü, yerine yerden açık, raylı, dolu/boş göstergeli düz laminat kabin çizildi.<br><br><b>Bedel ölçüldü:</b> şeridin içten dolması masaları kapıya yaklaştırdı, Kat 1 <b>−%4,3</b> kısaldı; 20 dk'yı aşan sayılar ve D-095 bandı aynı kaldı. Mutasyon 5/5."
+  },
   {
    "tarih": "23.09.2026",
    "etiket": "T6b — tarayıcı kayma ölçümü · defter kesimi",

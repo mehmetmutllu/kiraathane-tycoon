@@ -3,10 +3,11 @@ import { Scene } from './components/three/Scene';
 import { HUD } from './components/ui/HUD';
 import { Joystick } from './components/ui/Joystick';
 import { SplashScreen } from './components/ui/SplashScreen';
-import { useGame } from './game/store';
+import { kayitVerisi, useGame } from './game/store';
 import { sesiBagla } from './game/audioBridge';
 import { reklamBaslat, reklamEkranda } from './game/ads';
 import { satinAlmaBaslat } from './game/iap';
+import { bulutBaslat, bulutDongusu, bulutKaydet } from './game/bulut';
 
 const KEY_MAP: Record<string, [number, number]> = {
   KeyW: [0, -1],
@@ -45,6 +46,12 @@ export default function App() {
     void reklamBaslat();
     // F4a: mağaza hesabının kalıcı sahiplikleri (reklamsız · başlangıç) — okunamazsa kayıttaki önbellek geçerli.
     void satinAlmaBaslat().then((h) => h && useGame.getState().sahiplikEsitle(h));
+    // F4b: Play Games — açılışta sessiz giriş; bağlıysa bulut eşitlenir (daha ileri kayıt kazanır).
+    void bulutBaslat({
+      yerel: () => kayitVerisi(useGame.getState()),
+      yukle: (d) => useGame.getState().bulutKaydiYukle(d),
+    });
+    const bulutCoz = bulutDongusu();
     // Hile kancaları (__game/__addMoney/__setState...) yalnız geliştirmede yüklenir.
     if (import.meta.env.DEV) void import('./game/devHooks').then((m) => m.installDevHooks());
 
@@ -90,8 +97,10 @@ export default function App() {
     // Tam ekran reklam WebView'u gizler — o süre "arka plan" değil, çevrimdışı gelir sayılmaz.
     const onVisibility = () => {
       if (reklamEkranda()) return;
-      if (document.visibilityState === 'hidden') useGame.getState().arkaPlanaGec();
-      else useGame.getState().onPlanaDon();
+      if (document.visibilityState === 'hidden') {
+        useGame.getState().arkaPlanaGec();
+        void bulutKaydet();
+      } else useGame.getState().onPlanaDon();
     };
     document.addEventListener('visibilitychange', onVisibility);
 
@@ -102,6 +111,7 @@ export default function App() {
       window.removeEventListener('beforeunload', onHide);
       document.removeEventListener('visibilitychange', onVisibility);
       sesiCoz();
+      bulutCoz();
     };
   }, []);
 

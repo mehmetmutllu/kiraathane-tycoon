@@ -4799,3 +4799,15 @@ Fiyat kodda yok: mağazada ülke başına (ayrı oturum). RevenueCat (sunucu do�
 600'lük paketin 350'si ölü 💎. Harcanacak yeri olmayan para satılmaz. `docs/iap-raporu-f4a.md`.
 **Kurallar:** aynı işlem iki kez ödül vermez · başlangıç 💎'ı bir kez · sıfırlama satın alımı silmez · mağaza kaynaktır (iade düşer).
 **Bekçi:** `tests/iap-f4a.test.ts` 25 · `tools/mutasyon-iap-f4a.mjs` 11/11 · duman 55/55.
+
+## D-153 · Play Games: kendi eklentimiz · bulutta daha ileri kayıt kazanır · 19 başarım / 1000 XP ödülsüz (2026-09-24)
+
+**Karar (kullanıcı onayı, önerilen iki kol):** başarımlar oyun içi ödül VERMEZ (yalnız Play XP → denge dosyasına dokunulmadı,
+ölçüm turu yok) · giriş zorunlu değil (açılışta sessiz, Ayarlar'da "Bağlan"). Çakışma: daha ileri kayıt kazanır.
+**Teknik seçim (gerekçeli):** hazır Capacitor eklentileri Capacitor 5'te kaldı, Saved Games yok → `PlayGamesPlugin.java`
+(PGS v2 22.1.0, 6 çağrı). İlerleme = toplam kazanç, eşitse XP; Saved Games'e `progressValue` + HIGHEST_PROGRESS.
+**Kurallar:** ileri bulutun üstüne yazılmaz · okunamayan bulut ezilmez · yeni şemalı bulut yüklenmez · yüklemede ayar +
+satın alım yerelden · sıfırlama bulutu da sıfırlar · başarım durumdan türer (kayıt alanı yok) · APP_ID boşken KAPALI.
+Kayıt görüntüsü tek yerde (`kayitVerisi`), bulut kaydı yerelle aynı göç yolundan (`kayitCoz`). saveVersion artmadı.
+**Bekçi:** `tests/play-games-f4b.test.ts` 25 · `tools/mutasyon-play-games-f4b.mjs` 18/18 · emülatörde açılış + Ayarlar
+(`docs/gorsel/f4b/`). Kullanıcı adımları: `docs/play-games-kurulum.md`.

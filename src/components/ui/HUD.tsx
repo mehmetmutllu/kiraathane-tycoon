@@ -10,6 +10,7 @@ import { App as CapApp } from '@capacitor/app';
 import { odulAlindi, odulluIzle, odulluReklamHazir, panelKapandi, reklamAbone, sogumaSifirla } from '../../game/ads';
 import { screenPointer } from '../../game/screenPointer';
 import { satinAl, satinAlimlariGeriYukle, satinAlmaAbone, satinAlmaSurumu, urunFiyati } from '../../game/iap';
+import { basarimlariGoster, bulutAbone, bulutSifirla, bulutSurumu, girisYap, playGamesDurumu } from '../../game/bulut';
 import { iapConfig } from '../../config/iap.config';
 import { fmt } from '../../game/decimal';
 import { SAVE_VERSION } from '../../game/save';
@@ -231,6 +232,8 @@ export function HUD() {
     sogumaSifirla();
     setSheet(null);
     hardReset();
+    // F4b: bulut yedeği de sıfırlanır — yoksa bir sonraki açılışta "daha ileri" diye geri gelirdi.
+    void bulutSifirla();
   };
 
   return (
@@ -564,9 +567,10 @@ export function HUD() {
               <div><span>Yıkanan bulaşık</span><b>{fmt(stats.dishesWashed)}</b></div>
               <div><span>Açılan nokta</span><b>{padsDone.length}</b></div>
             </div>
+            <PlayGamesBolumu />
             <GeriYukle />
             <div className="sheet-foot-note">
-              Kayıt bu cihazda tutulur — sunucu yok. Oyunu sıfırlarsan geri alınamaz.
+              Kayıt bu cihazda tutulur; Play Games'e bağlıysan buluta da yedeklenir. Oyunu sıfırlarsan geri alınamaz.
             </div>
             <button className="danger-btn" data-testid="reset" onClick={() => setSifirlaSor(true)}>
               <ResetIcon size={17} /> Oyunu sıfırla
@@ -575,7 +579,7 @@ export function HUD() {
               <div className="modal-backdrop" data-testid="reset-confirm" onClick={() => setSifirlaSor(false)}>
                 <div className="modal-card reward-card" onClick={(e) => e.stopPropagation()}>
                   <div className="reward-title">Oyunu sıfırla?</div>
-                  <p className="onay-metin">Bu cihazdaki tüm ilerleme silinecek. Geri alınamaz.</p>
+                  <p className="onay-metin">Tüm ilerleme silinecek (bulut yedeği dahil). Geri alınamaz.</p>
                   <button className="danger-btn" data-testid="reset-yes" onClick={onReset}>
                     <ResetIcon size={17} /> Evet, sıfırla
                   </button>
@@ -1746,6 +1750,38 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
         </button>
       )}
     </Sheet>
+  );
+}
+
+/**
+ * PLAY GAMES (F4b · D-153). Giriş ZORUNLU DEĞİL: açılışta sessizce denenir, olmazsa burada bir düğme
+ * durur. APP_ID girilmemiş cihazda (ya da SDK kurulamadıysa) bölüm hiç çizilmez.
+ */
+function PlayGamesBolumu() {
+  useSyncExternalStore(bulutAbone, bulutSurumu);
+  const { kullanilabilir, girisli } = playGamesDurumu();
+  const [durum, setDurum] = useState<'bos' | 'bekle' | 'hata'>('bos');
+  if (!kullanilabilir) return null;
+  const baglan = async () => {
+    setDurum('bekle');
+    setDurum((await girisYap()) ? 'bos' : 'hata');
+  };
+  return (
+    <>
+      <div className="sheet-sec">PLAY GAMES</div>
+      {girisli ? (
+        <>
+          <div className="sheet-foot-note" data-testid="pg-bagli">Bağlısın — ilerlemen buluta yedekleniyor.</div>
+          <button className="sheet-cta" data-testid="pg-basarim" onClick={() => void basarimlariGoster()}>
+            Başarımlar
+          </button>
+        </>
+      ) : (
+        <button className="sheet-cta" data-testid="pg-baglan" disabled={durum === 'bekle'} onClick={() => void baglan()}>
+          {durum === 'hata' ? 'Bağlanamadı — tekrar dene' : "Play Games'e bağlan"}
+        </button>
+      )}
+    </>
   );
 }
 

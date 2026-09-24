@@ -13,4 +13,9 @@
     <string name="title_activity_main">Tea House Tycoon</string>
     <string name="package_name">com.memedobro.teahousetycoon</string>
     <string name="custom_url_scheme">com.memedobro.teahousetycoon</string>
+    <!--
+      PLAY GAMES PROJE KİMLİĞİ (F4b · D-153): Play Console → Play Games Services → Yapılandırma'daki
+      sayısal kimlik. BOŞKEN Play Games kapalıdır (oyun onsuz oynanır). Çevrilmez: values-tr'de YOK.
+    -->
+    <string name="game_services_project_id" translatable="false"></string>
 </resources>

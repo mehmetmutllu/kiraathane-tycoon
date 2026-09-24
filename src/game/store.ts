@@ -228,6 +228,60 @@ export function trayCapacity(tier?: number): number {
 export const gorunenCuzdan = (s: { wallet: Decimal; offlineEarned: number }): Decimal =>
   s.offlineEarned > 0 ? Decimal.max(0, s.wallet.sub(s.offlineEarned)) : s.wallet;
 
+/**
+ * KAYIT GÖRÜNTÜSÜ — diske yazılan da (`saveNow`) buluta giden de (F4b) bu. Tek yerde kurulur ki
+ * iki kayıt yolu birbirinden sapmasın.
+ */
+export function kayitVerisi(s: GameState): SaveData {
+  // K8 (D-146): yerdeki para kayıtta cüzdandadır — uygulama kapanınca yanmasın. Canlı durumda
+  // paralar yerde kalır (toplama oyunun döngüsü); yalnız YAZILAN cüzdan onları içerir. Kayıt
+  // yüklenince yerde para yoktur → çift sayım olmaz.
+  let yerde = 0;
+  for (const c of s.coins) yerde += c.value;
+  // D-015: tables/stations/hasWaiter KAYDEDİLMEZ — yüklemede padsDone'dan türetilir.
+  return {
+    ...defaultSave(),
+    wallet: s.wallet.add(yerde).toString(),
+    diamonds: s.diamonds.toString(),
+    lifetime: s.lifetime.add(yerde).toString(),
+    stationLevels: [...s.stationLevels],
+    tableLevels: [...s.tableLevels],
+    lavaboLevel: s.lavaboLevel,
+    padsDone: [...s.padsDone],
+    padFills: { ...s.padFills },
+    // G-78: kısmi ödenmiş yükseltmeler de kayda gider. `padFills` zaten gidiyordu; bu üçü
+    // gitmediği için oyuncunun yarım bıraktığı yükseltmeye ödediği para her yüklemede yanıyordu.
+    upgradeFills: [...s.upgradeFills],
+    tableUpgradeFills: [...s.tableUpgradeFills],
+    lavaboFill: s.lavaboFill,
+    stats: { ...s.stats },
+    // D-088: kayda index DEĞİL kimlik gider — hat değişse de kaydın yeri kaymasın.
+    questsDone: completedQuestIds(C.quests, s.questIndex),
+    goalsClaimed: [...(s.goalsClaimed ?? [])],
+    mastersOwned: [...(s.mastersOwned ?? [])],
+    reklam: { ...s.reklam },
+    satin: { ...s.satin, islenen: [...s.satin.islenen] },
+    daily: { ...s.daily, ids: [...s.daily.ids], base: { ...s.daily.base }, claimed: [...s.daily.claimed] },
+    questBase: s.questBase,
+    questBaseId: C.quests[s.questIndex]?.id ?? '',
+    xp: s.xp,
+    settings: { ...s.settings },
+    floorThemeByArea: [...s.floorThemeByArea],
+    wallThemeByArea: [...s.wallThemeByArea],
+    tableTheme: s.tableTheme,
+    kitchenTheme: s.kitchenTheme,
+    ownedCosmetics: [...s.ownedCosmetics],
+    charUpgrades: { ...s.charUpgrades },
+    waiterUpgrades: { ...s.waiterUpgrades },
+    charPanelSeen: s.charPanelSeen,
+    trayTipSeen: s.trayTipSeen,
+    washTipSeen: s.washTipSeen,
+    // A7: alınmamış ₺'li seviye ödülü kayda gider (ekran açıkken kapanırsa yanmasın).
+    levelUp: s.levelUp && s.levelUp.amount > 0 ? { ...s.levelUp } : null,
+    lastSaved: Date.now(),
+  };
+}
+
 export function goalMetricsOf(s: {
   stats: { teasServed: number; waiterServed: number; dishesWashed: number };
   padsDone: readonly string[];
@@ -466,6 +520,8 @@ export interface GameState {
   satinAlimIsle: (islem: Islem) => number | null;
   /** F4a: mağaza hesabının kalıcı sahiplikleri (açılış · geri yükleme) — önbellek bununla eşitlenir. */
   sahiplikEsitle: (h: Sahiplik) => void;
+  /** F4b: buluttaki daha ileri kaydı yükle (`bulut.ts` birleştirilmiş kaydı verir). */
+  bulutKaydiYukle: (d: SaveData) => void;
   /** F4a: reklamsızın bugünkü 💎'ını al. Hazır değilse 0. */
   claimAdFreeDaily: () => number;
   /** D8: bugünün bir günlük görevinin 💎 ödülünü al. Eşik doğrulaması `dailyQuests.ts`te. */
@@ -1341,54 +1397,15 @@ export const useGame = create<GameState>((set, get) => ({
   },
 
   saveNow: () => {
-    const s = get();
-    // K8 (D-146): yerdeki para kayıtta cüzdandadır — uygulama kapanınca yanmasın. Canlı durumda
-    // paralar yerde kalır (toplama oyunun döngüsü); yalnız YAZILAN cüzdan onları içerir. Kayıt
-    // yüklenince yerde para yoktur → çift sayım olmaz.
-    let yerde = 0;
-    for (const c of s.coins) yerde += c.value;
-    // D-015: tables/stations/hasWaiter KAYDEDİLMEZ — yüklemede padsDone'dan türetilir.
-    writeSave({
-      ...defaultSave(),
-      wallet: s.wallet.add(yerde).toString(),
-      diamonds: s.diamonds.toString(),
-      lifetime: s.lifetime.add(yerde).toString(),
-      stationLevels: [...s.stationLevels],
-      tableLevels: [...s.tableLevels],
-      lavaboLevel: s.lavaboLevel,
-      padsDone: [...s.padsDone],
-      padFills: { ...s.padFills },
-      // G-78: kısmi ödenmiş yükseltmeler de kayda gider. `padFills` zaten gidiyordu; bu üçü
-      // gitmediği için oyuncunun yarım bıraktığı yükseltmeye ödediği para her yüklemede yanıyordu.
-      upgradeFills: [...s.upgradeFills],
-      tableUpgradeFills: [...s.tableUpgradeFills],
-      lavaboFill: s.lavaboFill,
-      stats: { ...s.stats },
-      // D-088: kayda index DEĞİL kimlik gider — hat değişse de kaydın yeri kaymasın.
-      questsDone: completedQuestIds(C.quests, s.questIndex),
-      goalsClaimed: [...(s.goalsClaimed ?? [])],
-      mastersOwned: [...(s.mastersOwned ?? [])],
-      reklam: { ...s.reklam },
-      satin: { ...s.satin, islenen: [...s.satin.islenen] },
-      daily: { ...s.daily, ids: [...s.daily.ids], base: { ...s.daily.base }, claimed: [...s.daily.claimed] },
-      questBase: s.questBase,
-      questBaseId: C.quests[s.questIndex]?.id ?? '',
-      xp: s.xp,
-      settings: { ...s.settings },
-      floorThemeByArea: [...s.floorThemeByArea],
-      wallThemeByArea: [...s.wallThemeByArea],
-      tableTheme: s.tableTheme,
-      kitchenTheme: s.kitchenTheme,
-      ownedCosmetics: [...s.ownedCosmetics],
-      charUpgrades: { ...s.charUpgrades },
-      waiterUpgrades: { ...s.waiterUpgrades },
-      charPanelSeen: s.charPanelSeen,
-      trayTipSeen: s.trayTipSeen,
-      washTipSeen: s.washTipSeen,
-      // A7: alınmamış ₺'li seviye ödülü kayda gider (ekran açıkken kapanırsa yanmasın).
-      levelUp: s.levelUp && s.levelUp.amount > 0 ? { ...s.levelUp } : null,
-      lastSaved: Date.now(),
-    });
+    writeSave(kayitVerisi(get()));
+  },
+
+  bulutKaydiYukle: (d) => {
+    // F4b: buluttaki DAHA İLERİ kayıt. Diske yazılır ve oyun onunla yeniden kurulur — yükleme yolu
+    // yereldekiyle aynı (`init`), yani göç, kelepçe ve türetme bir kez yazılı.
+    writeSave(d);
+    get().init();
+    set({ notice: { text: 'Bulut kaydı yüklendi', ttl: 4, kind: 'reveal' } });
   },
 
   hardReset: () => {

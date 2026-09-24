@@ -195,7 +195,7 @@ h2{font-size:21px;font-weight:800}
 <script type="application/json" id="durum">
 {
  "guncelleme": "24.09.2026",
- "yapilan": 123,
+ "yapilan": 124,
  "toplam": 127,
  "kilometre": [
   {
@@ -216,14 +216,14 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "ozet": {
-  "etiket": "Bu oturum — F3 kapandı (D-149 · D-150): reklam",
-  "baslik": "Reklam <b>bağlandı</b>, ödüllü video ölçüldü",
-  "aciklama": "AdMob çocuk-güvenli kipte kuruldu; geçişli reklam 3 dk soğumayla yalnız panel kapanınca. Ödüllü video: seviye/günlük/kısa yokluk 2×, Usta günde 1 video, 2 saatte 4 video hakkı. Kat 1 en fazla %4,5 kısalıyor."
+  "etiket": "Bu oturum — F4b kapandı (D-153): Play Games",
+  "baslik": "Bulut kaydı + <b>19 başarım</b>",
+  "aciklama": "Kendi Android eklentimiz: giriş, bulut kaydı (daha ileri kayıt kazanır), başarımlar (1000 XP, oyun içi ödül yok). Kimlik girilene dek kapalı; Play Console adımları docs/play-games-kurulum.md'de."
  },
  "siradaki": {
-  "etiket": "Sırada — F4",
-  "baslik": "Uygulama içi satın alma: <b>RevenueCat</b>",
-  "aciklama": "“Reklamları Kaldır” (geçişliyi kaldırır, ödüllüye dokunmaz, günde +10 💎) · elmas paketleri · başlangıç paketi. Sonra F5 mağaza vitrini ve tanıtım videosu. Gerçek AdMob kimliği ve cihaz denemesi bekliyor."
+  "etiket": "Sırada — F4c",
+  "baslik": "💎 <b>kozmetik vitrini</b>",
+  "aciklama": "Elmas paketlerinin harcama yeri + başlangıç paketinin özel kozmetiği; adaylar render edilip seçtirilir. Sonra F5 mağaza vitrini. Bekleyenler: RevenueCat anahtarı, AdMob kimliği, Play Games kimlikleri."
  },
  "donemler": [
   {
@@ -378,10 +378,10 @@ h2{font-size:21px;font-weight:800}
      "k": "F",
      "t": "Paketleme ve yayın",
      "d": "Mağazaya çıkışın kabuğu. <b>F2 (D-125):</b> ölü asset yükü silindi, APK 20,93 → 11,84 MB ve gölge cihaz sınıfına bağlandı. <b>F1 (D-130):</b> kabuk ve imza — kalıcı kimlik <code>com.memedobro.teahousetycoon</code>, R8 + kaynak budama açık, sürüm <code>package.json</code>&#39;dan türer; <b>imzalı APK 8,58 MB / AAB 8,89 MB</b> (debug&#39;dan −%27,5), anahtar depoda değil. Ad ile kimlik ayrıldı: başlık dil başına yazılıyor (EN &#34;Tea House Tycoon: Idle Cafe&#34; · TR &#34;Köşe Kıraathanesi: Tycoon&#34;). <b>F3 (D-149 · D-150):</b> AdMob çocuk-güvenli kipte (reklam kimliği ve Privacy Sandbox izinleri yok, banner yok), R8 eklentiyle yeniden ölçüldü ve güvenli, APK 11,24 MiB. Geçişli reklam 3 dk soğumayla yalnız panel kapanınca; ödüllü video seviye/günlük/kısa yokluk 2×, Usta günde 1 video, 2 saatte 4 video hakkı — Kat 1 en fazla −%4,5. Kalan: <b>F4</b> RevenueCat · <b>F5</b> mağaza vitrini, gizlilik, yaş derecelendirmesi.",
-     "yapilan": 5,
+     "yapilan": 6,
      "toplam": 8,
      "kapi": "Mağazaya yüklenebilir imzalı AAB + vitrin materyali",
-     "durum": "next"
+     "durum": "now"
     },
     {
      "k": "T",
@@ -389,13 +389,36 @@ h2{font-size:21px;font-weight:800}
      "d": "Kullanıcının oynayıp verdiği geri bildirimin turları. <b>T1</b> onarım (bir <b>veri kaybı</b> dâhil) · <b>T2</b> görev akışı (mantık + görsel) · <b>T4</b> performans: fps tavanı yoktu, erken oyunda <b>116,7 fps</b> çiziliyordu; ve kare <b>bölüşümü</b> ölçülünce herkesin bir tur boyunca <b>yanlış yarıya</b> baktığı görüldü — çizim karenin yarısı bile değil, en büyük kalem <code>findNavPath</code>. <b>T5 (D-139):</b> devralınan plan (&#34;41 KB tampon ayırmak pahalı&#34;) ölçülüp <b>çürütüldü</b>; üç kol uygulandı, çıktı birebir aynı kaldı. <b>T5b:</b> T5&#39;in açık ucu kapandı — iki kol <b>aynı sayfada</b>, ABBA deseninde, gölge montajda sabitlenmiş hâlde koşturuldu ve nav&#39;la ilgisiz kalemler <b>denetim kolu</b> olarak sınandı. Tarayıcıda oran <b>×1,09</b> çıktı, node&#39;da <b>×2,52</b>; tarayıcının GERÇEK çağrıları node&#39;da oynatılınca <b>×2,82</b> → korpus temsilî, fark <b>ortamda</b> (node blok ölçer, GC dâhil; tarayıcı çağrı-içi ölçer, GC dışarıda). <b>T5&#39;in kaçırdığı asıl kazanç:</b> ayırma <b>178,6 → 33,5 MB/sn</b> — T5 bunu &#34;tabanın %10,3&#39;ü&#34; diye elemişti, zaman olarak doğruydu ama ayırma bir <b>hız</b>tır ve telefonda karşılığı GC takılması + pildir. Kare kazancı kanıtlandı ama küçük: <b>%5,9-7,1</b>. <b>T6 (D-140, kapandı):</b> kullanıcı <i>&#34;kapı dışında izdiham oluyor, 100lerce npc birikiyor&#34;</i> dedi ve ölçüm aynı şeyi sayıyla gördü — 2 dakikada üçgen <b>+%80</b>, kare <b>+%31</b>, NPC 39 → 56. Kodda doğrulanan şüpheli: doğma tavanı <code>leaving</code>/WC durumlarını saymıyor, yani ekrandaki <b>toplam nüfusun tavanı yok</b>. Piyasa standardı araştırıldı (Restaurant Tycoon 2/3: &#34;uygun masa yoksa hiç doğma&#34;; kuramı Little yasası). Kök doğma tavanı değil çıkış çıktı: <code>leaving</code> ayrışmadan muaf tutuldu → 10 dk'da NPC <b>494 → 59</b>, kapı önü <b>475 → 11</b>; final koşu ölçülen kolu birebir verdi. <b>T7 (D-141, kapandı):</b> banket artık masayla <b>ortadan dışa</b> büyüyor, minder adaya <b>komple</b> geliyor (ada dolunca en düşük masa seviyesi: keten → bordo + sırt → yastık → pirinç biye + kapitone), ada başına tek mesh; Salon 3 pad&#39;inin çakışması kapandı; WC kabini elle çizildi. Bedel ölçüldü: Kat 1 <b>−%4,3</b>, eşikler aynı. <b>T8a (D-142, kapandı):</b> zincir sırası ve T3'ün fiyat kolları yürürlükteki oyunun üstünde ölçüldü — sim'in tabanının oyunun sıra kuralını (D-124) oynamadığı da bu sırada çıktı. 2. garson Salon 1'in sonuna (152. → 29. dk), garson 2'li tepsiyle başlıyor, seviye atlama ödül ekranı oldu (Seviye 5'ten itibaren son 60 sn'nin kazancı), yükseltme noktası yalnız kendi görevinde canlı. Kat 1 <b>−%7,7</b>, eşikler temiz; final taban ölçülen kolla parmak izine kadar aynı. <b>T8b (D-143, kapandı):</b> tezgâh sol duvardan 0,75 açıldı, çaycı ve bulaşıkçı arkaya geçti (0,60 en küçük yeterli paydı ama kafa duvara giriyordu); kirli leğende birikip 10 sn'de toptan yıkanıyor (kap başına süre yığın oluşturmuyordu), geç oyun −%3; Türk tost makinesi çizildi — hiçbir CC0 pakette pres tipi yok. <b>T9a (D-145, kapandı):</b> kare bölüşümü tick'in <b>%96</b>'sını yol bulmada gösterdi; yol ÇAĞRISI başlangıç hücresine göre önbelleklendi (T5'in bayatlayan yol önbelleğinin tersine) — tick <b>×10</b>, telefon öykünmesinde kare işi <b>−%21,2</b>, davranış parmak izine kadar aynı. g1 kolunun “iyileştiriyor” kaydı bayat kolun hattı tıkamasıymış; elendi.",
      "yapilan": 13,
      "toplam": 13,
-     "kapi": "Kullanıcının gördüğü her kusur ya düzeltilmiş ya ölçülerek elenmiş olmalı",
-     "durum": "now"
+     "kapi": "Kullanıcının gördüğü her kusur ya düzeltilmiş ya ölçülerek elenmiş olmalı"
     }
    ]
   }
  ],
  "gunluk": [
+  {
+   "tarih": "24.09.2026",
+   "etiket": "F4b — Play Games (D-153)",
+   "baslik": "Play Games <b>hazır</b>: bulut kaydı + 19 başarım",
+   "govde": "Hazır eklentiler eski kaldığı için kendi küçük Android eklentimiz yazıldı. Oyuncu bağlıysa kayıt buluta yedekleniyor; telefon değişince ya da oyun silinip kurulunca daha ileri olan kayıt kazanıyor. Başarımlar yalnız Play puanı veriyor, oyunun dengesine dokunmuyor.<br><br>Play Console'da kimlikler girilene dek bölüm kapalı; emülatörde oyun normal açıldı.",
+   "maddeler": [
+    "çakışma: <b>daha ileri kayıt kazanır</b> (toplam kazanç, eşitse XP)",
+    "daha ileri bulutun üstüne yazılmaz · sıfırlama bulutu da sıfırlar",
+    "19 başarım · <b>1000 XP</b> · giriş zorunlu değil",
+    "bekçi 25 test · 18/18 mutasyon · release APK 12,31 MiB"
+   ]
+  },
+  {
+   "tarih": "24.09.2026",
+   "etiket": "F4a — satın alımlar (D-152)",
+   "baslik": "Satın alma <b>bağlandı</b>: Reklamları Kaldır + başlangıç 100 💎",
+   "govde": "RevenueCat katmanı kuruldu; anahtar girilene dek cihazda kapalı, tarayıcıda sahte mağaza. Reklamları Kaldır geçişliyi kaldırıyor, ödüllüye dokunmuyor ve günde 10 💎 veriyor.<br><br><b>Ölçülen: peşin 💎.</b> Başlangıç 100 💎 Kat 1'i %4,5 kısaltıyor; sınırsız 💎 bile yalnız %7,0. 💎'ın talebi 250'de bitiyor, bu yüzden paketler 25/60/150 ve vitrin 💎 harcama yeri gelene dek kapalı.",
+   "maddeler": [
+    "başlangıç paketi: <b>100 💎</b> + yalnız ona özel kozmetik (F4c)",
+    "elmas paketleri <b>25/60/150</b> kodda, vitrinde kapalı",
+    "aynı işlem iki kez ödül vermez · sıfırlama satın alımı silmez · geri yükle",
+    "bekçi 25 test · 11/11 mutasyon · duman 55/55"
+   ]
+  },
   {
    "tarih": "24.09.2026",
    "etiket": "F3 — reklam altyapısı (D-149) + ödüllü videonun ödülü (D-150)",
@@ -466,18 +489,6 @@ h2{font-size:21px;font-weight:800}
    "etiket": "T8b — tezgâh arkası (D-143)",
    "baslik": "En küçük yeterli pay <b>0,60</b> çıktı, seçilen <b>0,75</b> oldu",
    "govde": "Adam 0,30'luk boşluğa sığmıyordu (gövdesi 0,56). Ölçüm 0,60'ı en küçük yeterli pay buldu ama karede kafası duvara giriyordu — 'en az' ile 'kaliteli' çatıştı, 0,75 ikisini de tutuyor. Hiçbir pay servisi düşürmedi.<br><br><b>Bulaşıkta sürpriz:</b> kap başına süreli yıkama leğende en fazla 2-4 kap biriktiriyor, yani kullanıcının istediği yığın ekranda hiç oluşmuyordu. Tarife uyan kol ölçüm sırasında eklendi: kirli birikir, 10 sn'de bir toptan yıkanır — yığın 4-7 kap, bedeli −%3.<br><br>Kısa koşunun '−%27 servis' işareti tek tohumlu gürültüydü; 4 tohumla kayboldu. Bekçi 6 denetim, 3 mutasyon kırmızı. Tost yeri (aynı tezgâh mı, ayrı modül mü) açık soru."
-  },
-  {
-   "tarih": "23.09.2026",
-   "etiket": "T8a — zincir + T3 denge + nokta kapısı + seviye ₺ (D-142)",
-   "baslik": "Sim oyunun sıra kuralını <b>oynamıyormuş</b>; düzelince taban 6,05 sa",
-   "govde": "Ölçüm aracı yürürlükteki oyunu kurarken bir kusur buldu: sim masa yükseltmesini serbest sırayla alıyordu, oyunda D-124'ten beri tek hedef var. Kat 1 %6,7 fazla görünüyordu. 22 kolun hepsi doğru taban üstünde koştu.<br><br><b>Seçilen:</b> 2. garson Salon 1'in sonunda ₺800 (₺1.600'da kendi 30 dk'lık beklemesini doğuruyordu) · garson 2'li tepsi, tavan 4 · tepsi ₺30 · 4. masa ₺250 · seviye tabanı 90 · seviye ₺'si Seviye 5'ten (kapısız hâli ilk alımı 22 → 3 sn'ye indiriyordu) · yükseltme noktası görev kapılı.<br><br><b>Uygulanan kod ölçülen kolun kendisi:</b> final taban commit #1'in PK2 satırını parmak izine kadar verdi. Bardak havuzu bağlamıyor çıktı; T6'nın '42 bardak, temiz 0' ölçümü araç hatasıymış (dünyada 22 bardak vardı). 2. garson pad'inin ilk yeri karede garsonun altında kaldı, taşındı. Mutasyon 6/6, duman 50/50."
-  },
-  {
-   "tarih": "23.09.2026",
-   "etiket": "T7 — banket ortadan büyür · ada tek kademe · WC kabini (D-141)",
-   "baslik": "Minder artık <b>parça parça değil</b>, adaya bir anda geliyor",
-   "govde": "Kullanıcı karar paketindeki üç görünüş kolunun yerine kendi kuralını verdi: <i>&#34;önce banketler uzasın, sonra minder; yarısında var yarısında yok olmasın&#34;</i>. Kural buna göre kuruldu: ada dolmadan çıplak ahşap sedir, dolunca adadaki <b>en düşük</b> masa seviyesi. Dolmayı beklemek şart, yoksa yeni açılan L0 masa bütün minderleri geri alırdı.<br><br><b>Çizim tek mesh:</b> onlarca parça (kaide, çerçeveli pano, uç kolu, minder, kapitone) köşe rengiyle birleşti — ölçümün 24 → 88 çağrı riski 2'ye indi. <b>WC:</b> KayKit'in panelli oda kapısı söküldü, yerine yerden açık, raylı, dolu/boş göstergeli düz laminat kabin çizildi.<br><br><b>Bedel ölçüldü:</b> şeridin içten dolması masaları kapıya yaklaştırdı, Kat 1 <b>−%4,3</b> kısaldı; 20 dk'yı aşan sayılar ve D-095 bandı aynı kaldı. Mutasyon 5/5."
   }
  ],
  "riskler": [
@@ -732,7 +743,7 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "gunlukArsiv": {
-  "kart": 75,
+  "kart": 77,
   "ilk": "05.06 – 17.06.2026",
   "son": "23.09.2026",
   "yer": "memory-bank/arsiv/pano-gunluk.json"

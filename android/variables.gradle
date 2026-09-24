@@ -16,4 +16,6 @@ ext {
     // F3 (D-144): AdMob eklentisinin varsayılanı '25.4.+' — dinamik sürüm iki derlemeye iki SDK verebilir.
     playServicesAdsVersion = '25.4.0'
     userMessagingPlatformVersion = '4.0.0'
+    // F4b (D-153): Play Games v2.
+    playServicesGamesVersion = '22.1.0'
 }

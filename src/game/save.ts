@@ -425,23 +425,36 @@ export function kayitKilitli(): boolean {
   return yazmaKilidi;
 }
 
+/**
+ * Ham kaydı (JSON'dan çözülmüş nesne) bugünkü şemaya getirir: göç zinciri + derin birleştirme.
+ * Yerel kayıt da bulut kaydı da (F4b) AYNI yoldan geçer — iki ayrı çözücü olsaydı biri diğerinden
+ * saparda (D-015 dersi). `yeniSurum`: kayıt bu paketten yeni sürümle yazılmış (okunur ama yazılmaz).
+ */
+export function kayitCoz(parsed: Record<string, unknown>): { data: SaveData; yeniSurum: boolean } {
+  // Ayarlar HER yolda birleştirilir: yüzeysel yayılım eski kaydın eksik ayar alanlarını
+  // `undefined` bırakırdı ve göç bunu yakalayamazdı (sürüm zaten güncel). Bkz. `ayarlariBirlestir`.
+  const ayarla = (d: Record<string, unknown>): SaveData => {
+    const b = derinBirlestir(defaultSave(), d) as SaveData;
+    return { ...b, saveVersion: SAVE_VERSION, settings: ayarlariBirlestir(d.settings) };
+  };
+  const yeniSurum = typeof parsed.saveVersion === 'number' && parsed.saveVersion > SAVE_VERSION;
+  if (parsed.saveVersion === SAVE_VERSION || yeniSurum) return { data: ayarla(parsed), yeniSurum };
+  // Göç zinciri ADIM ADIM: her göç bir sonraki sürümü üretir (v31 → v33 → v34, v32 → v33 → v34).
+  let d: Record<string, unknown> | null = parsed;
+  for (const goc of [migrateV31, migrateV32, migrateV33]) d = (d && goc(d)) ?? d;
+  return {
+    data: d && d.saveVersion === SAVE_VERSION ? ayarla(d) : resetKeepingSettings(parsed),
+    yeniSurum: false,
+  };
+}
+
 export function loadSave(): SaveData {
   try {
     const raw = localStorage.getItem(KEY);
     if (!raw) return defaultSave();
-    const parsed = JSON.parse(raw) as Record<string, unknown>;
-    // Ayarlar HER yolda birleştirilir: yüzeysel yayılım eski kaydın eksik ayar alanlarını
-    // `undefined` bırakırdı ve göç bunu yakalayamazdı (sürüm zaten güncel). Bkz. `ayarlariBirlestir`.
-    const ayarla = (d: Record<string, unknown>): SaveData => {
-      const b = derinBirlestir(defaultSave(), d) as SaveData;
-      return { ...b, saveVersion: SAVE_VERSION, settings: ayarlariBirlestir(d.settings) };
-    };
-    yazmaKilidi = typeof parsed.saveVersion === 'number' && parsed.saveVersion > SAVE_VERSION;
-    if (parsed.saveVersion === SAVE_VERSION || yazmaKilidi) return ayarla(parsed);
-    // Göç zinciri ADIM ADIM: her göç bir sonraki sürümü üretir (v31 → v33 → v34, v32 → v33 → v34).
-    let d: Record<string, unknown> | null = parsed;
-    for (const goc of [migrateV31, migrateV32, migrateV33]) d = (d && goc(d)) ?? d;
-    return d && d.saveVersion === SAVE_VERSION ? ayarla(d) : resetKeepingSettings(parsed);
+    const { data, yeniSurum } = kayitCoz(JSON.parse(raw) as Record<string, unknown>);
+    yazmaKilidi = yeniSurum;
+    return data;
   } catch {
     return defaultSave();
   }

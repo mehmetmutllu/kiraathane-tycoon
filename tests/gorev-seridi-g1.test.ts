@@ -238,8 +238,9 @@ describe('G1/3 · kutlama sürerken kamera kaçmaz (G-44, gerçek tick)', () => 
   it('bekleyen odak KAYDA yazılmaz (geçici hâl, saveVersion oynamaz)', () => {
     // Kaydedilseydi `saveVersion` + migrasyon borcu doğardı; kamera odağı zaten geçici.
     const kaynak = oku('src/game/store.ts');
-    const yazma = kaynak.slice(kaynak.indexOf('writeSave({'));
-    const govde = yazma.split(/\n {4}\}\);/)[0];
+    // F4b: kayıt görüntüsü `kayitVerisi`nde kurulur (disk + bulut aynı yoldan).
+    const yazma = kaynak.slice(kaynak.indexOf('export function kayitVerisi('));
+    const govde = yazma.split(/\n\}\n/)[0];
     expect(govde).toContain('questsDone'); // doğru blok mu — yoksa denetim boşa yeşil yanar
     expect(govde).not.toContain('camBekleyen');
   });

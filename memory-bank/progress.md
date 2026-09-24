@@ -11,7 +11,7 @@ Durum: ✅ bitti · 🔧 devam · ⏳ bekliyor
 `docs/pano/ilerleme-panosu.html` · https://claude.ai/artifact/1Y8JNb3MckS3EhfSXJKKRs
 Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (elle sayı yazılmaz).
 
-**Oturum bütçesi (TOPLAM 127 · YAPILAN 123 · %97):**
+**Oturum bütçesi (TOPLAM 127 · YAPILAN 124 · %98):**
 
 | Dönem | Faz | Yapılan/Toplam |
 |---|---|---|
@@ -27,9 +27,9 @@ Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (ell
 | | **S sanat ve arayüz geçişi** | **24/24 ✅** |
 | | H oynanış düzeltmeleri | 2/2 ✅ |
 | | **R geri bildirim turları (2026-09-16)** | **4/4 ✅** |
-| | **F paketleme ve yayın** | **5/8** 🔧 |
+| | **F paketleme ve yayın** | **6/8** 🔧 |
 | | **T tur serisi (geri bildirim + performans)** | **13/13 ✅** |
-| **Program toplam** | | **95/99** |
+| **Program toplam** | | **96/99** |
 
 Bütçe düzeltmelerinin tarihçesi (73 → 121) ve bitmiş fazların tam anlatısı: `memory-bank/arsiv/progress-tamamlanan.md`.
 
@@ -106,14 +106,14 @@ Bütçe düzeltmelerinin tarihçesi (73 → 121) ve bitmiş fazların tam anlat�
 - ✅ **H1 — oynanış hataları (G-01 · G-02 · G-03)** …
 - ✅ **H2 — yükseltme SIRASI** …
 
-## Faz F — PAKETLEME VE YAYIN (5/8) 🔧
+## Faz F — PAKETLEME VE YAYIN (6/8) 🔧
 - ✅ **F2 — telefon yükü** …
 - ✅ **F1 — kabuk + imza** (tur adı F1a) …
 - ✅ **F3 — reklam (AdMob)** …
   · tur 2: altyapı koda indi — A1 8.1.0 · SDK sabit · çocuk kipi (AAID/Sandbox yok) · geçişli C1′ 3 dk · banner yok · D-149 · APK 11,24 MiB
   · F3b: ödüllü ödülü — 2× seviye/günlük/kısa yokluk · Usta günde 1 · video hakkı oranlı · Kat 1 −%4,5 · D-150 · `docs/odullu-raporu-f3b.md` · kalan: cihaz turu (gerçek dolgu/UMP) + gerçek AdMob kimliği
 - ✅ **F4 — satın alımlar (RevenueCat)** *(tur adı F4a)* · başlangıç 100 💎 · paketler 25/60/150 (vitrin kapalı) · Reklamları Kaldır + günlük 10 💎 · geri yükle · D-152 · `docs/iap-raporu-f4a.md` · 💎 talebi 250 tavan bulundu
-- ⏳ **F7 — Play Games: bulut kaydı + başarımlar (XP)** *(tur adı F4b)* (kullanıcı kararı 2026-09-24: sil-yükle ilerlemeyi kaybettirmesin)
+- ✅ **F7 — Play Games: bulut kaydı + başarımlar (XP)** *(tur adı F4b)* · kendi native eklentimiz (PGS v2) · daha ileri kayıt kazanır · 19 başarım / 1000 XP ödülsüz · kimlik girilene dek KAPALI · D-153 · `docs/play-games-kurulum.md` · kalan: Console kurulumu + gerçek cihazda giriş/bulut turu
 - ⏳ **F8 — 💎 kozmetik vitrini + başlangıç paketinin kozmetiği** *(tur adı F4c)* (D-152: elmas paketinin harcama yeri; adaylar render edilip seçtirilir) · fiyatlar ayrı oturum
 - ⏳ **F5 — mağaza vitrini + uyum** …
 - ✅ **F6 — açılış ekranı + ekran yönü + yatay/tablet HUD** (F1b iki tur + tur 3) …
