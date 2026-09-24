@@ -5,22 +5,30 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-24 — F4b KAPANDI · D-153; sıradaki F4c 💎 kozmetik vitrini)
+## ŞU AN (2026-09-24 — F4c 💎 vitrini: adaylar SEÇİLDİ, uygulama sırada)
 
 ```
-SORU            : F4b — Play Games: giriş + bulut kaydı + başarımlar (sil-yükle ilerlemeyi kaybettirmesin)
-ÖLÇÜLECEK KOLLAR: yok — başarımlar ödülsüz (yalnız Play XP), denge dosyalarına dokunulmadı
-SAYILAR         : — (ölçüm turu değil)
-KARAR           : D-153 — kendi eklentimiz (PGS v2) · daha ileri kayıt kazanır · 19 başarım/1000 XP · giriş opsiyonel
-UYGULAMA        : PlayGamesPlugin.java · bulut.ts · basarim.ts · playGames.config · save.kayitCoz · store.kayitVerisi · Ayarlar bölümü
-BEKÇİ           : `play-games-f4b.test.ts` 25 + 18/18 mutasyon · emülatörde açılış/Ayarlar · debug + release APK derlendi
+SORU            : F4c — 💎 kozmetik vitrini: ne satılır + başlangıç paketinin özel kozmetiği
+ÖLÇÜLECEK KOLLAR: yok (denge dosyasına dokunmaz; fiyatlar ayrı oturum). Tabela görünürlüğü ölçülecek (C)
+SAYILAR         : — · adaylar `tools/vitrin-adaylari.html` · kareler `docs/gorsel/ss/f4c-aday-*.png`
+KARAR           : ₺ temalarıyla TEK vitrin · 4 tür · kurucu = K4 bordo yelek+fes · liste aşağıda
+UYGULAMA        : F4c-1 (vitrin + kıyafet + tepsi + kurucu + başlangıç tetiği) → F4c-2 (tabela + dekor köşesi)
+BEKÇİ           : —
 ```
+Seçilen (kullanıcı + Claude, artifact https://claude.ai/artifact/TYJTkxPJsVD8c3yEu1h4AR):
+- **K** kurucu K4 · vitrin K2 K5 K7 K8 K10 (K3 elendi: fes kurucuya özel)
+- **T** T3 gümüş askılı (elden ASILI tutuş gerekir) · T4 altın · T2 bakır · T7 emaye
+- **C** C2 C4 C7 C8 — önce oyun kamerasında görünürlük ölçümü
+- **D** D1 radyo · D2 saat · D3 semaver · D5 kanarya · D6 gramofon · D10 tablo · D7a koltuk · D7b lamba (ayrı)
+- **Y** yılbaşı paketi geri (`git checkout 13738b5^ -- public/assets/models/kaykit-holiday-bits`): büyük koltuk
+  4 renk (tek ürün, ÖLÇEK KÜÇÜLECEK) + yuvarlak halı. `asset-olu-yuk.test` src'de referans ister.
+- Dekor yerleşimi önerisi: salon başına sabit "süs köşesi" (yürüme yolu bozulmaz) — F4c-2'de onaylat.
 
 ## ⏭️ SIRADAKİ ADIM
 
-**F4c (pano F8) — 💎 kozmetik vitrini** (D-152: elmas paketlerinin harcama yeri) + başlangıç paketinin özel kozmetiği +
-başlangıç paketi tetiği (ilk Usta'dan sonra bir kez). Adaylar RENDER edilip seçtirilir (6-12 aday, aynı kadraj).
-Sonra **F5** mağaza + G-89 (EN SON).
+**F4c-1:** vitrin ekranı (₺ temaları + 💎 ürünler tek yerde) · sahip kıyafeti seçimi (KayActor) · tepsi
+görünümü (CupTray; askılı tutuş) · K4 yalnız başlangıç paketiyle · başlangıç paketi tetiği (ilk Usta'dan
+sonra bir kez) · kayıt: saveVersion + migrasyon. Sonra **F4c-2** · sonra **F5** mağaza + G-89 (EN SON).
 
 ## AÇIK KALEMLER
 - **Play Games (kullanıcı):** `docs/play-games-kurulum.md` adımları → proje kimliği `strings.xml` + 19 başarım kimliği

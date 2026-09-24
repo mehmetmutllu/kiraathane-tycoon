@@ -1,0 +1,356 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>vitrin-adaylari</title>
+<style>
+  body { margin: 0; background: #e9e4dc; overflow: hidden; }
+  canvas { display: block; }
+  .et { position: fixed; transform: translate(-50%, 0); font: 600 14px system-ui; color: #2b2118;
+    background: #ffffffd9; padding: 3px 8px; border-radius: 6px; white-space: nowrap; }
+  .et.ozel { background: #f2d27a; }
+</style>
+<script type="module">
+  // vitrin-adaylari.html — F4c 💎 KOZMETİK VİTRİNİ adayları (kullanıcı kuralı `feedback_show_dont_ask`:
+  // estetik çatal metinle değil, aynı kadrajda çizilip elenerek seçilir).
+  //
+  // ?sayfa=kiyafet | tepsi | tabela | dekor — her sayfa tek türün adaylarını yan yana çizer.
+  // Adaylar OYUNUN malzemesinden: KayKit gövdeleri/mobilyası + oyunun ilkel dili + palette.ts renkleri
+  // (sayfa TS modülü almıyor; değerler elle aynı). Sarı etiket = başlangıç paketine özel aday.
+  //
+  // Kullanım (sunucuyu `tools/vitrin-adaylari.mjs` kaldırır): /tools/vitrin-adaylari.html?sayfa=kiyafet
+  import * as THREE from 'three';
+  import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+  import { clone as skClone } from 'three/examples/jsm/utils/SkeletonUtils.js';
+
+  const SAYFA = new URLSearchParams(location.search).get('sayfa') ?? 'kiyafet';
+  const P = {
+    shirt: '#f3ecd9', pants: '#3e3a36', apron: '#7a2230', awning: '#2e6b4f', stripe: '#e6d7b8',
+    tea: '#c0392b', teaEm: '#7a1f17', altin: '#d4af37', bakir: '#b8733a', gumus: '#c9ccd1',
+    cini: '#2f6fb3', bordo: '#7c2230', zumrut: '#1f6f50', lacivert: '#2b3242',
+  };
+  const mat = (renk, o = {}) => new THREE.MeshStandardMaterial({ color: renk, roughness: 0.8, flatShading: true, ...o });
+  const mesh = (geo, renk, o) => new THREE.Mesh(geo, mat(renk, o));
+  const kutu = (w, h, d, renk, o) => mesh(new THREE.BoxGeometry(w, h, d), renk, o);
+  const silindir = (rUst, rAlt, h, renk, seg = 12, o) => mesh(new THREE.CylinderGeometry(rUst, rAlt, h, seg), renk, o);
+  const loader = new GLTFLoader();
+  const onbellek = new Map();
+  async function gltf(yol) {
+    if (!onbellek.has(yol)) onbellek.set(yol, await loader.loadAsync(yol));
+    return onbellek.get(yol);
+  }
+  async function model(yol) { return skClone((await gltf(yol)).scene); }
+
+  // ═══════════════════════════ KIYAFET (sahip) ═══════════════════════════
+  const KAY = '/assets/models/kaykit-characters/';
+  const OLCEK = 1.75 / 2.204, KAFA = 0.75;
+  const EKIPMAN = ['cape', 'cloak', 'helmet', 'visor', 'hood', 'hat', 'crown', 'shoulder', 'pauldron',
+    'armor', 'sword', 'shield', 'staff', 'wand', 'bow', 'quiver', 'dagger', 'axe', 'spellbook', 'horn', 'backpack', 'mask'];
+  const ekipmanMi = (ad) => { const r = ad.split('_').pop()?.toLowerCase() ?? ''; return EKIPMAN.some((k) => r.startsWith(k) || r.endsWith(k)); };
+  const basMi = (ad) => /head|skull/i.test(ad);
+
+  const KIYAFET = [
+    { ad: 'K1 bugün (referans)', gomlek: P.shirt, pantolon: P.pants, havlu: true },
+    { ad: 'K2 KURUCU · yeşil yelek + köstek', ozel: true, gomlek: P.shirt, pantolon: P.pants, yelek: P.awning, kostek: true, dugme: P.altin },
+    { ad: 'K3 KURUCU · siyah yelek + fes', ozel: true, gomlek: P.shirt, pantolon: '#26241f', yelek: '#22201c', fes: '#9b1c22', kostek: true },
+    { ad: 'K4 bordo yelek + fes', gomlek: P.shirt, pantolon: P.pants, yelek: P.bordo, fes: '#9b1c22' },
+    { ad: 'K5 şef garson · papyon', gomlek: '#fbfaf6', pantolon: '#1f1d1a', yelek: '#1f1d1a', papyon: '#9b1c22' },
+    { ad: 'K6 mahalle · kasket + gri yelek', gomlek: P.shirt, pantolon: P.pants, yelek: '#6b6a66', kasket: '#5a4632' },
+    { ad: 'K7 yazlık · hasır şapka', gomlek: '#a9cbe6', pantolon: '#cdbb94', hasir: '#dcc588' },
+    { ad: 'K8 kışlık · kazak + atkı', gomlek: '#8a2b2f', pantolon: P.pants, atki: '#efe6cf', kasket: '#3a3a3a' },
+    { ad: 'K9 çini mavisi yelek', gomlek: '#fbfaf6', pantolon: P.pants, yelek: P.cini, dugme: '#f4f1ea' },
+    { ad: 'K10 ALTIN yelek', gomlek: '#1f1d1a', pantolon: '#1f1d1a', yelek: P.altin, dugme: '#1f1d1a', papyon: '#1f1d1a' },
+  ];
+
+  function kiyafetGovde(o, c) {
+    o.traverse((n) => {
+      if (!n.isMesh) return;
+      if (ekipmanMi(n.name)) { n.visible = false; return; }
+      if (basMi(n.name)) return;
+      if (/arm|body|torso/i.test(n.name)) n.material = mat(c.gomlek, { flatShading: false, roughness: 0.85 });
+      else if (/leg/i.test(n.name)) n.material = mat(c.pantolon, { flatShading: false, roughness: 0.85 });
+    });
+    o.traverse((n) => { if (n.isBone && n.name === 'head') n.scale.setScalar(KAFA); if (n.isSkinnedMesh) n.boundingBox = null; });
+    o.updateMatrixWorld(true);
+    const kemik = new Map();
+    o.traverse((n) => { if (n.isBone) kemik.set(n.name, n); });
+    const q = new THREE.Quaternion();
+    const tak = (ad, m, nokta) => {
+      const k = kemik.get(ad); if (!k) return;
+      k.add(m); m.position.copy(k.worldToLocal(nokta.clone())); m.quaternion.copy(k.getWorldQuaternion(q).invert());
+    };
+    const bas = new THREE.Box3();
+    o.traverse((n) => { if (n.isMesh && n.visible && basMi(n.name)) bas.union(new THREE.Box3().setFromObject(n)); });
+    const tepe = bas.max.y, yr = ((bas.max.x - bas.min.x) / 2) * 0.98;
+
+    if (c.yelek) {
+      const y = new THREE.Group();
+      const on = kutu(0.46, 0.6, 0.07, c.yelek); on.position.z = 0.3;
+      const sol = kutu(0.07, 0.6, 0.34, c.yelek); sol.position.set(-0.24, 0, 0.12);
+      const sag = sol.clone(); sag.position.x = 0.24;
+      y.add(on, sol, sag);
+      // V yaka: gömlek rengi üçgen şerit
+      const yaka = kutu(0.12, 0.22, 0.02, c.gomlek); yaka.position.set(0, 0.2, 0.34); y.add(yaka);
+      if (c.dugme) for (let i = 0; i < 3; i++) { const d = silindir(0.022, 0.022, 0.02, c.dugme, 8); d.rotation.x = Math.PI / 2; d.position.set(0, 0.04 - i * 0.12, 0.345); y.add(d); }
+      if (c.kostek) {
+        const z = kutu(0.26, 0.018, 0.02, P.altin, { metalness: 0.6, roughness: 0.35 }); z.position.set(0.1, -0.1, 0.35); z.rotation.z = -0.35; y.add(z);
+        const s = silindir(0.045, 0.045, 0.02, P.altin, 12, { metalness: 0.6, roughness: 0.35 }); s.rotation.x = Math.PI / 2; s.position.set(0.21, -0.17, 0.35); y.add(s);
+      }
+      tak('chest', y, new THREE.Vector3(0, 0.8, 0));
+    }
+    if (c.papyon) {
+      const p = new THREE.Group();
+      const l = kutu(0.1, 0.07, 0.04, c.papyon); l.position.x = -0.055; l.rotation.z = 0.25;
+      const r = l.clone(); r.position.x = 0.055; r.rotation.z = -0.25;
+      p.add(l, r, kutu(0.035, 0.045, 0.05, c.papyon));
+      tak('chest', p, new THREE.Vector3(0, 1.17, 0.3));
+    }
+    if (c.atki) {
+      const a = new THREE.Group();
+      const halka = mesh(new THREE.TorusGeometry(0.22, 0.07, 6, 14), c.atki); halka.rotation.x = Math.PI / 2; a.add(halka);
+      const uc = kutu(0.12, 0.4, 0.05, c.atki); uc.position.set(0.1, -0.22, 0.2); a.add(uc);
+      tak('chest', a, new THREE.Vector3(0, 1.2, 0.05));
+    }
+    if (c.havlu) {
+      const h = kutu(0.2, 0.05, 0.5, '#f7f4ee'); tak('chest', h, new THREE.Vector3(-0.28, 1.2, 0.02));
+      const s = kutu(0.2, 0.28, 0.04, '#f7f4ee'); tak('chest', s, new THREE.Vector3(-0.28, 1.06, 0.27));
+    }
+    if (c.kasket) {
+      const g = new THREE.Group();
+      g.add(silindir(yr * 0.94, yr, 0.16, c.kasket, 14));
+      const v = kutu(yr * 1.15, 0.045, yr * 0.7, c.kasket); v.position.set(0, -0.06, yr * 0.95); g.add(v);
+      tak('head', g, new THREE.Vector3(0, tepe - 0.05, 0));
+    }
+    if (c.fes) {
+      const g = new THREE.Group();
+      g.add(silindir(yr * 0.62, yr * 0.8, 0.34, c.fes, 14));
+      const puskul = kutu(0.03, 0.2, 0.03, '#111'); puskul.position.set(yr * 0.5, 0.02, 0); g.add(puskul);
+      tak('head', g, new THREE.Vector3(0, tepe + 0.08, 0));
+    }
+    if (c.hasir) {
+      const g = new THREE.Group();
+      g.add(silindir(yr * 1.7, yr * 1.7, 0.035, c.hasir, 18));
+      const t = silindir(yr * 0.8, yr * 0.9, 0.22, c.hasir, 14); t.position.y = 0.11; g.add(t);
+      const bant = silindir(yr * 0.91, yr * 0.91, 0.06, '#3b2b1d', 14); bant.position.y = 0.04; g.add(bant);
+      tak('head', g, new THREE.Vector3(0, tepe - 0.02, 0));
+    }
+    o.scale.setScalar(OLCEK);
+    return o;
+  }
+
+  async function kiyafetSayfa(sahne) {
+    const poz = (await gltf(`${KAY}Rig_Medium_General.glb`)).animations.find((c) => c.name === 'Idle_A');
+    const hucreler = [];
+    for (const c of KIYAFET) {
+      const o = kiyafetGovde(await model(`${KAY}Ranger.glb`), c);
+      o.rotation.y = 0.35;
+      const m = new THREE.AnimationMixer(o); m.clipAction(poz).play(); m.update(poz.duration * 0.5);
+      hucreler.push({ obje: o, ad: c.ad, ozel: c.ozel });
+    }
+    return { hucreler, sutun: 5, yon: [0.25, 0.3, 1] };
+  }
+
+  // ═══════════════════════════ TEPSİ / ÇAY TAKIMI ═══════════════════════════
+  // Oyunun ölçüsü: bardak yarıçap 0,05 · boy 0,14 · ızgara 0,16 × 0,15 (CupTray). Adaylar 3 bardakla.
+  const TEPSI = [
+    { ad: 'T1 bugün (referans)', tip: 'kutu', renk: '#8d6e63', bardak: 'duz' },
+    { ad: 'T2 bakır yuvarlak', tip: 'yuvarlak', renk: P.bakir, metal: true, bardak: 'belli', tabak: '#f4f1ea' },
+    { ad: 'T3 gümüş askılı tepsi', tip: 'aski', renk: P.gumus, metal: true, bardak: 'belli', tabak: '#f4f1ea' },
+    { ad: 'T4 altın yaldız', tip: 'yuvarlak', renk: P.altin, metal: true, bardak: 'belli', tabak: P.altin, kenar: P.altin },
+    { ad: 'T5 çini mavisi', tip: 'yuvarlak', renk: '#f4f1ea', desen: P.cini, bardak: 'belli', tabak: P.cini },
+    { ad: 'T6 ceviz oval', tip: 'oval', renk: '#5a3a22', bardak: 'belli', tabak: '#f4f1ea' },
+    { ad: 'T7 kırmızı emaye (lale)', tip: 'yuvarlak', renk: '#b3262a', desen: '#f4f1ea', bardak: 'belli', tabak: '#f4f1ea' },
+    { ad: 'T8 zümrüt + altın kenar', tip: 'kutu', renk: P.zumrut, kenar: P.altin, bardak: 'belli', tabak: P.altin },
+  ];
+  function bardak(tip, tabakRenk, kenar) {
+    const g = new THREE.Group();
+    const cay = { emissive: P.teaEm, emissiveIntensity: 0.25, roughness: 0.5, flatShading: false };
+    if (tip === 'duz') { const b = silindir(0.05, 0.04, 0.14, P.tea, 10, cay); b.position.y = 0.08; g.add(b); return g; }
+    if (tabakRenk) { const t = silindir(0.075, 0.065, 0.015, tabakRenk, 14, { flatShading: false }); t.position.y = 0.012; g.add(t); }
+    // İNCE BELLİ: iki kesik koni, belde daralır.
+    const alt = silindir(0.035, 0.042, 0.06, P.tea, 12, cay); alt.position.y = 0.05; g.add(alt);
+    const ust = silindir(0.05, 0.035, 0.08, P.tea, 12, cay); ust.position.y = 0.12; g.add(ust);
+    if (kenar) { const k = mesh(new THREE.TorusGeometry(0.05, 0.006, 5, 16), kenar, { metalness: 0.6, roughness: 0.35 }); k.rotation.x = Math.PI / 2; k.position.y = 0.16; g.add(k); }
+    return g;
+  }
+  function tepsi(t) {
+    const g = new THREE.Group();
+    const mo = t.metal ? { metalness: 0.55, roughness: 0.35, flatShading: false } : {};
+    if (t.tip === 'kutu') {
+      g.add(kutu(0.58, 0.04, 0.3, t.renk, mo));
+      if (t.kenar) for (const [w, d, x, z] of [[0.6, 0.02, 0, 0.15], [0.6, 0.02, 0, -0.15], [0.02, 0.3, 0.29, 0], [0.02, 0.3, -0.29, 0]]) {
+        const k = kutu(w, 0.03, d, t.kenar, { metalness: 0.6, roughness: 0.35 }); k.position.set(x, 0.03, z); g.add(k);
+      }
+    } else if (t.tip === 'oval') {
+      const b = silindir(0.24, 0.22, 0.04, t.renk, 20); b.scale.z = 0.62; g.add(b);
+      const k = mesh(new THREE.TorusGeometry(0.235, 0.018, 6, 24), '#3e2716'); k.rotation.x = Math.PI / 2; k.scale.y = 0.62; k.position.y = 0.025; g.add(k);
+    } else {
+      g.add(silindir(0.25, 0.23, 0.03, t.renk, 24, mo));
+      const k = mesh(new THREE.TorusGeometry(0.25, 0.018, 6, 28), t.kenar ?? t.renk, mo); k.rotation.x = Math.PI / 2; k.position.y = 0.02; g.add(k);
+      if (t.desen) for (let i = 0; i < 8; i++) {
+        const a = (i / 8) * Math.PI * 2; const d = kutu(0.05, 0.005, 0.05, t.desen); d.position.set(Math.cos(a) * 0.19, 0.017, Math.sin(a) * 0.19); d.rotation.y = a + Math.PI / 4; g.add(d);
+      }
+      if (t.tip === 'aski') {
+        // Klasik çay askısı: üç kol yukarıda halkada birleşir.
+        for (let i = 0; i < 3; i++) {
+          const a = (i / 3) * Math.PI * 2 + Math.PI / 2;
+          const alt = new THREE.Vector3(Math.cos(a) * 0.23, 0.02, Math.sin(a) * 0.23), ust = new THREE.Vector3(0, 0.44, 0);
+          const boy = alt.distanceTo(ust);
+          const kol = silindir(0.008, 0.008, boy, t.renk, 6, mo);
+          kol.position.copy(alt).lerp(ust, 0.5);
+          kol.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), ust.clone().sub(alt).normalize());
+          g.add(kol);
+        }
+        const halka = mesh(new THREE.TorusGeometry(0.06, 0.012, 6, 16), t.renk, mo); halka.position.y = 0.5; g.add(halka);
+      }
+    }
+    const yer = t.tip === 'kutu' ? [[-0.16, 0], [0, 0], [0.16, 0]] : [[-0.12, 0.05], [0.12, 0.05], [0, -0.1]];
+    for (const [x, z] of yer) { const b = bardak(t.bardak, t.tabak, t.kenar && t.tip !== 'kutu' ? t.kenar : t.kenar); b.position.set(x, 0.02, z); g.add(b); }
+    return g;
+  }
+  async function tepsiSayfa() {
+    const hucreler = TEPSI.map((t) => {
+      const g = new THREE.Group();
+      const tp = tepsi(t); tp.rotation.y = 0.25; g.add(tp);
+      return { obje: g, ad: t.ad };
+    });
+    return { hucreler, sutun: 4, yon: [0, 0.8, 1] };
+  }
+
+  // ═══════════════════════════ TABELA / CEPHE ═══════════════════════════
+  const TABELA = [
+    { ad: 'C1 bugün (referans)', tente: P.awning, fir: P.stripe, tabela: P.awning, yazi: null },
+    { ad: 'C2 yeşil-krem çizgili · ahşap', tente: P.awning, cizgi: P.stripe, fir: P.stripe, tabela: '#6b4a2e', yazi: '#f4ead2' },
+    { ad: 'C3 bordo-krem çizgili', tente: P.bordo, cizgi: '#efe3c8', fir: '#efe3c8', tabela: '#efe3c8', yazi: P.bordo },
+    { ad: 'C4 lacivert + altın yazı', tente: '#233049', fir: P.altin, tabela: '#1b2438', yazi: P.altin },
+    { ad: 'C5 yazlık turuncu çizgi', tente: '#e0762e', cizgi: '#fbf4e4', fir: '#fbf4e4', tabela: '#fbf4e4', yazi: '#b24d17' },
+    { ad: 'C6 ceviz oyma tabela', tente: '#5a3a22', fir: '#c9a36a', tabela: '#7a5230', yazi: '#f2d27a', oyma: true },
+    { ad: 'C7 NEON gece', tente: '#1d1d22', fir: '#34343c', tabela: '#141418', yazi: '#ff4fa3', neon: true },
+    { ad: 'C8 çini mavisi', tente: P.cini, cizgi: '#f4f1ea', fir: '#f4f1ea', tabela: '#f4f1ea', yazi: P.cini, cini: true },
+  ];
+  function yaziDokusu(renk, zemin, neon) {
+    const c = document.createElement('canvas'); c.width = 1024; c.height = 110;
+    const x = c.getContext('2d');
+    x.fillStyle = zemin; x.fillRect(0, 0, c.width, c.height);
+    x.font = '700 68px Georgia, serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
+    if (neon) { x.shadowColor = renk; x.shadowBlur = 22; }
+    x.fillStyle = renk; x.fillText('KÖŞE KIRAATHANESİ', c.width / 2, c.height / 2 + 3);
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8;
+    return t;
+  }
+  function cephe(t) {
+    const g = new THREE.Group();
+    // Duvar + kapı + iki vitrin (oyunun cephesinin kaba kopyası; boy 3,3).
+    const duvar = kutu(4.4, 3.4, 0.2, '#e8dcc3'); duvar.position.set(0, 1.7, -0.1); g.add(duvar);
+    const kapi = kutu(1.0, 2.3, 0.05, '#5d4037'); kapi.position.set(0, 1.15, 0.01); g.add(kapi);
+    for (const x of [-1.45, 1.45]) { const v = kutu(1.1, 1.3, 0.05, '#a9d6ea', { roughness: 0.2 }); v.position.set(x, 1.35, 0.01); g.add(v); const c = kutu(1.2, 1.4, 0.03, '#5d4037'); c.position.set(x, 1.35, 0); g.add(c); }
+    // Tente (eğimli) — çizgili adayda şeritlerle.
+    const TW = 3.6, TD = 1.0, rot = 0.5;
+    const tente = new THREE.Group(); tente.position.set(0, 2.6, 0.45); tente.rotation.x = rot;
+    if (t.cizgi) {
+      const n = 9;
+      for (let i = 0; i < n; i++) { const s = kutu(TW / n, 0.05, TD, i % 2 ? t.cizgi : t.tente); s.position.x = -TW / 2 + TW / n * (i + 0.5); tente.add(s); }
+    } else tente.add(kutu(TW, 0.05, TD, t.tente));
+    g.add(tente);
+    const fir = kutu(TW, 0.24, 0.04, t.fir); fir.position.set(0, 2.6 - (TD / 2) * Math.sin(rot) - 0.12, 0.45 + (TD / 2) * Math.cos(rot)); g.add(fir);
+    // Tabela: tentenin üstünde, alınlıkta.
+    const tabG = new THREE.Group(); tabG.position.set(0, 3.02, 0.05);
+    if (t.yazi) {
+      const yuz = new THREE.Mesh(new THREE.BoxGeometry(3.4, 0.36, 0.06), [mat(t.tabela), mat(t.tabela), mat(t.tabela), mat(t.tabela),
+        new THREE.MeshStandardMaterial({ map: yaziDokusu(t.yazi, t.tabela, t.neon), roughness: 0.7, emissive: t.neon ? '#ffffff' : '#000000', emissiveMap: t.neon ? yaziDokusu(t.yazi, t.tabela, true) : null, emissiveIntensity: t.neon ? 1.2 : 0 }),
+        mat(t.tabela)]);
+      tabG.add(yuz);
+    } else tabG.add(kutu(3.4, 0.34, 0.06, t.tabela));
+    if (t.oyma) for (const x of [-1.8, 1.8]) { const k = kutu(0.18, 0.5, 0.1, '#5a3a22'); k.position.x = x; tabG.add(k); const s = silindir(0.08, 0.08, 0.1, P.altin, 8); s.rotation.x = Math.PI / 2; s.position.set(x, 0, 0.05); tabG.add(s); }
+    if (t.cini) for (const x of [-1.62, 1.62]) { const k = kutu(0.2, 0.3, 0.08, P.cini); k.position.set(x, 0, 0.01); tabG.add(k); }
+    if (t.neon) { const cer = mesh(new THREE.TorusGeometry(0.1, 0.02, 6, 12), '#3bd6ff', { emissive: '#3bd6ff', emissiveIntensity: 1.5 }); cer.position.set(-1.9, 0, 0.05); }
+    g.add(tabG);
+    return g;
+  }
+  async function tabelaSayfa() {
+    const hucreler = TABELA.map((t) => ({ obje: cephe(t), ad: t.ad }));
+    return { hucreler, sutun: 4, yon: [0, 0.15, 1] };
+  }
+
+  // ═══════════════════════════ DEKOR ═══════════════════════════
+  const FB = '/assets/models/kaykit-furniture-bits/';
+  async function kay(ad, olcek = 1) { const o = await model(`${FB}${ad}.gltf`); o.scale.setScalar(olcek); return o; }
+  const DEKOR = [
+    { ad: 'D1 nostaljik lambalı radyo', yap: async () => { const g = new THREE.Group(); const s = await kay('cabinet_small'); g.add(s); const r = new THREE.Group(); r.add(kutu(0.5, 0.32, 0.24, '#6b4226')); const hop = kutu(0.3, 0.22, 0.02, '#d9c79b'); hop.position.set(-0.06, 0.02, 0.121); r.add(hop); for (const x of [0.15, 0.2]) { const d = silindir(0.03, 0.03, 0.03, '#2a1c12', 10); d.rotation.x = Math.PI / 2; d.position.set(x, -0.06, 0.13); r.add(d); } const b = new THREE.Box3().setFromObject(s); r.position.y = b.max.y + 0.16; g.add(r); return g; } },
+    { ad: 'D2 sarkaçlı duvar saati', duvar: true, yap: async () => { const g = new THREE.Group(); const k = kutu(0.42, 1.2, 0.16, '#5a3a22'); k.position.y = 1.6; g.add(k); const y = silindir(0.16, 0.16, 0.02, '#f4ead2', 20); y.rotation.x = Math.PI / 2; y.position.set(0, 1.95, 0.09); g.add(y); const s = kutu(0.02, 0.4, 0.02, P.altin); s.position.set(0, 1.45, 0.09); g.add(s); const dk = silindir(0.07, 0.07, 0.02, P.altin, 14, { metalness: 0.6 }); dk.rotation.x = Math.PI / 2; dk.position.set(0, 1.22, 0.09); g.add(dk); return g; } },
+    { ad: 'D3 bakır semaver köşesi', yap: async () => { const g = new THREE.Group(); const m = await kay('table_small'); g.add(m); const h = new THREE.Box3().setFromObject(m).max.y; const s = new THREE.Group(); const mo = { metalness: 0.55, roughness: 0.35, flatShading: false }; const gov = silindir(0.13, 0.16, 0.34, P.bakir, 16, mo); gov.position.y = 0.2; s.add(gov); const ayak = silindir(0.12, 0.14, 0.06, P.bakir, 16, mo); ayak.position.y = 0.03; s.add(ayak); const dm = silindir(0.07, 0.09, 0.12, '#f4f1ea', 12); dm.position.y = 0.43; s.add(dm); const mus = silindir(0.012, 0.012, 0.1, P.bakir, 6, mo); mus.rotation.z = Math.PI / 2; mus.position.set(0.17, 0.12, 0); s.add(mus); s.position.y = h; g.add(s); return g; } },
+    { ad: 'D4 akvaryum', yap: async () => { const g = new THREE.Group(); const s = await kay('cabinet_medium'); g.add(s); const h = new THREE.Box3().setFromObject(s).max.y; const a = kutu(0.8, 0.45, 0.35, '#7cc7e0', { transparent: true, opacity: 0.55, roughness: 0.1 }); a.position.y = h + 0.23; g.add(a); for (const [x, y, c] of [[-0.15, 0.25, '#ff8c1a'], [0.12, 0.15, '#ffd23f'], [0.22, 0.3, '#ff5e5e']]) { const f = kutu(0.08, 0.04, 0.02, c); f.position.set(x, h + y, 0); g.add(f); } const ot = silindir(0.02, 0.03, 0.2, '#3e8e41', 5); ot.position.set(-0.3, h + 0.1, 0.05); g.add(ot); return g; } },
+    { ad: 'D5 kanarya kafesi', yap: async () => { const g = new THREE.Group(); const ay = silindir(0.03, 0.03, 1.4, '#2a2a2a', 6); ay.position.y = 0.7; g.add(ay); const ta = silindir(0.18, 0.22, 0.04, '#2a2a2a', 10); ta.position.y = 0.02; g.add(ta); const kf = new THREE.Group(); kf.position.set(0, 1.45, 0); for (let i = 0; i < 10; i++) { const a = i / 10 * Math.PI * 2; const t = silindir(0.006, 0.006, 0.4, P.altin, 4, { metalness: 0.6 }); t.position.set(Math.cos(a) * 0.17, 0, Math.sin(a) * 0.17); kf.add(t); } const kub = mesh(new THREE.SphereGeometry(0.17, 12, 6, 0, Math.PI * 2, 0, Math.PI / 2), P.altin, { metalness: 0.6, wireframe: true }); kub.position.y = 0.2; kf.add(kub); const tb = silindir(0.18, 0.18, 0.03, P.altin, 14, { metalness: 0.6 }); tb.position.y = -0.2; kf.add(tb); const kus = mesh(new THREE.SphereGeometry(0.05, 8, 6), '#ffd23f'); kus.scale.set(1.3, 1, 1); kf.add(kus); g.add(kf); return g; } },
+    { ad: 'D6 gramofon', yap: async () => { const g = new THREE.Group(); const m = await kay('table_small'); g.add(m); const h = new THREE.Box3().setFromObject(m).max.y; const k = kutu(0.36, 0.14, 0.36, '#6b4226'); k.position.y = h + 0.07; g.add(k); const pl = silindir(0.15, 0.15, 0.015, '#111', 20); pl.position.y = h + 0.15; g.add(pl); const boru = silindir(0.015, 0.015, 0.3, P.altin, 6, { metalness: 0.6 }); boru.position.set(0.12, h + 0.3, -0.1); g.add(boru); const hr = silindir(0.2, 0.02, 0.34, P.altin, 16, { metalness: 0.6, roughness: 0.3, side: THREE.DoubleSide }); hr.position.set(0.12, h + 0.5, 0.05); hr.rotation.x = -1.0; g.add(hr); return g; } },
+    { ad: 'D7a koltuk (tek başına)', yap: async () => kay('armchair') },
+    { ad: 'D7b ayaklı lamba (tek başına)', yap: async () => { const o = await kay('lamp_standing'); o.position.z = -0.25; return o; } },
+    { ad: 'D8 duvar rafı + kitaplar', duvar: true, yap: async () => { const o = await kay('shelf_B_large_decorated'); o.position.y = 1.2; return o; } },
+    { ad: 'D9 büyük saksı (fikus)', yap: async () => { const g = new THREE.Group(); const s = silindir(0.26, 0.2, 0.46, '#b5652e', 12); s.position.y = 0.23; g.add(s); const gv = silindir(0.03, 0.04, 0.7, '#5a3a22', 6); gv.position.y = 0.8; g.add(gv); for (const [x, y, z, r] of [[0, 1.25, 0, 0.3], [0.2, 1.05, 0.1, 0.24], [-0.2, 1.1, -0.05, 0.25], [0.05, 0.9, -0.2, 0.2]]) { const y2 = mesh(new THREE.IcosahedronGeometry(r, 0), '#3f8f4a'); y2.position.set(x, y, z); g.add(y2); } return g; } },
+    { ad: 'D10 eski İstanbul tablosu', duvar: true, yap: async () => { const g = new THREE.Group(); const c = kutu(1.1, 0.75, 0.05, P.altin, { metalness: 0.5, roughness: 0.4 }); c.position.y = 1.7; g.add(c); const r = document.createElement('canvas'); r.width = 256; r.height = 170; const x = r.getContext('2d'); const gr = x.createLinearGradient(0, 0, 0, 170); gr.addColorStop(0, '#f2b872'); gr.addColorStop(1, '#6b8fb3'); x.fillStyle = gr; x.fillRect(0, 0, 256, 170); x.fillStyle = '#3b3550'; x.fillRect(0, 110, 256, 60); x.beginPath(); x.arc(128, 95, 36, Math.PI, 0); x.fill(); for (const px of [70, 186]) x.fillRect(px - 4, 40, 8, 75); x.fillStyle = '#2a4d6e'; x.fillRect(0, 140, 256, 30); const t = new THREE.CanvasTexture(r); t.colorSpace = THREE.SRGBColorSpace; const res = new THREE.Mesh(new THREE.PlaneGeometry(0.98, 0.64), new THREE.MeshStandardMaterial({ map: t })); res.position.set(0, 1.7, 0.03); g.add(res); return g; } },
+  ];
+  // Yılbaşı paketi (KayKit Holiday Bits, CC0 — D-125'te depodan çıkmıştı, kullanıcı 2026-09-24 geri istedi).
+  const HB = '/assets/models/kaykit-holiday-bits/';
+  async function hol(ad) { return model(`${HB}${ad}.gltf`); }
+  DEKOR.push(
+    { ad: 'Y1 büyük koltuk · kırmızı', yap: async () => hol('chair_large_red') },
+    { ad: 'Y2 büyük koltuk · yeşil', yap: async () => hol('chair_large_green') },
+    { ad: 'Y3 büyük koltuk · mavi', yap: async () => hol('chair_large_blue') },
+    { ad: 'Y4 büyük koltuk · kahve', yap: async () => hol('chair_large_brown') },
+    { ad: 'Y5 koltuk + puf takımı', yap: async () => { const g = new THREE.Group(); const k = await hol('chair_large_red'); k.position.x = -0.2; g.add(k); const f = await hol('footstool_red'); f.position.set(0.45, 0, 0.3); g.add(f); return g; } },
+    { ad: 'Y6 yuvarlak halı', yap: async () => hol('carpet_round_large') },
+    { ad: 'Y7 küçük fener', yap: async () => hol('lantern_mini') },
+    { ad: 'Y8 süslü tabak (duvar)', duvar: true, yap: async () => { const g = new THREE.Group(); for (const [ad, x] of [['plate_decorated_A', -0.3], ['plate_decorated_B', 0.3]]) { const o = await hol(ad); o.rotation.x = Math.PI / 2; o.position.set(x, 1.6, 0.05); g.add(o); } return g; } },
+  );
+  async function dekorSayfa(ikinci = false) {
+    const hucreler = [];
+    // İkinci sayfa (2026-09-24): ayrılan koltuk/lamba + yılbaşı paketi.
+    for (const d of DEKOR.filter((x) => /^(D7|Y)/.test(x.ad) === ikinci)) {
+      const g = new THREE.Group();
+      // Her aday aynı sahnecikte: 1,4 × 1,2 zemin + arka duvar (oyunun ölçüsünde, D-073).
+      const z = kutu(1.4, 0.04, 1.2, '#c89a68'); z.position.y = -0.02; g.add(z);
+      const w = kutu(1.4, 2.4, 0.08, '#e8dcc3'); w.position.set(0, 1.2, -0.62); g.add(w);
+      const o = await d.yap(); if (d.duvar) o.position.z = -0.5; g.add(o);
+      hucreler.push({ obje: g, ad: d.ad });
+    }
+    return { hucreler, sutun: 5, yon: [0.3, 0.45, 1] };
+  }
+
+  // ═══════════════════════════ ORTAK SAHNE ═══════════════════════════
+  // Her aday KENDİ karesinde çizilir (viewport/scissor): aynı kamera açısı ve AYNI ölçek — sayfa
+  // içindeki en büyük adaya göre tek mesafe, yani adaylar birbirine göre gerçek boyda okunur.
+  const sahne = new THREE.Scene();
+  sahne.add(new THREE.HemisphereLight('#ffffff', '#8d8272', 1.5));
+  const gunes = new THREE.DirectionalLight('#fff6e0', 2.0); gunes.position.set(3, 6, 5); sahne.add(gunes);
+  const zemin = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), new THREE.MeshStandardMaterial({ color: '#d8c9b2' }));
+  zemin.rotation.x = -Math.PI / 2; zemin.position.y = -0.045; sahne.add(zemin);
+  const plan = await ({ kiyafet: kiyafetSayfa, tepsi: tepsiSayfa, tabela: tabelaSayfa, dekor: () => dekorSayfa(false), dekor2: () => dekorSayfa(true) }[SAYFA])(sahne);
+  const { hucreler, sutun } = plan;
+  const satir = Math.ceil(hucreler.length / sutun);
+  const W = innerWidth, H = innerHeight, ETIKET = 34;
+  const hw = Math.floor(W / sutun), hh = Math.floor(H / satir);
+  let boy = 0;
+  for (const h of hucreler) { const b = new THREE.Box3().setFromObject(h.obje); const s3 = b.getSize(new THREE.Vector3()); boy = Math.max(boy, s3.y, s3.x / (hw / (hh - ETIKET))); }
+  const r = new THREE.WebGLRenderer({ antialias: true });
+  r.setSize(W, H); r.setPixelRatio(Math.min(devicePixelRatio, 2)); r.outputColorSpace = THREE.SRGBColorSpace;
+  r.setScissorTest(true); r.setClearColor('#e9e4dc');
+  document.body.appendChild(r.domElement);
+  const kamera = new THREE.PerspectiveCamera(plan.fov ?? 28, hw / (hh - ETIKET), 0.05, 200);
+  const yon = new THREE.Vector3(...(plan.yon ?? [0, 0.42, 1])).normalize();
+  hucreler.forEach((h, i) => {
+    for (const o of hucreler) o.obje.visible = o === h;
+    if (!h.obje.parent) sahne.add(h.obje);
+    for (const o of hucreler) o.obje.visible = o === h;
+    const b = new THREE.Box3().setFromObject(h.obje);
+    const merkez = b.getCenter(new THREE.Vector3()); merkez.y = b.min.y + boy * 0.5;
+    const mesafe = (boy * 0.62) / Math.tan(THREE.MathUtils.degToRad(kamera.fov / 2));
+    kamera.position.copy(merkez).addScaledVector(yon, mesafe); kamera.lookAt(merkez);
+    const cx = (i % sutun) * hw, cy = Math.floor(i / sutun) * hh;
+    r.setViewport(cx + 4, H - cy - hh + ETIKET, hw - 8, hh - ETIKET - 4);
+    r.setScissor(cx + 4, H - cy - hh + ETIKET, hw - 8, hh - ETIKET - 4);
+    r.render(sahne, kamera);
+    const d = document.createElement('div');
+    d.className = h.ozel ? 'et ozel' : 'et';
+    d.textContent = h.ad;
+    d.style.left = `${cx + hw / 2}px`; d.style.top = `${cy + hh - ETIKET + 4}px`;
+    document.body.appendChild(d);
+  });
+  window.__hazir = true;
+</script>
