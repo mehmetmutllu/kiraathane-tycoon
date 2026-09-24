@@ -4773,3 +4773,6 @@ Hepsi −%8,0. Hedef 💎 2× → 20/20 Usta peşin (kuyruk 0 gün). O2 1 sa'lik
 Sabit 200 ₺ geç oyunda eriyor. U∞ kuyruğu 1 günde bitiriyor; U1 0,71 gün/Usta.
 **Uygulamada bulunan:** ödül ₺'si kazanç izine giriyordu → arka arkaya videolar katlanıyordu; iz ödül kadar kaydırılır.
 **Bekçi:** `tests/odullu-f3b.test.ts` 20 · 11/11 mutasyon · duman 54/54. Kayıt: `reklam` ek alanı, sürüm artmadı.
+**Sıra kilidi uyarısı (karma-commit, `26c16c6`) — biçim sapması, sıra uyuldu:** commit #1 `70e83df`+`61b4fff` karar-boş
+push'landı, paket sonra geldi. Rapor başlığı `## KARAR` yazılmıştı; araç `§Karar` arıyor → imza tanınmadı. Başlık düzeltildi
+(`reklam-raporu-f3.md` de aynı biçimde, dokunulmadı: o turun kodu D-149'da denge dosyasına dokunmadı).

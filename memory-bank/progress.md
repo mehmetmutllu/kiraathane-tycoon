@@ -136,6 +136,7 @@ Bütçe düzeltmelerinin tarihçesi (73 → 121) ve bitmiş fazların tam anlat�
 G-01…G-91 tam listesi + kullanıcının kendi cümleleri: `docs/geribildirim-oyun-testi-<tarih>.md` (09-09 · 09-16 · 09-17 · 09-18 · 09-21). Turlara dağılımı Faz T'de.
 
 ## Bilinen açık kalemler
+- **`logic.test.ts` › "eşikleri doğru biçimler" bir kez kararsız düştü** (2026-09-24, tam takımda; tek başına 3/3, tam takım 2/2 yeşil). Test saf `fmt` + `toLocaleString`; kaynağı bulunmadı.
 - **`outputMultByLevel` yok** — servis çıktı çarpanı basamak-başı değil merdiven-geneli …
 - **Sim'de serbest oyun bloğu ölü kod** (D1 Bulgu 5).
 - **Sim'in taşıma tavanı 4 masada fazla kötümser** (model 6,36 < ölçülen 7,53 müşteri/dk) …

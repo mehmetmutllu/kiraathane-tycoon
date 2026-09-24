@@ -1,9 +1,15 @@
 {
  "not": "İlerleme panosunun ESKİ oturum kartları. Pano her turda büyüyordu (67 kart / 219 KB) ve yayını canlı sürümün tamamının okunmasını şart koştuğu için tur başına maliyeti ARTIYORDU — okunanın neredeyse tamamı bir daha bakılmayacak arşivdi. Projenin kendi kuralı buraya da uygulandı (eski anlatı → arsiv/). Pano son 8 turu gösterir; öncesi burada ve git geçmişinde durur.",
  "kaynak": "docs/pano/ilerleme-panosu.html",
- "tasindi": "2026-09-23",
- "kart": 74,
+ "tasindi": "2026-09-24",
+ "kart": 75,
  "gunluk": [
+  {
+   "tarih": "23.09.2026",
+   "etiket": "T6b — tarayıcı kayma ölçümü · defter kesimi",
+   "baslik": "Kazanç NPC'de ve bellekte büyük, <b>karede küçük</b>",
+   "govde": "Yeni araç <code>olcum-kayma-t6b</code> iki sürümü aynı tarayıcıda, dondurulan sayfalar ve ABBA dilimlerle 10 dakika ölçtü. Telefon: iş ms ×1,15, bellek 167 → 131 MB. Masaüstü: NPC 375 → 57 ama kare yalnız ~%8 — ve iki koşunun ikisi de damgalı.<br><br><b>İzdiham kare hızına bağlı çıktı:</b> aynı eski kod 1/60 adımda 332 NPC'ye büyüyor, 1/12'de ~65'te duruyor. G-91 hızlı cihazın hastalığıymış.<br><br>Ayrıca <code>progress.md</code> 86 KB → 8,5 KB (tam metin arşivde) ve T5 araçları artık ocağı tavanda kuruyor."
+  },
   {
    "tarih": "23.09.2026",
    "etiket": "T6 commit #2 — izdiham kapandı (D-140) · YouTube Playables araştırması",

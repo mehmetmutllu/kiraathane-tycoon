@@ -110,7 +110,7 @@ Usta bugün yalnız masada: **20 hedef · 25 💎 · günlük 10 💎 · hedefle
 
 ---
 
-## KARAR (kullanıcı, 2026-09-24 · D-150 — üç soruda da önerilen kol)
+## §Karar (kullanıcı, 2026-09-24 · D-150 — üç soruda da önerilen kol)
 
 1. **"İzle, 2× al" → seviye ₺ + günlük görev 💎 + kısa yokluk.** S2 · Eg2 · O2 (tavan yine bağlar).
    Tavandaki çevrimdışı ekranında düğme **çizilmez**. Hedef ekranında düğme **yok** (Eh2/H2 elendi).
@@ -121,7 +121,7 @@ Birleşimin sayısı **SV2 −%4,5** (eşik %7). U1 ve Eg2 gün ölçeğinde: iz
 
 ---
 
-## UYGULAMA
+## §Uygulama
 
 | kalem | nerede |
 |---|---|
