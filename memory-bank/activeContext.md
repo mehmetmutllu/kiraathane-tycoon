@@ -5,15 +5,18 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-24 — F4c-2 dekor BİTTİ · D-155; sıradaki F4c-3 tabela)
+## ŞU AN (2026-09-25 — F4c-3 tabela: ÖLÇÜM; karar paketi bekliyor)
 
 ```
-SORU            : F4c-2 — 💎 dekor bugünkü düzene nereye sığar (düzen değişmez, duvara gömülmez)
-ÖLÇÜLECEK KOLLAR: 10 yuva (yılbaşı A/B) — docs/dekor-raporu-f4c2.md
-SAYILAR         : trafik %0 · en yakın nokta 1,83 · duvar payı 0,02 · harita artifact YbqrWF1n4H9F96QMsMr1tv
-KARAR           : D-155 — yerleşim olduğu gibi · yılbaşı A (sol ön) · 3. Salon'a kadar kilitli
-UYGULAMA        : config/decor.ts VITRIN_YUVALARI · VitrinDekor.tsx · Dekor sekmesi · WALL_BACK çıtaya (B5)
-BEKÇİ           : vitrin-dekor-f4c2.test.ts 22 + 14/14 mutasyon · duman 60/60 · vitest 1626
+SORU            : F4c-3 — cephe (tabela + tente) oyun kamerasında ne zaman, ne boyda görünüyor; 💎 cephe
+                  temasının yazısı nereye konursa okunur?
+ÖLÇÜLECEK KOLLAR: yazı yüzeyi K0 bugün · K1 öne · K2 alınlığı doldur · K3 tente üstü · K4/K4e çatı · K5 fırfır
+                  + renk adayları C2 C4 C7 C8 karşıtlığı — docs/tabela-raporu-f4c3.md
+SAYILAR         : cephe ekranda dikey %4,6 (3. Salon %0,7) · bugünkü tabela harfi 7,7 px, yarısı lento/kordon
+                  arkasında · K4e 18,8 px / K3 24,7 px ama okunur süre hiçbir kolda > %0,1 — rapor §Bulgular
+KARAR           : (karar paketi)
+UYGULAMA        : (yalnız seçilen kol)
+BEKÇİ           : (—)
 ```
 
 ## ⏭️ SIRADAKİ ADIM
