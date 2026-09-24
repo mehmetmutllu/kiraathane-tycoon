@@ -56,11 +56,7 @@ Sonra **F5** mağaza + G-89 (EN SON). Aday sayfası: https://claude.ai/artifact/
 5. Faz F — ~~F3 reklam~~ ✅ D-149/D-150 · ~~F4a IAP~~ ✅ D-152 · ~~F4b Play Games~~ ✅ D-153 · **F4c 💎 vitrini** ← buradan · F5 mağaza + G-89 (EN SON)
 
 ---
-
 **Karar paketleri ve kare arşivi** (birikimli liste, buradan ayrıldı): `memory-bank/karar-paketleri.md`
-
----
-
 ## TUR KARTI ŞABLONU (her yeni tur bunu doldurur, öncekinin üstüne)
 
 ```
