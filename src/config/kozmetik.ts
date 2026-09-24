@@ -70,3 +70,20 @@ export function tepsiPulu(id: string): [string, string] {
   const t = tepsiGorunum(id);
   return [t.renk, t.kenar ?? t.desen ?? t.tabak ?? t.renk];
 }
+
+/** 💎 dekorun vitrin pulu (F4c-2): eşyanın kendi iki ana rengi (ahşap/metal/kumaş). */
+const DEKOR_PULU: Record<string, [string, string]> = {
+  radyo: ['#6b4226', '#d9c79b'],
+  koltuk: ['#7a5230', '#c9a36a'],
+  lamba: ['#2a1c12', '#f4ead2'],
+  tablo: [ALTIN, '#6b8fb3'],
+  semaver: ['#b8733a', '#f4f1ea'],
+  gramofon: [ALTIN, '#6b4226'],
+  kanarya: ['#ffd23f', ALTIN],
+  saat: ['#5a3a22', '#f4ead2'],
+  'yilbasi-kirmizi': ['#b3262a', '#f4f1ea'],
+  'yilbasi-yesil': ['#2f7d4a', '#f4f1ea'],
+  'yilbasi-mavi': ['#2f5f9e', '#f4f1ea'],
+  'yilbasi-kahve': ['#6b4226', '#f4f1ea'],
+};
+export const dekorPulu = (id: string): [string, string] => DEKOR_PULU[id] ?? ['#8d6e63', '#d7ccc8'];

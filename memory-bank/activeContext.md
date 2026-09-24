@@ -5,26 +5,25 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-24 — F4c-2 adım 2 ÖLÇ bitti · karar paketi bekliyor)
+## ŞU AN (2026-09-24 — F4c-2 dekor BİTTİ · D-155; sıradaki F4c-3 tabela)
 
 ```
-SORU            : F4c-2 — 💎 dekor bugünkü düzene nereye sığar (düzen değişmez, duvara gömülmez) + tabela
-ÖLÇÜLECEK KOLLAR: 10 yuva (sol arka D1 D7a D7b D10 · sağ arka D3 D6 D5 · lavabo duvarı D2 · yılbaşı A/B)
-SAYILAR         : docs/dekor-raporu-f4c2.md §Bulgular · harita https://claude.ai/artifact/YbqrWF1n4H9F96QMsMr1tv
-KARAR           : (boş — paket: yuvalar onay? · yılbaşı A mı B mi · 3. Salon öncesi vitrinde dekor kilitli mi)
-UYGULAMA        : —
-BEKÇİ           : — (plan: gövde ∩ duvar profili = 0 · trafik yok · nokta > 1,0)
+SORU            : F4c-2 — 💎 dekor bugünkü düzene nereye sığar (düzen değişmez, duvara gömülmez)
+ÖLÇÜLECEK KOLLAR: 10 yuva (yılbaşı A/B) — docs/dekor-raporu-f4c2.md
+SAYILAR         : trafik %0 · en yakın nokta 1,83 · duvar payı 0,02 · harita artifact YbqrWF1n4H9F96QMsMr1tv
+KARAR           : D-155 — yerleşim olduğu gibi · yılbaşı A (sol ön) · 3. Salon'a kadar kilitli
+UYGULAMA        : config/decor.ts VITRIN_YUVALARI · VitrinDekor.tsx · Dekor sekmesi · WALL_BACK çıtaya (B5)
+BEKÇİ           : vitrin-dekor-f4c2.test.ts 22 + 14/14 mutasyon · duman 60/60 · vitest 1626
 ```
 
 ## ⏭️ SIRADAKİ ADIM
 
-**Karar paketi (kullanıcı):** harita sayfası + 3 soru → sonra UYGULA: yuvalar `config/decor.ts`e veri olarak,
-modeller, vitrin sekmesi, bekçi, en az 2 mutasyon. Yılbaşı paketi diske geri alındı ama COMMIT'LENMEDİ
-(`asset-olu-yuk.test` src referansı ister) — commit #2'de koda bağlanınca girer.
-- **Ek bulgu B5:** bugünkü konsol/TV ünitesi de çıtaya 0,04 gömülü (`WALL_BACK` gövde yüzünde) — aynı turda düzeltilebilir.
-- Tabela: cephe görünürlük ölçümü hâlâ yapılmadı (C2 C4 C7 C8) — F4c-2'nin ikinci yarısı.
-- **Sonraki oturumda sor:** 💎 fiyatları (TASLAK) ayrı fiyat oturumunda. Yelek-tepsi görünürlüğü oynarken.
-Sonra **F5** mağaza + G-89 (EN SON).
+**F4c-3 tabela (F8'in son kalemi):** önce oyun kamerasında cephenin görünürlüğü ölçülür (kaç px, hangi anda
+ekranda) → C2 C4 C7 C8 adayları (`tools/vitrin-adaylari.html?sayfa=tabela`) → karar → uygulama. Sonra **F5** mağaza + G-89 (EN SON).
+- **Sonraki oturumda sor:** 💎 fiyatları (kıyafet/tepsi/dekor hepsi TASLAK) ayrı fiyat oturumunda.
+- **Görsel açık (kullanıcı oynayınca):** yelek tepsinin arkasında · dikey telefonda yan duvar dekoru köşeye yürüyünce okunuyor ·
+  "Kaldır" düğmesi satın al yeşilinde (nötr mü olmalı?).
+- Duman bir kez "İzle, 2× al" adımında zaman aşımı verdi (3 koşu temiz) — tekrar ederse bakılsın.
 
 ## AÇIK KALEMLER
 - **Play Games (kullanıcı):** `docs/play-games-kurulum.md` adımları → proje kimliği `strings.xml` + 19 başarım kimliği

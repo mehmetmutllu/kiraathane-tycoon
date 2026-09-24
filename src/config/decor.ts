@@ -48,8 +48,8 @@
  *    onayı ister, B6b'de sorulacak.
  */
 import type { RVec3 } from '../game/layout';
-import { FLOOR_HALF, doorX } from '../game/layout';
-import { WALL_M, WALL_T_BODY } from '../components/three/wallPanel';
+import { BAND, FLOOR_HALF, LAVABO, LAYOUT, doorX } from '../game/layout';
+import { RAIL_TOP, WAINSCOT_H, WALL_H, WALL_M, WALL_T_BODY, WALL_T_RAIL, WALL_T_WAINSCOT } from '../components/three/wallPanel';
 
 /**
  * Duvar öğelerinin ASILDIĞI düzlem = duvarın oda tarafındaki GERÇEK YÜZÜ (`WALL_INNER`).
@@ -65,12 +65,21 @@ import { WALL_M, WALL_T_BODY } from '../components/three/wallPanel';
  */
 export const WALL_FACE = FLOOR_HALF + WALL_M - WALL_T_BODY / 2;
 /**
+ * Duvarın EN KALIN katmanından bırakılan pay (F4c-2). Gömülmeyecek kadar, S6/②'nin *"duvardan
+ * ayrı duruyo"* dediği 0,09'luk boşluğa dönmeyecek kadar küçük.
+ */
+export const DUVAR_PAYI = 0.02;
+
+/**
  * Zemine oturan ama duvara YASLANAN öğelerin (konsol · TV ünitesi · petek) SIRT hattı.
- * Artık `WALL_FACE` ile AYNI sayı: ikisi de duvarın oda tarafındaki yüzü. Eskiden 17,15'ti
- * (yani duvarın 0,26 önünde) ve o da bir tahmindi — asılan öğelerdeki 0,09'un zemindeki karşılığı.
+ *
+ * **F4c-2 ile düzeltildi (`docs/dekor-raporu-f4c2.md` B5).** S6/②'de `WALL_FACE`e eşitlenmişti,
+ * ama o GÖVDENİN yüzü (0,18). Zemin hizasında gövdenin önünde lambri (0,22) ve çıta (0,26) var:
+ * 17,41'e yaslanan konsol lambriye 0,02, çıtaya 0,04 GÖMÜLÜYDU — kullanıcının aday karelerinde
+ * gördüğü *"dekor duvarla birleşiyor"* kusurunun oyundaki hâli. Sırt artık çıtanın `DUVAR_PAYI` önünde.
  * `parcaYerlesim` `sirt: 'duvar'` parçalarının SIRTINI tam bu hatta getiriyor.
  */
-export const WALL_BACK = WALL_FACE;
+export const WALL_BACK = FLOOR_HALF + WALL_M - WALL_T_RAIL / 2 - DUVAR_PAYI;
 
 /** `WALL_FACE`in okunur takma adı — zemine oturan öğelerin gerekçesi orada yazılı. */
 export const WALL_INNER = WALL_FACE;
@@ -153,7 +162,7 @@ const RIGHT_WALL: DecorItem[] = [
   { kind: 'pencere', pos: [WALL_FACE, (WINDOW.sill + WINDOW.top) / 2, 2.6], rot: -Math.PI / 2, from: 2, len: 3.2, h: WINDOW.top - WINDOW.sill },
   { kind: 'aplik', pos: [WALL_FACE, MOUNT.high, 5.0], rot: -Math.PI / 2, from: 2 },
   { kind: 'pencere', pos: [WALL_FACE, (WINDOW.sill + WINDOW.top) / 2, 7.4], rot: -Math.PI / 2, from: 2, len: 3.2, h: WINDOW.top - WINDOW.sill },
-  { kind: 'petek', pos: [WALL_INNER, 0, 7.4], rot: -Math.PI / 2, from: 2, len: 1.6 },
+  { kind: 'petek', pos: [WALL_BACK, 0, 7.4], rot: -Math.PI / 2, from: 2, len: 1.6 },
   { kind: 'aplik', pos: [WALL_FACE, MOUNT.high, 9.8], rot: -Math.PI / 2, from: 2 },
   { kind: 'pencere', pos: [WALL_FACE, (WINDOW.sill + WINDOW.top) / 2, 12.2], rot: -Math.PI / 2, from: 2, len: 3.2, h: WINDOW.top - WINDOW.sill },
   // S5: gazetelik KayKit kitaplığına geçti (kullanıcı kararı) ve ölçüm o modelin bir DUVAR rafı
@@ -213,3 +222,106 @@ const FIXED: DecorItem[] = [...ENTRY, ...CORRIDOR, ...LEFT_WALL, ...RIGHT_WALL];
 /** O an SAHNEDE olan dekor (kilitli alanın dekoru çizilmez — D-057 ile aynı kural). */
 export const decorItems = (areasOpen: number): DecorItem[] =>
   areasOpen < 1 ? [] : [...FIXED.filter((d) => d.from <= areasOpen), ...entryAtDoor(areasOpen)];
+
+// ============================================================================================
+//  💎 VİTRİN DEKORU (F4c-2 · D-155) — satın alınınca kendi YUVASINDA belirir
+// ============================================================================================
+//
+// Kullanıcı (2026-09-24): dekor haritada gösterilsin, DÜZEN DEĞİŞMESİN, dekor boş yerlere sığsın.
+// Yuvalar ölçülerek seçildi (`tools/olcum-dekor-yuva-f4c2.ts` · `docs/dekor-raporu-f4c2.md`):
+// yürüme trafiği %0, en yakın pad/yükseltme noktası 1,0'ın dışında, katı engel ve bugünkü dekorla
+// çakışma yok. Onaylanan harita: https://claude.ai/artifact/YbqrWF1n4H9F96QMsMr1tv
+//
+// Sırt duvarın PROFİLİNE göre konur: yere oturan eşya çıtaya (0,26), asılan eşya gövdeye (0,18)
+// değer — ikisi de `DUVAR_PAYI` önde. Aday karelerindeki "duvara gömülme" tam bu farktı.
+
+export type VitrinDuvar = 'sol' | 'sag' | 'wc';
+
+export interface VitrinYuva {
+  id: string;
+  duvar: VitrinDuvar;
+  /** Duvar boyunca merkez (sol/sağ duvar → z · lavabo duvarı → x). */
+  boy: number;
+  /** Duvar boyunca genişlik · duvardan derinlik · alt/üst y (gövde kutusu). */
+  w: number;
+  d: number;
+  y0: number;
+  y1: number;
+}
+
+/**
+ * Sol arka köşe: radyo · koltuk · lamba · üstte tablo. Sağ arka köşe: semaver · gramofon · kanarya.
+ * Lavabo duvarı (kameranın tam karşısı): sarkaçlı saat. Yılbaşı koltuğu + halı sol önde, TV ile
+ * askı rayı arasında — oyunun başından görünen tek yuva (kullanıcı A kolunu seçti).
+ * Ölçüler modellerin ölçülmüş kutusundan (`kaykit` → `model-olc.mjs`): gövde = çizilen şey.
+ */
+export const VITRIN_YUVALARI: readonly VitrinYuva[] = [
+  { id: 'radyo', duvar: 'sol', boy: -2.2, w: 0.9, d: 0.91, y0: 0, y1: 1.28 },
+  { id: 'koltuk', duvar: 'sol', boy: -4.1, w: 1.26, d: 1.12, y0: 0, y1: 0.86 },
+  { id: 'lamba', duvar: 'sol', boy: -5.5, w: 0.62, d: 0.62, y0: 0, y1: 1.55 },
+  { id: 'tablo', duvar: 'sol', boy: -4.1, w: 1.1, d: 0.05, y0: 1.45, y1: 2.2 },
+  { id: 'semaver', duvar: 'sag', boy: -2.2, w: 0.9, d: 0.9, y0: 0, y1: 1.4 },
+  { id: 'gramofon', duvar: 'sag', boy: -4.0, w: 0.9, d: 0.9, y0: 0, y1: 1.55 },
+  { id: 'kanarya', duvar: 'sag', boy: -5.6, w: 0.45, d: 0.45, y0: 0, y1: 1.85 },
+  { id: 'saat', duvar: 'wc', boy: 8.2, w: 0.42, d: 0.16, y0: 1.0, y1: 2.1 },
+  { id: 'yilbasi', duvar: 'sol', boy: 13.05, w: 1.4, d: 1.45, y0: 0, y1: 1.07 },
+];
+
+export const vitrinYuva = (id: string): VitrinYuva | undefined => VITRIN_YUVALARI.find((y) => y.id === id);
+
+/** Salon duvarının hattı (dış kabuk) ve lavabo odasının ön duvarı (yükseklik 2,2). */
+export const SALON_DUVAR_HAT = FLOOR_HALF + WALL_M;
+export const WC_ON_DUVAR = { hat: BAND.front, h: 2.2, kapi: [LAVABO.door[0] - 0.7, LAVABO.door[0] + 0.7] } as const;
+
+/** Duvar hattından oda tarafına taşan kalınlık, verilen y aralığında (en kalın katman kazanır). */
+export function duvarProfili(y0: number, y1: number): number {
+  let t = 0;
+  if (y0 < WAINSCOT_H) t = Math.max(t, WALL_T_WAINSCOT / 2);
+  if (y0 < RAIL_TOP && y1 > WAINSCOT_H) t = Math.max(t, WALL_T_RAIL / 2);
+  if (y1 > WAINSCOT_H) t = Math.max(t, WALL_T_BODY / 2);
+  return t;
+}
+
+export interface Kutu2 {
+  minX: number;
+  maxX: number;
+  minZ: number;
+  maxZ: number;
+}
+
+/** Yuvanın ankrajı: SIRTININ ortası (dünya) + oda yönüne bakan yaw. Çizim buradan yerleşir. */
+export function yuvaAnkraj(y: VitrinYuva): { pos: [number, number, number]; rot: number } {
+  const t = duvarProfili(y.y0, y.y1) + DUVAR_PAYI;
+  if (y.duvar === 'wc') return { pos: [y.boy, y.y0, WC_ON_DUVAR.hat + t], rot: 0 };
+  const s = y.duvar === 'sol' ? -1 : 1;
+  return { pos: [s * (SALON_DUVAR_HAT - t), y.y0, y.boy], rot: -s * (Math.PI / 2) };
+}
+
+/** Yuvanın dünya gövde kutusu (xz). */
+export function yuvaKutu(y: VitrinYuva): Kutu2 {
+  const { pos } = yuvaAnkraj(y);
+  if (y.duvar === 'wc') return { minX: y.boy - y.w / 2, maxX: y.boy + y.w / 2, minZ: pos[2], maxZ: pos[2] + y.d };
+  const ic = pos[0] + (y.duvar === 'sol' ? y.d : -y.d);
+  return { minX: Math.min(pos[0], ic), maxX: Math.max(pos[0], ic), minZ: y.boy - y.w / 2, maxZ: y.boy + y.w / 2 };
+}
+
+/** Gövde ile duvar profili arası en küçük boşluk (eksi = gömülü / duvardan taşıyor / kapının önünde). */
+export function yuvaDuvarPayi(y: VitrinYuva): number {
+  const k = yuvaKutu(y);
+  if (y.duvar === 'wc') {
+    if (y.y1 > WC_ON_DUVAR.h) return WC_ON_DUVAR.h - y.y1;
+    if (k.maxX > WC_ON_DUVAR.kapi[0] && k.minX < WC_ON_DUVAR.kapi[1]) return -1;
+    return k.minZ - (WC_ON_DUVAR.hat + duvarProfili(y.y0, y.y1));
+  }
+  if (y.y1 > WALL_H) return WALL_H - y.y1;
+  const yuz = SALON_DUVAR_HAT - duvarProfili(y.y0, y.y1);
+  return y.duvar === 'sol' ? k.minX + yuz : yuz - k.maxX;
+}
+
+/** Yuvanın alanı (0 ön-sol · 1 ön-sağ · 2 arka yarı) — alan açılmadan yuva çizilmez (D-057). */
+export function yuvaAlani(y: VitrinYuva): number {
+  const k = yuvaKutu(y);
+  const cx = Math.max(-FLOOR_HALF + 0.01, Math.min(FLOOR_HALF - 0.01, (k.minX + k.maxX) / 2));
+  const cz = Math.max(BAND.front + 0.01, Math.min(FLOOR_HALF - 0.01, (k.minZ + k.maxZ) / 2));
+  return LAYOUT.areaBounds.findIndex((a) => cx >= a.minX && cx <= a.maxX && cz >= a.minZ && cz <= a.maxZ);
+}

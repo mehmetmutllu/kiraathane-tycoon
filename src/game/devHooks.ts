@@ -13,6 +13,7 @@ import { toastCizilir } from './rules';
 import { dailyViews } from './dailyQuests';
 import { D } from './decimal';
 import { izdusur } from './cameraView';
+import { gorunenDekor } from './vitrin';
 import { reklamDurumu, reklamSaatiKaydir } from './ads';
 import { economyConfig, levelProgress, charLevel, lavaboVisitChance, lavaboFee, lavaboIncomePerCustomer, type CharStat } from '../config/economy.config';
 import type { SaveStats } from './save';
@@ -122,6 +123,8 @@ export function installDevHooks(): void {
       tables: s.tables,
       stations: s.stations,
       areasOpen: s.areasOpen,
+      // F4c-2: salonda ÇİZİLEN 💎 dekor (sahip + yuvasında + yuvası açık) — duman testi buradan okur.
+      dekor: gorunenDekor({ dekor: s.dekor, ownedCosmetics: s.ownedCosmetics, satin: s.satin, areasOpen: s.areasOpen }).map((d) => d.id),
       // B2: kat TEK servis noktasından döner → "zone başına ocak/personel" anlık görüntüsü kalktı,
       // yerine tek `service` nesnesi geldi (testler ve duman testi buradan okur).
       service: {

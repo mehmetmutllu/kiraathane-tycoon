@@ -22,6 +22,25 @@
 | B6 | Görünürlük dönemi: arka köşeler ve lavabo duvarı (8 yuva) 3. Salon açılmadan çizilmiyor (D-057). Yılbaşı A 1. Salon'da, yılbaşı B 2. Salon'da açılıyor. | 1. Salon'da 1 yuva · 2. Salon'da 2 · 3. Salon'da 10 |
 | B7 | Kadraj: dikey telefonda yan duvardaki eşya ancak oyuncu o köşeye yürüyünce okunuyor. Lavabo duvarı tam karşıdan görünüyor. | kadrajlar `f4c2-kadraj-*.png` |
 
-## Karar
+## Karar (D-155 · kullanıcı 2026-09-24)
 
-*(boş — karar paketi sonrası)*
+1. **Yerleşim olduğu gibi** — 9 ürün yuvası (commit #1 kodları: D1 radyo · D7a koltuk · D7b lamba · D10 tablo · D3 semaver ·
+   D6 gramofon · D5 kanarya · D2 saat) · yuvalar `config/decor.ts` `VITRIN_YUVALARI`.
+2. **Yılbaşı A** (sol ön) — B (sağ ön pencere altı) elendi. Koltuk ×0,50 + halı ×0,70 → yuva 1,40 × 1,45.
+3. **Kilitli** — yuvanın salonu açılmadan vitrinde "N. Salon açılınca", satılmaz, çizilmez.
+
+## Uygulama ve final (tam koşu, PAY 0,02)
+
+| Kalem | Sayı |
+|---|---|
+| Final trafik (9 yuva × 3 dönem) | %0,0 · denetim %41,1 / %42,6 / %62,6 |
+| En yakın etkileşim noktası | 1,83 (gramofon) … 4,74 (radyo) |
+| Duvar payı (profil) | 0,020 hepsi · konsol/TV/petek 17,41 → 17,35 (B5 kapandı) |
+| Çizim ⊆ yuva | 9/9 (ilk koşuda radyo 0,9018 > 0,90 yakalandı → yuva 0,91) |
+| Bekçi | `tests/vitrin-dekor-f4c2.test.ts` 22 test · mutasyon 14/14 · duman 60/60 · vitest 1626 |
+| Kareler | `docs/gorsel/ss/f4c2-oyun-*.png` · `f4c2-magaza-*.png` (`tools/shot-f4c2.mjs`) |
+
+**Mutasyonun gösterdiği zayıflık:** ilk sınavda M4/M5 (yuva petek/TV'nin içine) KAÇTI. Sebep: test `MAX_AREAS`ı `layout`tan
+alıyordu (dışa açık değil → undefined); dönem döngüleri dönmüyor, `decorItems(undefined)` yalnız kapı takımını veriyordu.
+Düzeltildi ve "boş küme" bekçisi eklendi (üç dönem · konsol/TV/petek listede · 9 yuva).
+**Duman:** 4 koşudan birinde "İzle, 2× al" adımı zaman aşımına düştü; sonraki 3 koşu 60/60 — kararsız, dekor adımıyla ilişkisi görülmedi.

@@ -47,6 +47,7 @@ import { Customers } from './Customers';
 import { Coins } from './Coins';
 import { Pad } from './Pad';
 import { Decor } from './Decor';
+import { VitrinDekor } from './VitrinDekor';
 import { Kitchen, KayTezgah } from './Kitchen';
 import { onHatGovdeleri } from './kitchenLook';
 import { DishSink } from './DishSink';
@@ -1365,6 +1366,7 @@ export function Scene() {
       <Street />
       <Walls />
       <Decor />
+      <VitrinDekor />
       <BanketIslands />
       <WaiterStation />
       <Stations />

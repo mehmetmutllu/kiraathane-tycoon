@@ -41,7 +41,7 @@ import {
   type ReklamSayaci,
   type SatinAlim,
 } from './save';
-import { vitrinSahip, vitrinUrunu, type VitrinTuru } from './vitrin';
+import { dekorAcik, dekorDegistir, vitrinSahip, vitrinUrunu, type DekorYerlesim, type VitrinTuru } from './vitrin';
 import { reklamsizAyarla } from './ads';
 import type { Islem, Sahiplik } from './iap';
 
@@ -274,6 +274,7 @@ export function kayitVerisi(s: GameState): SaveData {
     ownedCosmetics: [...s.ownedCosmetics],
     outfit: s.outfit,
     trayLook: s.trayLook,
+    dekor: { ...s.dekor },
     charUpgrades: { ...s.charUpgrades },
     waiterUpgrades: { ...s.waiterUpgrades },
     charPanelSeen: s.charPanelSeen,
@@ -460,6 +461,8 @@ export interface GameState {
   /** F4c 💎 vitrini (additive): sahibin kıyafeti + tepsi görünümü. Giyilen = `gecerliKiyafet`. */
   outfit: string;
   trayLook: string;
+  /** F4c-2 💎 dekor: yuva → duran ürün. Çizilen = `gorunenDekor` (sahiplik + yuva açık). */
+  dekor: DekorYerlesim;
   /** Karakter yükseltme kademeleri (persist v20): tepsi/mıknatıs/hız. Karakter seviyesi türetilir. */
   charUpgrades: CharUpgrades;
   /** Garson tepsi yükseltme kademeleri (persist v27/Y3): çay garsonları ortak + tostçu ayrı. */
@@ -546,7 +549,8 @@ export interface GameState {
    * false), sahip olunan tema ücretsiz yeniden seçilir. Başarıda anında kaydedilir.
    */
   buyCosmetic: (kind: 'floor' | 'wall' | 'table' | 'kitchen', id: string, area: number) => boolean;
-  /** F4c: 💎 vitrini — sahip değilse 💎 düşer (yetmezse/paket ürünüyse false), sahipse giyer. */
+  /** F4c: 💎 vitrini — sahip değilse 💎 düşer (yetmezse/paket ürünüyse false), sahipse giyer.
+   *  Dekor (F4c-2): yuvası kapalıysa false; sahipse yuvasına koyar, zaten oradaysa KALDIRIR. */
   buyGemCosmetic: (kind: VitrinTuru, id: string) => boolean;
   /** F4c: başlangıç paketi teklifi kapandı — bir daha çıkmaz. */
   baslangicTeklifKapat: () => void;
@@ -692,6 +696,7 @@ export const useGame = create<GameState>((set, get) => ({
   ownedCosmetics: [],
   outfit: 'klasik',
   trayLook: 'klasik',
+  dekor: {},
   charUpgrades: defaultCharUpgrades(),
   waiterUpgrades: defaultWaiterUpgrades(),
   charPanelSeen: false,
@@ -876,6 +881,7 @@ export const useGame = create<GameState>((set, get) => ({
       ownedCosmetics: [...save.ownedCosmetics],
       outfit: save.outfit ?? 'klasik',
       trayLook: save.trayLook ?? 'klasik',
+      dekor: { ...(save.dekor ?? {}) },
       charUpgrades,
       waiterUpgrades,
       charPanelSeen: save.charPanelSeen,
@@ -1272,6 +1278,7 @@ export const useGame = create<GameState>((set, get) => ({
     const s = get();
     const urun = vitrinUrunu(kind, id);
     if (!urun) return false;
+    if (kind === 'decor' && !dekorAcik(id, s.areasOpen)) return false;
     let diamonds = s.diamonds;
     let ownedCosmetics = s.ownedCosmetics;
     if (!vitrinSahip(s, kind, id)) {
@@ -1279,7 +1286,11 @@ export const useGame = create<GameState>((set, get) => ({
       diamonds = diamonds.sub(urun.diamonds);
       ownedCosmetics = [...ownedCosmetics, `${kind}:${id}`];
     }
-    set({ diamonds, ownedCosmetics, ...(kind === 'outfit' ? { outfit: id } : { trayLook: id }) });
+    set({
+      diamonds,
+      ownedCosmetics,
+      ...(kind === 'outfit' ? { outfit: id } : kind === 'tray' ? { trayLook: id } : { dekor: dekorDegistir(s.dekor, id) }),
+    });
     get().saveNow();
     return true;
   },

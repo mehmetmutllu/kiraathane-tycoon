@@ -7,7 +7,7 @@ import {
   wallSideLine,
   wallUzunluk,
 } from '../src/components/three/wallLook';
-import { WALL_H, WAINSCOT_H, WALL_M, WALL_T_BODY, wallBoxes } from '../src/components/three/wallPanel';
+import { WALL_H, WAINSCOT_H, WALL_M, WALL_T_BODY, WALL_T_RAIL, wallBoxes } from '../src/components/three/wallPanel';
 import {
   AYNA_GOZ,
   AYNA_H,
@@ -29,7 +29,7 @@ import {
 } from '../src/components/three/wcLook';
 import { DUVAR_GOLGE, PENCERE_GOLGE } from '../src/components/three/decorLook';
 import { WALL_THEMES } from '../src/config/palette';
-import { WALL_BACK, WALL_FACE, WINDOW, decorItems } from '../src/config/decor';
+import { DUVAR_PAYI, WALL_BACK, WALL_FACE, WINDOW, decorItems } from '../src/config/decor';
 import { FLOOR_HALF } from '../src/game/layout';
 import { MAX_AREAS } from '../src/game/world';
 
@@ -214,15 +214,20 @@ describe('duvar ankrajı — asılan/yaslanan hiçbir şey HAVADA durmaz (S6/②
     expect(WALL_FACE).toBeCloseTo(FLOOR_HALF + WALL_M - WALL_T_BODY / 2, 6);
   });
 
-  it('zemine yaslananlar da AYNI hatta (konsol · TV · petek)', () => {
-    expect(WALL_BACK).toBeCloseTo(WALL_FACE, 6);
+  it('zemine yaslananlar (konsol · TV · petek) ÇITANIN önünde, gövde yüzünde DEĞİL (F4c-2 · B5)', () => {
+    // S6/②'de WALL_BACK = WALL_FACE yazılmıştı; ama zemin hizasında gövdenin önünde lambri (0,22) ve
+    // çıta (0,26) var → konsol 0,04 gömülüydü. Artık çıtanın DUVAR_PAYI önünde; havada da değil (≤ 0,05).
+    const citaYuzu = FLOOR_HALF + WALL_M - WALL_T_RAIL / 2;
+    expect(citaYuzu - WALL_BACK).toBeCloseTo(DUVAR_PAYI, 6);
+    expect(citaYuzu - WALL_BACK).toBeLessThanOrEqual(0.05);
   });
 
   it('duvara asılan hiçbir öğe duvarın ÖNÜNDE boşlukta durmuyor', () => {
     const yuz = FLOOR_HALF + WALL_M - WALL_T_BODY / 2;
     for (const d of decorItems(MAX_AREAS)) {
       const dikey = Math.abs(Math.abs(d.rot) - Math.PI / 2) < 1e-6;
-      if (!dikey) continue;
+      // Zemine yaslananlar yukarıdaki testte (çıta hattı); burada yalnız ASILANLAR.
+      if (!dikey || d.pos[1] < 0.5) continue;
       // Dik duvardaki öğenin |x|'i duvar yüzünden KÜÇÜK olamaz (küçükse odaya doğru kaçmış).
       expect({ kind: d.kind, kopuk: Math.abs(d.pos[0]) < yuz - 1e-6 }).toEqual({
         kind: d.kind,

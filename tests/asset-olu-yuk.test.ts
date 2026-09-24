@@ -72,8 +72,8 @@ describe('ölü asset yükü (F2 · D-125)', () => {
     expect(ayrinti).toEqual([]);
   });
 
-  it('F2 turunda silinen dört paket ne diskte ne kodda duruyor', () => {
-    const silinen = ['kaykit-board-game-bits', 'kaykit-resource-bits', 'kaykit-holiday-bits', 'kaykit-forest-nature'];
+  it('F2 turunda silinen üç paket ne diskte ne kodda duruyor (holiday F4c-2/D-155 ile geri geldi)', () => {
+    const silinen = ['kaykit-board-game-bits', 'kaykit-resource-bits', 'kaykit-forest-nature'];
     for (const p of silinen) {
       expect(existsSync(path.join(MODEL_KOK, p)), `${p} diske geri gelmiş`).toBe(false);
       expect(metin.includes(p), `${p} kodda hâlâ anılıyor → 404 + sessiz fallback`).toBe(false);

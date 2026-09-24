@@ -38,7 +38,8 @@ const GRUP = {
   wc: { ad: 'Lavabo duvarı', renk: 'var(--wc)' },
   yil: { ad: 'Yılbaşı takımı', renk: 'var(--yil)' },
 };
-const grupOf = (y) => (y.kod === 'Y' ? 'yil' : y.duvar);
+// Commit #2'den beri yuva kimlikleri `config/decor.ts`ten (radyo · koltuk · … · yilbasi).
+const grupOf = (y) => (y.id === 'yilbasi' ? 'yil' : y.duvar);
 const SALON = ['1. Salon (baştan)', '2. Salon', '3. Salon'];
 
 function isiSvg(r, d) {
@@ -102,7 +103,7 @@ const KADRAJ_AD = {
   'sol-on': 'Sol ön · yılbaşı A',
   'sag-on': 'Sağ ön · yılbaşı B',
 };
-const odak = { 'sol-arka': ['d1', 'd7a', 'd7b', 'd10'], 'sag-arka': ['d3', 'd6', 'd5'], 'wc-duvar': ['d2'], 'sol-on': ['yA'], 'sag-on': ['yB'] };
+const odak = { 'sol-arka': ['radyo', 'koltuk', 'lamba', 'tablo'], 'sag-arka': ['semaver', 'gramofon', 'kanarya'], 'wc-duvar': ['saat'], 'sol-on': ['yilbasi'], 'sag-on': [] };
 const kadrajHtml = kadraj.kadrajlar
   .map((k) => {
     const polys = k.yuva

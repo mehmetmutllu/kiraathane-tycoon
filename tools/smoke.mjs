@@ -529,6 +529,28 @@ try {
     const vitrin = await page.evaluate(() => window.__game().diamonds);
     if (vitrin === 40) pass('💎 vitrini: Kıyafet alındı ve giyildi (100→40)');
     else fail(`💎 vitrini: kıyafet alımı yanlış (100→${vitrin})`);
+    // F4c-2 💎 DEKOR: yuvanın salonu açılmadan kilitli; yılbaşı koltuğu baştan açık → alınır, salona konur.
+    await tikla('[data-testid="shop-tab-decor"]');
+    await page.waitForSelector('[data-testid="dekor-onizleme"]', { timeout: 5000 });
+    // Duman bu noktada geç dönemde; kilidi görmek için dönem bir an 1. Salon'a alınır (alan sayısı
+    // padsDone'dan TÜRER), denetimden sonra aynı liste geri yazılır.
+    const padsOnce = await page.evaluate(() => window.__game().padsDone);
+    await page.evaluate(() => window.__setState({ padsDone: [] }));
+    await tikla('[data-testid="shop-card-decor-semaver"]');
+    const kilit = await page.evaluate(() => {
+      const d = document.querySelector('[data-testid="shop-buy"]');
+      return { kapali: !!d?.disabled, metin: d?.textContent ?? '' };
+    });
+    await page.evaluate((p) => window.__setState({ padsDone: p }), padsOnce);
+    if (kilit.kapali && kilit.metin.includes('3. Salon')) pass('💎 dekor: semaver 3. Salon açılmadan kilitli');
+    else fail(`💎 dekor: kilit yok (${kilit.metin})`);
+    await page.evaluate(() => window.__setState({ diamonds: 100 }));
+    await tikla('[data-testid="shop-card-decor-yilbasi-kirmizi"]');
+    await tikla('[data-testid="shop-buy"]');
+    await page.waitForFunction(() => document.querySelector('[data-testid="shop-buy"]')?.textContent?.includes('Kaldır'), null, { timeout: 5000 });
+    const dekor = await page.evaluate(() => ({ elmas: window.__game().diamonds, dekor: window.__game().dekor }));
+    if (dekor.elmas === 0 && dekor.dekor.includes('yilbasi-kirmizi')) pass('💎 dekor: yılbaşı koltuğu alındı ve salona kondu (100→0)');
+    else fail(`💎 dekor: alım yanlış (${JSON.stringify(dekor)})`);
     await tikla('[data-testid="shop-panel"] .sheet-back');
     await page.waitForSelector('[data-testid="shop-panel"]', { state: 'detached', timeout: 5000 });
   }

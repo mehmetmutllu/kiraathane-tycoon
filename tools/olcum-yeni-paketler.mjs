@@ -41,7 +41,8 @@ export const REDDEDILEN = ['kaykit-block-bits']; // voxel küpü — mekân hacm
  * aynı turda yapılmalı (`tests/asset-olu-yuk.test.ts` kodda karşılığı olmayan paketi geçirmez).
  */
 // T7 (D-141): prototype-bits'in tek işi WC kabin kapısıydı; kabin elle çizime geçti, paket söküldü.
-export const CIKARILAN = ['kaykit-board-game-bits', 'kaykit-resource-bits', 'kaykit-holiday-bits', 'kaykit-forest-nature', 'kaykit-prototype-bits'];
+// F4c-2 (D-155): holiday-bits geri geldi (yalnız 💎 yılbaşı koltuğu + halı, 5 model) — çıkarılanlardan düştü.
+export const CIKARILAN = ['kaykit-board-game-bits', 'kaykit-resource-bits', 'kaykit-forest-nature', 'kaykit-prototype-bits'];
 export const GEREKEN = {
   'kaykit-board-game-bits': {
     gerekce: 'okey/tavla masası (Kat 2 kimliği)',

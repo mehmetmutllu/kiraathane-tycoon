@@ -6,19 +6,22 @@
  * Kurucu kıyafeti listede SAKLANMAZ — paket iade edilirse sahiplik de kendiliğinden düşer.
  */
 import { economyConfig as C } from '../config/economy.config';
+import { vitrinYuva, yuvaAlani } from '../config/decor';
 import type { SatinAlim } from './save';
 
-export type VitrinTuru = 'outfit' | 'tray';
+export type VitrinTuru = 'outfit' | 'tray' | 'decor';
 
 interface VitrinUrun {
   id: string;
   label: string;
   diamonds: number;
   paket?: string;
+  /** Yalnız dekor: çizildiği yuva (`config/decor.ts` `VITRIN_YUVALARI`). */
+  yuva?: string;
 }
 
 export function vitrinUrunleri(tur: VitrinTuru): readonly VitrinUrun[] {
-  return (tur === 'outfit' ? C.cosmetics.outfits : C.cosmetics.trays) as readonly VitrinUrun[];
+  return (tur === 'outfit' ? C.cosmetics.outfits : tur === 'tray' ? C.cosmetics.trays : C.cosmetics.decor) as readonly VitrinUrun[];
 }
 
 export const vitrinUrunu = (tur: VitrinTuru, id: string): VitrinUrun | undefined =>
@@ -49,4 +52,43 @@ export const gecerliTepsi = (s: SahiplikDurumu & { trayLook: string }): string =
  */
 export function baslangicTeklifiGoster(s: { mastersOwned?: readonly string[]; satin: Pick<SatinAlim, 'baslangic' | 'teklif'> }): boolean {
   return (s.mastersOwned?.length ?? 0) >= 1 && !s.satin.baslangic && !s.satin.teklif;
+}
+
+// ---- 💎 DEKOR (F4c-2 · D-155) ----
+
+/** Yuva → o yuvada DURAN ürün. Sahiplik ayrı (`ownedCosmetics`), bu yalnız yerleşim seçimi. */
+export type DekorYerlesim = Readonly<Record<string, string>>;
+
+/** Ürünün yuvası AÇIK mı? Yuvanın salonu açılmadan dekor vitrinde kilitli durur (kullanıcı kararı). */
+export function dekorAcik(id: string, areasOpen: number): boolean {
+  const y = vitrinYuva(vitrinUrunu('decor', id)?.yuva ?? '');
+  return !!y && yuvaAlani(y) >= 0 && yuvaAlani(y) < areasOpen;
+}
+
+/** Yuvanın hangi salonla açıldığı (1'den sayılır) — kilit metni bunu söyler. */
+export function dekorSalonu(id: string): number {
+  const y = vitrinYuva(vitrinUrunu('decor', id)?.yuva ?? '');
+  return y ? yuvaAlani(y) + 1 : 0;
+}
+
+/**
+ * Sahnede çizilecek dekor: yerleştirilmiş + sahip olunan + yuvası açık. Sahiplik düşerse (kayıt
+ * bozulması) yerleşimde kalan ürün kendiliğinden çizilmez — tek kaynak `ownedCosmetics`.
+ */
+export function gorunenDekor(
+  s: SahiplikDurumu & { dekor: DekorYerlesim; areasOpen: number },
+): { yuva: string; id: string }[] {
+  return Object.entries(s.dekor)
+    .filter(([yuva, id]) => vitrinUrunu('decor', id)?.yuva === yuva && vitrinSahip(s, 'decor', id) && dekorAcik(id, s.areasOpen))
+    .map(([yuva, id]) => ({ yuva, id }));
+}
+
+/** Ürünü yuvasına koyar; zaten oradaysa kaldırır. Aynı yuvadaki başka ürün (yılbaşı rengi) yer değiştirir. */
+export function dekorDegistir(dekor: DekorYerlesim, id: string): DekorYerlesim {
+  const yuva = vitrinUrunu('decor', id)?.yuva;
+  if (!yuva) return dekor;
+  const yeni: Record<string, string> = { ...dekor };
+  if (yeni[yuva] === id) delete yeni[yuva];
+  else yeni[yuva] = id;
+  return yeni;
 }

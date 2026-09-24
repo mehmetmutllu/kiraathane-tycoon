@@ -52,6 +52,8 @@ const T_WAINSCOT = 0.22;
 /** Lambri kalınlığı — zemin hizasında duvarın EN DIŞ yüzü buradan çıkar (gövde 0,18'den kalın). */
 export const WALL_T_WAINSCOT = T_WAINSCOT;
 const T_RAIL = 0.26;
+/** Çıta kalınlığı — duvarın EN KALIN katmanı; zemine yaslanan eşyanın sırtı buna değer (F4c-2). */
+export const WALL_T_RAIL = T_RAIL;
 /** Çıtanın yüksekliği ve merkez y'si — maket: box(...,0.08,...) @ y = 0.94. */
 const RAIL_H = 0.08;
 const RAIL_Y = 0.94;

@@ -1,30 +1,28 @@
-# F4c-2 dekor yuvaları · kip tam · ısınma 240 sn · kayıt 900 sn/dönem · örnek 0,1 sn · PAY 0.05
+# F4c-2 dekor yuvaları · kip tam · ısınma 240 sn · kayıt 900 sn/dönem · örnek 0,1 sn · PAY 0.02
 dönem 1: alan 1 · masa 4 · örnek 9000 · ort. aktör 21.5 · KONTROL (kapı içi yol) trafik %41.1
 dönem 2: alan 2 · masa 8 · örnek 9000 · ort. aktör 41.1 · KONTROL (kapı içi yol) trafik %42.6
 dönem 3: alan 3 · masa 20 · örnek 9000 · ort. aktör 62.3 · KONTROL (kapı içi yol) trafik %62.6
 
 ## Yuvalar — geometri (dönemden bağımsız)
 yuva  kod   duvar  kutu x[min,max] z[min,max]              duvar payı  dekor çakışma          yuva çakışma
-d1    D1    sol    [-17.32,-16.42] [-2.65,-1.75]                   0.050    —                      —
-d7a   D7a   sol    [-17.34,-16.22] [-4.73,-3.47]                   0.050    —                      —
-d7b   D7b   sol    [-17.32,-16.70] [-5.81,-5.19]                   0.050    —                      —
-d10   D10   sol    [-17.36,-17.31] [-4.65,-3.55]                   0.050    —                      —
-d3    D3    sag    [ 16.42, 17.32] [-2.65,-1.75]                   0.050    —                      —
-d6    D6    sag    [ 16.42, 17.32] [-4.45,-3.55]                   0.050    —                      —
-d5    D5    sag    [ 16.87, 17.32] [-5.82,-5.38]                   0.050    —                      —
-d2    D2    wc     [ 7.99, 8.41] [-9.66,-9.50]                     0.050    —                      —
-yA    Y     sol    [-17.32,-15.72] [ 12.59, 13.51]                 0.050    —                      —
-yB    Y     sag    [ 15.72, 17.32] [ 11.40, 13.00]                 0.050    —                      —
+radyo radyo sol    [-17.35,-16.44] [-2.65,-1.75]                   0.020    —                      —
+koltuk koltuk sol    [-17.37,-16.25] [-4.73,-3.47]                 0.020    —                      —
+lamba lamba sol    [-17.35,-16.73] [-5.81,-5.19]                   0.020    —                      —
+tablo tablo sol    [-17.39,-17.34] [-4.65,-3.55]                   0.020    —                      —
+semaver semaver sag    [ 16.45, 17.35] [-2.65,-1.75]               0.020    —                      —
+gramofon gramofon sag    [ 16.45, 17.35] [-4.45,-3.55]             0.020    —                      —
+kanarya kanarya sag    [ 16.90, 17.35] [-5.82,-5.38]               0.020    —                      —
+saat  saat  wc     [ 7.99, 8.41] [-9.69,-9.53]                     0.020    —                      —
+yilbasi yilbasi sol    [-17.35,-15.90] [ 12.35, 13.75]             0.020    —                      —
 
 ## Yuvalar × dönem — trafik (aktörün gövdeye girdiği örnek oranı) · en yakın nokta · katı
 yuva  | dönem 1: alan  trafik   nokta  katı | dönem 2: alan  trafik   nokta  katı | dönem 3: alan  trafik   nokta  katı 
-d1    | a2 KAPALI                          | a2 KAPALI                          | a2     %0.0   4.72  yok         
-d7a   | a2 KAPALI                          | a2 KAPALI                          | a2     %0.0   3.30  yok         
-d7b   | a2 KAPALI                          | a2 KAPALI                          | a2     %0.0   2.37  yok         
-d10   | a2 KAPALI                          | a2 KAPALI                          | a2     %0.0   3.67  yok         
-d3    | a2 KAPALI                          | a2 KAPALI                          | a2     %0.0   2.91  yok         
-d6    | a2 KAPALI                          | a2 KAPALI                          | a2     %0.0   1.81  yok         
-d5    | a2 KAPALI                          | a2 KAPALI                          | a2     %0.0   2.20  yok         
-d2    | a2 KAPALI                          | a2 KAPALI                          | a2     %0.0   2.20  yok         
-yA    | a0     %0.0   3.59  yok         | a0     %0.0   3.59  yok         | a0     %0.0   4.02  yok         
-yB    | a1 KAPALI                          | a1     %0.0   4.02  yok         | a1     %0.0   4.02  yok         
+radyo | a2 KAPALI                          | a2 KAPALI                          | a2     %0.0   4.74  yok         
+koltuk| a2 KAPALI                          | a2 KAPALI                          | a2     %0.0   3.30  yok         
+lamba | a2 KAPALI                          | a2 KAPALI                          | a2     %0.0   2.38  yok         
+tablo | a2 KAPALI                          | a2 KAPALI                          | a2     %0.0   3.69  yok         
+semaver| a2 KAPALI                          | a2 KAPALI                          | a2     %0.0   2.93  yok         
+gramofon| a2 KAPALI                          | a2 KAPALI                          | a2     %0.0   1.83  yok         
+kanarya| a2 KAPALI                          | a2 KAPALI                          | a2     %0.0   2.23  yok         
+saat  | a2 KAPALI                          | a2 KAPALI                          | a2     %0.0   2.23  yok         
+yilbasi| a0     %0.0   3.35  yok         | a0     %0.0   3.35  yok         | a0     %0.0   4.18  yok         

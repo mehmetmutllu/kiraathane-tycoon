@@ -1135,13 +1135,18 @@ body,
 
 /* ---- Tema mağazası sekmeleri + çeşit kartları + 3D önizleme (5b) ---- */
 .shop-tabs {
-  /* F4c: altı sekme (Kıyafet/Tepsi eklendi) — tek satırda telefonda sığmıyor, 3×2 ızgara. */
+  /* F4c: sekmeler tek satıra sığmıyor. F4c-2 (Dekor ile yedi sekme): iki DOLU satır, para birimine
+     göre — üstte 💎 ile alınan dört sekme, altta ₺ ile alınan üç sekme (12 kolon: 4×3 · 3×4). */
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(12, 1fr);
   gap: 6px;
   margin: 10px 0 12px;
 }
+.shop-tab.elmas {
+  grid-column: span 3;
+}
 .shop-tab {
+  grid-column: span 4;
   flex: 1;
   display: inline-flex;
   align-items: center;

@@ -4825,3 +4825,18 @@ kayıt additive (saveVersion artmadı) · bulut `teklif`i yerelden korur. `iapCo
 **Sıra kilidi `olcum-yok` (bilerek):** `economy.config.ts`'e yalnız ürün listesi + TASLAK 💎 fiyat girdi; tick/₺ akışına
 etkisi yok, fiyat turu ölçümlü yapılacak (kullanıcı ertelendi).
 **Açık:** yelek oyun kamerasında tepsinin arkasında kalıyor (yanlardan okunuyor; şapkalılar net) · F4c-2 tabela + dekor.
+
+## D-155 · 💎 dekor (F4c-2): 9 yuva bugünkü düzende · sırt duvar PROFİLİNDEN · 3. Salon'a kadar kilitli · yılbaşı sol önde (2026-09-24)
+
+**Karar (kullanıcı, harita sayfasından — artifact YbqrWF1n4H9F96QMsMr1tv):** yerleşim olduğu gibi (sol arka: radyo · koltuk ·
+lamba · tablo · sağ arka: semaver · gramofon · kanarya · lavabo duvarı: sarkaçlı saat) · yılbaşı koltuğu + halı **A** (sol ön,
+TV ile askı arası — baştan görünen tek yuva) · yuvanın salonu açılmadan vitrinde **kilitli** ("3. Salon açılınca").
+**Ölçüm:** 9 yuvada trafik %0,0 (denetim kutusu %41–63) · en yakın pad/yükseltme 1,83 br · katı/dekor çakışması 0 (`docs/dekor-raporu-f4c2.md`).
+**Kurallar:** sırt duvarın EN KALIN katmanından `DUVAR_PAYI` 0,02 önde (yer eşyası çıtaya 0,26, asılı gövdeye 0,18) —
+bugünkü konsol/TV/petek de düzeldi (0,04 gömülüydü, B5) · aynı düğme koyar/KALDIRIR (sahiplik kalır) · yılbaşı 4 rengi tek
+yuva · kayıt `dekor` additive · holiday paketi 5 modelle geri (0,2 MB). Sekmeler iki dolu satır: 💎 üstte, ₺ altta.
+**Bekçi:** `tests/vitrin-dekor-f4c2.test.ts` 22 · `tools/mutasyon-dekor-f4c2.mjs` 14/14 (ilk koşuda 2 kaçtı → `MAX_AREAS`
+yanlış modülden undefined, döngüler boştu; boş küme koruması eklendi) · duman 60/60. Fiyat TASLAK 40–100 💎 (sıra kilidi `olcum-yok`).
+**Sıra kilidi `karma-commit` (bilerek):** commit #1 (fc80214) araç + ham çıktı + rapor, karar BOŞ; commit #2 final TAM
+koşunun çıktısını kodla birlikte taşıyor (protokolün "final tam koşu" adımı) — araç bunu ayırt edemiyor.
+**Açık:** tabela (cephe görünürlüğü ölçülmedi) · dikey telefonda yan duvar eşyası köşeye yürüyünce okunuyor.

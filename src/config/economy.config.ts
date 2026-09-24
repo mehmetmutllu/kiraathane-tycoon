@@ -1235,6 +1235,26 @@ export const economyConfig = {
       { id: 'aski', label: 'Gümüş Askılı', diamonds: 80 },
       { id: 'altin', label: 'Altın Yaldız', diamonds: 100 },
     ],
+    /**
+     * 💎 DEKOR (F4c-2 · D-155): her ürün kendi YUVASINDA belirir (`config/decor.ts`
+     * `VITRIN_YUVALARI`); yuvanın salonu açılmadan vitrinde kilitli durur (kullanıcı kararı).
+     * Yılbaşı koltuğunun dört rengi AYNI yuvayı paylaşır — biri seçilince öbürü kalkar.
+     * FİYATLAR TASLAK (kıyafet/tepsi gibi, ayrı fiyat oturumu).
+     */
+    decor: [
+      { id: 'radyo', label: 'Lambalı Radyo', diamonds: 60, yuva: 'radyo' },
+      { id: 'koltuk', label: 'Okuma Koltuğu', diamonds: 80, yuva: 'koltuk' },
+      { id: 'lamba', label: 'Ayaklı Lamba', diamonds: 40, yuva: 'lamba' },
+      { id: 'tablo', label: 'Eski İstanbul Tablosu', diamonds: 60, yuva: 'tablo' },
+      { id: 'semaver', label: 'Bakır Semaver', diamonds: 80, yuva: 'semaver' },
+      { id: 'gramofon', label: 'Gramofon', diamonds: 80, yuva: 'gramofon' },
+      { id: 'kanarya', label: 'Kanarya Kafesi', diamonds: 60, yuva: 'kanarya' },
+      { id: 'saat', label: 'Sarkaçlı Saat', diamonds: 60, yuva: 'saat' },
+      { id: 'yilbasi-kirmizi', label: 'Yılbaşı Koltuğu · Kırmızı', diamonds: 100, yuva: 'yilbasi' },
+      { id: 'yilbasi-yesil', label: 'Yılbaşı Koltuğu · Yeşil', diamonds: 100, yuva: 'yilbasi' },
+      { id: 'yilbasi-mavi', label: 'Yılbaşı Koltuğu · Mavi', diamonds: 100, yuva: 'yilbasi' },
+      { id: 'yilbasi-kahve', label: 'Yılbaşı Koltuğu · Kahve', diamonds: 100, yuva: 'yilbasi' },
+    ],
   },
 
 } as const;
