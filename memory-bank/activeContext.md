@@ -7,13 +7,21 @@
 
 ## ŞU AN (2026-09-24 — F4c-2 adım 2 ÖLÇ bitti · karar paketi bekliyor)
 
-\
+```
+SORU            : F4c-2 — 💎 dekor bugünkü düzene nereye sığar (düzen değişmez, duvara gömülmez) + tabela
+ÖLÇÜLECEK KOLLAR: 10 yuva (sol arka D1 D7a D7b D10 · sağ arka D3 D6 D5 · lavabo duvarı D2 · yılbaşı A/B)
+SAYILAR         : docs/dekor-raporu-f4c2.md §Bulgular · harita https://claude.ai/artifact/YbqrWF1n4H9F96QMsMr1tv
+KARAR           : (boş — paket: yuvalar onay? · yılbaşı A mı B mi · 3. Salon öncesi vitrinde dekor kilitli mi)
+UYGULAMA        : —
+BEKÇİ           : — (plan: gövde ∩ duvar profili = 0 · trafik yok · nokta > 1,0)
+```
+
 ## ⏭️ SIRADAKİ ADIM
 
-**Karar paketi (kullanıcı):** harita sayfası + 3 soru → sonra UYGULA: yuvalar e veri olarak,
+**Karar paketi (kullanıcı):** harita sayfası + 3 soru → sonra UYGULA: yuvalar `config/decor.ts`e veri olarak,
 modeller, vitrin sekmesi, bekçi, en az 2 mutasyon. Yılbaşı paketi diske geri alındı ama COMMIT'LENMEDİ
-( src referansı ister) — commit #2'de koda bağlanınca girer.
-- **Ek bulgu B5:** bugünkü konsol/TV ünitesi de çıtaya 0,04 gömülü ( gövde yüzünde) — aynı turda düzeltilebilir.
+(`asset-olu-yuk.test` src referansı ister) — commit #2'de koda bağlanınca girer.
+- **Ek bulgu B5:** bugünkü konsol/TV ünitesi de çıtaya 0,04 gömülü (`WALL_BACK` gövde yüzünde) — aynı turda düzeltilebilir.
 - Tabela: cephe görünürlük ölçümü hâlâ yapılmadı (C2 C4 C7 C8) — F4c-2'nin ikinci yarısı.
 - **Sonraki oturumda sor:** 💎 fiyatları (TASLAK) ayrı fiyat oturumunda. Yelek-tepsi görünürlüğü oynarken.
 Sonra **F5** mağaza + G-89 (EN SON).
