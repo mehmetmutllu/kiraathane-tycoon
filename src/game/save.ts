@@ -105,6 +105,22 @@ export interface ReklamSayaci {
 
 export const defaultReklam = (): ReklamSayaci => ({ ustaGun: -1, ustaSayi: 0, videoPencere: 0, videoKullanilan: 0 });
 
+/**
+ * SATIN ALIMLAR (F4a · D-152). Kalıcı sahiplikler mağaza hesabında durur; buradaki bayraklar yalnız
+ * ÖNBELLEK (çevrimdışı açılışta reklamsızlık bilinsin). Açılışta mağaza okunursa önbellek onunla
+ * eşitlenir (`sahiplikEsitle`). ADDITIVE alan → saveVersion ARTMADI (`reklam` emsali).
+ */
+export interface SatinAlim {
+  reklamsiz: boolean;
+  baslangic: boolean;
+  /** Reklamsızın günlük 💎'ının son alındığı gün (`dayIndex`). */
+  gunlukGun: number;
+  /** Ödülü verilmiş son işlem kimlikleri — aynı işlem ikinci kez 💎 vermesin. */
+  islenen: string[];
+}
+
+export const defaultSatinAlim = (): SatinAlim => ({ reklamsiz: false, baslangic: false, gunlukGun: -1, islenen: [] });
+
 export function defaultSettings(): SaveSettings {
   return { sound: true, music: true, notifications: true, soundVolume: 1, musicVolume: 1, golge: 'oto' };
 }
@@ -196,6 +212,8 @@ export interface SaveData {
   daily: DailyState;
   /** F3b (D-150): ödüllü videonun günlük/pencere hakları. Additive — sürüm ARTMADI. */
   reklam: ReklamSayaci;
+  /** F4a (D-152): satın alımların önbelleği + işlenmiş işlemler. Additive — sürüm ARTMADI. */
+  satin: SatinAlim;
   /** Aktif SAYAÇ görevinin başlangıç sayaç değeri (delta hedefi için taban; v16). */
   questBase: number;
   /** Tabanın AİT OLDUĞU görevin kimliği (v32). Konum bilgisi değil sahiplik etiketi: yüklemede
@@ -267,6 +285,7 @@ export function defaultSave(): SaveData {
     mastersOwned: [],
     daily: defaultDaily(),
     reklam: defaultReklam(),
+    satin: defaultSatinAlim(),
     questBase: 0,
     questBaseId: '',
     xp: 0,

@@ -101,6 +101,10 @@ const tekrar = olc(null);
 damga('B0 = taban (peşin 0 kancası birebir)', b0.iz === taban.iz, `${b0.iz} ≠ ${taban.iz}`);
 damga('taban = F3b T0 (parmak izi 38fd43d5)', taban.iz === '38fd43d5', `taban izi ${taban.iz}`);
 damga('kancalar sızmadı (taban tekrar = taban)', tekrar.iz === taban.iz, `${tekrar.iz} ≠ ${taban.iz}`);
+// commit #2 BEKÇİSİ (D-152): config'e yazılan sayılar ölçülen kolların kendisi olmalı.
+damga('config = ölçülen kol (B100 · paketler 25/60/150 · reklamsız 10/gün)',
+  C.iap.starterDiamonds === 100 && C.iap.diamondPacks.join() === '25,60,150' && C.iap.removeAdsDiamondsPerDay === 10,
+  JSON.stringify(C.iap));
 for (const k of secilen) {
   const s = sonuc.get(k.kod)!;
   damga(`${k.kod} 💎 korunumu 0`, s.korunum === 0, `sapma ${s.korunum}`);
@@ -136,7 +140,7 @@ const USTA_HEDEF = LAYOUT.tables.length; // oyunda Usta yalnız masada (rules.ma
 const FIYAT = C.master.diamondCost;
 const TALEP = USTA_HEDEF * FIYAT;
 const GUNLUK = C.dailyQuests.diamondsPerDay;
-const KALDIR_GUNLUK = 10; // D-040 — F4a'da config'e yazılacak sayı; burada kıyas için sabit
+const KALDIR_GUNLUK = C.iap.removeAdsDiamondsPerDay; // D-040 · D-152
 const USTA_VIDEO_GUN = C.rewarded.masterPerDay;
 /** Oyunda 💎 harcanan başka yer var mı? — defterin kapsamını KOD belirler, varsayım değil. */
 const DIGER_HARCAMA = 'yok (kozmetik ₺ ile · diamondExtendHours tanımlı ama hiçbir yerde kullanılmıyor)';

@@ -4788,3 +4788,14 @@ Privacy Sandbox izinlerinin çıkarılması. Kaldı: UMP rıza formu (yasal ön 
 `monetization.md` §3 ve `CLAUDE.md` güncellendi. Açık kalem: Play Console hedef kitle beyanı (F5).
 **Bekçi:** `tests/reklam-f3.test.ts` bayrakların GERİ GELMESİNİ yakalar · 10/10 mutasyon.
 
+
+## D-152 · Satın alımlar: başlangıç 100 💎 · paketler 25/60/150 · 💎 vitrini önce harcama yeri ister (2026-09-24)
+
+**Karar (kullanıcı, önerilen iki kol):** başlangıç paketi **B100** (Kat 1 −%4,5) + yalnız o pakette olan kozmetik ·
+elmas paketleri **önce yeni bir 💎 harcama yeri** (💎 ile alınan kozmetik vitrini, ayrı tur, görsel adaylarla);
+o gelene dek paketler 25/60/150 olarak kodda, vitrinde KAPALI (`iapConfig.vitrin`). Reklamları Kaldır D-040'la aynı.
+Fiyat kodda yok: mağazada ülke başına (ayrı oturum). RevenueCat (sunucu doğrulaması, iki mağaza) — anahtar yokken cihazda KAPALI.
+**Gerekçe:** para tempoyu az satın alıyor (sınırsız 💎 −%7,0; Usta ₺ tavanı ister) ama 💎'ın talebi 250 ile sınırlı —
+600'lük paketin 350'si ölü 💎. Harcanacak yeri olmayan para satılmaz. `docs/iap-raporu-f4a.md`.
+**Kurallar:** aynı işlem iki kez ödül vermez · başlangıç 💎'ı bir kez · sıfırlama satın alımı silmez · mağaza kaynaktır (iade düşer).
+**Bekçi:** `tests/iap-f4a.test.ts` 25 · `tools/mutasyon-iap-f4a.mjs` 11/11 · duman 55/55.

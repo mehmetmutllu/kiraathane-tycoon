@@ -3,12 +3,14 @@ import { useGame, goalMetricsOf, tableThemeUnlocked, tableSoftMaxLevel, gorunenC
 import { claimableGoals, collectionBonus, goalViewsForPanel, type GoalView } from '../../game/goals';
 import { dailyViews, claimableDailyCount, dayIndex, type DailyQuestView } from '../../game/dailyQuests';
 import { dailyCountersOf } from '../../game/store';
-import { masterAdsLeft, masterCost, toastCizilir, questInTransition, videoReward, videoRights, type QuestView } from '../../game/rules';
+import { adFreeDailyReady, masterAdsLeft, masterCost, toastCizilir, questInTransition, videoReward, videoRights, type QuestView } from '../../game/rules';
 import { ekranKanali, geriTusu, tepsiIpucuZamani } from '../../game/ekranKanali';
 import { Capacitor } from '@capacitor/core';
 import { App as CapApp } from '@capacitor/app';
 import { odulAlindi, odulluIzle, odulluReklamHazir, panelKapandi, reklamAbone, sogumaSifirla } from '../../game/ads';
 import { screenPointer } from '../../game/screenPointer';
+import { satinAl, satinAlimlariGeriYukle, satinAlmaAbone, satinAlmaSurumu, urunFiyati } from '../../game/iap';
+import { iapConfig } from '../../config/iap.config';
 import { fmt } from '../../game/decimal';
 import { SAVE_VERSION } from '../../game/save';
 import { levelProgress, reputationCarryMult, economyConfig, MAX_AREAS } from '../../config/economy.config';
@@ -562,6 +564,7 @@ export function HUD() {
               <div><span>Yıkanan bulaşık</span><b>{fmt(stats.dishesWashed)}</b></div>
               <div><span>Açılan nokta</span><b>{padsDone.length}</b></div>
             </div>
+            <GeriYukle />
             <div className="sheet-foot-note">
               Kayıt bu cihazda tutulur — sunucu yok. Oyunu sıfırlarsan geri alınamaz.
             </div>
@@ -931,6 +934,41 @@ function UstaModal({ id, onClose }: { id: string; onClose: () => void }) {
   );
 }
 
+/** Reklamları Kaldır'ın günlük 💎'ı (D-040) — günlük görevlerin altında, her gün elle alınır. */
+function ReklamsizHediye() {
+  const reklamsiz = useGame((s) => s.satin.reklamsiz);
+  const hazir = useGame((s) => adFreeDailyReady(s.satin, dayIndex(Date.now())));
+  const claimAdFreeDaily = useGame((s) => s.claimAdFreeDaily);
+  if (!reklamsiz) return null;
+  const odul = economyConfig.iap.removeAdsDiamondsPerDay;
+  return (
+    <ul className="goals">
+      <li
+        className={`goal${hazir ? ' ready' : ' full'}`}
+        data-testid="reklamsiz-hediye"
+        data-state={hazir ? 'claimable' : 'claimed'}
+      >
+        <span className="goal-top">
+          <b>Reklamsız paket hediyesi</b>
+        </span>
+        <span className="goal-foot">
+          <span className="goal-note">{hazir ? 'Her gün yenilenir' : 'Bugün alındı'}</span>
+          {hazir ? (
+            <button className="goal-claim" data-testid="reklamsiz-hediye-al" onClick={() => claimAdFreeDaily()}>
+              Al · {odul} <GemIcon size={13} />
+            </button>
+          ) : (
+            <span className="goal-reward">
+              <GemIcon size={13} />
+              {odul}
+            </span>
+          )}
+        </span>
+      </li>
+    </ul>
+  );
+}
+
 function QuestsSheet({ onClose }: { onClose: () => void }) {
   const questIndex = useGame((s) => s.questIndex);
   const quest = useGame((s) => s.quest);
@@ -994,6 +1032,7 @@ function QuestsSheet({ onClose }: { onClose: () => void }) {
           </li>
         ))}
       </ul>
+      <ReklamsizHediye />
       <div className="sheet-foot-note" data-testid="daily-left">
         {gunKalan > 0 ? (
           <>
@@ -1422,6 +1461,71 @@ function RewardModal({
  * yerde; eskiden üç ayrı önizleme bileşeninin içindeydi ve hangi düğmenin neyi aldığı ekrandan
  * okunmuyordu. Salon seçimi de bir SEÇİM oldu — üç salon üç ayrı satın alma düğmesi değil.
  */
+/**
+ * PAKETLER (F4a · D-152) — gerçek parayla satılanlar. Fiyat mağazanın yerel metni ("49,99 ₺"); fiyatı
+ * bilinmeyen ürün satılmaz. Geri sayım, "son fırsat", indirim baskısı YOK (monetization.md §2).
+ * Başlangıç paketi ve elmas paketleri `iapConfig.vitrin` açılana dek görünmez.
+ */
+function Paketler() {
+  useSyncExternalStore(satinAlmaAbone, satinAlmaSurumu);
+  const satin = useGame((s) => s.satin);
+  const satinAlimIsle = useGame((s) => s.satinAlimIsle);
+  const U = iapConfig.urun;
+  const P = economyConfig.iap;
+  const al = async (urun: string) => {
+    const r = await satinAl(urun);
+    if (r) satinAlimIsle(r);
+  };
+  const kart = (urun: string, ad: string, not: string, odul: number | null, sahip: boolean) => {
+    const fiyat = urunFiyati(urun);
+    return (
+      <li className={`goal${sahip ? ' full' : ''}`} key={urun} data-testid={`paket-${urun}`}>
+        <span className="goal-top">
+          <b>{ad}</b>
+          {odul != null && (
+            <span className="goal-reward">
+              <GemIcon size={13} />
+              {odul}
+            </span>
+          )}
+        </span>
+        <span className="goal-foot">
+          <span className="goal-note">{not}</span>
+          <button
+            className="goal-claim"
+            data-testid={`paket-al-${urun}`}
+            disabled={sahip || !fiyat}
+            onClick={() => void al(urun)}
+          >
+            {sahip ? 'Sahipsin' : (fiyat ?? 'Mağaza hazır değil')}
+          </button>
+        </span>
+      </li>
+    );
+  };
+  return (
+    <div className="paketler" data-testid="shop-paketler">
+      <ul className="goals">
+        {kart(
+          U.reklamsiz,
+          'Reklamları Kaldır',
+          `Geçiş reklamları kalkar, ödüllü videolar isteğe bağlı kalır. Her gün +${P.removeAdsDiamondsPerDay} elmas.`,
+          null,
+          satin.reklamsiz,
+        )}
+        {iapConfig.vitrin.baslangic &&
+          kart(U.baslangic, 'Başlangıç Paketi', 'Bir kez alınır: elmas + yalnız bu pakette olan görünüm.',
+            P.starterDiamonds, satin.baslangic)}
+        {iapConfig.vitrin.elmas &&
+          U.elmas.map((u, i) => kart(u, 'Elmas', 'İstediğin kadar alınır.', P.diamondPacks[i] ?? 0, false))}
+      </ul>
+      <div className="sheet-foot-note">
+        Fiyatlar mağazanın para biriminde. Satın alımların Google hesabına bağlıdır, Ayarlar'dan geri yüklenir.
+      </div>
+    </div>
+  );
+}
+
 function ShopPanel({ onClose }: { onClose: () => void }) {
   const areasOpen = useGame((s) => s.areasOpen);
   const tables = useGame((s) => s.tables);
@@ -1444,7 +1548,7 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
    * mağazayı açtığında satın alınabilir hiçbir şey görmüyordu. Kilitli sekme duruyor
    * (koşulu anlatması gerekiyor), yalnız varsayılan sekme satılabilir olana kayıyor.
    */
-  const [tab, setTab] = useState<'table' | 'floor' | 'wall'>(tableUnlocked ? 'table' : 'floor');
+  const [tab, setTab] = useState<'table' | 'floor' | 'wall' | 'paket'>(tableUnlocked ? 'table' : 'floor');
   // Zemin/duvar salon-başı satılır: hangi salona bakıldığı bir SEÇİM, ayrı bir satın alma değil.
   const [zone, setZone] = useState(0);
   const maxedTables = tableLevels.slice(0, tables).filter((l) => l >= tableSoftMaxLevel()).length;
@@ -1455,10 +1559,11 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
     wall: wallThemeByArea[0] ?? economyConfig.cosmetics.wallThemes[0].id,
   }));
 
-  const TABS: { k: 'table' | 'floor' | 'wall'; label: string }[] = [
+  const TABS: { k: 'table' | 'floor' | 'wall' | 'paket'; label: string }[] = [
     { k: 'table', label: 'Masa' },
     { k: 'floor', label: 'Zemin' },
     { k: 'wall', label: 'Duvar' },
+    { k: 'paket', label: 'Paketler' },
   ];
 
   const kilitli = tab === 'table' && !tableUnlocked;
@@ -1467,6 +1572,7 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
   // Seçili çeşidin künyesi — üç sekmenin ORTAK dili (ad · fiyat · sahip mi · uygulanmış mı).
   // Tek yerde çözülüyor ki ad satırı ile satın alma düğmesi asla ayrı şey söylemesin.
   const secili = (() => {
+    if (tab === 'paket') return null;
     const id = sel[tab];
     if (tab === 'table') {
       const t = economyConfig.cosmetics.tableThemes.find((x) => x.id === id);
@@ -1511,6 +1617,7 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
         ),
       );
     }
+    if (tab === 'paket') return null;
     const themes = tab === 'floor' ? economyConfig.cosmetics.floorThemes : economyConfig.cosmetics.wallThemes;
     const selected = tab === 'floor' ? floorThemeByArea : wallThemeByArea;
     return themes.map((t) => {
@@ -1530,7 +1637,7 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
   };
 
   return (
-    <Sheet title="Dekor Mağazası" testid="shop-panel" onClose={onClose}>
+    <Sheet title={tab === 'paket' ? 'Paketler' : 'Dekor Mağazası'} testid="shop-panel" onClose={onClose}>
       <div className="shop-card">
         <div className="shop-tabs">
           {TABS.map(({ k, label }) => (
@@ -1550,7 +1657,9 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
           ))}
         </div>
 
-        {kilitli ? (
+        {tab === 'paket' ? (
+          <Paketler />
+        ) : kilitli ? (
           <div className="shop-locked" data-testid="shop-table-locked">
             <div className="shop-locked-icon">
               <LockIcon size={46} />
@@ -1621,7 +1730,7 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
           className={`shop-buy${secili.applied ? ' sel' : ''}`}
           data-testid="shop-buy"
           disabled={secili.applied || !afford}
-          onClick={() => buyCosmetic(tab, secili.id, secili.alan)}
+          onClick={() => tab !== 'paket' && buyCosmetic(tab, secili.id, secili.alan)}
         >
           {secili.applied ? (
             <>
@@ -1637,6 +1746,27 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
         </button>
       )}
     </Sheet>
+  );
+}
+
+/** "Satın alımları geri yükle" — silip yükleyen ya da telefon değiştiren oyuncu kalıcı ürünlerini alır. */
+function GeriYukle() {
+  const sahiplikEsitle = useGame((s) => s.sahiplikEsitle);
+  const [durum, setDurum] = useState<'bos' | 'bekle' | 'tamam' | 'hata'>('bos');
+  const yukle = async () => {
+    setDurum('bekle');
+    const h = await satinAlimlariGeriYukle();
+    if (h) sahiplikEsitle(h);
+    setDurum(h ? 'tamam' : 'hata');
+  };
+  return (
+    <button className="sheet-cta" data-testid="geri-yukle" disabled={durum === 'bekle'} onClick={() => void yukle()}>
+      {durum === 'tamam'
+        ? 'Satın alımlar geri yüklendi'
+        : durum === 'hata'
+          ? 'Mağazaya ulaşılamadı'
+          : 'Satın alımları geri yükle'}
+    </button>
   );
 }
 

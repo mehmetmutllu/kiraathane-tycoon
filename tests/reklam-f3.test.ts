@@ -24,7 +24,7 @@ const oku = (p: string) => readFileSync(p, 'utf8');
 const SOGUMA_MS = adsConfig.gecisli.sogumaSn * 1000;
 
 describe('geçişli kuralı (saf)', () => {
-  const taban = { simdi: 0, oturumBasi: 0, sonGecisli: null, panelOdul: false, reklamAcik: false, sogumaSn: 180 };
+  const taban = { simdi: 0, oturumBasi: 0, sonGecisli: null, panelOdul: false, reklamAcik: false, sogumaSn: 180, reklamsiz: false };
   it('açılışta reklam yok, soğuma dolunca var', () => {
     expect(gecisliUygun({ ...taban, simdi: 179_999 })).toBe(false);
     expect(gecisliUygun({ ...taban, simdi: 180_000 })).toBe(true);

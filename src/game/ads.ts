@@ -23,11 +23,13 @@ export interface GecisliGirdi {
   /** Şu an ekranda bir reklam var mı. */
   reklamAcik: boolean;
   sogumaSn: number;
+  /** "Reklamları Kaldır" alındı (F4a · D-040): geçişli HİÇ çıkmaz. Ödüllüye dokunmaz. */
+  reklamsiz: boolean;
 }
 
 /** C1′: soğuma KURAR, panel kapanışı PATLATIR. Kapanış anında bu fonksiyon doğruysa reklam çıkar. */
 export function gecisliUygun(g: GecisliGirdi): boolean {
-  if (g.panelOdul || g.reklamAcik) return false;
+  if (g.reklamsiz || g.panelOdul || g.reklamAcik) return false;
   const referans = Math.max(g.oturumBasi, g.sonGecisli ?? -Infinity);
   return g.simdi - referans >= g.sogumaSn * 1000;
 }
@@ -114,6 +116,7 @@ let panelOdul = false;
 let reklamAcik = false;
 let gecisliHazir = false;
 let odulluHazir = false;
+let reklamsiz = false;
 const sayac = { gecisli: 0, odullu: 0 };
 const dinleyiciler = new Set<() => void>();
 const bildir = () => dinleyiciler.forEach((f) => f());
@@ -155,6 +158,11 @@ export async function reklamBaslat(ozel?: ReklamArkaUcu): Promise<void> {
   await Promise.all([gecisliYukle(), odulluYukle()]);
 }
 
+/** Store çağırır (açılış · satın alma · geri yükleme). Reklam başlatılmadan önce de gelebilir. */
+export function reklamsizAyarla(b: boolean): void {
+  reklamsiz = b;
+}
+
 /** Oyun sıfırlandı: yeni oyun açılış sayılır, soğuma baştan kurulur. */
 export function sogumaSifirla(): void {
   oturumBasi = Date.now();
@@ -178,6 +186,7 @@ export async function panelKapandi(): Promise<boolean> {
     panelOdul,
     reklamAcik,
     sogumaSn: adsConfig.gecisli.sogumaSn,
+    reklamsiz,
   });
   panelOdul = false; // bayrak YALNIZ burada iner: bir ödül, ardından gelen ilk kapanışı reklamsız yapar
   if (!uygun || !arkaUc || !gecisliHazir) return false;
@@ -223,6 +232,7 @@ export function reklamDurumu() {
     odullu: sayac.odullu,
     sogumaKalanSn: Math.max(0, adsConfig.gecisli.sogumaSn - (Date.now() - referans) / 1000),
     odulluHazir: odulluReklamHazir(),
+    reklamsiz,
   };
 }
 

@@ -26,7 +26,8 @@ import {
   type CharUpgrades,
   type WaiterUpgrades,
 } from '../config/economy.config';
-import type { ReklamSayaci, SaveStats } from './save';
+import type { ReklamSayaci, SatinAlim, SaveStats } from './save';
+import { iapConfig } from '../config/iap.config';
 import { LAYOUT, LAVABO, servicePlace, type RVec3 } from './layout';
 import { MAX_AREAS, THE_SERVICE, areaOfTable, areaTableStart, tostShare, isCounter } from './world';
 
@@ -837,6 +838,43 @@ export function spendVideoRight(r: ReklamSayaci, simdi: number): ReklamSayaci {
     ? { ...r, videoPencere: simdi, videoKullanilan: 1 }
     : { ...r, videoKullanilan: r.videoKullanilan + 1 };
 }
+
+/* ─────────────────────── SATIN ALIMLAR (F4a · D-152) ─────────────────────── */
+
+/** Bir ürünün verdiği: 💎 + hangi kalıcı sahiplik. Bilinmeyen ürün null. Tek kaynak: config. */
+export function purchaseGrant(urun: string): { diamonds: number; reklamsiz?: true; baslangic?: true } | null {
+  const U = iapConfig.urun;
+  if (urun === U.reklamsiz) return { diamonds: 0, reklamsiz: true };
+  if (urun === U.baslangic) return { diamonds: C.iap.starterDiamonds, baslangic: true };
+  const i = U.elmas.indexOf(urun as (typeof U.elmas)[number]);
+  return i >= 0 && C.iap.diamondPacks[i] != null ? { diamonds: C.iap.diamondPacks[i] } : null;
+}
+
+/** İşlenmiş işlem listesinin boyu — aynı işlemin ikinci kez gelmesi dakikalar içinde olur. */
+const ISLENEN_SINIRI = 50;
+
+/**
+ * Satın alımı durumuna uygular. Aynı işlem ikinci kez gelirse HİÇBİR ŞEY vermez (çift 💎 yok).
+ * Başlangıç paketi ikinci kez gelirse (geri yükleme ya da mağazanın tekrar bildirimi) 💎'ı VERMEZ:
+ * paket bir kez 💎 verir, kalıcı olan yalnız sahipliğidir.
+ */
+export function applyPurchase(s: SatinAlim, islem: string, urun: string): { satin: SatinAlim; diamonds: number } | null {
+  const g = purchaseGrant(urun);
+  if (!g || s.islenen.includes(islem)) return null;
+  const diamonds = g.baslangic && s.baslangic ? 0 : g.diamonds;
+  return {
+    satin: {
+      ...s,
+      reklamsiz: s.reklamsiz || !!g.reklamsiz,
+      baslangic: s.baslangic || !!g.baslangic,
+      islenen: [...s.islenen, islem].slice(-ISLENEN_SINIRI),
+    },
+    diamonds,
+  };
+}
+
+/** Reklamsızın bugünkü 💎'ı alınabilir mi (gün değiştiyse evet). */
+export const adFreeDailyReady = (s: SatinAlim, gun: number): boolean => s.reklamsiz && s.gunlukGun !== gun;
 
 /** Kazanç izinin örnekleme aralığı (sn) — `tick.ts` yazar, ödüller okur. */
 export const GELIR_ORNEK_SN = 5;

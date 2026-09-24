@@ -31,6 +31,7 @@ import {
   defaultCharUpgrades,
   defaultWaiterUpgrades,
   defaultReklam,
+  defaultSatinAlim,
   loadSave,
   writeSave,
   clearSave,
@@ -38,7 +39,10 @@ import {
   type SaveStats,
   type SaveSettings,
   type ReklamSayaci,
+  type SatinAlim,
 } from './save';
+import { reklamsizAyarla } from './ads';
+import type { Islem, Sahiplik } from './iap';
 
 import {
   LAYOUT,
@@ -132,6 +136,8 @@ import {
   spendVideoRight,
   videoReward,
   offlineWatchExtra,
+  applyPurchase,
+  adFreeDailyReady,
   stationSoftMaxLevel,
   stationUpgradeCost,
   incomeRate,
@@ -354,6 +360,8 @@ export interface GameState {
   mastersOwned: string[];
   /** F3b (D-150): ödüllü videonun günlük Usta hakkı + video hakkı penceresi (kayıtta). */
   reklam: ReklamSayaci;
+  /** F4a (D-152): satın alımların önbelleği. Reklamsızlık bayrağı `ads.ts`e buradan iner. */
+  satin: SatinAlim;
   /** D8: bugünün günlük görevleri (gün · kimlikler · sayaç tabanı · toplananlar). Gün dönümü
    *  `store.tick`te bakılır — `tick.ts`e (denge dosyası) DOKUNULMAZ, `saveTimer` deseni. */
   daily: DailyState;
@@ -453,6 +461,13 @@ export interface GameState {
   buyMasterAd: (id: string) => boolean;
   /** F3b (D-150): video hakkını kullan → son `video.incomeSec` sn'nin ₺'si cüzdana. Hak yoksa 0. */
   claimVideo: () => number;
+  /** F4a: mağazanın onayladığı işlemin ödülü. Verilen 💎 (0 olabilir); işlem tanınmıyorsa ya da
+   *  daha önce işlendiyse null. */
+  satinAlimIsle: (islem: Islem) => number | null;
+  /** F4a: mağaza hesabının kalıcı sahiplikleri (açılış · geri yükleme) — önbellek bununla eşitlenir. */
+  sahiplikEsitle: (h: Sahiplik) => void;
+  /** F4a: reklamsızın bugünkü 💎'ını al. Hazır değilse 0. */
+  claimAdFreeDaily: () => number;
   /** D8: bugünün bir günlük görevinin 💎 ödülünü al. Eşik doğrulaması `dailyQuests.ts`te. */
   claimDailyQuest: (id: string, izledi?: boolean) => boolean;
   /** Sahne katmanı çağırır: oyuncunun menzilindeki Usta noktası (yoksa `null`). */
@@ -593,6 +608,7 @@ export const useGame = create<GameState>((set, get) => ({
   mastersOwned: [],
   daily: defaultDaily(),
   reklam: defaultReklam(),
+  satin: defaultSatinAlim(),
   nearMaster: null,
   ustaKapali: null,
   questIndex: 0,
@@ -776,6 +792,7 @@ export const useGame = create<GameState>((set, get) => ({
       goalsClaimed: [...(save.goalsClaimed ?? [])],
       mastersOwned: [...(save.mastersOwned ?? [])],
       reklam: { ...save.reklam },
+      satin: { ...save.satin, islenen: [...save.satin.islenen] },
       daily: loadedDaily,
       questIndex: loadedQuestIndex,
       questBase: loadedQuestBase,
@@ -820,6 +837,7 @@ export const useGame = create<GameState>((set, get) => ({
       saveTimer: SAVE_INTERVAL,
       nextId: 1,
     });
+    reklamsizAyarla(save.satin.reklamsiz);
   },
 
   /**
@@ -1015,6 +1033,35 @@ export const useGame = create<GameState>((set, get) => ({
     });
     get().saveNow();
     return true;
+  },
+
+  satinAlimIsle: (islem) => {
+    const s = get();
+    const r = applyPurchase(s.satin, islem.islem, islem.urun);
+    if (!r) return null;
+    set({ satin: r.satin, diamonds: s.diamonds.add(r.diamonds) });
+    reklamsizAyarla(r.satin.reklamsiz);
+    get().saveNow();
+    return r.diamonds;
+  },
+
+  sahiplikEsitle: (h) => {
+    const s = get();
+    if (s.satin.reklamsiz === h.reklamsiz && s.satin.baslangic === h.baslangic) return;
+    // Mağaza kaynaktır: iade edilen ürün de burada düşer. 💎 verilmez — o yalnız işlemle gelir.
+    set({ satin: { ...s.satin, reklamsiz: h.reklamsiz, baslangic: h.baslangic } });
+    reklamsizAyarla(h.reklamsiz);
+    get().saveNow();
+  },
+
+  claimAdFreeDaily: () => {
+    const s = get();
+    const gun = dayIndex(Date.now());
+    if (!adFreeDailyReady(s.satin, gun)) return 0;
+    const odul = C.iap.removeAdsDiamondsPerDay;
+    set({ satin: { ...s.satin, gunlukGun: gun }, diamonds: s.diamonds.add(odul) });
+    get().saveNow();
+    return odul;
   },
 
   claimVideo: () => {
@@ -1322,6 +1369,7 @@ export const useGame = create<GameState>((set, get) => ({
       goalsClaimed: [...(s.goalsClaimed ?? [])],
       mastersOwned: [...(s.mastersOwned ?? [])],
       reklam: { ...s.reklam },
+      satin: { ...s.satin, islenen: [...s.satin.islenen] },
       daily: { ...s.daily, ids: [...s.daily.ids], base: { ...s.daily.base }, claimed: [...s.daily.claimed] },
       questBase: s.questBase,
       questBaseId: C.quests[s.questIndex]?.id ?? '',
@@ -1344,7 +1392,12 @@ export const useGame = create<GameState>((set, get) => ({
   },
 
   hardReset: () => {
+    // Satın alımlar oyunun değil mağaza hesabının malı: sıfırlama onları silmez (💎 ise ilerlemedir, gider).
+    const satin = get().satin;
     clearSave();
     get().init();
+    set({ satin: { ...satin, islenen: [...satin.islenen] } });
+    reklamsizAyarla(satin.reklamsiz);
+    get().saveNow();
   },
 }));

@@ -88,10 +88,27 @@ Gün 0'da alınan paket (işe yarayan / ölü 💎 · kuyruğu kaç gün öne ç
 
 ---
 
-## §Karar
+## §Karar (kullanıcı, 2026-09-24 · D-152 — iki soruda da önerilen kol)
 
-(boş — karar paketinden sonra doldurulur)
+1. **Başlangıç paketi → B100:** 100 💎 + yalnız bu pakette olan kozmetik. Kat 1 −%4,5 (eşik %7).
+2. **Elmas paketleri → önce yeni bir 💎 harcama yeri:** 💎 ile alınan kozmetik vitrini ayrı turda, görsel adaylarla.
+   O gelene dek paketler **25 / 60 / 150** (talebin içinde, gün 0'da ölü 💎 0) kodda hazır, vitrinde **kapalı**.
+   Başlangıç paketinin kozmetiği de o turda seçilir; vitrini de o zamana dek kapalı.
 
 ## §Uygulama
 
-(boş)
+| kalem | nerede |
+|---|---|
+| sayılar: `starterDiamonds 100` · `diamondPacks [25, 60, 150]` · `removeAdsDiamondsPerDay 10` | `economy.config.ts` `iap` |
+| ürün/hak kimlikleri · RevenueCat anahtarı (null) · vitrin kapıları | `iap.config.ts` |
+| arka uç: cihazda RevenueCat, anahtar yoksa KAPALI; tarayıcıda sahte · fiyat mağazanın yerel metni | `iap.ts` |
+| `purchaseGrant` · `applyPurchase` (çift işlem yok, başlangıç 💎'ı bir kez) · `adFreeDailyReady` | `rules.ts` |
+| `satinAlimIsle` · `sahiplikEsitle` (mağaza kaynak, iade düşer) · `claimAdFreeDaily` · sıfırlama satın alımı korur | `store.ts` |
+| `satin` alanı kayıtta — ek alan, **sürüm artmadı** (`derinBirlestir` doldurur) | `save.ts` |
+| geçişli kuralına `reklamsiz` koşulu (ödüllüye dokunmaz) | `ads.ts` |
+| mağazada **Paketler** sekmesi · Ayarlar'da **Satın alımları geri yükle** · Görevler'de **Reklamsız paket hediyesi** | `HUD.tsx` · kareler `docs/gorsel/f4a/` |
+
+**Final tam koşu** (`docs/olcum-iap-f4a.txt`): commit #1 çıktısıyla birebir · taban izi `38fd43d5` · damga "config = ölçülen kol" ✓.
+**Bekçi:** `tests/iap-f4a.test.ts` 25 test · `tools/mutasyon-iap-f4a.mjs` **11/11** · duman **55/55** (yeni denetim: Reklamları
+Kaldır satın alınınca soğuma dolu panel kapanışı reklamsız) · debug APK RevenueCat eklentisiyle derlendi.
+**Kalan (kullanıcı):** RevenueCat hesabı → Android SDK anahtarı · Play Console'da üç ürün + iki "entitlement" (`reklamsiz`, `baslangic`).

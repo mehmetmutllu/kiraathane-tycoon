@@ -6,6 +6,7 @@ import { SplashScreen } from './components/ui/SplashScreen';
 import { useGame } from './game/store';
 import { sesiBagla } from './game/audioBridge';
 import { reklamBaslat, reklamEkranda } from './game/ads';
+import { satinAlmaBaslat } from './game/iap';
 
 const KEY_MAP: Record<string, [number, number]> = {
   KeyW: [0, -1],
@@ -42,6 +43,8 @@ export default function App() {
     useGame.getState().init();
     // F3: reklam SDK'sı + rıza (UMP). Başarısız olursa oyun reklamsız devam eder.
     void reklamBaslat();
+    // F4a: mağaza hesabının kalıcı sahiplikleri (reklamsız · başlangıç) — okunamazsa kayıttaki önbellek geçerli.
+    void satinAlmaBaslat().then((h) => h && useGame.getState().sahiplikEsitle(h));
     // Hile kancaları (__game/__addMoney/__setState...) yalnız geliştirmede yüklenir.
     if (import.meta.env.DEV) void import('./game/devHooks').then((m) => m.installDevHooks());
 

@@ -1032,6 +1032,21 @@ export const economyConfig = {
     video: { rights: 4, periodSec: 2 * 60 * 60, incomeSec: 60 },
   },
 
+  /**
+   * SATIN ALIMLARIN İÇERİĞİ (F4a · D-152, `docs/iap-raporu-f4a.md`). Fiyat burada DEĞİL (mağazada,
+   * ülke başına). Para tempoyu çok az satın alabiliyor: sınırsız 💎 bile Kat 1'de −%7,0, çünkü Usta
+   * yalnız ₺ tavanındaki masaya alınır. Ama 💎'ın harcanacak yeri bugün 250 ile sınırlı → büyük paket
+   * ÖLÜ 💎 olur; paketler talebin içinde (§2b) ve vitrini 💎 kozmetik turuna dek kapalı (`iap.config`).
+   */
+  iap: {
+    /** "Reklamları Kaldır": geçişli kalkar, ödüllüye dokunmaz, günde bu kadar 💎 (D-040 · F3b: 1,25 gün/Usta). */
+    removeAdsDiamondsPerDay: 10,
+    /** Başlangıç paketi: bir kez alınır; 💎 + yalnız bu pakette olan kozmetik. B100: Kat 1 −%4,5. */
+    starterDiamonds: 100,
+    /** Elmas paketleri (sınırsız alınır). Hepsi 250'lik talebin içinde: gün 0'da ölü 💎 0. */
+    diamondPacks: [25, 60, 150],
+  },
+
   master: {
     /** Usta masanın bahşiş çarpanı — `tableTip` sonucunun üstüne biner. ÖLÇÜLDÜ (yukarı bak). */
     tipMult: 1.5,

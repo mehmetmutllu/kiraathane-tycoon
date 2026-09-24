@@ -533,6 +533,25 @@ try {
     else fail(`"İzle, 2× al" 2× vermedi (+${Math.round(sonra - once)} ₺, ödüllü ${odullu})`);
   }
 
+  // F4a REKLAMLARI KALDIR (D-152): mağazanın Paketler sekmesinden sahte arka uçla satın alınır;
+  // düğme "Sahipsin" olur ve soğuma dolu olsa da panel kapanışı artık geçişli göstermez.
+  {
+    await tikla('[data-testid="shop"]');
+    await tikla('[data-testid="shop-tab-paket"]');
+    const al = '[data-testid="paket-al-kiraathane_reklamsiz"]';
+    await page.waitForSelector(`${al}:not([disabled])`, { timeout: 5000 });
+    await page.click(al);
+    await page.waitForFunction((s) => document.querySelector(s)?.textContent === 'Sahipsin', al, { timeout: 5000 });
+    await tikla('[data-testid="shop-panel"] .sheet-back');
+    await page.waitForSelector('[data-testid="shop-panel"]', { state: 'detached', timeout: 5000 });
+    await page.evaluate(() => window.__ads.saat(180_000));
+    const r0 = await page.evaluate(() => window.__ads.durum());
+    const r1 = await adPaneliAcKapa();
+    if (r1.reklamsiz && r1.gecisli === r0.gecisli)
+      pass(`Reklamları Kaldır: satın alındı, soğuma dolu panel kapanışı reklamsız (${r0.gecisli}→${r1.gecisli})`);
+    else fail(`Reklamları Kaldır tutmadı (reklamsız ${r1.reklamsiz}, geçişli ${r0.gecisli}→${r1.gecisli})`);
+  }
+
   if (consoleErrors.length === 0) pass('Konsol hatası yok');
   else fail(`Konsol hataları: ${consoleErrors.slice(0, 5).join(' | ')}`);
 } catch (e) {

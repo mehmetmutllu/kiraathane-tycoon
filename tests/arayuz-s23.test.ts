@@ -179,7 +179,7 @@ describe('§E — paneller ekranı dolduruyor', () => {
   });
 
   it('mağaza satılabilir bir sekmede açılıyor (kilitli sekmede değil)', () => {
-    expect(HUD).toMatch(/useState<'table' \| 'floor' \| 'wall'>\(tableUnlocked \? 'table' : 'floor'\)/);
+    expect(HUD).toMatch(/useState<'table' \| 'floor' \| 'wall'(?: \| 'paket')?>\(tableUnlocked \? 'table' : 'floor'\)/);
   });
 
   it('kilitli kart kendi boyunda — gövdeye yayılıp iç delik açmıyor', () => {
