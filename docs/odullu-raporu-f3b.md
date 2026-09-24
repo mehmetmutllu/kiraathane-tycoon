@@ -44,9 +44,11 @@ kolda bozulmuyor, HÜKÜM hep 0.
 | V200 | G-57: 2 sa'te 4 video × 200 ₺ sabit | 5,48 | −%1,8 | 30,5 | video ₺1.600 (8) |
 | V120 | G-57: 2 sa'te 4 video × son 120 sn | 5,34 | −%4,4 | 30,5 | video ₺4.856 (8) |
 | **SV** | en çok izleyen: S2 + H2 + V60 | 5,14 | **−%8,0** | 29,0 | ₺2.233 + ₺3.151 |
+| **SV2** | hedef ekranında düğme YOK: S2 + V60 *(commit #1b)* | 5,33 | **−%4,5** | 30,5 | ₺4.964 + ₺2.358 |
 
 - Eleme eşiği %7 (D1/D-090). **Tek kolların hepsi altında**, hepsi birden (SV) **−%8,0** ile üstünde.
   Bu sayı üst sınır: oyuncu her seviyede, her hedefte ve her 2 saatte 4 video izliyor.
+  Eşiği aşan H2: hedef ekranı çıkınca (SV2) toplam **−%4,5**'e iniyor.
 - **V200 (sabit 200 ₺) geç oyunda eriyor:** 8 video toplam ₺1.600. Aynı 8 video oranlı V60'ta ₺2.336
   ediyor ve bu fark oyun ilerledikçe açılıyor. Taslağın kendi *"seviye arttıkça o da artar"* sezgisi
   sayıyla doğrulandı: ödül **oranlı** olmalı.
