@@ -1,0 +1,82 @@
+=== F3b — ÖDÜLLÜ VİDEONUN ÖDÜLÜ: ₺ kolları (sim) · çevrimdışı 2× (defter) · 💎/Usta (defter) ===
+
+economy.config.ts DOSYASI DEĞİŞMEDİ — kollar sim kancasıyla çalışma anında uygulanır.
+Taban = oyunun kuralları (D-124 tek hedef · D-142 seviye ₺ 60 sn, Sv 5'ten) + HRE yığını.
+Ölçütler: ilk alım < 90 sn · açılış boşluğu ≤ 2 dk · otomasyon < 15 dk · İdealize aşan ≤ 1 (HÜKÜM)
+          · Normal aşan = gözlem · KAT 1 = Normal profilde 20. masa.
+ÜST SINIR: oyuncu her fırsatta izler, dolum %100, ödül düştüğü tick cüzdanda.
+
+--- §1 ₺ KOLLARI (Normal profil ödemeleri · dKat1 tabana göre) ---
+kol  | ilk alım sn | açılış dk | otom. dk | HÜKÜM ideal | GÖZLEM normal | KAT1 sa | dKat1  | seviye ₺   | video ₺ (adet)
+------------------------------------------------------------------------------------------------------------------------
+T0   |          22 |       1.6 |      5.2 |    0 · 17.1 |      1 · 30.5 |    5.58 |  +0.0% |     ₺2.405 | —
+S2   |          22 |       1.6 |      5.2 |    0 · 17.1 |      1 · 30.5 |    5.45 |  -2.3% |     ₺5.012 | —
+H2   |          22 |       1.5 |      5.2 |    0 · 16.3 |      1 · 29.0 |    5.37 |  -3.9% |     ₺2.585 | —
+V60  |          22 |       1.6 |      5.2 |    0 · 13.2 |      1 · 30.5 |    5.45 |  -2.3% |     ₺2.485 | ₺2.336 (8)
+V200 |          22 |       1.6 |      5.2 |    0 · 15.5 |      1 · 30.5 |    5.48 |  -1.8% |     ₺2.485 | ₺1.600 (8)
+V120 |          22 |       1.6 |      5.2 |    0 · 13.2 |      1 · 30.5 |    5.34 |  -4.4% |     ₺2.461 | ₺4.856 (8)
+SV   |          22 |       1.5 |      5.2 |    0 · 16.3 |      1 · 29.0 |    5.14 |  -8.0% |     ₺2.233 | ₺3.151 (8)
+
+Kolların tarifi:
+  T0   taban: reklam yok (seviye ₺ 1×)
+  S2   ödül ekranı 2×: seviye ₺ ikiye katlanır (her seviyede izler)
+  H2   ödül ekranı 2×: hedefin KALICI gelir payı ikiye katlanır (her hedefte izler)
+  V60  G-57 · 2 sa'te 4 hak · video = son 60 sn'nin ₺'si (ilerlemeye oranlı)
+  V200 G-57 · 2 sa'te 4 hak · video = 200 ₺ sabit (kullanıcı taslağı)
+  V120 G-57 · 2 sa'te 4 hak · video = son 120 sn'nin ₺'si
+  SV   en çok izleyen: S2 + H2 + V60 birlikte
+
+20 dk'yı aşan alımlar (Normal):
+  T0   30.5 dk → servis L6
+  S2   30.5 dk → servis L6
+  H2   29.0 dk → servis L6
+  V60  30.5 dk → servis L6
+  V200 30.5 dk → servis L6
+  V120 30.5 dk → servis L6
+  SV   29.0 dk → servis L6
+Parmak izi: taban 38fd43d5 · S2 a9475b7d · H2 8966b7fd · V60 e453f99d · V200 1d0af4e5 · V120 d84d038d · SV edf5044d
+
+--- §2 ÇEVRİMDIŞI 2× (taban Normal profilinden 67 örnek, 5 dk'da bir; sıradaki pad hâlâ varken) ---
+oran = dönüş ödülü / sıradaki omurga pad'in fiyatı. ≥ 1 → dönen oyuncu sıradaki pad'i TEK BAŞINA alır.
+≥ 2 → sıradaki pad + bir o kadar daha ("alanın içi bitmesin" kuralının kırılma yönü). Tavan = 1,15.
+kol | yokluk | medyan oran | p90 oran | ≥1 pad | ≥2 pad | tavanda
+-----------------------------------------------------------------
+O0  |  20 dk |        1,15 |     1,15 |    %36 |     %0 | %36
+O1  |  20 dk |        2,30 |     2,30 |    %78 |    %36 | %36
+O2  |  20 dk |        1,15 |     1,15 |    %78 |     %0 | %36
+O0  |  60 dk |        1,15 |     1,15 |   %100 |     %0 | %100
+O1  |  60 dk |        2,30 |     2,30 |   %100 |   %100 | %100
+O2  |  60 dk |        1,15 |     1,15 |   %100 |     %0 | %100
+Kollar:
+  O0 taban: reklam yok
+  O1 2× TAVANDAN SONRA (izleyen tavanın iki katını alır)
+  O2 2× TAVANDAN ÖNCE (tavan yine bağlar)
+
+--- §3 ELMAS / USTA KUYRUĞU (Usta hedefi 20 masa · fiyat 25 💎 · günlük 10 💎 · hedef 💎 toplam 250) ---
+peşin = hedef 💎'ıyla alınabilen Usta · kuyruk = kalan · gün = kuyruğun bitişi (masalar ₺ tavanında varsayılır).
+kol  | peşin | kuyruk | 💎/gün | Usta/gün | kuyruk biter | gün/Usta
+-------------------------------------------------------------------
+E0   |    10 |     10 |     10 |     0,40 |     25,0 gün | 2,50
+Eg2  |    10 |     10 |     20 |     0,80 |     12,5 gün | 1,25
+Eh2  |    20 |      0 |     10 |     0,40 |      0,0 gün | —
+Egh2 |    20 |      0 |     20 |     0,80 |      0,0 gün | —
+U1   |    10 |     10 |     10 |     1,40 |      7,1 gün | 0,71
+U3   |    10 |     10 |     10 |     3,40 |      2,9 gün | 0,29
+U∞   |    10 |     10 |     10 |        ∞ |      1,0 gün | 0,10
+Ug1  |    10 |     10 |     14 |     0,56 |     17,9 gün | 1,79
+Ug2  |    10 |     10 |     18 |     0,72 |     13,9 gün | 1,39
+IAP  |    10 |     10 |     20 |     0,80 |     12,5 gün | 1,25
+Kollar:
+  E0   taban: reklam yok
+  Eg2  günlük görev 💎 2× (her gün izler)
+  Eh2  hedef 💎 2× (her hedefte izler)
+  Egh2 günlük + hedef 2× birlikte
+  U1   Usta "İzle": 1 video = 1 Usta, günde en çok 1
+  U3   Usta "İzle": 1 video = 1 Usta, günde en çok 3
+  U∞   Usta "İzle": 1 video = 1 Usta, sınırsız
+  Ug1  G-57 💎: 4 hak × 1 💎, günde 1 oturum
+  Ug2  G-57 💎: 4 hak × 1 💎, günde 2 oturum
+  IAP  KIYAS: Reklamları Kaldır (+10 💎/gün, D-040), video yok
+MODEL SINIRI: kozmetikler (💎) aynı havuzu paylaşır, bu defter onları saymaz → gün sayıları ALT sınır.
+
+✓ Damgalar temiz (tam koşu).

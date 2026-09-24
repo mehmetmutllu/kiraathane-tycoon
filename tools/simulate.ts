@@ -210,6 +210,9 @@ export interface HedefDurum {
   /** O andaki gelir oranı (₺/sn), ödül düşmeden ÖNCE. D3b `hG` kolu ödülü bununla tanımlar:
    *  "şu anki gelirin N saniyesi". Alan additive — onu okumayan kollar birebir aynı kalır. */
   oran: number;
+  /** F3b: açılmış pad kimlikleri — çevrimdışı ödülün "sıradaki pad" tavanı bununla okunur
+   *  (`rules.computeOfflineEarned`). Salt-okunur; additive, okumayan kollar birebir aynı. */
+  padsDone?: readonly string[];
 }
 /** Bir koşunun ödeyicisi: her tick çağrılır, o tick düşen ₺'yi döndürür (yoksa 0). */
 export type HedefOdeyici = (d: HedefDurum) => number;
@@ -1298,7 +1301,7 @@ function runProfile(eff: number, log = false, buys?: Buy[], darbogaz?: Record<st
       seviyeleriEsitle(s, w);
       const usta = s.tableLevels.slice(0, w.tables.length).filter((l) => l >= tableSoftMax()).length;
       const d: HedefDurum = {
-        t: s.t, lifetime: s.lifetime, padSayisi: s.padsDone.length, ustaMasa: usta, oran: inc / DT,
+        t: s.t, lifetime: s.lifetime, padSayisi: s.padsDone.length, ustaMasa: usta, oran: inc / DT, padsDone: s.padsDone,
       };
       if (hedef) {
         const odul = hedef(d);

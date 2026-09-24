@@ -13,7 +13,8 @@ SORU            : (a) F3 tur 1 kararlarını koda indir — A1 eklenti · SDK sa
                   (b) F3b: ödüllü videonun ÖDÜLÜ ne — "İzle, 2× al" hangi ödülleri katlar, Usta kaç reklam?
 ÖLÇÜLECEK KOLLAR: (a) teknik, D-144 + `reklam-raporu-f3.md` §Kollar — ölçüm yapıldı, varyant yok
                   (b) `economy.config.ts`e dokunur → varyant kapısı: kollar ölçüm sırasında yazılır
-SAYILAR         : (a) `docs/reklam-raporu-f3.md` §B/§E · (b) `docs/odullu-raporu-f3b.md` §Bulgular (açılacak)
+SAYILAR         : (a) `docs/reklam-raporu-f3.md` §B/§E · (b) `docs/odullu-raporu-f3b.md` §Bulgular — S2 −%2,3 · H2 −%3,9 ·
+                  V60 −%2,3 · hepsi −%8,0 · O2 1 sa'te %100 boş · hedef 💎 2× kuyruğu 0 güne indirir · U1 0,71 gün/Usta
 KARAR           : (a) D-144 ② → uygulandı D-149 ✅ · (b) karar paketi
 UYGULAMA        : (a) önce, kod + bekçi + mutasyon · (b) yalnız seçilen kol
 BEKÇİ           : (a) `tests/reklam-f3.test.ts` 19 · `tools/mutasyon-reklam-f3.mjs` 10/10 · duman 53/53 · (b) açılacak
