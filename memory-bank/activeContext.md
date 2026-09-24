@@ -18,11 +18,18 @@ BEKÇİ           : `vitrin-f4c.test.ts` 25 + 14/14 mutasyon · duman 58/58 · v
 
 ## ⏭️ SIRADAKİ ADIM
 
-**F4c-2 (aynı F8 kalemi):** önce **tabela görünürlüğü ölçülür** (oyun kamerasında cephe kaç px?) → C2 C4 C7 C8 ·
-**dekor süs köşesi** yerleşimi kullanıcıya onaylatılır (salon başına sabit köşe öneriyoruz) → D1 radyo · D2 saat · D3 semaver ·
-D5 kanarya · D6 gramofon · D10 tablo · D7a koltuk · D7b lamba (ayrı) + yılbaşı paketi geri (`git checkout 13738b5^ --
-public/assets/models/kaykit-holiday-bits`): büyük koltuk 4 renk (ÖLÇEK KÜÇÜLECEK) + yuvarlak halı; `asset-olu-yuk.test`
-src'de referans ister. Sonra **F5** mağaza + G-89 (EN SON). Aday sayfası: https://claude.ai/artifact/TYJTkxPJsVD8c3yEu1h4AR
+**F4c-2 (aynı F8 kalemi) — kullanıcı 2026-09-24 kapanışta istedi:**
+1. **Dekoru HARİTA ÜZERİNDE göster:** aday dekorları salonun bugünkü planında (üstten harita + oyun kadrajı)
+   nereye oturacaklarıyla çiz. **DÜZENİ DEĞİŞTİRME** — masa/tezgâh/duvar/yol yerinde kalır; dekor boş yerlere
+   sığar. Önce göster, onay al, sonra kod.
+2. **KUSUR (kullanıcı):** aday karelerindeki dekorlar **duvarla birleşiyor** (duvar objeleri duvara gömülü,
+   dolap/raf arka duvara giriyor — `tools/vitrin-adaylari.html` dekor sayfası). Uygulamada her obje duvar
+   yüzünden PAYLA durmalı; çakışma ölçülüp bekçiye yazılır (gövde kutusu ∩ duvar = 0).
+3. Tabela: önce oyun kamerasında görünürlük ölçülür (cephe kaç px?) → C2 C4 C7 C8.
+4. Dekor listesi: D1 radyo · D2 saat · D3 semaver · D5 kanarya · D6 gramofon · D10 tablo · D7a koltuk · D7b lamba
+   (ayrı) + yılbaşı paketi geri (`git checkout 13738b5^ -- public/assets/models/kaykit-holiday-bits`): büyük koltuk
+   4 renk (ÖLÇEK KÜÇÜLECEK) + yuvarlak halı; `asset-olu-yuk.test` src'de referans ister.
+Sonra **F5** mağaza + G-89 (EN SON). Aday sayfası: https://claude.ai/artifact/TYJTkxPJsVD8c3yEu1h4AR
 
 - **Sonraki oturumda sor:** 💎 fiyatları (TASLAK 60/150 kıyafet · 40/80/100 tepsi) ayrı fiyat oturumunda.
 - **Görsel açık:** yelek oyun kamerasında tepsinin arkasında kalıyor (yanlardan okunuyor) — kullanıcı oynayınca bakılsın.
