@@ -1015,6 +1015,23 @@ export const economyConfig = {
    * Yer tutuyorlar, Kat 2'de anlam kazanacaklar. TAVAN ŞARTI KALKMAZ: kalkarsa personel kanalı
    * ×1,25'te bile %-13,4 — eleme eşiğinin iki katı (kanal en güçlüsü, o yüzden en tehlikelisi).
    */
+  /**
+   * ÖDÜLLÜ VİDEONUN ÖDÜLÜ (F3b · D-150, `docs/odullu-raporu-f3b.md`). Hepsi üst sınırda ölçüldü
+   * (oyuncu her fırsatta izler): seviye 2× + video hakkı birlikte Kat 1 −%4,5 (eşik %7).
+   * Hedef ekranında düğme YOK: hedef 💎 2× Usta kuyruğunu ilk güne indiriyordu (20/20 peşin),
+   * kalıcı gelir 2× tek başına −%3,9 ve birlikte −%8,0'e çıkarıyordu.
+   */
+  rewarded: {
+    /** "İzle, 2× al": seviye ₺ · günlük görev 💎 · çevrimdışı ₺. Çevrimdışında TAVAN yine bağlar
+     *  (`offline.capNextPadFrac`): 1 sa'lik dönüşlerin %100'ü tavanda → düğme o ekranda çizilmez. */
+    claimMult: 2,
+    /** Usta "İzle": 1 video = 1 Usta, günde bu kadar (U1 · 2,50 → 0,71 gün/Usta; sınırsızı kuyruğu 1 günde bitiriyordu). */
+    masterPerDay: 1,
+    /** G-57 video hakkı (V60): `periodSec`'te `rights` video, her video son `incomeSec` saniyenin ₺'si.
+     *  Sabit ₺ (V200) geç oyunda eriyordu; ödül ilerlemeye oranlı. Pencere İLK izlemede başlar. */
+    video: { rights: 4, periodSec: 2 * 60 * 60, incomeSec: 60 },
+  },
+
   master: {
     /** Usta masanın bahşiş çarpanı — `tableTip` sonucunun üstüne biner. ÖLÇÜLDÜ (yukarı bak). */
     tipMult: 1.5,

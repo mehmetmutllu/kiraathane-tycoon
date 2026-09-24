@@ -89,6 +89,22 @@ export interface SaveSettings {
   golge: 'oto' | 'acik' | 'kapali';
 }
 
+/**
+ * REKLAM SAYAÇLARI (F3b · D-150). Ödüllü videonun günlük/pencere hakları kayıtta durur ki uygulamayı
+ * kapatıp açmak hakkı tazelemesin. ADDITIVE alan → saveVersion ARTMADI (`golge` emsali):
+ * `derinBirlestir` eski kayıtta eksik alanı varsayılanla doldurur.
+ */
+export interface ReklamSayaci {
+  /** Usta "İzle"nin son kullanıldığı gün (`dayIndex`) ve o gün kaç kez kullanıldığı. */
+  ustaGun: number;
+  ustaSayi: number;
+  /** Video hakkı penceresinin başladığı an (ms) ve o pencerede izlenen video sayısı. */
+  videoPencere: number;
+  videoKullanilan: number;
+}
+
+export const defaultReklam = (): ReklamSayaci => ({ ustaGun: -1, ustaSayi: 0, videoPencere: 0, videoKullanilan: 0 });
+
 export function defaultSettings(): SaveSettings {
   return { sound: true, music: true, notifications: true, soundVolume: 1, musicVolume: 1, golge: 'oto' };
 }
@@ -178,6 +194,8 @@ export interface SaveData {
    *  (`mastersOwned` deseni). Kimlikler NEDEN saklanıyor: havuz gate'li, gün içinde yeniden
    *  türetilse oyuncunun sabah aldığı görev öğlen altından kayardı (`dailyQuests.ts` başlığı). */
   daily: DailyState;
+  /** F3b (D-150): ödüllü videonun günlük/pencere hakları. Additive — sürüm ARTMADI. */
+  reklam: ReklamSayaci;
   /** Aktif SAYAÇ görevinin başlangıç sayaç değeri (delta hedefi için taban; v16). */
   questBase: number;
   /** Tabanın AİT OLDUĞU görevin kimliği (v32). Konum bilgisi değil sahiplik etiketi: yüklemede
@@ -248,6 +266,7 @@ export function defaultSave(): SaveData {
     goalsClaimed: [],
     mastersOwned: [],
     daily: defaultDaily(),
+    reklam: defaultReklam(),
     questBase: 0,
     questBaseId: '',
     xp: 0,

@@ -110,12 +110,41 @@ Usta bugün yalnız masada: **20 hedef · 25 💎 · günlük 10 💎 · hedefle
 
 ---
 
-## KARAR
+## KARAR (kullanıcı, 2026-09-24 · D-150 — üç soruda da önerilen kol)
 
-_(BOŞ — karar paketi sunulduktan sonra doldurulur · D-084 sıra kilidi)_
+1. **"İzle, 2× al" → seviye ₺ + günlük görev 💎 + kısa yokluk.** S2 · Eg2 · O2 (tavan yine bağlar).
+   Tavandaki çevrimdışı ekranında düğme **çizilmez**. Hedef ekranında düğme **yok** (Eh2/H2 elendi).
+2. **Usta "İzle" → U1:** 1 video = 1 Usta, günde 1.
+3. **G-57 → V60:** 2 saatte 4 video, her video son 60 sn'nin ₺'si. Pencere ilk izlemede başlar.
+
+Birleşimin sayısı **SV2 −%4,5** (eşik %7). U1 ve Eg2 gün ölçeğinde: izleyen 0,71 gün/Usta, izlemeyen 2,50.
 
 ---
 
 ## UYGULAMA
 
-_(BOŞ)_
+| kalem | nerede |
+|---|---|
+| sayılar: `claimMult 2` · `masterPerDay 1` · `video {4, 7200 sn, 60 sn}` | `economy.config.ts` `rewarded` |
+| O2 eki `offlineWatchExtra` · hak sayaçları `masterAdsLeft`/`videoRights` · `videoReward` | `rules.ts` |
+| `claimLevelUp(izledi)` · `claimOffline(izledi)` · `claimDailyQuest(id, izledi)` · `buyMasterAd` · `claimVideo` | `store.ts` |
+| hak sayaçları kayıtta (`reklam`) — ek alan, **sürüm artmadı** (`derinBirlestir` doldurur) | `save.ts` |
+| iz penceresi iki ödülün büyüğü; seviye ödülü kendi penceresini okur (bugün ikisi de 60 sn → birebir) | `tick.ts` |
+| ödül YALNIZ video sonuna dek izlenince · hazır değilse düğme pasif ama görünür (D-039) | `HUD.tsx` |
+| video hakkı: yan yığında düğme + kalan hak rozeti, Sv 5'ten itibaren (seviye ₺ kapısı) | `HUD.tsx` · `VideoKarti` |
+
+**Uygulamada bulunan kusur — ödülün kendisi kazanç izine giriyordu.** Seviye ve video ödülü "son 60 sn'de
+kazanılan ₺" olarak hesaplanıyor. Ödül `lifetime`a yazılıp izde kaldığı için bir sonraki ödül onu da
+sayıyordu: arka arkaya iki video 240 → **460** verdi (karede görüldü, `docs/gorsel/f3b/`). Sim ödülü gelir
+akışına saymadığı için ölçülen kol bu değildi. Çözüm: ödül ₺'si (seviye · video · çevrimdışı) iz kadar
+kaydırılır, izde yalnız oyunun kendi geliri kalır. Aynı döngü D-142'den beri seviye ödülünde de vardı.
+Görev ödülü ₺'si hâlâ izde (tick içinde, küçük) → **açık kalem**.
+
+**Final tam koşu** (`docs/olcum-odullu-f3b.txt`): sayılar commit #1 ile aynı · taban izi `38fd43d5` ·
+damga "config = ölçülen kol" ✓. Sim `tick.ts`i koşturmaz; `tick.ts`teki iz değişikliği bugün birebirdir
+(iki pencere de 60 sn), bunu `zincir-t8a` ve `odullu-f3b` testleri tutuyor.
+
+**Bekçi:** `tests/odullu-f3b.test.ts` 20 test · `tools/mutasyon-odullu-f3b.mjs` **11/11**. İlk koşu 9/10 çıktı:
+M10 kaçtı, çünkü günlük 💎 2×'i sınayan store testi yoktu; test eklendi. M11 katlanma kusurunun kendisi.
+Duman 54/54, "İzle, 2× al" tarayıcıda +1000 ₺ (500 × 2). F3 mutasyonu 10/10: M9 kalıbı ödül ekranına özgü
+yapıldı, çünkü `onClick={izle}` artık üç düğmede geçiyor ve mutasyon Usta'nınkine uygulanıyordu.

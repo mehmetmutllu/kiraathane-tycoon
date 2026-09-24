@@ -30,12 +30,14 @@ import {
   defaultSettings,
   defaultCharUpgrades,
   defaultWaiterUpgrades,
+  defaultReklam,
   loadSave,
   writeSave,
   clearSave,
   type SaveData,
   type SaveStats,
   type SaveSettings,
+  type ReklamSayaci,
 } from './save';
 
 import {
@@ -124,6 +126,12 @@ import {
   tableSoftMaxLevel,
   masterUnlockedForTable,
   masterCost,
+  masterAdsLeft,
+  spendMasterAd,
+  videoRights,
+  spendVideoRight,
+  videoReward,
+  offlineWatchExtra,
   stationSoftMaxLevel,
   stationUpgradeCost,
   incomeRate,
@@ -344,6 +352,8 @@ export interface GameState {
   /** USTA olmuş objelerin KİMLİKLERİ (D7a · D-093). "Kaç Usta aldım" saklanmaz — tick
    *  çarpanı (`masterTipsOf`) ve hedef sayaçları bu listeden türer (`goalsClaimed` deseni). */
   mastersOwned: string[];
+  /** F3b (D-150): ödüllü videonun günlük Usta hakkı + video hakkı penceresi (kayıtta). */
+  reklam: ReklamSayaci;
   /** D8: bugünün günlük görevleri (gün · kimlikler · sayaç tabanı · toplananlar). Gün dönümü
    *  `store.tick`te bakılır — `tick.ts`e (denge dosyası) DOKUNULMAZ, `saveTimer` deseni. */
   daily: DailyState;
@@ -410,6 +420,8 @@ export interface GameState {
   /** Genel-bakış zoom'u (transient): HUD kamera butonu AÇIKKEN kamera uzaklaşır (salonu görmek için). */
   camZoomOut: boolean;
   offlineEarned: number;
+  /** F3b (D-150): çevrimdışı ekranında "İzle"nin eki (transient; 0 → düğme çizilmez). */
+  offlineIzleEki: number;
   /** T9c/A3: arka plana geçiş anı (epoch ms, transient). Sıcak dönüşte çevrimdışı gelir buradan sayılır. */
   gizlendiAt: number | null;
   // Dahili
@@ -434,11 +446,15 @@ export interface GameState {
   /** Hedef ödülünü topla (D3/D-089). Toplanabilir değilse hiçbir şey yapmaz ve `false` döner. */
   claimGoal: (id: string) => boolean;
   /** D-142: seviye ödül ekranını kapatır ve ₺'yi cüzdana geçirir. */
-  claimLevelUp: () => void;
+  claimLevelUp: (izledi?: boolean) => void;
   /** D-093: USTA basamağını 💎 ile satın al. Kimlik `masterId()` kalıbında (`table:3`). */
   buyMaster: (id: string) => boolean;
+  /** F3b (D-150): Usta'yı ödüllü videoyla aç — 💎 yerine günlük hak (`rewarded.masterPerDay`). */
+  buyMasterAd: (id: string) => boolean;
+  /** F3b (D-150): video hakkını kullan → son `video.incomeSec` sn'nin ₺'si cüzdana. Hak yoksa 0. */
+  claimVideo: () => number;
   /** D8: bugünün bir günlük görevinin 💎 ödülünü al. Eşik doğrulaması `dailyQuests.ts`te. */
-  claimDailyQuest: (id: string) => boolean;
+  claimDailyQuest: (id: string, izledi?: boolean) => boolean;
   /** Sahne katmanı çağırır: oyuncunun menzilindeki Usta noktası (yoksa `null`). */
   setNearMaster: (id: string | null) => void;
   /** K4: Usta penceresi kapatıldı → nokta, oyuncu çıkıp yeniden basana kadar kilitli. */
@@ -484,7 +500,7 @@ export interface GameState {
   /** T9c/A3: sayfa yeniden görünür → yeniden yüklenmeden dönüşte de çevrimdışı gelir (init ile aynı hesap). */
   onPlanaDon: () => void;
   /** Çevrimdışı ödül ekranı kapatıldı (₺ zaten cüzdanda; ekran bir sonraki dönüşe kadar çıkmaz). */
-  claimOffline: () => void;
+  claimOffline: (izledi?: boolean) => void;
   hardReset: () => void;
 }
 
@@ -509,11 +525,28 @@ const CEVRIMDISI_ESIK_SN = 30;
 function cevrimdisiGelir(
   s: { tables: number; tableLevels: number[]; stationLevels: number[]; lavaboLevel: number; goalsClaimed: string[]; padsDone: string[] },
   elapsed: number,
-): number {
+): { kazanc: number; izleEki: number } {
   let tipTotal = 0;
   for (let i = 0; i < s.tables; i++) tipTotal += C.tables.tipBase * (s.tableLevels[i] ?? 0);
   const rate = incomeRate(s.tables, s.stationLevels[THE_SERVICE], tipTotal, s.lavaboLevel, collectionMult(s.goalsClaimed));
-  return computeOfflineEarned(rate, elapsed, s.padsDone);
+  // F3b (D-150): "İzle"nin eki aynı oran ve aynı tavanla hesaplanır; 0 ise ekranda düğme yok.
+  return { kazanc: computeOfflineEarned(rate, elapsed, s.padsDone), izleEki: offlineWatchExtra(rate, elapsed, s.padsDone) };
+}
+
+/**
+ * F3b (D-150): ÖDÜL ₺'si kazanç izine girmez. Seviye ve video ödülleri "son N sn'de KAZANILAN ₺"dır
+ * (`videoReward` · `levelRewardAmount`); ödülün kendisi `lifetime`a yazılıp izde kalsaydı bir sonraki
+ * ödül onu da sayardı ve arka arkaya izlenen videolar katlanırdı (240 → 480 → 960). İz, ödül kadar
+ * kaydırılır → fark yalnız oyunun kendi geliri kalır (sim de ödülü gelir akışına saymıyor).
+ */
+const izKaydir = (iz: readonly number[], odul: number): number[] => iz.map((v) => v + odul);
+
+/** Usta'nın 💎'dan bağımsız iki şartı: alınmamış olmalı ve masa ₺ tavanında olmalı (D-093). */
+function ustaAcilabilir(s: { mastersOwned?: string[]; tables: number; tableLevels: number[] }, id: string): boolean {
+  if ((s.mastersOwned ?? []).includes(id)) return false;
+  const masaIdx = id.startsWith('table:') ? Number(id.slice('table:'.length)) : -1;
+  if (!Number.isInteger(masaIdx) || masaIdx < 0 || masaIdx >= s.tables) return false;
+  return masterUnlockedForTable(s.tableLevels[masaIdx] ?? 0);
 }
 
 export const useGame = create<GameState>((set, get) => ({
@@ -559,6 +592,7 @@ export const useGame = create<GameState>((set, get) => ({
   goalsClaimed: [],
   mastersOwned: [],
   daily: defaultDaily(),
+  reklam: defaultReklam(),
   nearMaster: null,
   ustaKapali: null,
   questIndex: 0,
@@ -584,6 +618,7 @@ export const useGame = create<GameState>((set, get) => ({
   camBekleyen: null,
   camZoomOut: false,
   offlineEarned: 0,
+  offlineIzleEki: 0,
   gizlendiAt: null,
   spawnTimer: 1,
   spawnArea: 0,
@@ -632,14 +667,15 @@ export const useGame = create<GameState>((set, get) => ({
     let wallet = D(save.wallet);
     let lifetime = D(save.lifetime);
     let offlineEarned = 0;
+    let offlineIzleEki = 0;
     if (elapsed > CEVRIMDISI_ESIK_SN) {
       // B4: offline oran lavabo kolunu da sayar (oyuncu yokken de istif kabarır).
       const lavLevel = roomOpen(world, 'lavabo') ? Math.min(Math.max(save.lavaboLevel ?? 1, 1), lavaboMaxLevel()) : 0;
-      offlineEarned = cevrimdisiGelir(
+      ({ kazanc: offlineEarned, izleEki: offlineIzleEki } = cevrimdisiGelir(
         { tables: world.tables.length, tableLevels: save.tableLevels, stationLevels, lavaboLevel: lavLevel,
           goalsClaimed: save.goalsClaimed ?? [], padsDone: save.padsDone },
         elapsed,
-      );
+      ));
       wallet = wallet.add(offlineEarned);
       lifetime = lifetime.add(offlineEarned);
     }
@@ -677,6 +713,7 @@ export const useGame = create<GameState>((set, get) => ({
       padsDone: [...save.padsDone],
       padFills: { ...save.padFills },
       offlineEarned,
+      offlineIzleEki,
       player: [...LAYOUT.player] as Vec3,
       npcs: [],
       coins: [],
@@ -738,6 +775,7 @@ export const useGame = create<GameState>((set, get) => ({
       stats: { ...save.stats },
       goalsClaimed: [...(save.goalsClaimed ?? [])],
       mastersOwned: [...(save.mastersOwned ?? [])],
+      reklam: { ...save.reklam },
       daily: loadedDaily,
       questIndex: loadedQuestIndex,
       questBase: loadedQuestBase,
@@ -913,14 +951,15 @@ export const useGame = create<GameState>((set, get) => ({
    * saklanacak bir alan yok: kayıt sürümü ARTMADI. XP de verilir — hedef, görev hattı gibi bir
    * ilerleme olayıdır.
    */
-  claimLevelUp: () => {
+  claimLevelUp: (izledi = false) => {
     const s = get();
     if (!s.levelUp) return;
-    const amount = s.levelUp.amount;
+    const amount = s.levelUp.amount * (izledi ? C.rewarded.claimMult : 1);
     set({
       levelUp: null,
       wallet: amount > 0 ? s.wallet.add(amount) : s.wallet,
       lifetime: amount > 0 ? s.lifetime.add(amount) : s.lifetime,
+      gelirIzi: amount > 0 ? izKaydir(s.gelirIzi, amount) : s.gelirIzi,
     });
     if (amount > 0) get().saveNow();
   },
@@ -950,10 +989,7 @@ export const useGame = create<GameState>((set, get) => ({
    */
   buyMaster: (id) => {
     const s = get();
-    if ((s.mastersOwned ?? []).includes(id)) return false;
-    const masaIdx = id.startsWith('table:') ? Number(id.slice('table:'.length)) : -1;
-    if (!Number.isInteger(masaIdx) || masaIdx < 0 || masaIdx >= s.tables) return false;
-    if (!masterUnlockedForTable(s.tableLevels[masaIdx] ?? 0)) return false;
+    if (!ustaAcilabilir(s, id)) return false;
     const fiyat = D(masterCost());
     if (s.diamonds.lt(fiyat)) return false;
     set({
@@ -965,12 +1001,44 @@ export const useGame = create<GameState>((set, get) => ({
     return true;
   },
 
+  /** F3b (D-150): `buyMaster`in aynı üç şartından ilk ikisi; 💎 yerine günün reklam hakkı düşer.
+   *  Reklamın izlendiğini HUD doğrular (`ads.odulluIzle`), store yalnız hakkı sayar. */
+  buyMasterAd: (id) => {
+    const s = get();
+    if (!ustaAcilabilir(s, id)) return false;
+    const gun = dayIndex(Date.now());
+    if (masterAdsLeft(s.reklam, gun) <= 0) return false;
+    set({
+      mastersOwned: [...(s.mastersOwned ?? []), id],
+      reklam: spendMasterAd(s.reklam, gun),
+      xp: s.xp + C.xp.perUpgrade,
+    });
+    get().saveNow();
+    return true;
+  },
+
+  claimVideo: () => {
+    const s = get();
+    const simdi = Date.now();
+    if (videoRights(s.reklam, simdi).kalan <= 0) return 0;
+    const odul = videoReward(s.gelirIzi, s.lifetime.toNumber());
+    if (odul <= 0) return 0;
+    set({
+      reklam: spendVideoRight(s.reklam, simdi),
+      wallet: s.wallet.add(odul),
+      lifetime: s.lifetime.add(odul),
+      gelirIzi: izKaydir(s.gelirIzi, odul),
+    });
+    get().saveNow();
+    return odul;
+  },
+
   /**
    * GÜNLÜK GÖREV ÖDÜLÜ (D8) — günün 💎'ı. `claimGoal` deseni: eşik kontrolü BURADA DEĞİL
    * `dailyQuests.ts`te (iki yerde kural olsaydı biri diğerinden sapardı — D-015 dersi).
    * Kayıt sürümü ARTMAZ, XP VERMEZ (ölçülmemiş İtibar enjeksiyonu olurdu — `economy.config.ts`).
    */
-  claimDailyQuest: (id) => {
+  claimDailyQuest: (id, izledi = false) => {
     const s = get();
     const odul = claimDailyReward(
       id,
@@ -981,7 +1049,7 @@ export const useGame = create<GameState>((set, get) => ({
     if (odul === null) return false;
     set({
       daily: { ...s.daily, claimed: [...s.daily.claimed, id] },
-      diamonds: s.diamonds.add(odul),
+      diamonds: s.diamonds.add(odul * (izledi ? C.rewarded.claimMult : 1)),
     });
     get().saveNow();
     return true;
@@ -1198,7 +1266,7 @@ export const useGame = create<GameState>((set, get) => ({
     const elapsed = Math.max(0, (Date.now() - s.gizlendiAt) / 1000);
     set({ gizlendiAt: null });
     if (elapsed <= CEVRIMDISI_ESIK_SN) return;
-    const kazanc = cevrimdisiGelir({ ...s, goalsClaimed: s.goalsClaimed ?? [] }, elapsed);
+    const { kazanc, izleEki } = cevrimdisiGelir({ ...s, goalsClaimed: s.goalsClaimed ?? [] }, elapsed);
     if (kazanc <= 0) return;
     const lifetime = s.lifetime.add(kazanc);
     // D8 sırası (init ile aynı): gün dönümü çevrimdışı gelirden SONRA — gece kazanılan ₺ bugünün
@@ -1207,11 +1275,23 @@ export const useGame = create<GameState>((set, get) => ({
     const daily = s.daily.day === gun
       ? s.daily
       : rollDaily(s.daily, gun, dailyContextOf(s), dailyCountersOf({ stats: s.stats, lifetime }));
-    set({ wallet: s.wallet.add(kazanc), lifetime, offlineEarned: kazanc, daily });
+    set({ wallet: s.wallet.add(kazanc), lifetime, offlineEarned: kazanc, offlineIzleEki: izleEki, daily,
+      gelirIzi: izKaydir(s.gelirIzi, kazanc) });
     get().saveNow();
   },
 
-  claimOffline: () => set({ offlineEarned: 0 }),
+  claimOffline: (izledi = false) => {
+    const s = get();
+    const ek = izledi ? s.offlineIzleEki : 0;
+    set({
+      offlineEarned: 0,
+      offlineIzleEki: 0,
+      wallet: ek > 0 ? s.wallet.add(ek) : s.wallet,
+      lifetime: ek > 0 ? s.lifetime.add(ek) : s.lifetime,
+      gelirIzi: ek > 0 ? izKaydir(s.gelirIzi, ek) : s.gelirIzi,
+    });
+    if (ek > 0) get().saveNow();
+  },
 
   saveNow: () => {
     const s = get();
@@ -1241,6 +1321,7 @@ export const useGame = create<GameState>((set, get) => ({
       questsDone: completedQuestIds(C.quests, s.questIndex),
       goalsClaimed: [...(s.goalsClaimed ?? [])],
       mastersOwned: [...(s.mastersOwned ?? [])],
+      reklam: { ...s.reklam },
       daily: { ...s.daily, ids: [...s.daily.ids], base: { ...s.daily.base }, claimed: [...s.daily.claimed] },
       questBase: s.questBase,
       questBaseId: C.quests[s.questIndex]?.id ?? '',

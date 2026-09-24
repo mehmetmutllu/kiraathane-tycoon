@@ -26,7 +26,7 @@ import {
   type CharUpgrades,
   type WaiterUpgrades,
 } from '../config/economy.config';
-import type { SaveStats } from './save';
+import type { ReklamSayaci, SaveStats } from './save';
 import { LAYOUT, LAVABO, servicePlace, type RVec3 } from './layout';
 import { MAX_AREAS, THE_SERVICE, areaOfTable, areaTableStart, tostShare, isCounter } from './world';
 
@@ -781,13 +781,71 @@ export function visiblePads(questIndex: number, g: GateState): PadDef[] {
  * SONRA PARA tavanı = sıradaki omurga pad maliyeti × capNextPadFrac (tüm pad'ler bittiyse en pahalı pad
  * referans alınır). İki kelepçe birlikte: kapa-aç ~7k verip zone'u tek girişte bitirme bug'ı kapanır.
  */
-export function computeOfflineEarned(rate: number, elapsedSec: number, padsDone: readonly string[]): number {
+/** Çevrimdışının iki kelepçesinden önceki ham tutar ve PARA tavanı (sıradaki omurga pad × oran). */
+function offlineRawCap(rate: number, elapsedSec: number, padsDone: readonly string[]): { raw: number; cap: number } {
   const capSec = C.offline.baseCapHours * 3600;
   const raw = Math.floor(rate * C.offline.rateMult * Math.min(elapsedSec, capSec));
   const pads = C.pads as readonly PadDef[];
   const next = pads.find((p) => !p.optional && !padsDone.includes(p.id));
   const refCost = next ? next.cost : Math.max(...pads.map((p) => p.cost));
-  return Math.min(raw, Math.floor(refCost * C.offline.capNextPadFrac));
+  return { raw, cap: Math.floor(refCost * C.offline.capNextPadFrac) };
+}
+
+export function computeOfflineEarned(rate: number, elapsedSec: number, padsDone: readonly string[]): number {
+  const { raw, cap } = offlineRawCap(rate, elapsedSec, padsDone);
+  return Math.min(raw, cap);
+}
+
+/**
+ * F3b (D-150) — çevrimdışı ekranında "İzle"nin EKİ. Kat tavandan ÖNCE uygulanır (O2): tavan yine
+ * bağlar, "alan açılır ama içi bitmez" kuralı korunur. 0 ise ekranda düğme çizilmez — 1 sa'lik
+ * dönüşlerin %100'ü zaten tavanda (`odullu-raporu-f3b` §2), orada "2×" boş bir vaat olurdu.
+ */
+export function offlineWatchExtra(rate: number, elapsedSec: number, padsDone: readonly string[]): number {
+  const { raw, cap } = offlineRawCap(rate, elapsedSec, padsDone);
+  return Math.max(0, Math.min(raw * C.rewarded.claimMult, cap) - Math.min(raw, cap));
+}
+
+/* ─────────────────────── ÖDÜLLÜ VİDEO HAKLARI (F3b · D-150) ─────────────────────── */
+
+/** Bugün Usta "İzle"nin kaç hakkı kaldı (gün değiştiyse sayaç tazedir). */
+export function masterAdsLeft(r: ReklamSayaci, gun: number): number {
+  const kullanilan = r.ustaGun === gun ? r.ustaSayi : 0;
+  return Math.max(0, C.rewarded.masterPerDay - kullanilan);
+}
+
+export function spendMasterAd(r: ReklamSayaci, gun: number): ReklamSayaci {
+  return { ...r, ustaGun: gun, ustaSayi: (r.ustaGun === gun ? r.ustaSayi : 0) + 1 };
+}
+
+/** Video hakkı penceresi: İLK izlemede başlar, `periodSec` sonra tazelenir. Saat geri alınırsa
+ *  (simdi < pencere) pencere de tazelenir — oyuncu cezalandırılmaz, hak da çoğalmaz. */
+export function videoRights(r: ReklamSayaci, simdi: number): { kalan: number; yenilenmeMs: number } {
+  const per = C.rewarded.video.periodSec * 1000;
+  const taze = simdi < r.videoPencere || simdi - r.videoPencere >= per;
+  const kullanilan = taze ? 0 : r.videoKullanilan;
+  return {
+    kalan: Math.max(0, C.rewarded.video.rights - kullanilan),
+    yenilenmeMs: taze || kullanilan === 0 ? 0 : r.videoPencere + per - simdi,
+  };
+}
+
+export function spendVideoRight(r: ReklamSayaci, simdi: number): ReklamSayaci {
+  const per = C.rewarded.video.periodSec * 1000;
+  const taze = simdi < r.videoPencere || simdi - r.videoPencere >= per;
+  return taze
+    ? { ...r, videoPencere: simdi, videoKullanilan: 1 }
+    : { ...r, videoKullanilan: r.videoKullanilan + 1 };
+}
+
+/** Kazanç izinin örnekleme aralığı (sn) — `tick.ts` yazar, ödüller okur. */
+export const GELIR_ORNEK_SN = 5;
+
+/** Video ödülü: son `video.incomeSec` saniyede kazanılan ₺ (seviye ₺'si ile aynı iz, D-142). */
+export function videoReward(gelirIzi: readonly number[], lifetime: number): number {
+  if (!gelirIzi.length) return 0;
+  const k = Math.ceil(C.rewarded.video.incomeSec / GELIR_ORNEK_SN);
+  return Math.max(0, Math.floor(lifetime - gelirIzi[Math.max(0, gelirIzi.length - 1 - k)]));
 }
 
 /** ₺ ile çıkılabilen en yüksek istasyon seviyesi (L5 = Usta, 💎/video — Faz 4). */

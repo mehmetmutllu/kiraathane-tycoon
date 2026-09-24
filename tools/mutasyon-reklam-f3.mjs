@@ -79,10 +79,10 @@ const MUTASYONLAR = [
   {
     ad: 'M9 2x dugmesi yine Al in islevi',
     dosya: 'src/components/ui/HUD.tsx',
-    bul: `            onClick={onIzle}
-`,
-    koy: `            onClick={onClaim}
-`,
+    bul: `            disabled={!hazir || izleniyor}
+            onClick={izle}`,
+    koy: `            disabled={!hazir || izleniyor}
+            onClick={onClaim}`,
     ne: 'F3 3D kusuru geri gelir: 2x diyip 1x verir',
   },
   {

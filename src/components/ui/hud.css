@@ -228,6 +228,11 @@
   width: 44px;
   height: 44px;
 }
+/* F3b (D-150): video hakkı bitince düğme durur ama söner — yeni haklar kartta yazar. */
+.video-btn.bos {
+  opacity: 0.55;
+}
+
 .tray-count {
   position: absolute;
   right: -3px;

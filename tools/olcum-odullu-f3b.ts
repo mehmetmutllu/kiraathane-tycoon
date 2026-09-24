@@ -171,6 +171,13 @@ const tekrar = olc(TABAN_KOL);
 
 damga('kancalar sızmadı (taban tekrar = taban)', tekrar.iz === taban.iz, `${tekrar.iz} ≠ ${taban.iz}`);
 damga('taban seviye ödülü ödendi', taban.seviye > 0, '0 ₺');
+// commit #2 BEKÇİSİ (D-150): taban reklamsız dünyadır → tick.ts'teki iz penceresi değişikliği onu kımıldatmamalı
+// (commit #1 izi 38fd43d5); config'e yazılan sayılar ölçülen SV2 kolunun kendisi olmalı.
+damga('taban = commit #1 (parmak izi 38fd43d5)', taban.iz === '38fd43d5', `taban izi ${taban.iz}`);
+const R = C.rewarded;
+damga('config = ölçülen kol (S2 2× · V60 4 hak / 2 sa / 60 sn · U1 günde 1)',
+  R.claimMult === 2 && R.masterPerDay === 1 && R.video.rights === 4 && R.video.periodSec === IKI_SAAT && R.video.incomeSec === 60,
+  JSON.stringify(R));
 for (const k of secilen) {
   varyantDamgasi(k.kod, taban.iz, sonuc.get(k.kod)!.iz);
   const s = sonuc.get(k.kod)!;

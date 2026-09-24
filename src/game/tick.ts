@@ -92,6 +92,7 @@ import {
   cardQuestIndex,
   upgradeSpotLiveNow,
   levelRewardAmount,
+  GELIR_ORNEK_SN,
   questInTransition,
   CAM_FOCUS_TTL,
   brewTime,
@@ -1608,9 +1609,6 @@ function questSystem(c: TickCtx): void {
   c.quest = quest;
 }
 
-/** D-142: seviye ₺'sinin kazanç izi örnekleme aralığı (sn). Denge sayısı değil çözünürlük: ödül
- *  penceresi (`xp.levelRewardSec`) bunun katlarıyla okunur. */
-const GELIR_ORNEK_SN = 5;
 
 /**
  * Level-up bildirimi: toplam XP bu tick'te seviye atlattıysa toast (kuyruğa girer).
@@ -1620,9 +1618,11 @@ function levelNoticeSystem(c: TickCtx): void {
   let notice = c.notice;
 
   // D-142: kazanç izi. Pencere `levelRewardSec` kadar geriye bakar; örnek sayısı ondan türer.
+  // F3b: video ödülü de aynı izi okur (`videoReward`) → iz ikisinin büyüğü kadar tutulur.
+  const n = Math.ceil(C.xp.levelRewardSec / GELIR_ORNEK_SN) + 1;
   if (c.gelirIziT <= 0) {
-    const n = Math.ceil(C.xp.levelRewardSec / GELIR_ORNEK_SN) + 1;
-    c.gelirIzi = [...c.gelirIzi, c.lifetime.toNumber()].slice(-n);
+    const nIz = Math.max(n, Math.ceil(C.rewarded.video.incomeSec / GELIR_ORNEK_SN) + 1);
+    c.gelirIzi = [...c.gelirIzi, c.lifetime.toNumber()].slice(-nIz);
     c.gelirIziT = GELIR_ORNEK_SN;
   }
 
@@ -1633,7 +1633,7 @@ function levelNoticeSystem(c: TickCtx): void {
     // kalır; Seviye 5'ten itibaren üstüne "son 60 sn'de kazandığın kadar" ₺ gelir. Aynı karede
     // birden çok seviye atlanırsa ödüller tek ekranda toplanır.
     if (after > before) {
-      const sonKazanc = c.gelirIzi.length ? c.lifetime.toNumber() - c.gelirIzi[0] : 0;
+      const sonKazanc = c.gelirIzi.length ? c.lifetime.toNumber() - c.gelirIzi[Math.max(0, c.gelirIzi.length - n)] : 0;
       let amount = c.levelUp?.amount ?? 0;
       for (let lv = before + 1; lv <= after; lv++) amount += levelRewardAmount(lv, sonKazanc);
       c.levelUp = {

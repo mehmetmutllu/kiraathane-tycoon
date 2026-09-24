@@ -519,6 +519,20 @@ try {
   if (seviyeEkraniGoruldu > 0) pass(`Seviye atlama ödül ekranı çıktı ve "Al" ile kapandı (${seviyeEkraniGoruldu} kez)`);
   else fail('Akış boyunca hiç seviye ödül ekranı çıkmadı');
 
+  // F3b ÖDÜLLÜ 2× (D-150): "İzle, 2× al" gerçek tarayıcıda sahte reklamla uçtan uca — ödül
+  // yalnız izlenince ve İKİ KATI verilir. Mantık bekçisi store'u sınıyor; burada sınanan kablo.
+  {
+    const once = (await page.evaluate(() => window.__game())).wallet;
+    await page.evaluate(() => window.__setState({ levelUp: { level: 9, amount: 500, carryBefore: 0, carryAfter: 0 } }));
+    await page.waitForSelector('[data-testid="level-up-izle"]:not([disabled])', { timeout: 5000 });
+    await page.click('[data-testid="level-up-izle"]'); // `tikla` DEĞİL: o, açık seviye ekranını "Al" ile kapatır
+    await page.waitForSelector('[data-testid="level-up"]', { state: 'detached', timeout: 5000 });
+    const sonra = (await page.evaluate(() => window.__game())).wallet;
+    const odullu = (await page.evaluate(() => window.__ads.durum())).odullu;
+    if (sonra - once >= 1000 && odullu >= 1) pass(`"İzle, 2× al" seviye ödülünü ikiye katladı (+${Math.round(sonra - once)} ₺, ödüllü ${odullu})`);
+    else fail(`"İzle, 2× al" 2× vermedi (+${Math.round(sonra - once)} ₺, ödüllü ${odullu})`);
+  }
+
   if (consoleErrors.length === 0) pass('Konsol hatası yok');
   else fail(`Konsol hataları: ${consoleErrors.slice(0, 5).join(' | ')}`);
 } catch (e) {

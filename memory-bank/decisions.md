@@ -4761,3 +4761,15 @@ Kural `ads.ts` `gecisliUygun`; ayarlar `ads.config.ts` (kapıya tabi değil). "�
 **Sayı:** APK 11,24 MiB (R8 açık) · köprü sınıfı korundu · duman 53/53 · 10/10 mutasyon.
 **Bırakılan:** ödüllü videonun ödülü → F3b (varyant kapısı). Cihazda dolgu/UMP/ses → cihaz turu.
 
+---
+
+## D-150 · Ödüllü videonun ödülü: seviye/günlük/kısa yokluk 2× · Usta günde 1 · video hakkı oranlı (2026-09-24)
+
+**Karar (kullanıcı, üç soruda da önerilen kol):** "İzle, 2× al" seviye ₺, günlük 💎 ve çevrimdışı ₺ ekranlarında
+çalışır. Çevrimdışında katsayı tavandan ÖNCE uygulanır, tavandaysa düğme yoktur. Hedef ekranında düğme yok.
+Usta "İzle": 1 video = 1 Usta, günde 1. G-57: 2 sa'te 4 video × son 60 sn'nin ₺'si, Sv 5'ten itibaren.
+**Belirleyici sayı** (`docs/odullu-raporu-f3b.md`, üst sınır): S2 −%2,3 · V60 −%2,3 · birlikte −%4,5 (eşik %7).
+Hepsi −%8,0. Hedef 💎 2× → 20/20 Usta peşin (kuyruk 0 gün). O2 1 sa'lik dönüşte %100 boş.
+Sabit 200 ₺ geç oyunda eriyor. U∞ kuyruğu 1 günde bitiriyor; U1 0,71 gün/Usta.
+**Uygulamada bulunan:** ödül ₺'si kazanç izine giriyordu → arka arkaya videolar katlanıyordu; iz ödül kadar kaydırılır.
+**Bekçi:** `tests/odullu-f3b.test.ts` 20 · 11/11 mutasyon · duman 54/54. Kayıt: `reklam` ek alanı, sürüm artmadı.

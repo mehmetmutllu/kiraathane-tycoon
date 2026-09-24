@@ -148,16 +148,18 @@ describe('yapılandırma bekçileri', () => {
 
   it('"İzle, 2× al" düğmesi "Al"ın işlevini çağırmaz', () => {
     const hud = oku('src/components/ui/HUD.tsx');
-    const i = hud.lastIndexOf('İzle, 2× al');
-    const dugme = hud.slice(hud.lastIndexOf('<button', i), i);
-    expect(dugme).toContain('onClick={onIzle}');
+    const i = hud.indexOf('data-testid={`${testid}-izle`}');
+    const dugme = hud.slice(hud.lastIndexOf('<button', i), hud.indexOf('</button>', i));
+    expect(dugme).toContain('onClick={izle}');
     expect(dugme).not.toContain('onClaim');
+    // `izle` ödülü yalnız video sonuna dek izlenince verir (F3b · D-150).
+    expect(hud).toMatch(/if \(await odulluIzle\(\)\) onIzle\(\);/);
   });
 
   it('panel kapanışı ve panel-içi ödüller reklam katmanına bağlı', () => {
     const hud = oku('src/components/ui/HUD.tsx');
     expect(hud).toMatch(/sheet == null\) void panelKapandi\(\)/);
-    expect(hud.match(/odulAlindi\(\)/g)?.length).toBe(2);
+    expect(hud.match(/odulAlindi\(\)/g)?.length).toBe(3); // günlük Al · günlük İzle · hedef Al
   });
 
   it('reklam ekrandayken görünürlük değişimi çevrimdışı sayılmaz', () => {

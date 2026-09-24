@@ -1,13 +1,13 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { useGame, goalMetricsOf, tableThemeUnlocked, tableSoftMaxLevel, gorunenCuzdan } from '../../game/store';
 import { claimableGoals, collectionBonus, goalViewsForPanel, type GoalView } from '../../game/goals';
-import { dailyViews, claimableDailyCount, type DailyQuestView } from '../../game/dailyQuests';
+import { dailyViews, claimableDailyCount, dayIndex, type DailyQuestView } from '../../game/dailyQuests';
 import { dailyCountersOf } from '../../game/store';
-import { masterCost, toastCizilir, questInTransition, type QuestView } from '../../game/rules';
+import { masterAdsLeft, masterCost, toastCizilir, questInTransition, videoReward, videoRights, type QuestView } from '../../game/rules';
 import { ekranKanali, geriTusu, tepsiIpucuZamani } from '../../game/ekranKanali';
 import { Capacitor } from '@capacitor/core';
 import { App as CapApp } from '@capacitor/app';
-import { odulAlindi, panelKapandi, sogumaSifirla } from '../../game/ads';
+import { odulAlindi, odulluIzle, odulluReklamHazir, panelKapandi, reklamAbone, sogumaSifirla } from '../../game/ads';
 import { screenPointer } from '../../game/screenPointer';
 import { fmt } from '../../game/decimal';
 import { SAVE_VERSION } from '../../game/save';
@@ -88,6 +88,7 @@ export function HUD() {
   const settings = useGame((s) => s.settings);
   const setSetting = useGame((s) => s.setSetting);
   const offlineEarned = useGame((s) => s.offlineEarned);
+  const offlineIzleEki = useGame((s) => s.offlineIzleEki);
   const notice = useGame((s) => s.notice);
   /**
    * GÖREV HATTI BİTİŞ BANDI 5 SANİYE DURUR (kullanıcı 2026-09-09: *"görev hattı tamamlanınca
@@ -129,6 +130,10 @@ export function HUD() {
   const [sheet, setSheet] = useState<Sheet>(null);
   // C5 (T9d): sıfırlama onayı OYUNUN kutusunda — `window.confirm` Capacitor'da çıplak sistem penceresiydi.
   const [sifirlaSor, setSifirlaSor] = useState(false);
+  // F3b (D-150) · G-57: video hakkı kartı. Düğme seviye ₺'si ile AYNI kapıdan açılır (Sv 5): ödül
+  // "son dakikanın kazancı" olduğundan ona bağlansaydı oyuncu durunca düğme kaybolup geri gelirdi.
+  const [videoAcik, setVideoAcik] = useState(false);
+  const videoKalan = useGame((s) => videoRights(s.reklam, Date.now()).kalan);
   // Ayarlar künyesi (E3 · S23) — oyuncunun kendi geçmişi, ekranın boş kalan altını doldurur.
   const stats = useGame((s) => s.stats);
   const lifetime = useGame((s) => s.lifetime);
@@ -187,6 +192,7 @@ export function HUD() {
   useEffect(() => {
     geri.current = () => {
       if (sifirlaSor) return setSifirlaSor(false);
+      if (videoAcik) return setVideoAcik(false);
       const eylem = geriTusu(kanal, sheet != null);
       if (eylem === 'cevrimdisi') claimOffline();
       else if (eylem === 'usta') closeMaster();
@@ -278,6 +284,21 @@ export function HUD() {
         >
           <CamZoomIcon size={24} out={camZoomOut} />
         </button>
+        {lvl.level >= economyConfig.xp.levelRewardFromLevel && (
+          <button
+            className={`round-btn tray-btn video-btn${videoKalan > 0 ? '' : ' bos'}`}
+            data-testid="video-btn"
+            title="Reklam izle, para kazan"
+            onClick={() => setVideoAcik(true)}
+          >
+            <PlayAdIcon size={22} />
+            {videoKalan > 0 && (
+              <span className="tray-count" data-testid="video-kalan">
+                {videoKalan}
+              </span>
+            )}
+          </button>
+        )}
         {trayFood > 0 && (
           <button
             className="round-btn tray-btn"
@@ -574,10 +595,13 @@ export function HUD() {
           bonus={levelUp.carryAfter - levelUp.carryBefore}
           bonusBefore={levelUp.carryBefore}
           bonusLabel="Servis hızı"
-          onClaim={claimLevelUp}
+          onClaim={() => claimLevelUp()}
+          onIzle={() => claimLevelUp(true)}
           claimTestid="level-up-ok"
         />
       )}
+
+      {videoAcik && <VideoKarti onClose={() => setVideoAcik(false)} />}
 
       {/* ───────── OFFLINE KAZANÇ (ortak ödül ekranı kalıbı) ───────── */}
       {showOffline && (
@@ -585,7 +609,9 @@ export function HUD() {
           testid="offline"
           title="Sen yokken kıraathane çalıştı"
           amount={Math.floor(offlineEarned)}
-          onClaim={claimOffline}
+          onClaim={() => claimOffline()}
+          onIzle={offlineIzleEki > 0 ? () => claimOffline(true) : undefined}
+          izleEtiket={`İzle, +${fmt(offlineIzleEki)}`}
           claimTestid="offline-ok"
         />
       )}
@@ -784,9 +810,76 @@ function OgretmeBulasik({ onClose, onShow }: { onClose: () => void; onShow: () =
   );
 }
 
+/**
+ * G-57 VİDEO HAKKI (F3b · D-150, kol V60). `rewarded.video.periodSec`te `rights` video; her video
+ * son `incomeSec` saniyenin ₺'si — sabit ₺ geç oyunda eriyordu (`odullu-raporu-f3b` §1). Pencere
+ * ilk izlemede başlar. Tamamen isteğe bağlı: kapatınca hiçbir şey kaybedilmez.
+ */
+function VideoKarti({ onClose }: { onClose: () => void }) {
+  const claimVideo = useGame((s) => s.claimVideo);
+  const kalan = useGame((s) => videoRights(s.reklam, Date.now()).kalan);
+  const yenilenmeMs = useGame((s) => videoRights(s.reklam, Date.now()).yenilenmeMs);
+  const odul = useGame((s) => videoReward(s.gelirIzi, s.lifetime.toNumber()));
+  const hazir = useOdulluHazir();
+  const [izleniyor, setIzleniyor] = useState(false);
+  const toplam = economyConfig.rewarded.video.rights;
+  const izle = async () => {
+    if (izleniyor) return;
+    setIzleniyor(true);
+    if (await odulluIzle()) claimVideo();
+    setIzleniyor(false);
+  };
+  const dk = Math.ceil(yenilenmeMs / 60000);
+  const sure = dk >= 60 ? `${Math.floor(dk / 60)} sa ${dk % 60} dk` : `${dk} dk`;
+  return (
+    <div className="usta-backdrop" data-testid="video-kart" onClick={onClose}>
+      <div className="usta-card" onClick={(e) => e.stopPropagation()}>
+        <button className="sheet-x usta-x" onClick={onClose} aria-label="Kapat">
+          <CloseIcon size={16} />
+        </button>
+        <span className="usta-badge">
+          <CoinIcon size={34} />
+        </span>
+        <span className="usta-head">+{fmt(odul)}</span>
+        <span className="usta-note">Bir reklam izle, son dakikada kazandığın kadar para al</span>
+        <div className="usta-acts">
+          <button
+            className={`master-buy ad${hazir && kalan > 0 && odul > 0 && !izleniyor ? '' : ' off'}`}
+            data-testid="video-izle"
+            disabled={!hazir || kalan <= 0 || odul <= 0 || izleniyor}
+            onClick={izle}
+          >
+            <PlayAdIcon size={15} />
+            İzle
+          </button>
+        </div>
+        <span className="usta-note" data-testid="video-not">
+          {kalan <= 0
+            ? `Yeni haklar ${sure} sonra`
+            : odul <= 0
+              ? 'Önce biraz servis yap — ödül son dakikanın kazancı'
+              : `Kalan hak: ${kalan}/${toplam}`}
+        </span>
+      </div>
+    </div>
+  );
+}
+
 function UstaModal({ id, onClose }: { id: string; onClose: () => void }) {
   const diamonds = useGame((s) => s.diamonds);
   const buyMaster = useGame((s) => s.buyMaster);
+  const buyMasterAd = useGame((s) => s.buyMasterAd);
+  // F3b (D-150): 1 video = 1 Usta, günde `rewarded.masterPerDay`. Hak bittiyse düğme pasif, not yarını söyler.
+  const reklamHakki = useGame((s) => masterAdsLeft(s.reklam, dayIndex(Date.now())));
+  const hazir = useOdulluHazir();
+  const [izleniyor, setIzleniyor] = useState(false);
+  const izle = async () => {
+    if (izleniyor) return;
+    setIzleniyor(true);
+    if (await odulluIzle()) buyMasterAd(id);
+    setIzleniyor(false);
+  };
+  const izlenebilir = hazir && reklamHakki > 0 && !izleniyor;
   const fiyat = masterCost();
   const yeter = diamonds.toNumber() >= fiyat;
   const masaNo = Number(id.split(':')[1] ?? 0) + 1;
@@ -812,11 +905,21 @@ function UstaModal({ id, onClose }: { id: string; onClose: () => void }) {
             <GemIcon size={16} />
             {fiyat}
           </button>
-          <button className="master-buy ad off" data-testid="master-ad" disabled>
+          <button
+            className={`master-buy ad${izlenebilir ? '' : ' off'}`}
+            data-testid="master-ad"
+            disabled={!izlenebilir}
+            onClick={izle}
+          >
             <PlayAdIcon size={15} />
             İzle
           </button>
         </div>
+        {reklamHakki <= 0 && (
+          <span className="usta-note" data-testid="master-ad-yarin">
+            Reklamla Usta yarın yeniden
+          </span>
+        )}
         {!yeter && (
           <span className="eksik" data-testid="eksik">
             <GemIcon size={12} />
@@ -910,6 +1013,11 @@ function QuestsSheet({ onClose }: { onClose: () => void }) {
           claimTestid="daily-reward-ok"
           onClaim={() => {
             claimDailyQuest(gunOdul.id);
+            odulAlindi();
+            setGunOdul(null);
+          }}
+          onIzle={() => {
+            claimDailyQuest(gunOdul.id, true);
             odulAlindi();
             setGunOdul(null);
           }}
@@ -1154,6 +1262,11 @@ function GoalsSheet({ onClose }: { onClose: () => void }) {
   );
 }
 
+/** Ödüllü reklam şu an gösterilebilir mi (F3 · `ads.ts`) — hazır olunca düğmeler kendiliğinden açılır. */
+function useOdulluHazir(): boolean {
+  return useSyncExternalStore(reklamAbone, odulluReklamHazir);
+}
+
 /** ORTAK ÖDÜL EKRANI (plan §9): başlık · ödül · [Al] · [▶ İzle, 2× al].
  *  Reklam hazır değilse ikinci buton pasif görünür ama KAYBOLMAZ (D-039 kalıbı). */
 function RewardModal({
@@ -1167,6 +1280,7 @@ function RewardModal({
   onClaim,
   claimTestid,
   onIzle,
+  izleEtiket,
 }: {
   testid: string;
   title: string;
@@ -1183,9 +1297,21 @@ function RewardModal({
   onClaim: () => void;
   claimTestid: string;
   /** Ödüllü video izlendi → katlı ödül. "Al"dan AYRI yol (F3 §D: düğme eskiden `onClaim`i çağırıp
-   *  "2× al" deyip 1× veriyordu). Verilmezse düğme pasif çizilir ama kaybolmaz (D-039 kalıbı). */
+   *  "2× al" deyip 1× veriyordu). VERİLMEZSE düğme yok (D-150: hedef ekranı · tavandaki çevrimdışı);
+   *  verilir ama reklam hazır değilse pasif çizilir, kaybolmaz (D-039 kalıbı). */
   onIzle?: () => void;
+  /** Düğme metni — çevrimdışında tavan eki 2×'ten az olabilir, o yüzden "+X" yazar. */
+  izleEtiket?: string;
 }) {
+  const hazir = useOdulluHazir();
+  const [izleniyor, setIzleniyor] = useState(false);
+  const izle = async () => {
+    if (!onIzle || izleniyor) return;
+    setIzleniyor(true);
+    // Ödül YALNIZ video sonuna dek izlendiyse verilir; yarıda kalırsa ekran açık kalır, "Al" durur.
+    if (await odulluIzle()) onIzle();
+    else setIzleniyor(false);
+  };
   /** Ödül SATIRLARI — her ödül kendi elemanı. Liste burada kuruluyor ki "+" ayıracı ancak
    *  GERÇEKTEN iki ödül varken çizilsin (tek ödüllü offline ekranı sarkık bir artı taşımasın). */
   const satirlar: { key: string; icerik: React.ReactNode; ikiKat?: boolean }[] = [];
@@ -1270,14 +1396,14 @@ function RewardModal({
         <button className="sheet-cta" data-testid={claimTestid} onClick={onClaim}>
           {katlanir ? 'Al' : 'Harika!'}
         </button>
-        {katlanir && (
+        {katlanir && onIzle && (
           <button
-            className={`sheet-cta ad${onIzle ? '' : ' off'}`}
+            className={`sheet-cta ad${hazir && !izleniyor ? '' : ' off'}`}
             data-testid={`${testid}-izle`}
-            disabled={!onIzle}
-            onClick={onIzle}
+            disabled={!hazir || izleniyor}
+            onClick={izle}
           >
-            <PlayAdIcon size={18} /> İzle, 2× al
+            <PlayAdIcon size={18} /> {izleEtiket ?? `İzle, ${economyConfig.rewarded.claimMult}× al`}
           </button>
         )}
       </div>
