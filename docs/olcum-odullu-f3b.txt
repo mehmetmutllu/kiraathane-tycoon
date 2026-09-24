@@ -16,6 +16,7 @@ V60  |          22 |       1.6 |      5.2 |    0 · 13.2 |      1 · 30.5 |    5
 V200 |          22 |       1.6 |      5.2 |    0 · 15.5 |      1 · 30.5 |    5.48 |  -1.8% |     ₺2.485 | ₺1.600 (8)
 V120 |          22 |       1.6 |      5.2 |    0 · 13.2 |      1 · 30.5 |    5.34 |  -4.4% |     ₺2.461 | ₺4.856 (8)
 SV   |          22 |       1.5 |      5.2 |    0 · 16.3 |      1 · 29.0 |    5.14 |  -8.0% |     ₺2.233 | ₺3.151 (8)
+SV2  |          22 |       1.6 |      5.2 |    0 · 17.1 |      1 · 30.5 |    5.33 |  -4.5% |     ₺4.964 | ₺2.358 (8)
 
 Kolların tarifi:
   T0   taban: reklam yok (seviye ₺ 1×)
@@ -25,6 +26,7 @@ Kolların tarifi:
   V200 G-57 · 2 sa'te 4 hak · video = 200 ₺ sabit (kullanıcı taslağı)
   V120 G-57 · 2 sa'te 4 hak · video = son 120 sn'nin ₺'si
   SV   en çok izleyen: S2 + H2 + V60 birlikte
+  SV2  hedef ekranında düğme YOK: S2 + V60 birlikte (öneri adayı)
 
 20 dk'yı aşan alımlar (Normal):
   T0   30.5 dk → servis L6
@@ -34,7 +36,8 @@ Kolların tarifi:
   V200 30.5 dk → servis L6
   V120 30.5 dk → servis L6
   SV   29.0 dk → servis L6
-Parmak izi: taban 38fd43d5 · S2 a9475b7d · H2 8966b7fd · V60 e453f99d · V200 1d0af4e5 · V120 d84d038d · SV edf5044d
+  SV2  30.5 dk → servis L6
+Parmak izi: taban 38fd43d5 · S2 a9475b7d · H2 8966b7fd · V60 e453f99d · V200 1d0af4e5 · V120 d84d038d · SV edf5044d · SV2 94d6577d
 
 --- §2 ÇEVRİMDIŞI 2× (taban Normal profilinden 67 örnek, 5 dk'da bir; sıradaki pad hâlâ varken) ---
 oran = dönüş ödülü / sıradaki omurga pad'in fiyatı. ≥ 1 → dönen oyuncu sıradaki pad'i TEK BAŞINA alır.

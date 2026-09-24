@@ -105,6 +105,8 @@ const KOLLAR: KolTanim[] = [
     video: { hak: 4, periyotSn: IKI_SAAT, odul: (d) => 120 * d.oran } },
   { kod: 'SV', ad: 'en çok izleyen: S2 + H2 + V60 birlikte', seviyeKat: 2, hedefKat: 2,
     video: { hak: 4, periyotSn: IKI_SAAT, odul: (d) => 60 * d.oran } },
+  { kod: 'SV2', ad: 'hedef ekranında düğme YOK: S2 + V60 birlikte (öneri adayı)', seviyeKat: 2,
+    video: { hak: 4, periyotSn: IKI_SAAT, odul: (d) => 60 * d.oran } },
 ];
 
 /* ── Yürürlükteki oyun (olcum-t8a'nın `olc`u, taban = oyunun kuralları) ──────────────── */
