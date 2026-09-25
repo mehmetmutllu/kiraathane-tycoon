@@ -12,16 +12,16 @@ SORU            : F4c-4 — (1) dekor mağazada salondaki YERİNDE, uzak/oyun a�
                   (2) satın alma metinleri + teklif kartı neden "boğuk", nasıl netleşir? (kullanıcı 2026-09-25, kare 21/23)
 ÖLÇÜLECEK KOLLAR: dekor: A yarım sayfa + canlı oyun odağı · B "Salonda gör" tam ekran · C kutu içinde oda köşesi
                   metin/teklif: aday kartlar GÖSTERİLEREK (feedback_show_dont_ask) · microcopy envanteri
-SAYILAR         : —
-KARAR           : — (karar paketi kullanıcıya)
+SAYILAR         : `docs/magaza-raporu-f4c4.md` B1-B8 · karar paketi https://claude.ai/artifact/Uysjk79bfpLWpP7r35ntQi
+KARAR           : — (kullanıcı seçecek: dekor A/B/C · teklif T1/T2/T3 · metin 1-14)
 UYGULAMA        : —
 BEKÇİ           : —
 ```
 
 ## ⏭️ SIRADAKİ ADIM
 
-**F4c-4 aday kareleri:** dekor A/B/C gerçek oyun karesinden (kamera `camFocus` ile yuvaya) + teklif kartı 3-4 aday +
-satın alma metinleri envanteri (eski → yeni) → tek karar paketi. Kod YOK (seçilen kola). Mağaza turu kareleri:
+**F4c-4 commit #1 atıldı (araç + kareler + rapor, karar boş).** Kullanıcının seçimi gelince: seçilen dekor kolu
+(ayrı kamera, önizleme kutusunda sahnenin anlık görüntüsü) + teklif kolu + metinler + B6/B7 düzeltmesi → bekçi + mutasyon → commit #2. Mağaza turu kareleri:
 `tools/shot-magaza-son.mjs` · https://claude.ai/artifact/WSH385msDgxYkCZUMbwbMj. Sonra **F5** mağaza + G-89 (EN SON).
 - **Hata (düzeltilecek):** Paketler sekmesinin alt notu kesiliyor (kare 13). Kilitli dekor düğmesi yeşil kalıyor (kare 11).
 - **Sonraki oturumda sor:** 💎 fiyatları (kıyafet/tepsi/dekor hepsi TASLAK) ayrı fiyat oturumunda.
