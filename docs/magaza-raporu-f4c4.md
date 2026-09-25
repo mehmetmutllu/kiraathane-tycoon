@@ -30,6 +30,8 @@ Karar paketi: https://claude.ai/artifact/Uysjk79bfpLWpP7r35ntQi
 ## Kollar
 - **Dekor (v2, otomatik kadraj):** A oyun açısı · B çapraz %30 · C çapraz %38 · D çapraz %45 (eşyanın ekranda dikey payı). Öneri C.
   (v1 kolları — sabit mesafe — B9 ile elendi; kareleri `f4c4-dekor-*`.)
+  v3 (kullanıcı 2026-09-25: "çapraz uzak daha iyi, çok az daha uzak olabilir"): çapraz %30 · %25 · %22. %22'de lamba/kanarya
+  çok inceliyor, duvar üstünden dış (çit/ağaç) kare tepesini kaplıyor. Öneri %25.
 - **Teklif:** T1 büyük sayı · T2 iki karo · T3 ışıklı kart. Öneri T3 ("Bir kereye özel" → "Bir kez alınabilir").
 - **Metin:** 14 satır eski → yeni (karar paketinde tablo). 14. satır yeni davranış (alım bildirimi + ses + paket ödül ekranı).
 

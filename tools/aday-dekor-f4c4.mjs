@@ -101,7 +101,7 @@ try {
     return r;
   };
   const ESYALAR = { radyo: 'radyo', koltuk: 'koltuk', lamba: 'lamba', tablo: 'tablo', semaver: 'semaver', gramofon: 'gramofon', kanarya: 'kanarya', saat: 'saat', 'yilbasi-kirmizi': 'yilbasi' };
-  const KOLLAR = [['oyun', 'oyun', 0.3], ['capraz', 'capraz', 0.3], ['capraz-orta', 'capraz', 0.38], ['capraz-yakin', 'capraz', 0.45]];
+  const KOLLAR = [['oyun', 'oyun', 0.3], ['capraz', 'capraz', 0.3], ['capraz-orta', 'capraz', 0.38], ['capraz-yakin', 'capraz', 0.45], ['capraz-25', 'capraz', 0.25], ['capraz-22', 'capraz', 0.22]];
   for (const [esya, yuva] of Object.entries(ESYALAR)) {
     await sayfa.evaluate(([esya, yuva]) => window.__setState({ ownedCosmetics: [`decor:${esya}`], dekor: { [yuva]: esya } }), [esya, yuva]);
     await sayfa.waitForTimeout(1500);
