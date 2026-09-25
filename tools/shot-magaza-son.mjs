@@ -78,6 +78,10 @@ try {
   await kare('magaza-dekor-yilbasi');
   await tikla('shop-tab-paket');
   await kare('magaza-paketler');
+  // F4c-4: gerçek parayla alımın karşılığı (dev'de mağaza sahtesi hemen onaylar).
+  await sayfa.click('[data-testid="paket-al-kiraathane_reklamsiz"]').catch(() => {});
+  await sayfa.waitForSelector('[data-testid="satin-odul"]', { timeout: 4000 }).then(() => kare('paket-alindi', 600)).catch(() => console.log('paket ödül kartı çıkmadı'));
+  await sayfa.click('[data-testid="satin-odul-tamam"]').catch(() => {});
   await tikla('shop-tab-table');
   await kare('magaza-masa-kilitli');
   await tikla('shop-tab-floor');
@@ -99,6 +103,14 @@ try {
   await kare('gec-dekor-salonda');
   await tikla('shop-card-decor-gramofon');
   await kare('gec-dekor-satin-al');
+  // F4c-4: alım anı — bildirim (mağazanın üstünde) + satın alma sesi.
+  await tikla('shop-buy', 300);
+  await kare('gec-dekor-alindi-bildirim', 200);
+  // F4c-4 (D-157): dokuz eşyanın salondaki yerinden çekilmiş önizlemesi — mağazanın kendi kutusu.
+  for (const esya of ['radyo', 'koltuk', 'lamba', 'tablo', 'semaver', 'gramofon', 'kanarya', 'saat', 'yilbasi-yesil']) {
+    await tikla(`shop-card-decor-${esya}`, 1800);
+    await sayfa.locator('[data-testid="dekor-onizleme"]').screenshot({ path: `${OUT}/son-onizleme-${esya}.png` });
+  }
   await tikla('shop-tab-table');
   await kare('gec-masa');
   await tikla('shop-tab-floor');

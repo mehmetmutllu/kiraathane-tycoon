@@ -90,8 +90,8 @@ describe('ekran kabuğu — K3 (D-106)', () => {
       expect(kod, `${ekran} kendi kabuğunu kuruyor`).not.toContain(`data-testid="${ekran}"`);
     }
     // Ham modal kabuğu yalnız GERÇEK modallerin hakkı — ödül ekranı + sıfırlama onayı (C5 · T9d,
-    // `window.confirm`in yerini aldı) — panellerin değil.
-    expect([...yorumsuz(oku(HUD)).matchAll(/className="modal-backdrop"/g)].length, "ödül + sıfırlama onayı + başlangıç teklifi (F4c)").toBe(3);
+    // `window.confirm`in yerini aldı) + teklif + alım kartı (F4c-4) — panellerin değil.
+    expect([...yorumsuz(oku(HUD)).matchAll(/className="modal-backdrop"/g)].length, "ödül + sıfırlama onayı + başlangıç teklifi (F4c) + alım kartı (F4c-4)").toBe(4);
     expect(yorumsuz(oku(CHAR))).not.toContain('modal-backdrop');
   });
 

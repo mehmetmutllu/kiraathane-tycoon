@@ -592,6 +592,16 @@ try {
     const dekor = await page.evaluate(() => ({ elmas: window.__game().diamonds, dekor: window.__game().dekor }));
     if (dekor.elmas === 0 && dekor.dekor.includes('yilbasi-kirmizi')) pass('💎 dekor: yılbaşı koltuğu alındı ve salona kondu (100→0)');
     else fail(`💎 dekor: alım yanlış (${JSON.stringify(dekor)})`);
+    // F4c-4 (D-157): alım SESSİZ bitmez — mağazanın üstünde bildirim; önizleme salondaki YERİNDEN çekilir.
+    const bildirim = await page.$eval('[data-testid="notice"]', (el) => el.textContent ?? '').catch(() => '');
+    if (bildirim.includes('salona kondu')) pass(`Alım bildirimi mağazanın üstünde (${bildirim.trim()})`);
+    else fail(`Alım bildirimi yok (${bildirim})`);
+    const cekim = await page
+      .waitForFunction(() => Number(document.querySelector('[data-testid="dekor-salonda"]')?.getAttribute('data-kare') ?? 0) > 0, null, { timeout: 5000 })
+      .then(() => true)
+      .catch(() => false);
+    if (cekim) pass('Dekor önizlemesi salondaki yerinden çekiliyor (ayrı kamera)');
+    else fail('Dekor önizlemesi salondan çekilmedi — kutu boş kalır');
     await tikla('[data-testid="shop-panel"] .sheet-back');
     await page.waitForSelector('[data-testid="shop-panel"]', { state: 'detached', timeout: 5000 });
   }
@@ -623,14 +633,17 @@ try {
   }
 
   // F4a REKLAMLARI KALDIR (D-152): mağazanın Paketler sekmesinden sahte arka uçla satın alınır;
-  // düğme "Sahipsin" olur ve soğuma dolu olsa da panel kapanışı artık geçişli göstermez.
+  // ödül kartı çıkar, düğme "Alındı" olur ve soğuma dolu olsa da panel kapanışı artık geçişli göstermez.
   {
     await tikla('[data-testid="shop"]');
     await tikla('[data-testid="shop-tab-paket"]');
     const al = '[data-testid="paket-al-kiraathane_reklamsiz"]';
     await page.waitForSelector(`${al}:not([disabled])`, { timeout: 5000 });
     await page.click(al);
-    await page.waitForFunction((s) => document.querySelector(s)?.textContent === 'Sahipsin', al, { timeout: 5000 });
+    // F4c-4: gerçek parayla alımın karşılığı ekranda — ödül kartı "Harika!" ile kapanır, kart "Alındı" olur.
+    await page.waitForSelector('[data-testid="satin-odul"]', { timeout: 5000 });
+    await page.click('[data-testid="satin-odul-tamam"]');
+    await page.waitForFunction((s) => document.querySelector(s)?.textContent?.includes('Alındı'), al, { timeout: 5000 });
     await tikla('[data-testid="shop-panel"] .sheet-back');
     await page.waitForSelector('[data-testid="shop-panel"]', { state: 'detached', timeout: 5000 });
     await page.evaluate(() => window.__ads.saat(180_000));

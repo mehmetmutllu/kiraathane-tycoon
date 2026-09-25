@@ -481,7 +481,8 @@ export interface LevelUpOdul {
 export interface GameNotice {
   text: string;
   ttl: number;
-  kind: 'quest' | 'level' | 'reveal';
+  /** `satin` (F4c-4 · D-157): 💎/₺ kozmetik alındı ya da uygulandı — sessiz kalan satın almanın geri bildirimi. */
+  kind: 'quest' | 'level' | 'reveal' | 'satin';
   /** Görev ödülü (₺; M1): toast'ta coin ikonu + tutar olarak gösterilir (₺ sembolü display'de yok). */
   reward?: number;
 }
@@ -501,7 +502,7 @@ export interface GameNotice {
  * daralırsa bu liste ölü dal olmaz, sadece kısalır — yani derleyici kararı bir daha silemez.
  * Bekçisi: `tests/gorev-seridi-g1.test.ts`.
  */
-export const CIZILEN_TOAST: readonly GameNotice['kind'][] = ['level', 'reveal'];
+export const CIZILEN_TOAST: readonly GameNotice['kind'][] = ['level', 'reveal', 'satin'];
 
 /** Bu bildirim ekrana çizilir mi? HUD tek karar noktası olarak bunu çağırır. */
 export const toastCizilir = (n: GameNotice | null | undefined): n is GameNotice =>

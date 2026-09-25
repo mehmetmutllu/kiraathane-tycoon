@@ -30,7 +30,7 @@ import {
 
 const TABAN: SesKesit = {
   coinsCollected: 0, teaPickups: 0, served: 0, yukseltmeToplam: 0,
-  padSayisi: 0, questIndex: 0, seviye: 1, ustaSayisi: 0, odulSayisi: 0,
+  padSayisi: 0, questIndex: 0, seviye: 1, ustaSayisi: 0, odulSayisi: 0, alimSayisi: 0,
 };
 const ile = (y: Partial<SesKesit>): SesKesit => ({ ...TABAN, ...y });
 
@@ -83,6 +83,8 @@ describe('2 — her sayaç KENDİ olayını doğuruyor', () => {
     ['seviye', 'level'],
     ['ustaSayisi', 'master'],
     ['odulSayisi', 'reward'],
+    // F4c-4 (D-157): 💎/₺ kozmetik + mağaza alımı eskiden SESSİZDİ.
+    ['alimSayisi', 'purchase'],
   ];
 
   for (const [alan, id] of eslesme) {
@@ -105,7 +107,7 @@ describe('2 — her sayaç KENDİ olayını doğuruyor', () => {
 
 describe('3 — AZALMA sessizdir (yükleme · göç · prestij)', () => {
   it('bütün sayaçlar düşerse tek ses bile yok', () => {
-    const dolu = ile({ coinsCollected: 900, padSayisi: 24, seviye: 13, questIndex: 50, ustaSayisi: 10, odulSayisi: 30, served: 500, teaPickups: 500, yukseltmeToplam: 90 });
+    const dolu = ile({ coinsCollected: 900, padSayisi: 24, seviye: 13, questIndex: 50, ustaSayisi: 10, odulSayisi: 30, served: 500, teaPickups: 500, yukseltmeToplam: 90, alimSayisi: 12 });
     expect(sesOlaylari(dolu, TABAN)).toEqual([]);
   });
 

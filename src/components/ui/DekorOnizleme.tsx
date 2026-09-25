@@ -1,12 +1,47 @@
+import { useEffect, useRef, useSyncExternalStore } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { KareTavani } from '../three/KareTavani';
 import { useGame } from '../../game/store';
-import { vitrinUrunu } from '../../game/vitrin';
+import { dekorAcik, vitrinUrunu } from '../../game/vitrin';
+import { dekorKaresi } from '../three/DekorCekimi';
 import { DUVAR_PAYI, duvarProfili, vitrinYuva } from '../../config/decor';
 import { PREVIEW_GL } from '../../config/palette';
 import { DekorGovde } from '../three/VitrinDekor';
 import { GOVDE } from '../three/vitrinDekorLook';
 import { FixedCam, SalonLights, FloorPatch, WallBack } from './SalonSlice';
+
+const abone = (f: () => void) => {
+  dekorKaresi.dinleyiciler.add(f);
+  return () => dekorKaresi.dinleyiciler.delete(f);
+};
+const surum = () => dekorKaresi.surum;
+
+/**
+ * SALONDAKİ YERİNDE (F4c-4 · D-157): ana sahnenin ayrı kamerayla çekilmiş karesi (`DekorCekimi`).
+ * Paylaşılan tuval kutuya takılır; kutu kendi en/boy oranını yazar ki çekim kırpılmadan otursun.
+ */
+function SalondaOnizleme() {
+  const kutu = useRef<HTMLDivElement>(null);
+  const kare = useSyncExternalStore(abone, surum);
+  useEffect(() => {
+    const el = kutu.current;
+    const t = dekorKaresi.tuval;
+    if (!el || !t) return;
+    t.className = 'dekor-kare';
+    el.appendChild(t);
+    const olc = () => {
+      if (el.clientWidth > 0 && el.clientHeight > 0) dekorKaresi.enBoy = el.clientWidth / el.clientHeight;
+    };
+    olc();
+    const ro = new ResizeObserver(olc);
+    ro.observe(el);
+    return () => {
+      ro.disconnect();
+      t.remove();
+    };
+  }, []);
+  return <div className="preview-canvas" ref={kutu} data-testid="dekor-salonda" data-kare={kare} />;
+}
 
 /**
  * 💎 DEKOR ÖNİZLEMESİ (F4c-2) — mağazanın Dekor sekmesi. `SahipOnizleme` ile aynı sahne (oyunun
@@ -14,6 +49,20 @@ import { FixedCam, SalonLights, FloorPatch, WallBack } from './SalonSlice';
  * salondaki payla yaslanır. Kamera eşyanın boyuna göre yaklaşır: saat ile koltuk aynı karede okunsun.
  */
 export function DekorOnizleme({ id }: { id: string }) {
+  // Yuvasının salonu açıksa eşya salondaki YERİNDE gösterilir; kapalıysa (kilitli dekor) yalıtık vitrin.
+  const salonda = useGame((s) => dekorAcik(id, s.areasOpen));
+  if (salonda) {
+    return (
+      <div className="shop-preview" data-testid="dekor-onizleme">
+        <SalondaOnizleme />
+      </div>
+    );
+  }
+  return <YalitikOnizleme id={id} />;
+}
+
+/** F4c-2'nin yalıtık vitrini — yuvanın salonu henüz açılmamış (kilitli) dekor için. */
+function YalitikOnizleme({ id }: { id: string }) {
   const floorId = useGame((s) => s.floorThemeByArea[0] ?? 'parke');
   const wallId = useGame((s) => s.wallThemeByArea[0] ?? 'krem');
   const yuvaId = vitrinUrunu('decor', id)?.yuva ?? '';

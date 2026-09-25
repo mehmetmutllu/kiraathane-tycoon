@@ -83,6 +83,21 @@ export function gorunenDekor(
     .map(([yuva, id]) => ({ yuva, id }));
 }
 
+/**
+ * Sahnede ÇİZİLEN dekor = görünen dekor + mağazada önizlenen ürün (F4c-4 · D-157). Önizleme GEÇİCİDİR:
+ * sahiplik aramaz, kayda/yerleşime yazılmaz; yalnız yuvasının salonu açıksa kendi yuvasında (o yuvadaki
+ * öteki ürünün yerine) çizilir. Salon kapalıysa mağaza eski yalıtık önizlemeyi gösterir.
+ */
+export function cizilenDekor(
+  s: SahiplikDurumu & { dekor: DekorYerlesim; areasOpen: number },
+  onizleme: string | null,
+): { yuva: string; id: string }[] {
+  const liste = gorunenDekor(s);
+  const yuva = onizleme ? vitrinUrunu('decor', onizleme)?.yuva : undefined;
+  if (!onizleme || !yuva || !dekorAcik(onizleme, s.areasOpen)) return liste;
+  return [...liste.filter((d) => d.yuva !== yuva), { yuva, id: onizleme }];
+}
+
 /** Ürünü yuvasına koyar; zaten oradaysa kaldırır. Aynı yuvadaki başka ürün (yılbaşı rengi) yer değiştirir. */
 export function dekorDegistir(dekor: DekorYerlesim, id: string): DekorYerlesim {
   const yuva = vitrinUrunu('decor', id)?.yuva;
@@ -91,4 +106,18 @@ export function dekorDegistir(dekor: DekorYerlesim, id: string): DekorYerlesim {
   if (yeni[yuva] === id) delete yeni[yuva];
   else yeni[yuva] = id;
   return yeni;
+}
+
+/**
+ * SATIN ALMA / UYGULAMA BİLDİRİMİ (F4c-4 · D-157 · metin tablosu 14). Eskiden alım sessizdi: 💎 düşüyor,
+ * kart "Sahipsin"e dönüyordu. Ad cümlenin BAŞINDA durur — Türkçe ek ("-yi/-yı/-'ı") ürün adına göre
+ * değişir, ad başta olunca ek gerekmez.
+ */
+export type BildirimTuru = VitrinTuru | 'table' | 'kitchen' | 'floor' | 'wall';
+export function satinBildirimi(tur: BildirimTuru, ad: string, o: { kaldirildi?: boolean; salon?: number } = {}): string {
+  if (tur === 'decor') return o.kaldirildi ? `${ad} salondan kaldırıldı` : `${ad} salona kondu`;
+  if (tur === 'outfit') return `${ad} giyildi`;
+  if (tur === 'tray') return `${ad} artık elinde`;
+  if ((tur === 'floor' || tur === 'wall') && o.salon != null) return `${ad} · ${o.salon + 1}. Salon`;
+  return `${ad} uygulandı`;
 }

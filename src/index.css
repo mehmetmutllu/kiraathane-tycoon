@@ -1095,8 +1095,6 @@ body,
 
 /* ---- Dekor mağazası (WP6) ---- */
 .shop-card {
-  max-height: 78vh;
-  overflow-y: auto;
   text-align: left;
 }
 .shop-section {
@@ -1334,6 +1332,15 @@ body,
   background: linear-gradient(180deg, var(--ac), var(--ac2));
   color: var(--txa);
 }
+/* F4c-4 (D-157): KALDIR bir satın alma değil → yeşil değil nötr; KİLİTLİ satılamaz → gri, kilit ikonlu. */
+.shop-buy.notr {
+  background: linear-gradient(180deg, var(--kart), var(--kart2));
+  color: var(--tx);
+}
+.shop-buy.kilitli {
+  background: var(--oyuk);
+  color: var(--tx2);
+}
 
 /* Sayfa-içi önizleme (modal yok): kompakt oyun-anı SS hissi, kartların üstünde */
 /* Vitrin ekranın BOŞ kalan payını yutar: M2'nin amacı "satın alınan şey görünür olsun" ve
@@ -1475,4 +1482,11 @@ body,
     transform: scale(1.1);
     opacity: 1;
   }
+}
+/* F4c-4 (D-157): dekorun salondaki karesi — çekim kutunun oranında yapılır, `cover` yalnız yuvarlama payı. */
+.preview-canvas > .dekor-kare {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }

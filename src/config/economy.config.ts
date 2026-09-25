@@ -1045,6 +1045,8 @@ export const economyConfig = {
     starterDiamonds: 100,
     /** Elmas paketleri (sınırsız alınır). Hepsi 250'lik talebin içinde: gün 0'da ölü 💎 0. */
     diamondPacks: [25, 60, 150],
+    /** Paketlerin adları (F4c-4 · D-157): üçü de "Elmas" yazıyordu — sıra `diamondPacks` ile aynı. */
+    diamondPackLabels: ['Bir Avuç Elmas', 'Elmas Kesesi', 'Elmas Sandığı'],
   },
 
   master: {
@@ -1180,6 +1182,8 @@ export const economyConfig = {
    * palette.ts FLOOR_THEMES/WALL_THEMES'te (alan zemini temanın DÜZ base rengiyle boyanır).
    */
   cosmetics: {
+    /** F4c-4 (D-157): alım/uygulama bildiriminin ekranda kaldığı süre (sn). */
+    bildirimSn: 3,
     floorThemes: [
       { id: 'parke', label: 'Klasik Parke', cost: 0 },
       // Yemek salonunun doğuştan teması (Y1, defaultFloorTheme); ücretsiz — diğer salonlara da uygulanabilir.

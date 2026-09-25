@@ -325,3 +325,32 @@ export function yuvaAlani(y: VitrinYuva): number {
   const cz = Math.max(BAND.front + 0.01, Math.min(FLOOR_HALF - 0.01, (k.minZ + k.maxZ) / 2));
   return LAYOUT.areaBounds.findIndex((a) => cx >= a.minX && cx <= a.maxX && cz >= a.minZ && cz <= a.maxZ);
 }
+
+// ============================================================================================
+//  💎 DEKOR ÖNİZLEMESİNİN KADRAJI (F4c-4 · D-157) — mağazada eşya salondaki YERİNDE
+// ============================================================================================
+//
+// Kullanıcı (2026-09-25): "oyun açısı olsa bile bazıları belli olmuyor ve ortalı değil" · "çapraz
+// uzak daha iyi, çok az daha uzak olabilir". Aday kareleri: `docs/magaza-raporu-f4c4.md` (B9/B10).
+// Oyunun kamerası güneyden bakar; yan duvardaki eşyayı YANDAN görür (tablo 0 px). Önizleme bu yüzden
+// kendi kamerasıyla çapraz bakar: yan duvarda odanın içinden + güneyden, karşı duvarda hafif yandan.
+
+export const DEKOR_KADRAJ = {
+  fov: 34,
+  /** Önizleme kutusunun en/boy oranı (çekim bu oranda yapılır; kutu `object-fit: cover`). */
+  enBoy: 720 / 660,
+  /** Çekimin en büyük eni (px) — tuval daha darsa tuvalin eni. */
+  enPx: 720,
+  /** Eşyanın ekranda kapladığı DİKEY pay (%30 → kullanıcı "biraz daha uzak" → %25; %22'de lamba incelir). */
+  pay: 0.25,
+  /** Yassı eşyada (tablo, saat) yatay kenar da okunur boy sayılır — kısa kenar 0,8 ile. */
+  yatayCarpan: 0.8,
+  /** Çok küçük gövdede kamera bundan fazla yaklaşmaz (m). */
+  enAzOlcu: 0.45,
+  /** Kameranın eşyadan uzaklaşma yönü (normalize edilir). Yan duvar: içeri + yukarı + güneye. */
+  yon: {
+    sol: [0.8, 0.85, 0.9],
+    sag: [-0.8, 0.85, 0.9],
+    wc: [0.45, 0.75, 1],
+  } satisfies Record<VitrinDuvar, readonly [number, number, number]>,
+} as const;

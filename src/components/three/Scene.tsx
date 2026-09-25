@@ -49,6 +49,7 @@ import { Coins } from './Coins';
 import { Pad } from './Pad';
 import { Decor } from './Decor';
 import { VitrinDekor } from './VitrinDekor';
+import { DekorCekimi } from './DekorCekimi';
 import { Kitchen, KayTezgah } from './Kitchen';
 import { onHatGovdeleri } from './kitchenLook';
 import { DishSink } from './DishSink';
@@ -1360,6 +1361,7 @@ export function Scene() {
       <Walls />
       <Decor />
       <VitrinDekor />
+      <DekorCekimi />
       <BanketIslands />
       <WaiterStation />
       <Stations />

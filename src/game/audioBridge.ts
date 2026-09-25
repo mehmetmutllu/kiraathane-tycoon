@@ -41,6 +41,9 @@ export function kesitAl(s: Durum): SesKesit {
     seviye: levelProgress(s.xp).level,
     ustaSayisi: (s.mastersOwned ?? []).length,
     odulSayisi: (s.goalsClaimed ?? []).length + (s.daily?.claimed ?? []).length,
+    // İŞLENMİŞ işlem sayılır, `satin.baslangic` değil: geri yükleme (telefon değişti) sahipliği
+    // döndürür ama yeni bir alım değildir — ses çalmamalı. Kozmetikte geri yükleme yok (kayıtla gelir).
+    alimSayisi: s.ownedCosmetics.length + (s.satin.islenen ?? []).length,
   };
 }
 

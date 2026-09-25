@@ -219,6 +219,8 @@ export interface SesKesit {
   ustaSayisi: number;
   /** Toplanmış hedef + günlük görev ödüllerinin toplamı. */
   odulSayisi: number;
+  /** F4c-4 (D-157): sahip olunan kozmetik + işlenmiş mağaza alımı. Artışı = satın alma sesi (eskiden sessizdi). */
+  alimSayisi: number;
 }
 
 /**
@@ -242,7 +244,7 @@ export function sesOlaylari(onceki: SesKesit | null, simdiki: SesKesit): SesId[]
   if (arttiMi(onceki.padSayisi, simdiki.padSayisi)) olaylar.push('padFill');
   if (arttiMi(onceki.questIndex, simdiki.questIndex)) olaylar.push('quest');
   if (arttiMi(onceki.odulSayisi, simdiki.odulSayisi)) olaylar.push('reward');
-  if (arttiMi(onceki.yukseltmeToplam, simdiki.yukseltmeToplam)) olaylar.push('purchase');
+  if (arttiMi(onceki.yukseltmeToplam, simdiki.yukseltmeToplam) || arttiMi(onceki.alimSayisi, simdiki.alimSayisi)) olaylar.push('purchase');
   if (arttiMi(onceki.served, simdiki.served)) olaylar.push('serve');
   if (arttiMi(onceki.teaPickups, simdiki.teaPickups)) olaylar.push('pour');
   if (arttiMi(onceki.coinsCollected, simdiki.coinsCollected)) olaylar.push('coin');

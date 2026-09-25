@@ -3,7 +3,8 @@ import { useFrame } from '@react-three/fiber';
 import { CanvasTexture, SRGBColorSpace, type Group } from 'three';
 import { vitrinYuva, yuvaAnkraj } from '../../config/decor';
 import { useGame } from '../../game/store';
-import { gorunenDekor } from '../../game/vitrin';
+import { cizilenDekor } from '../../game/vitrin';
+import { onizlemeGrubuKaydet } from './DekorCekimi';
 import { Model } from './Model';
 import { DECOR_S, DUVAR_GOLGE, LAMBA_YER_S } from './decorLook';
 import {
@@ -271,7 +272,9 @@ export function VitrinDekor() {
   const dekor = useGame((s) => s.dekor);
   const ownedCosmetics = useGame((s) => s.ownedCosmetics);
   const baslangic = useGame((s) => s.satin.baslangic);
-  const liste = gorunenDekor({ dekor, ownedCosmetics, satin: { baslangic }, areasOpen });
+  const onizleme = useGame((s) => s.dekorOnizleme);
+  // F4c-4 (D-157): mağazada önizlenen ürün de kendi yuvasında çizilir (geçici); grubu çekime kaydedilir.
+  const liste = cizilenDekor({ dekor, ownedCosmetics, satin: { baslangic }, areasOpen }, onizleme);
   return (
     <group>
       {liste.map(({ yuva, id }) => {
@@ -279,7 +282,12 @@ export function VitrinDekor() {
         if (!y) return null;
         const { pos, rot } = yuvaAnkraj(y);
         return (
-          <group key={yuva} position={pos} rotation={[0, rot, 0]}>
+          <group
+            key={`${yuva}:${id}`}
+            ref={id === onizleme ? onizlemeGrubuKaydet : undefined}
+            position={pos}
+            rotation={[0, rot, 0]}
+          >
             <DekorGovde yuva={yuva} id={id} />
           </group>
         );

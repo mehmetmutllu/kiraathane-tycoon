@@ -4849,4 +4849,16 @@ Yazı = oyuncunun girişte verdiği kafe adı (bir kez sorulur, eski kayıtlara 
 **Belirleyici sayı:** cephe dikey telefonda oyun süresinin %4,6'sında ekranda, 3. Salon'da %0,7 → 💎 ile satılan cephe
 oyunda görünmez. Eski tabelanın yarısı lento/kordon arkasında, harf 7,7 px; K2'de harf 12,2 px.
 **Kurallar:** ad kutusu ekran kanallarının EN ÖNÜNDE · kayıt `kafeAdi` additive (null = sorulmadı) · sıfırlama yeniden sordurur.
-**Bekçi:** `tests/tabela-f4c3.test.ts` 19 · mutasyon 4/11 (bellek yüzünden yarıda) · duman 65/65 · vitest 1645 · `docs/tabela-raporu-f4c3.md`.
+**Bekçi:** `tests/tabela-f4c3.test.ts` 19 · mutasyon 11/11 · final K0 = K2 · duman 65/65 · vitest 1645 · `docs/tabela-raporu-f4c3.md`.
+
+## D-157 · 💎 vitrini cilası (F4c-4): dekor salondaki YERİNDE çapraz uzak (%25) · teklif T3 ışıklı kart · satın alma metinleri + alım geri bildirimi (2026-09-25)
+
+**Karar (kullanıcı: "senin önerin olsun" — artifact Uysjk79bfpLWpP7r35ntQi):** Dekor önizlemesi ana sahnenin AYRI kamerayla
+anlık görüntüsü; eşya kendi yuvasında (alınmamışsa da önizleme süresince çizilir). Açı hep çapraz (yan duvarda içeriden+güneyden,
+karşı duvarda hafif yandan), kamera çizilen gövdenin kutusunun merkezine bakar, mesafe eşyayı dikeyin %25'i yapar. Yuvanın
+salonu kapalıysa eski yalıtık önizleme. Teklif T3 (altın çerçeve + içindekiler ✓, üst yazı "Bir kez alınabilir").
+Metin tablosunun 14 satırı; 14. = alımda kısa bildirim + satın alma sesi, paket alımında ödül kartı.
+**Belirleyici sayı:** oyun açısı yan duvar eşyasını yandan görüyor (tablo 0 px, kare ~%50 dış çimen); çapraz 9/9 okunuyor.
+%22'de lamba/kanarya incelir + duvar üstünden dış girer. Satın alma sonrası geri bildirim 0'dı.
+**Kurallar:** önizleme eşyası geçicidir (kayda/ekonomiye girmez, mağaza kapanınca kalkar) · sayılar `config/decor.ts` `DEKOR_KADRAJ`.
+**Bekçi:** `tests/magaza-f4c4.test.ts` 24 · mutasyon 12/12 · duman 67/67 · vitest 1670 · `docs/magaza-raporu-f4c4.md`.

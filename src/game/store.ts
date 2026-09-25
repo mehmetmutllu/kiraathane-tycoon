@@ -42,7 +42,7 @@ import {
   type SatinAlim,
 } from './save';
 import { KAFE_ADI_VARSAYILAN, kafeAdiOku, kafeAdiTemizle } from './kafeAdi';
-import { dekorAcik, dekorDegistir, vitrinSahip, vitrinUrunu, type DekorYerlesim, type VitrinTuru } from './vitrin';
+import { dekorAcik, dekorDegistir, satinBildirimi, vitrinSahip, vitrinUrunu, type DekorYerlesim, type VitrinTuru } from './vitrin';
 import { reklamsizAyarla } from './ads';
 import type { Islem, Sahiplik } from './iap';
 
@@ -465,6 +465,8 @@ export interface GameState {
   trayLook: string;
   /** F4c-2 💎 dekor: yuva → duran ürün. Çizilen = `gorunenDekor` (sahiplik + yuva açık). */
   dekor: DekorYerlesim;
+  /** F4c-4 (D-157): mağazada ÖNİZLENEN dekor — sahnede kendi yuvasında geçici çizilir. KAYDA GİRMEZ. */
+  dekorOnizleme: string | null;
   /** F4c-3 (D-156): kafenin adı (tabela). `null` = hiç sorulmadı → açılışta ad kutusu. */
   kafeAdi: string | null;
   /** Karakter yükseltme kademeleri (persist v20): tepsi/mıknatıs/hız. Karakter seviyesi türetilir. */
@@ -558,6 +560,8 @@ export interface GameState {
   buyGemCosmetic: (kind: VitrinTuru, id: string) => boolean;
   /** F4c: başlangıç paketi teklifi kapandı — bir daha çıkmaz. */
   baslangicTeklifKapat: () => void;
+  /** F4c-4 (D-157): mağazanın Dekor sekmesi önizlenen ürünü bildirir (`null` = önizleme yok). */
+  setDekorOnizleme: (id: string | null) => void;
   /** F4c-3 (D-156): kafeye ad ver (girişte ya da Ayarlar'dan). Boş → varsayılan ad. */
   kafeAdiKoy: (ad: string) => void;
   /**
@@ -703,6 +707,7 @@ export const useGame = create<GameState>((set, get) => ({
   outfit: 'klasik',
   trayLook: 'klasik',
   dekor: {},
+  dekorOnizleme: null,
   kafeAdi: null,
   charUpgrades: defaultCharUpgrades(),
   waiterUpgrades: defaultWaiterUpgrades(),
@@ -1242,7 +1247,7 @@ export const useGame = create<GameState>((set, get) => ({
         wallet = wallet.sub(theme.cost);
         ownedCosmetics = [...ownedCosmetics, key];
       }
-      set({ wallet, ownedCosmetics, tableTheme: id });
+      set({ wallet, ownedCosmetics, tableTheme: id, notice: { text: satinBildirimi('table', theme.label), ttl: C.cosmetics.bildirimSn, kind: 'satin' } });
       get().saveNow();
       return true;
     }
@@ -1258,7 +1263,7 @@ export const useGame = create<GameState>((set, get) => ({
         wallet = wallet.sub(theme.cost);
         ownedCosmetics = [...ownedCosmetics, key];
       }
-      set({ wallet, ownedCosmetics, kitchenTheme: id });
+      set({ wallet, ownedCosmetics, kitchenTheme: id, notice: { text: satinBildirimi('kitchen', theme.label), ttl: C.cosmetics.bildirimSn, kind: 'satin' } });
       get().saveNow();
       return true;
     }
@@ -1277,7 +1282,7 @@ export const useGame = create<GameState>((set, get) => ({
     const arrKey = kind === 'floor' ? 'floorThemeByArea' : 'wallThemeByArea';
     const arr = (kind === 'floor' ? s.floorThemeByArea : s.wallThemeByArea).slice();
     arr[area] = id;
-    set({ wallet, ownedCosmetics, [arrKey]: arr });
+    set({ wallet, ownedCosmetics, [arrKey]: arr, notice: { text: satinBildirimi(kind, theme.label, { salon: area }), ttl: C.cosmetics.bildirimSn, kind: 'satin' } });
     get().saveNow();
     return true;
   },
@@ -1294,10 +1299,12 @@ export const useGame = create<GameState>((set, get) => ({
       diamonds = diamonds.sub(urun.diamonds);
       ownedCosmetics = [...ownedCosmetics, `${kind}:${id}`];
     }
+    const kaldirildi = kind === 'decor' && !!urun.yuva && s.dekor[urun.yuva] === id;
     set({
       diamonds,
       ownedCosmetics,
       ...(kind === 'outfit' ? { outfit: id } : kind === 'tray' ? { trayLook: id } : { dekor: dekorDegistir(s.dekor, id) }),
+      notice: { text: satinBildirimi(kind, urun.label, { kaldirildi }), ttl: C.cosmetics.bildirimSn, kind: 'satin' },
     });
     get().saveNow();
     return true;
@@ -1306,6 +1313,10 @@ export const useGame = create<GameState>((set, get) => ({
   kafeAdiKoy: (ad) => {
     set({ kafeAdi: kafeAdiTemizle(ad) || KAFE_ADI_VARSAYILAN });
     get().saveNow();
+  },
+
+  setDekorOnizleme: (id) => {
+    if (get().dekorOnizleme !== id) set({ dekorOnizleme: id });
   },
 
   baslangicTeklifKapat: () => {

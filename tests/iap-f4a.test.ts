@@ -188,7 +188,8 @@ describe('arayüz kabloları', () => {
   });
   it('satın alma düğmesi fiyat bilinmeden basılamaz ve ödül store\'dan geçer', () => {
     expect(hud).toContain('disabled={sahip || !fiyat}');
-    expect(hud).toContain('if (r) satinAlimIsle(r);');
+    // F4c-4 (D-157): ödül store'dan geçer, dönen 💎 alım kartına gider (alım sessiz bitmez).
+    expect(hud).toContain('const elmas = r ? satinAlimIsle(r) : null;');
   });
   it('açılışta mağaza sahiplikleri eşitlenir', () => {
     expect(oku('src/App.tsx')).toContain('satinAlmaBaslat().then((h) => h && useGame.getState().sahiplikEsitle(h))');

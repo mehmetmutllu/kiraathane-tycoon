@@ -5,29 +5,25 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-25 — F4c-3 ✅ KAPANDI · F4c-4 açıldı: dekor yerinde önizleme + satın alma metinleri)
+## ŞU AN (2026-09-25 — F4c-4 ✅ KAPANDI · D-157)
 
 ```
-SORU            : F4c-4 — (1) dekor mağazada salondaki YERİNDE, uzak/oyun açısından nasıl gösterilir?
-                  (2) satın alma metinleri + teklif kartı neden "boğuk", nasıl netleşir? (kullanıcı 2026-09-25, kare 21/23)
-ÖLÇÜLECEK KOLLAR: dekor: A yarım sayfa + canlı oyun odağı · B "Salonda gör" tam ekran · C kutu içinde oda köşesi
-                  metin/teklif: aday kartlar GÖSTERİLEREK (feedback_show_dont_ask) · microcopy envanteri
-SAYILAR         : `docs/magaza-raporu-f4c4.md` B1-B8 · karar paketi https://claude.ai/artifact/Uysjk79bfpLWpP7r35ntQi
-KARAR           : — (kullanıcı seçecek: dekor A/B/C · teklif T1/T2/T3 · metin 1-14)
-UYGULAMA        : —
-BEKÇİ           : —
+SORU            : F4c-4 — dekor mağazada salondaki YERİNDE nasıl görünür? satın alma metinleri neden "boğuk"?
+ÖLÇÜLECEK KOLLAR: dekor: oyun açısı · çapraz %30/%38/%45 → %30/%25/%22 · teklif T1/T2/T3 · metin 14 satır
+SAYILAR         : `docs/magaza-raporu-f4c4.md` B1-B10 (oyun açısı yan duvarda tablo 0 px · alım geri bildirimi 0)
+KARAR           : D-157 — çapraz uzak %25 + oto kadraj · T3 ("Bir kez alınabilir") · 14 metin + bildirim/ses/ödül kartı
+UYGULAMA        : DEKOR_KADRAJ · dekorKadraj.ts · cizilenDekor · DekorCekimi.tsx · SatinOdulu · satinBildirimi · alimSayisi
+BEKÇİ           : magaza-f4c4.test.ts 24 · mutasyon 12/12 · vitest 1670 · duman 67/67
 ```
 
 ## ⏭️ SIRADAKİ ADIM
 
-**F4c-4 commit #1 atıldı (araç + kareler + rapor, karar boş).** Kullanıcının seçimi gelince: seçilen dekor kolu
-(ayrı kamera, önizleme kutusunda sahnenin anlık görüntüsü) + teklif kolu + metinler + B6/B7 düzeltmesi → bekçi + mutasyon → commit #2. Mağaza turu kareleri:
-`tools/shot-magaza-son.mjs` · https://claude.ai/artifact/WSH385msDgxYkCZUMbwbMj. Sonra **F5** mağaza + G-89 (EN SON).
-- **Hata (düzeltilecek):** Paketler sekmesinin alt notu kesiliyor (kare 13). Kilitli dekor düğmesi yeşil kalıyor (kare 11).
-- **Sonraki oturumda sor:** 💎 fiyatları (kıyafet/tepsi/dekor hepsi TASLAK) ayrı fiyat oturumunda.
-- **Görsel açık:** yelek tepsinin arkasında · "Kaldır" satın al yeşilinde (nötr mü?) — kullanıcı "şu an okey" dedi (2026-09-25).
+**F8'in (💎 vitrini) kalanı:** 💎 fiyatları TASLAK → ayrı fiyat oturumu (kullanıcıya sor). Sonra **F5** mağaza vitrini + uyum + G-89 (EN SON).
+Mağaza kareleri: `node tools/shot-magaza-son.mjs` (25 kare + 9 dekor önizlemesi).
+- **Duman:** bu makinede 5199 takılıyor (sayfa 30 sn'de açılmıyor) → `DUMAN_PORT=4000 npm run duman`.
+- **Python ile dosya yazma:** 'w' kipi Windows'ta CRLF yapar → `rb/wb` + LF kullan (kayıt bekçisi `\n}\n` ile böler).
+- **Görsel açık:** yelek tepsinin arkasında (kullanıcı "şu an okey" dedi). Bildirim önizlemenin üst kenarına biniyor (3 sn) — gözle bakılsın.
 - Kare araçları taze oyunda ad kutusuna takılır: `__setState({ kafeAdi: '…' })` ile geçilir.
-- F4c-3 final sırası: ölçüm (kollar.json yazar) → kadraj → ölçüm; ters sıra izdüşüm damgasını kırar.
 
 ## AÇIK KALEMLER
 - **Play Games (kullanıcı):** `docs/play-games-kurulum.md` adımları → proje kimliği `strings.xml` + 19 başarım kimliği

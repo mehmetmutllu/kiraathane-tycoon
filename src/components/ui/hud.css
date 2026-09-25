@@ -1873,6 +1873,80 @@
 .teklif-card {
   width: min(92vw, 360px);
 }
+/* T3 (F4c-4 · D-157): altın çerçeve + üstten ışık — kart "boğuk" değil, paketin kendisi gibi dursun. */
+.modal-card.teklif-card {
+  background:
+    radial-gradient(120% 55% at 50% 0%, var(--parilti) 0%, transparent 70%),
+    linear-gradient(180deg, var(--kart), var(--kart2));
+  /* Vurgu KENARLIKLA (D-107 · mor-dil 4: durum gölgeyle anlatılmaz). */
+  border: 4px solid var(--ac);
+  box-shadow: var(--k3duz);
+}
+.teklif-ust {
+  font-family: var(--font-game);
+  font-size: var(--p2);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ac);
+}
+.teklif-liste {
+  list-style: none;
+  width: 100%;
+  margin: 2px 0 6px;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.teklif-liste li {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 9px 12px;
+  border-radius: var(--r2);
+  background: var(--oyuk);
+  font-size: var(--p2);
+  color: var(--tx2);
+  text-align: left;
+  line-height: 1.35;
+}
+.teklif-liste b {
+  font-family: var(--font-game);
+  font-size: var(--p3);
+  font-weight: 800;
+  color: var(--tx);
+}
+.teklif-ik {
+  flex: 0 0 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--r1);
+  background: var(--kart);
+  border: 2px solid var(--g1);
+}
+.teklif-etiket {
+  display: inline-block;
+  margin-left: 4px;
+  padding: 1px 8px;
+  border-radius: var(--rr);
+  background: linear-gradient(180deg, var(--ac), var(--ac2));
+  color: var(--txa);
+  font-family: var(--font-game);
+  font-size: var(--p1);
+  font-weight: 800;
+  vertical-align: 2px;
+}
+/* Satın alma bildirimi (F4c-4): mağaza tam ekran — alttaki toast yerinde kalsa ekranın ARKASINDA kalır. */
+.notice.satin {
+  z-index: 45;
+  /* Sekmelerin ALTINA, önizlemenin üst kenarına: sekmeleri örtmez, ad satırını ve düğmeyi de örtmez. */
+  top: calc(var(--sat) + 196px);
+  bottom: auto;
+}
+.notice.satin .notice-badge {
+  color: var(--ok);
+}
 .teklif-card .preview-canvas {
   height: 210px;
 }
