@@ -23,10 +23,13 @@ Karar paketi: https://claude.ai/artifact/Uysjk79bfpLWpP7r35ntQi
 | B5 | Satın alma sonrası geri bildirim YOK (bildirim/ses/ödül ekranı) — kart sessizce "Sahipsin" olur | `HUD.tsx` Paketler/ShopPanel |
 | B6 | Paketler alt notu kesiliyor (yarım satır) | kare 13 |
 | B7 | Kilitli dekorun düğmesi yeşil (yalnız soluk); satır ve düğme aynı cümle | kare 11 |
+| B9 | Sabit mesafeli kadraj eşyayı kenarda/küçük bırakıyor (kullanıcı: "bazıları belli olmuyor ve ortalı değil") → OTOMATİK KADRAJ: çizilen gövdenin dünya kutusu ölçülür, kamera merkezine bakar, mesafe = boy / pay / (2·tan(fov/2)). 9 yuvanın hepsi ortada | `f4c4-oto-*` |
+| B10 | Otomatik kadrajla da oyun açısı yan duvar eşyasını yandan görüyor (tablo görünmez, kare yarısı dışarı); çapraz açı 9/9 okunuyor | `f4c4-oto-*-oyun` ↔ `-capraz*` |
 | B8 | 3 elmas paketi aynı adla ("Elmas"); "Mağaza hazır değil" sebep/çözüm söylemiyor | kare 13 |
 
 ## Kollar
-- **Dekor:** A oyun açısı uzak · B vitrin yakın · C vitrin uzak (küçük eşyada B mesafesi). Öneri C.
+- **Dekor (v2, otomatik kadraj):** A oyun açısı · B çapraz %30 · C çapraz %38 · D çapraz %45 (eşyanın ekranda dikey payı). Öneri C.
+  (v1 kolları — sabit mesafe — B9 ile elendi; kareleri `f4c4-dekor-*`.)
 - **Teklif:** T1 büyük sayı · T2 iki karo · T3 ışıklı kart. Öneri T3 ("Bir kereye özel" → "Bir kez alınabilir").
 - **Metin:** 14 satır eski → yeni (karar paketinde tablo). 14. satır yeni davranış (alım bildirimi + ses + paket ödül ekranı).
 

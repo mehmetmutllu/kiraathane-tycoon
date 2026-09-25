@@ -42,53 +42,75 @@ try {
   // İçeri yön: sol duvar → +x · sağ → −x · lavabo duvarı → +z.
   const iceri = (pos) => (pos[2] < -9 ? [0, 1] : pos[0] < 0 ? [1, 0] : [-1, 0]);
   /**
-   * Aynı sahne, AYRI kamera, önizleme kutusunun en-boyunda (720 × 660 px). Oyunun kamerasına dokunmaz:
-   * tuval geçici boyutlanır, `gl.render(scene, cam)` + aynı görevde `toDataURL`, sonra eski boyut.
-   *  - aci 'oyun'  : oyunun baktığı yön (güneyden, 45° yukarıdan); odak eşyanın 2 br içerisi.
-   *  - aci 'vitrin': salonun içinden duvara 3/4 (duvar boyunca güneyden, yukarıdan ~35°; oda karenin yarısı).
+   * OTOMATİK KADRAJ (kullanıcı 2026-09-25: "bazıları belli olmuyor ve ortalı değil"). Aynı sahne, AYRI kamera,
+   * önizleme kutusunun en-boyunda (720 × 660). Eşyanın ÇİZİLEN gövdesi ölçülür (yuva kutusunun içinde merkezi
+   * kalan mesh'lerin dünya kutusu) → kamera o kutunun MERKEZİNE bakar ve mesafe, kutunun ekranda dikeyin `pay`
+   * kadarını kaplayacağı yerden seçilir. Yön: 'oyun' = oyunun kamerası (güneyden 45°) · 'capraz' = duvara 3/4
+   * (duvardan içeri + duvar boyunca kameraya doğru + yukarı). Oyunun kamerasına dokunmaz (`gl.render` + `toDataURL`).
    */
-  const kare = async (pos, y1, aci, r, dosya) => {
-    const url = await sayfa.evaluate(async ([pos, y1, ic, aci, r]) => {
+  const kare = async (yuva, yon, pay, dosya) => {
+    const r = await sayfa.evaluate(async ([yuva, yon, pay]) => {
       const u = performance.getEntriesByType('resource').map((x) => x.name).find((n) => /\/deps\/three\.js/.test(n));
       const THREE = await import(u);
+      const m = await import('/src/config/decor.ts');
+      const y = m.vitrinYuva(yuva);
+      const k = m.yuvaKutu(y);
       const { gl, scene } = window.__three;
+      scene.updateMatrixWorld(true);
+      const kutu = new THREE.Box3();
+      const t = new THREE.Box3();
+      const c = new THREE.Vector3();
+      scene.traverse((o) => {
+        if (!o.isMesh || o.isSkinnedMesh || !o.visible) return;
+        t.setFromObject(o);
+        t.getCenter(c);
+        if (c.x < k.minX - 0.15 || c.x > k.maxX + 0.15 || c.z < k.minZ - 0.15 || c.z > k.maxZ + 0.15) return;
+        if (c.y < y.y0 - 0.05 || c.y > y.y1 + 0.1 || t.max.y - t.min.y > 4) return;
+        kutu.union(t);
+      });
+      if (kutu.isEmpty()) return { bos: true };
+      const merkez = kutu.getCenter(new THREE.Vector3());
+      const boy = kutu.getSize(new THREE.Vector3());
+      const pos = m.yuvaAnkraj(y).pos;
+      const ic = pos[2] < -9 ? [0, 1] : pos[0] < 0 ? [1, 0] : [-1, 0];
+      let d;
+      if (yon === 'oyun') d = new THREE.Vector3(0, 1, 1);
+      else if (ic[1]) d = new THREE.Vector3(0.45, 0.75, 1); // karşı duvar: hafif yandan
+      else d = new THREE.Vector3(ic[0] * 0.8, 0.85, 0.9); // yan duvar: içeriden, güneyden
+      d.normalize();
+      const fov = 34;
+      // Eşyanın kameraya dik düzlemdeki kaba boyu: en büyük kenar (yassı tablo/saat de okunur kalsın).
+      const olcu = Math.max(boy.y, Math.max(boy.x, boy.z) * 0.8, 0.45);
+      const uzak = olcu / pay / (2 * Math.tan((fov * Math.PI) / 360));
       const eski = gl.getSize(new THREE.Vector2());
       const eskiPr = gl.getPixelRatio();
       gl.setPixelRatio(1);
       gl.setSize(720, 660, false);
-      const cam = new THREE.PerspectiveCamera(34, 720 / 660, 0.1, 200);
-      const hy = pos[1] + Math.max(0.5, y1 * 0.5);
-      const hedef = new THREE.Vector3(pos[0] + ic[0] * (aci === 'oyun' ? 2 : 1.6), hy * (aci === 'oyun' ? 0.4 : 0.8), pos[2] + ic[1] * (aci === 'oyun' ? 2 : 1.6));
-      if (aci === 'oyun') cam.position.set(hedef.x, hedef.y + r * 0.72, hedef.z + r * 0.72);
-      else {
-        // duvara dik (ic) + duvar boyunca kameraya doğru (güney) bileşen
-        const boy = ic[1] ? [1, 0] : [0, 1];
-        cam.position.set(hedef.x + (ic[0] * 0.5 + boy[0] * 0.75) * r, hedef.y + r * 0.62, hedef.z + (ic[1] * 0.5 + boy[1] * 0.75) * r);
-      }
-      cam.lookAt(hedef);
+      const cam = new THREE.PerspectiveCamera(fov, 720 / 660, 0.1, 200);
+      cam.position.copy(merkez).addScaledVector(d, uzak);
+      cam.lookAt(merkez);
       cam.updateProjectionMatrix();
       gl.render(scene, cam);
       const url = gl.domElement.toDataURL('image/png');
       gl.setPixelRatio(eskiPr);
       gl.setSize(eski.x, eski.y, false);
-      return url;
-    }, [pos, y1, iceri(pos), aci, r]);
-    writeFileSync(`${OUT}/${dosya}`, Buffer.from(url.split(',')[1], 'base64'));
+      return { url, boy: boy.toArray().map((v) => +v.toFixed(2)), uzak: +uzak.toFixed(2) };
+    }, [yuva, yon, pay]);
+    if (r.bos) { console.log('  gövde bulunamadı', yuva); return; }
+    writeFileSync(`${OUT}/${dosya}`, Buffer.from(r.url.split(',')[1], 'base64'));
+    return r;
   };
-  const ACILAR = [['oyun-yakin', 'oyun', 8], ['oyun-uzak', 'oyun', 12], ['vitrin-yakin', 'vitrin', 5.5], ['vitrin-uzak', 'vitrin', 8.5]];
-  for (const [esya, yuva] of Object.entries(ESYA)) {
-    const { pos, y1 } = await sayfa.evaluate(async (yuva) => {
-      const m = await import('/src/config/decor.ts');
-      const y = m.vitrinYuva(yuva);
-      return { pos: m.yuvaAnkraj(y).pos, y1: y.y1 - y.y0 };
-    }, yuva);
-    await sayfa.evaluate(() => window.__setState({ ownedCosmetics: [], dekor: {} }));
-    await sayfa.waitForTimeout(900);
-    await kare(pos, y1, 'vitrin', 8.5, `f4c4-dekor-${esya}-bos.png`);
+  const ESYALAR = { radyo: 'radyo', koltuk: 'koltuk', lamba: 'lamba', tablo: 'tablo', semaver: 'semaver', gramofon: 'gramofon', kanarya: 'kanarya', saat: 'saat', 'yilbasi-kirmizi': 'yilbasi' };
+  const KOLLAR = [['oyun', 'oyun', 0.3], ['capraz', 'capraz', 0.3], ['capraz-orta', 'capraz', 0.38], ['capraz-yakin', 'capraz', 0.45]];
+  for (const [esya, yuva] of Object.entries(ESYALAR)) {
     await sayfa.evaluate(([esya, yuva]) => window.__setState({ ownedCosmetics: [`decor:${esya}`], dekor: { [yuva]: esya } }), [esya, yuva]);
     await sayfa.waitForTimeout(1500);
-    for (const [ad, aci, r] of ACILAR) await kare(pos, y1, aci, r, `f4c4-dekor-${esya}-${ad}.png`);
-    console.log('eşya', esya, pos.map((v) => v.toFixed(2)).join(','));
+    const satir = [];
+    for (const [ad, yon, pay] of KOLLAR) {
+      const r = await kare(yuva, yon, pay, `f4c4-oto-${esya}-${ad}.png`);
+      if (r) satir.push(`${ad} uzak ${r.uzak}`);
+    }
+    console.log('eşya', esya, satir.join(' · '));
   }
 } catch (e) {
   console.error('HATA', e.message);
