@@ -5,28 +5,29 @@
 > tek satır · zaman çizelgesi → git · eski anlatı → `memory-bank/arsiv/`.
 > Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-25 — F4c-3 tabela: KOD GİRDİ · D-156; doğrulama yarım)
+## ŞU AN (2026-09-25 — F4c-3 ✅ KAPANDI · F4c-4 açıldı: dekor yerinde önizleme + satın alma metinleri)
 
 ```
-SORU            : F4c-3 — cephe oyun kamerasında ne zaman, ne boyda görünüyor; yazı nereye konursa okunur?
-ÖLÇÜLECEK KOLLAR: K0 bugün · K1 öne · K2 alınlığı doldur · K3 tente üstü · K4/K4e çatı · K5 fırfır · renk C2-C8
-SAYILAR         : cephe ekranda dikey %4,6 (3. Salon %0,7) · eski tabela harf 7,7 px, yarısı örtülü · K2 12,2 px
-KARAR           : D-156 — K2 bedava + oyuncunun kafe adı (girişte bir kez, Ayarlar'dan, ≤ 20) · 💎 cephe yok ·
-                  yükleniyor "Tea House Tycoon"
-UYGULAMA        : streetLook.TABELA · Tabela.tsx · game/kafeAdi.ts · KafeAdiKutusu.tsx · ekranKanali kafe-adi
-BEKÇİ           : tabela-f4c3.test.ts 19 · duman 65/65 · vitest 1645 · mutasyon 4/11 (bellek yüzünden yarıda) · final tam koşu YOK
+SORU            : F4c-4 — (1) dekor mağazada salondaki YERİNDE, uzak/oyun açısından nasıl gösterilir?
+                  (2) satın alma metinleri + teklif kartı neden "boğuk", nasıl netleşir? (kullanıcı 2026-09-25, kare 21/23)
+ÖLÇÜLECEK KOLLAR: dekor: A yarım sayfa + canlı oyun odağı · B "Salonda gör" tam ekran · C kutu içinde oda köşesi
+                  metin/teklif: aday kartlar GÖSTERİLEREK (feedback_show_dont_ask) · microcopy envanteri
+SAYILAR         : —
+KARAR           : — (karar paketi kullanıcıya)
+UYGULAMA        : —
+BEKÇİ           : —
 ```
 
 ## ⏭️ SIRADAKİ ADIM
 
-**F4c-3'ü kapat:** `node tools/mutasyon-tabela-f4c3.mjs` (11 mutasyon, ~15 dk; makine yavaş, açık uygulama azken) →
-`node tools/tabela-kadraj-f4c3.mjs` + `KARE=kollar …` (kareler yeni tabelayla) → `OLCUM=tam npx tsx tools/olcum-tabela-f4c3.ts
-> docs/olcum-tabela-f4c3.txt` (final: K0 = K2 sayıları çıkmalı) → rapora final tablo → kareleri kullanıcıya göster
-(tabelada ad, ad kutusu, Ayarlar satırı). Sonra **F5** mağaza + G-89 (EN SON).
+**F4c-4 aday kareleri:** dekor A/B/C gerçek oyun karesinden (kamera `camFocus` ile yuvaya) + teklif kartı 3-4 aday +
+satın alma metinleri envanteri (eski → yeni) → tek karar paketi. Kod YOK (seçilen kola). Mağaza turu kareleri:
+`tools/shot-magaza-son.mjs` · https://claude.ai/artifact/WSH385msDgxYkCZUMbwbMj. Sonra **F5** mağaza + G-89 (EN SON).
+- **Hata (düzeltilecek):** Paketler sekmesinin alt notu kesiliyor (kare 13). Kilitli dekor düğmesi yeşil kalıyor (kare 11).
 - **Sonraki oturumda sor:** 💎 fiyatları (kıyafet/tepsi/dekor hepsi TASLAK) ayrı fiyat oturumunda.
-- **Görsel açık (kullanıcı oynayınca):** yelek tepsinin arkasında · dikey telefonda yan duvar dekoru köşeye yürüyünce okunuyor ·
-  "Kaldır" düğmesi satın al yeşilinde (nötr mü olmalı?) · yeni tabela + ad kutusu henüz gözle bakılmadı.
-- Öteki kare araçları (shot-*.mjs) taze oyunda ad kutusuna takılabilir: `__setState({ kafeAdi: '…' })` ile geçilir.
+- **Görsel açık:** yelek tepsinin arkasında · "Kaldır" satın al yeşilinde (nötr mü?) — kullanıcı "şu an okey" dedi (2026-09-25).
+- Kare araçları taze oyunda ad kutusuna takılır: `__setState({ kafeAdi: '…' })` ile geçilir.
+- F4c-3 final sırası: ölçüm (kollar.json yazar) → kadraj → ölçüm; ters sıra izdüşüm damgasını kırar.
 
 ## AÇIK KALEMLER
 - **Play Games (kullanıcı):** `docs/play-games-kurulum.md` adımları → proje kimliği `strings.xml` + 19 başarım kimliği

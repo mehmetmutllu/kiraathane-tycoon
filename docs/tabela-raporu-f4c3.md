@@ -74,5 +74,14 @@ Karar sayfası: https://claude.ai/artifact/1Q5yzv5wykx5Md1RBYbx6q
 | Bekçi | `tests/tabela-f4c3.test.ts` 19 test · duman 65/65 (ad kutusu + WASD + Ayarlar adımları) · vitest 1645 |
 | Ölçüm aracı | K0 artık `streetLook.TABELA`dan okunuyor (final koşuda K0 = K2 olmalı) |
 
-**Açık (sonraki oturum):** mutasyon sınavı 4/11'de sistem belleği azaldığı için durdu (4/4 yakalandı; yarıda
-kalan M5 kaynağa elle geri yazıldı, kaynak temiz). Kalan 7 mutasyon ve final TAM koşu yapılmadı.
+## Final (tam koşu, 2026-09-25)
+
+| Denetim | Sonuç |
+|---|---|
+| Mutasyon | **11/11** yakalandı (`tools/mutasyon-tabela-f4c3.mjs`) |
+| İzdüşüm damgası | node ↔ tarayıcı **0,00 px** · görünen pay farkı 0,022 |
+| K0 = K2 (B2, dikey telefon) | ekranda %4,1 · harf 12,2 / 12,8 px · yarısı okunur %1,3 — **birebir** |
+| Konum haritası | K0 2/170 ↔ K2 4/170 hücre: fark levhanın ön yüzü (z 17,98 ↔ 17,95), okunan harf aynı |
+
+Not: ilk final koşusunda izdüşüm damgası 104 px kırıldı — kadraj aracı `f4c3-kollar.json`'u ölçüm aracı
+yenilemeden okumuştu (eski K0). Sıra düzeltilince (önce ölçüm → kollar, sonra kadraj → ölçüm) damga temiz.

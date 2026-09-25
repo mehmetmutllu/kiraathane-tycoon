@@ -5,7 +5,7 @@
 
 ## Kollar (yazının geçeceği yüzey) — geometri
 kod    merkez y     z      en × boy      büyük harf (dünya)  yüzey
-K0       2.92  17.83   3.40 × 0.34      0.145            bugün: alınlık tabelası 3,4 × 0,34, lento/kordon arasında
+K0       2.92  17.98   5.00 × 0.55      0.229            oyundaki tabela (D-156): 5 × 0.55, z 17.95
 K1       2.92  17.95   3.40 × 0.34      0.145            tabela öne: aynı boy, z 17,95 (örtücünün önünde)
 K2       2.92  17.95   5.00 × 0.55      0.229            alınlığı doldur: 5,0 × 0,55, z 17,95 (lento+kordonun önü)
 K3       2.58  18.36   5.40 × 0.80      0.248            yazı TENTENİN ÜSTÜNDE: 5,4 × 0,8 şerit, örtücüden dışarıda
@@ -16,33 +16,33 @@ tente    2.61  18.18   6.40 × 1.37      0.294            tente üst yüzü (duv
 
 ## 0. Araç doğrulaması — bugünkü tabela, tarayıcı kareleriyle
 profil      konum      piksel görünen/tüm   piksel payı   node payı   fark
-390x844     dogus        13625/21915         %62.2       %65.0   0.028
-390x844     kapi         12867/18295         %70.3       %70.0   0.003
-390x844     z12          13738/23671         %58.0       %56.5   0.015
-390x844     tam-kapi     12867/18295         %70.3       %70.0   0.003
-390x844     tam-z14      14211/21030         %67.6       %65.0   0.026
-844x390     dogus            0/10503          %0.0        %0.0   0.000
-844x390     kapi          5793/7713          %75.1       %72.5   0.026
-844x390     tam-kapi      5793/7713          %75.1       %72.5   0.026
-820x1180    dogus        27320/43061         %63.4       %65.0   0.016
-820x1180    kapi         24898/35948         %69.3       %70.0   0.007
-izdüşüm: en büyük sapma 0.00 px · görünen pay: en büyük fark 0.028
+390x844     dogus        47580/47580        %100.0      %100.0   0.000
+390x844     kapi         44774/44774        %100.0      %100.0   0.000
+390x844     z12          42954/46020         %93.3       %91.1   0.022
+390x844     tam-kapi     44774/44774        %100.0      %100.0   0.000
+390x844     tam-z14      47580/47580        %100.0      %100.0   0.000
+844x390     dogus            0/25154          %0.0        %0.0   0.000
+844x390     kapi         19163/19163        %100.0      %100.0   0.000
+844x390     tam-kapi     19163/19163        %100.0      %100.0   0.000
+820x1180    dogus       103495/103495       %100.0      %100.0   0.000
+820x1180    kapi         86219/86219        %100.0      %100.0   0.000
+izdüşüm: en büyük sapma 0.00 px · görünen pay: en büyük fark 0.022
 
 ## A. Konum haritası — dikey telefon · satır oyuncu z · sütun oyuncu x (−16…16, 2 br)
 değer: görünen pay ×10 (· = hiç, # = YAZI OKUNUR) · sağda: oyuncu kapı hizasındayken büyük harf px
 
 K0 · kapı x = -8.5 (1. Salon)
-z  17 ··2674···········   harf   7.9 px · yazı şeridi %100.0
-z  16 ··15#3···········   harf   8.0 px · yazı şeridi %100.0
-z  15 ··15#3···········   harf   8.1 px · yazı şeridi %100.0
-z  14 ··14#2···········   harf   8.1 px · yazı şeridi %100.0
-z  13 ··04#2···········   harf   8.0 px · yazı şeridi %100.0
-z  12 ··0352···········   harf   7.8 px · yazı şeridi  %99.0
-z  11 ··0000···········   harf   7.5 px · yazı şeridi   %0.0
-z  10 ·················   harf   6.8 px · yazı şeridi   %0.0
-z   9 ·················   harf   5.7 px · yazı şeridi   %0.0
-z   8 ·················   harf   3.9 px · yazı şeridi   %0.0
-görünen en derin oyuncu z: 11 · yazının okunduğu hücre: 4/170
+z  17 ··37#51··········   harf  12.6 px · yazı şeridi %100.0
+z  16 ··37#51··········   harf  12.7 px · yazı şeridi %100.0
+z  15 ··26840··········   harf  12.8 px · yazı şeridi %100.0
+z  14 ··26840··········   harf  12.8 px · yazı şeridi  %94.3
+z  13 ··26840··········   harf  12.7 px · yazı şeridi  %86.8
+z  12 ··1574···········   harf  12.3 px · yazı şeridi  %70.0
+z  11 ··0010···········   harf  11.7 px · yazı şeridi   %4.5
+z  10 ·················   harf  10.5 px · yazı şeridi   %0.0
+z   9 ·················   harf   8.7 px · yazı şeridi   %0.0
+z   8 ·················   harf   5.6 px · yazı şeridi   %0.0
+görünen en derin oyuncu z: 11 · yazının okunduğu hücre: 2/170
 
 K2 · kapı x = -8.5 (1. Salon)
 z  17 ··37#51··········   harf  12.5 px · yazı şeridi %100.0
@@ -84,16 +84,16 @@ z   8 ·················   harf   6.7 px · yazı şeridi   %0.0
 görünen en derin oyuncu z: 11 · yazının okunduğu hücre: 4/170
 
 K0 · kapı x = 0 (2. Salon ve sonrası)
-z  17 ······15751······   harf   7.9 px · yazı şeridi %100.0
-z  16 ······04#40······   harf   8.0 px · yazı şeridi %100.0
-z  15 ······04#40······   harf   8.1 px · yazı şeridi %100.0
-z  14 ·······3#3·······   harf   8.1 px · yazı şeridi %100.0
-z  13 ·······3#3·······   harf   8.0 px · yazı şeridi %100.0
-z  12 ·······252·······   harf   7.8 px · yazı şeridi  %99.0
-z  11 ·······0·0·······   harf   7.5 px · yazı şeridi   %0.0
-z  10 ·················   harf   6.8 px · yazı şeridi   %0.0
-z   9 ·················   harf   5.7 px · yazı şeridi   %0.0
-z   8 ·················   harf   3.9 px · yazı şeridi   %0.0
+z  17 ······26#62······   harf  12.6 px · yazı şeridi %100.0
+z  16 ······26#62······   harf  12.7 px · yazı şeridi %100.0
+z  15 ······15#51······   harf  12.8 px · yazı şeridi %100.0
+z  14 ······15#51······   harf  12.8 px · yazı şeridi  %94.3
+z  13 ······15851······   harf  12.7 px · yazı şeridi  %86.8
+z  12 ······04740······   harf  12.3 px · yazı şeridi  %70.0
+z  11 ······00000······   harf  11.7 px · yazı şeridi   %4.5
+z  10 ·················   harf  10.5 px · yazı şeridi   %0.0
+z   9 ·················   harf   8.7 px · yazı şeridi   %0.0
+z   8 ·················   harf   5.6 px · yazı şeridi   %0.0
 görünen en derin oyuncu z: 11 · yazının okunduğu hücre: 4/170
 
 K2 · kapı x = 0 (2. Salon ve sonrası)
@@ -143,32 +143,32 @@ kare: ilk 2 dk 180 · 1. Salon 3859 · 2. Salon 4776 · 3. Salon 23765 · TÜMÜ
 
 ### B1. Bugünkü CEPHE (renk adaylarının boyadığı üç yüzey: tabela · tente · fırfır) — ekranda olduğu süre · ekran payı (görünürken medyan / p90)
 profil            dönem       | tabela ekranda  pay med | tente ekranda  pay med | CEPHE ekranda  pay med / p90
-dikey telefon     ilk 2 dk    |         %41.1    %0.4 |         %43.9    %1.4 |         %47.2    %1.7 /   %6.6
-dikey telefon     1. Salon    |         %20.0    %0.5 |         %22.4    %1.1 |         %23.6    %1.6 /   %6.7
-dikey telefon     2. Salon    |          %3.9    %0.3 |          %8.4    %2.7 |          %8.4    %2.8 /   %6.7
-dikey telefon     3. Salon    |          %0.4    %0.2 |          %0.7    %2.3 |          %0.7    %2.6 /   %6.9
-dikey telefon     TÜMÜ        |          %3.2    %0.4 |          %4.4    %1.5 |          %4.6    %1.9 /   %6.7
-dikey + uzaklaş   ilk 2 dk    |         %70.6    %0.4 |         %76.1    %3.5 |         %76.1    %4.2 /   %7.1
-dikey + uzaklaş   1. Salon    |         %52.5    %0.4 |         %61.0    %3.2 |         %61.0    %3.6 /   %6.8
-dikey + uzaklaş   2. Salon    |         %13.0    %0.2 |         %17.8    %2.0 |         %17.8    %2.3 /   %4.8
-dikey + uzaklaş   3. Salon    |          %1.3    %0.2 |          %2.1    %1.1 |          %2.1    %1.3 /   %4.5
-dikey + uzaklaş   TÜMÜ        |          %9.1    %0.4 |         %11.4    %2.2 |         %11.4    %2.6 /   %6.6
-yatay telefon     ilk 2 dk    |         %20.0    %0.1 |         %25.6    %0.3 |         %30.6    %0.3 /   %3.4
-yatay telefon     1. Salon    |          %9.1    %0.1 |         %13.4    %0.5 |         %13.9    %0.5 /   %4.4
-yatay telefon     2. Salon    |         %11.8    %0.4 |         %14.1    %2.8 |         %14.5    %3.3 /   %4.9
-yatay telefon     3. Salon    |          %1.0    %0.2 |          %1.2    %3.1 |          %1.2    %3.7 /   %4.9
-yatay telefon     TÜMÜ        |          %3.6    %0.2 |          %4.5    %2.1 |          %4.7    %2.3 /   %4.9
-dikey tablet      ilk 2 dk    |         %62.8    %0.3 |         %63.3    %4.2 |         %66.7    %4.7 /   %9.2
-dikey tablet      1. Salon    |         %38.3    %0.3 |         %40.7    %3.1 |         %43.0    %3.2 /   %8.7
-dikey tablet      2. Salon    |         %11.2    %0.2 |         %13.6    %2.8 |         %14.0    %3.1 /   %6.3
-dikey tablet      3. Salon    |          %1.0    %0.2 |          %1.4    %1.4 |          %1.5    %1.4 /   %5.9
-dikey tablet      TÜMÜ        |          %7.0    %0.3 |          %7.9    %2.9 |          %8.3    %3.0 /   %8.0
+dikey telefon     ilk 2 dk    |         %42.8    %1.2 |         %43.9    %1.4 |         %47.2    %2.5 /   %8.0
+dikey telefon     1. Salon    |         %20.9    %1.0 |         %22.4    %1.1 |         %23.7    %2.0 /   %9.1
+dikey telefon     2. Salon    |          %7.7    %0.6 |          %8.4    %2.7 |          %8.5    %3.4 /   %8.2
+dikey telefon     3. Salon    |          %0.6    %0.5 |          %0.7    %2.3 |          %0.7    %3.0 /   %8.2
+dikey telefon     TÜMÜ        |          %4.1    %0.6 |          %4.4    %1.5 |          %4.6    %2.8 /   %8.7
+dikey + uzaklaş   ilk 2 dk    |         %72.8    %1.3 |         %76.1    %3.5 |         %76.1    %5.0 /   %8.4
+dikey + uzaklaş   1. Salon    |         %55.6    %1.3 |         %61.0    %3.2 |         %61.0    %4.5 /   %8.0
+dikey + uzaklaş   2. Salon    |         %15.2    %0.7 |         %17.8    %2.0 |         %17.8    %2.9 /   %5.8
+dikey + uzaklaş   3. Salon    |          %1.6    %0.7 |          %2.1    %1.1 |          %2.1    %2.0 /   %5.3
+dikey + uzaklaş   TÜMÜ        |         %10.1    %1.0 |         %11.4    %2.2 |         %11.4    %3.3 /   %7.7
+yatay telefon     ilk 2 dk    |         %16.7    %0.6 |         %25.6    %0.3 |         %27.2    %0.4 /   %4.5
+yatay telefon     1. Salon    |          %8.3    %0.6 |         %13.4    %0.5 |         %13.6    %0.8 /   %5.4
+yatay telefon     2. Salon    |         %12.7    %1.1 |         %14.1    %2.8 |         %14.3    %4.1 /   %6.0
+yatay telefon     3. Salon    |          %1.0    %0.9 |          %1.2    %3.1 |          %1.2    %4.4 /   %6.0
+yatay telefon     TÜMÜ        |          %3.6    %0.9 |          %4.5    %2.1 |          %4.6    %2.9 /   %5.9
+dikey tablet      ilk 2 dk    |         %64.4    %1.2 |         %63.3    %4.2 |         %66.1    %5.5 /  %11.0
+dikey tablet      1. Salon    |         %40.0    %0.9 |         %40.7    %3.1 |         %42.3    %3.7 /  %10.6
+dikey tablet      2. Salon    |         %12.0    %0.9 |         %13.6    %2.8 |         %14.0    %3.7 /   %7.7
+dikey tablet      3. Salon    |          %1.1    %0.9 |          %1.4    %1.4 |          %1.5    %1.9 /   %6.9
+dikey tablet      TÜMÜ        |          %7.3    %0.9 |          %7.9    %2.9 |          %8.2    %3.7 /   %9.8
 
 ### B2. YAZI KOLLARI — oyun süresinin ne kadarında yazı OKUNUR (şeridin ≥ %90'ı, harf ≥ 8 px) · TÜMÜ: yarısı okunur (≥ %50) · ekranda · büyük harf px (görünürken medyan / en büyük) · ekran payı med
 
 dikey telefon (390×844) · kamera mesafesi 11.05
 kol   | ilk 2 dk okunur | 1. Salon okunur | 2. Salon okunur | 3. Salon okunur | TÜMÜ     okunur | yarısı okunur  ekranda  harf px med/max  pay med
-K0    |            %2.2 |            %0.4 |            %0.1 |            %0.0 |            %0.1 |          %0.2     %3.2      7.7 /   8.1     %0.4
+K0    |            %0.6 |            %0.2 |            %0.2 |            %0.0 |            %0.1 |          %1.3     %4.1     12.2 /  12.8     %0.6
 K1    |            %2.2 |            %0.4 |            %0.1 |            %0.0 |            %0.1 |          %0.2     %3.2      7.7 /   8.1     %0.5
 K2    |            %0.6 |            %0.2 |            %0.2 |            %0.0 |            %0.1 |          %1.3     %4.1     12.2 /  12.8     %0.6
 K3    |            %0.0 |            %0.2 |            %0.1 |            %0.0 |            %0.0 |          %0.4     %3.7     24.7 /  27.9     %0.7
@@ -178,7 +178,7 @@ K5    |            %0.0 |            %0.0 |            %0.0 |            %0.0 | 
 
 dikey + uzaklaş (390×844, ×1.35) · kamera mesafesi 14.92
 kol   | ilk 2 dk okunur | 1. Salon okunur | 2. Salon okunur | 3. Salon okunur | TÜMÜ     okunur | yarısı okunur  ekranda  harf px med/max  pay med
-K0    |            %0.0 |            %0.0 |            %0.0 |            %0.0 |            %0.0 |          %0.0     %9.1      5.3 /   5.5     %0.4
+K0    |            %8.3 |            %6.6 |            %1.2 |            %0.1 |            %1.0 |          %5.1    %10.1      8.3 /   8.7     %1.0
 K1    |            %0.0 |            %0.0 |            %0.0 |            %0.0 |            %0.0 |          %0.0     %9.0      5.3 /   5.5     %0.6
 K2    |            %8.9 |            %6.6 |            %1.2 |            %0.1 |            %1.0 |          %5.1    %10.2      8.3 /   8.7     %1.0
 K3    |            %7.8 |            %4.8 |            %0.7 |            %0.1 |            %0.7 |          %4.4    %10.2     16.3 /  18.9     %1.6
@@ -188,7 +188,7 @@ K5    |            %0.0 |            %0.0 |            %0.0 |            %0.0 | 
 
 yatay telefon (844×390) · kamera mesafesi 8.50
 kol   | ilk 2 dk okunur | 1. Salon okunur | 2. Salon okunur | 3. Salon okunur | TÜMÜ     okunur | yarısı okunur  ekranda  harf px med/max  pay med
-K0    |            %0.0 |            %0.0 |            %0.0 |            %0.0 |            %0.0 |          %0.0     %3.6      5.3 /   5.5     %0.2
+K0    |            %1.7 |            %0.7 |            %2.3 |            %0.2 |            %0.6 |          %1.5     %3.6      8.3 /   8.7     %0.9
 K1    |            %0.0 |            %0.0 |            %0.0 |            %0.0 |            %0.0 |          %0.0     %3.2      5.3 /   5.5     %0.5
 K2    |            %1.7 |            %0.7 |            %2.4 |            %0.2 |            %0.6 |          %1.5     %3.9      8.3 /   8.7     %0.8
 K3    |            %0.6 |            %0.4 |            %1.9 |            %0.2 |            %0.5 |          %1.4     %3.2     17.2 /  21.1     %2.2
@@ -198,7 +198,7 @@ K5    |            %0.0 |            %0.0 |            %0.0 |            %0.0 | 
 
 dikey tablet (820×1180) · kamera mesafesi 11.05
 kol   | ilk 2 dk okunur | 1. Salon okunur | 2. Salon okunur | 3. Salon okunur | TÜMÜ     okunur | yarısı okunur  ekranda  harf px med/max  pay med
-K0    |           %18.3 |            %9.0 |            %1.2 |            %0.1 |            %1.3 |          %2.5     %7.0     10.5 /  11.3     %0.3
+K0    |            %7.8 |            %4.1 |            %0.7 |            %0.1 |            %0.6 |          %2.1     %7.3     16.5 /  17.9     %0.9
 K1    |           %17.8 |            %8.2 |            %1.2 |            %0.1 |            %1.2 |          %2.2     %6.8     10.5 /  11.3     %0.5
 K2    |            %7.8 |            %4.2 |            %0.7 |            %0.1 |            %0.7 |          %2.2     %7.4     16.5 /  17.9     %0.9
 K3    |            %3.9 |            %1.5 |            %0.5 |            %0.0 |            %0.3 |          %1.1     %6.5     37.0 /  43.6     %2.5
@@ -207,12 +207,12 @@ K4e   |            %8.3 |            %5.7 |            %0.9 |            %0.1 | 
 K5    |            %0.0 |            %0.2 |            %0.2 |            %0.0 |            %0.1 |          %0.2     %3.4      7.4 /   8.0     %0.5
 
 ## C. Cephe ekrandayken oyuncunun görevi (dikey telefon, TÜMÜ) — ilk 8
-q_waiter2 (pad)                     %21.5
-q_z2table4 (pad)                    %11.8
-q_zone2 (pad)                        %9.9
-q_waiter (pad)                       %9.8
+q_waiter2 (pad)                     %21.4
+q_z2table4 (pad)                    %12.0
+q_waiter (pad)                       %9.9
+q_zone2 (pad)                        %9.8
 q_table3 (pad)                       %8.2
-q_zone3 (pad)                        %8.0
+q_zone3 (pad)                        %7.9
 q_tost5 (serveTost)                  %5.4
 q_table4 (pad)                       %5.0
 
@@ -221,3 +221,5 @@ C2 yeşil-krem çizgili · ahşap    yazı/zemin  6.64 · tente/duvar (#e6d7b8) 
 C4 lacivert + altın yazı         yazı/zemin  7.36 · tente/duvar (#e6d7b8)  9.29
 C7 NEON gece                     yazı/zemin  6.04 · tente/duvar (#e6d7b8) 11.81
 C8 çini mavisi                   yazı/zemin  4.60 · tente/duvar (#e6d7b8)  3.65
+
+✓ Damgalar temiz (tam koşu).
