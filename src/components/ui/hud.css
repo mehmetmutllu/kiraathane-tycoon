@@ -2015,3 +2015,188 @@
   font-weight: 800;
   cursor: pointer;
 }
+
+/* ═══════════════ E5 · ÖĞRETİCİ (ilk dakikalar) ═══════════════
+   Ekranı KESMEZ: kap `pointer-events: none`, yalnız "Atla" dokunur — sürükleme alttaki joystick
+   katmanına geçer. Satır ÜST şeritte (G-63 öğretme kartının yeri), doğal genişlikte ve ortada
+   (`feedback_hud_natural_width`). İlk kurulumda bandın üstündeydi — kare gösterdi: sağ kenardaki
+   tepsi düğmesi "Atla"nın üstüne biniyordu.
+   Hareket yalnız transform/opacity; süre `--el-tur` (config `ONBOARDING.elTurSn`). */
+.ogretici {
+  position: absolute;
+  inset: 0;
+  z-index: 11;
+  pointer-events: none;
+}
+.ogretici-satir {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--sat) + 96px);
+  transform: translateX(-50%);
+  max-width: calc(100% - 2 * var(--sal) - 24px);
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 5px 5px 5px 12px;
+  border-radius: var(--rr);
+  border: 2.5px solid var(--ot);
+  background: linear-gradient(180deg, var(--kart), var(--kart2));
+  box-shadow: var(--k2);
+  white-space: nowrap;
+  animation: ogreticiIn 0.36s cubic-bezier(0.18, 0.9, 0.3, 1.2) both;
+}
+@keyframes ogreticiIn {
+  from {
+    transform: translate(-50%, -10px);
+    opacity: 0;
+  }
+}
+.ogretici-noktalar {
+  display: inline-flex;
+  gap: 4px;
+}
+.ogretici-noktalar i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--oyuk);
+  border: 1.5px solid var(--ot);
+}
+.ogretici-noktalar i.bitti {
+  background: var(--ok);
+}
+.ogretici-noktalar i.simdi {
+  background: var(--ac);
+}
+.ogretici-metin {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: var(--font-game);
+  font-size: var(--p3);
+  font-weight: 800;
+  color: var(--tx);
+}
+.ogretici-atla {
+  flex: 0 0 auto;
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: var(--rr);
+  border: 2px solid var(--ot);
+  background: var(--oyuk);
+  color: var(--tx2);
+  font-size: var(--p2);
+  font-weight: 800;
+  cursor: pointer;
+  pointer-events: auto;
+}
+/* Sürükleyen el: oyuncunun hemen altında. Taban halka + düğme gerçek joystick'in (.joystick)
+   hayaleti; parmak ucu (ikonun 11,2 noktası) düğmenin merkezine oturur. */
+.ogretici-el-alan {
+  position: absolute;
+  left: 50%;
+  top: 64%;
+  width: 0;
+  height: 0;
+}
+.ogretici-taban,
+.ogretici-dugme,
+.ogretici-el {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.ogretici-taban {
+  width: 110px;
+  height: 110px;
+  margin: -55px 0 0 -55px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.45);
+  animation: ogreticiTaban var(--el-tur) ease-in-out infinite;
+}
+.ogretici-dugme {
+  width: 46px;
+  height: 46px;
+  margin: -23px 0 0 -23px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  animation: ogreticiSurukle var(--el-tur) ease-in-out infinite;
+}
+.ogretici-el {
+  margin: -5px 0 0 -24px;
+  filter: drop-shadow(0 3px 0 rgba(0, 0, 0, 0.35));
+  animation: ogreticiEl var(--el-tur) ease-in-out infinite;
+}
+@keyframes ogreticiTaban {
+  0%,
+  12% {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  22%,
+  78% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  90%,
+  100% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+@keyframes ogreticiSurukle {
+  0%,
+  16% {
+    opacity: 0;
+    transform: translate(0, 0);
+  }
+  22% {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+  58%,
+  76% {
+    opacity: 1;
+    transform: translate(28px, -26px);
+  }
+  88%,
+  100% {
+    opacity: 0;
+    transform: translate(0, 0);
+  }
+}
+@keyframes ogreticiEl {
+  0% {
+    opacity: 0;
+    transform: translate(10px, 16px) scale(1.1);
+  }
+  12% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1.06);
+  }
+  20% {
+    transform: translate(0, 0) scale(0.92);
+  }
+  58%,
+  76% {
+    opacity: 1;
+    transform: translate(28px, -26px) scale(0.92);
+  }
+  86% {
+    opacity: 1;
+    transform: translate(34px, -18px) scale(1.06);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(34px, -18px) scale(1.06);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ogretici-taban,
+  .ogretici-dugme,
+  .ogretici-el,
+  .ogretici-satir {
+    animation: none;
+  }
+}

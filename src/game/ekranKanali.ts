@@ -34,6 +34,9 @@
  *   6. **seviye** (D-142, G-66/G-67) — seviye atlama ödül ekranı. Öğreticilerin ÖNÜNDE (bir ödül
  *      bekletilmez) ama ipucular gibi SIRA BEKLER: seviye çoğu zaman görev bitince (XP) atlanır,
  *      yani tam kutlamanın ortasında — ekran kutlama bitince gelir, üstüne binmez.
+ *   7. **öğretici** (E5) — ilk dakikaların satırı + sürükleyen el. Ekranı KESMEZ (karartma yok,
+ *      yalnız "Atla" dokunur) ama yine de sıradadır: başka bir şey konuşurken susar, yoksa ekran
+ *      iki şeyi birden söylerdi. İpucuların ARKASINDA: onlar o anın özel durumunu anlatır.
  */
 
 /** Ekranı kesen kanallar. `null` = ekran serbest. */
@@ -46,6 +49,7 @@ export type EkranKanali =
   | 'ipucu-karakter'
   | 'ipucu-tepsi'
   | 'teklif-baslangic'
+  | 'ogretici'
   | null;
 
 export interface EkranGirdisi {
@@ -71,6 +75,8 @@ export interface EkranGirdisi {
   tepsiIpucuHazir: boolean;
   /** F4c: başlangıç paketi teklifi bekliyor (ilk Usta'dan sonra, bir kez — `vitrin.baslangicTeklifiGoster`). */
   baslangicTeklifHazir?: boolean;
+  /** E5: ilk dakikaların öğretici adımı var (`ogreticiAdimi` null değil). */
+  ogreticiHazir?: boolean;
 }
 
 export function ekranKanali(g: EkranGirdisi): EkranKanali {
@@ -85,6 +91,7 @@ export function ekranKanali(g: EkranGirdisi): EkranKanali {
   if (g.bulasikOgretmeHazir) return 'ogretme-bulasik';
   if (g.karakterIpucuHazir) return 'ipucu-karakter';
   if (g.tepsiIpucuHazir) return 'ipucu-tepsi';
+  if (g.ogreticiHazir) return 'ogretici';
   // SATIŞ TEKLİFİ EN SONDA: oyunu öğreten her şey önce gelir, eylem ortasında asla çıkmaz
   // (panel/bildirim/kutlama sırasında yukarıdaki kapı onu da bekletir). monetization.md §2.
   if (g.baslangicTeklifHazir) return 'teklif-baslangic';
@@ -105,6 +112,8 @@ export function geriTusu(kanal: EkranKanali, panelAcik: boolean): GeriEylemi {
   if (kanal === 'kafe-adi' || kanal === 'cevrimdisi' || kanal === 'usta') return kanal;
   if (panelAcik) return 'panel';
   if (kanal === 'seviye') return 'seviye';
+  // E5: öğretici ekranı kesmez → geri tuşu onu atlatmaz, uygulamayı küçültür (kazayla atlanmasın).
+  if (kanal === 'ogretici') return 'kucult';
   if (kanal != null) return 'ipucu';
   return 'kucult';
 }

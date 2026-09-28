@@ -3,7 +3,10 @@ import { useGame, goalMetricsOf, tableThemeUnlocked, tableSoftMaxLevel, gorunenC
 import { claimableGoals, collectionBonus, goalViewsForPanel, type GoalView } from '../../game/goals';
 import { dailyViews, claimableDailyCount, dayIndex, type DailyQuestView } from '../../game/dailyQuests';
 import { dailyCountersOf } from '../../game/store';
-import { adFreeDailyReady, masterAdsLeft, masterCost, toastCizilir, questInTransition, videoReward, videoRights, type QuestView } from '../../game/rules';
+import { adFreeDailyReady, cardQuestIndex, masterAdsLeft, masterCost, toastCizilir, questInTransition, videoReward, videoRights, type QuestView } from '../../game/rules';
+import { ogreticiAdimi, ogreticiMetni, yurudu } from '../../game/onboarding';
+import { LAYOUT } from '../../game/layout';
+import { Ogretici } from './Ogretici';
 import { ekranKanali, geriTusu, tepsiIpucuZamani } from '../../game/ekranKanali';
 import { Capacitor } from '@capacitor/core';
 import { App as CapApp } from '@capacitor/app';
@@ -168,6 +171,17 @@ export function HUD() {
   // (kilit store'da — `closeMaster` · `dwell.ustaKaresi`).
   const closeMaster = useGame((s) => s.closeMaster);
 
+  // E5 — ilk dakikaların öğreticisi. Adım KARTIN görevinden türer (`game/onboarding.ts`); tek yerel
+  // şey "bu oturumda yürüdü" mandalı: oyuncu başlangıç noktasına geri dönse el geri gelmesin.
+  const ogreticiAtlandi = useGame((s) => s.ogreticiAtlandi);
+  const ogreticiAtla = useGame((s) => s.ogreticiAtla);
+  const kartIndex = useGame((s) => cardQuestIndex(s));
+  const yurudiAn = useGame((s) => yurudu(s.player, LAYOUT.player));
+  const [yurudiOturum, setYurudiOturum] = useState(false);
+  if (yurudiAn && !yurudiOturum) setYurudiOturum(true);
+  const ogreticiAdim = ogreticiAdimi({ kartIndex, atlandi: ogreticiAtlandi, yurudu: yurudiOturum || yurudiAn });
+  const ogreticiMetinK = useGame((s) => (ogreticiAdim ? ogreticiMetni(ogreticiAdim, s) : null));
+
   const lvl = levelProgress(xp);
   const questPct = quest && quest.total != null ? Math.min(100, ((quest.cur ?? 0) / quest.total) * 100) : null;
   // Karakter panelinden alınan görevler (tepsi/garson tepsi/garson hız) → Karakter sekmesi işaretlenir.
@@ -192,6 +206,7 @@ export function HUD() {
     tepsiIpucuHazir: tepsiAni && !trayTipSeen,
     seviyeVar: levelUp != null,
     baslangicTeklifHazir: teklifHazir,
+    ogreticiHazir: ogreticiAdim != null,
   });
   const teklif = kanal === 'teklif-baslangic';
   const showOffline = kanal === 'cevrimdisi';
@@ -397,6 +412,11 @@ export function HUD() {
           yüklemede değil, oyuncu bir kez hareket ettikten sonra dolar). */}
       {kanal === 'usta' && nearMaster && (
         <UstaModal id={nearMaster} onClose={closeMaster} />
+      )}
+
+      {/* ───────── E5 ÖĞRETİCİ: bandın üstünde tek satır (+ ilk adımda sürükleyen el) ───────── */}
+      {kanal === 'ogretici' && ogreticiAdim && ogreticiMetinK && (
+        <Ogretici adim={ogreticiAdim} metin={ogreticiMetinK} onAtla={ogreticiAtla} />
       )}
 
       {/* ───────── ALT BANT: AKTİF ADIM (Tek Odak) ───────── */}

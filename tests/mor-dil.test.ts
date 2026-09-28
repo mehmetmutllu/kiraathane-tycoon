@@ -45,6 +45,7 @@ const OYNANAN = [
   'src/components/ui/SplashScreen.tsx',
   'src/components/ui/DioramaPreview.tsx',
   'src/components/ui/TableThemePreview.tsx',
+  'src/components/ui/Ogretici.tsx',
 ];
 
 const oku = (p: string) => readFileSync(p, 'utf8');

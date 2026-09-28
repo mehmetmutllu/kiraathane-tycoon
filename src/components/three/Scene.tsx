@@ -15,6 +15,8 @@ import { cihazSinifiOku, cihazSinifiYaz, golgeAcikMi, sinifBelirle, ISINMA_KARE,
 import { dwellState, ustaKaresi } from '../../game/dwell';
 import { Bahce } from './Bahce';
 import { GroundMarker } from './GroundMarker';
+import { OgreticiIz } from './OgreticiIz';
+import { ogreticiAdimi, ogreticiHedefi } from '../../game/onboarding';
 import { fmt } from '../../game/decimal';
 // Etiketler ve işaret yarıçapı `markerFrame`ten gelir: çerçeve genişliği YAZIDAN çözülüyor
 // ve aynı çerçeveyi `tick.ts` tetik olarak test ediyor (D-121). Buraya düz metin yazmak
@@ -101,7 +103,10 @@ function QuestPointer() {
     // atlıyor, kart hâlâ biten görevi yazıyordu (D-038'in dört kanalı ayrışıyordu).
     const qi = cardQuestIndex(g);
     const def = qi < economyConfig.quests.length ? economyConfig.quests[qi] : null;
-    const target = g.quest && def ? questFocusPos(def.target, g.tableLevels, g.tables, g.areasOpen, def.area ?? 0, tableUpgradeTarget(gateOf(g))) : null;
+    // E5: öğretici süresince hedef görevin genel noktası değil O ANKİ somut şey (çay bekleyen
+    // müşteri · yerdeki para) — `ogreticiHedefi` yalnız bu iki adımda ayrışır, yoksa null.
+    const ogretici = ogreticiHedefi(ogreticiAdimi({ kartIndex: qi, atlandi: g.ogreticiAtlandi, yurudu: true }), g);
+    const target = g.quest && def ? ogretici ?? questFocusPos(def.target, g.tableLevels, g.tables, g.areasOpen, def.area ?? 0, tableUpgradeTarget(gateOf(g))) : null;
     if (!target) {
       screenPointer.active = false;
       activeStep.has = false;
@@ -1387,6 +1392,7 @@ export function Scene() {
       <CameraRig />
       <Simulation />
       <QuestPointer />
+      <OgreticiIz />
       <PerfProbe />
     </Canvas>
   );
