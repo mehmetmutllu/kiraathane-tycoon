@@ -17,7 +17,10 @@
       Bu bayrak olmadan iOS WebView'da env() hep 0 döner ve HUD çentiğin altında kalır.
     -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    <meta name="theme-color" content="#1f2933" />
+    <meta name="theme-color" content="#221b52" />
+    <!-- Yerel açılış görseli (iOS) → yükleme ekranı arası BEYAZ kare olmasın: zemin baştan oyunun moru. -->
+    <style>html, body { background: #221b52; }</style>
+    <link rel="preload" as="image" href="/assets/ui/logo-acilis.webp" type="image/webp" />
     <title>Tea House Tycoon</title>
   </head>
   <body>

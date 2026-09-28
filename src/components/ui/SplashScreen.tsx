@@ -78,8 +78,10 @@ export function SplashScreen() {
   if (gone) return null;
   return (
     <div className={`splash${done ? ' splash--out' : ''}`} aria-hidden={done}>
+      {/* Seçenek 2 (2026-09-28, kullanıcı): oyun moru + amber hâle, maskot ve logo saydam. iOS'un yerel açılış
+          görseli aynı zemin ve aynı logo (ios/App/App/Assets.xcassets/Splash.imageset) — geçişte sıçrama yok. */}
       <div className="splash__glow" />
-      <div className="splash__title">{OYUN_ADI}</div>
+      <img className="splash__logo" src="/assets/ui/logo-acilis.webp" alt={OYUN_ADI} width={720} height={671} decoding="async" />
       <div className="splash__bar">
         <div className="splash__fill" style={{ width: `${done ? 100 : pct}%` }} />
       </div>

@@ -11,12 +11,14 @@ import type { CapacitorConfig } from '@capacitor/cli';
  * `appName` yalnız Capacitor'ın kendi kaydıdır; cihazda simgenin altında görünen ad
  * `android/app/src/main/res/` altındaki `values` ve `values-tr` klasörlerinin
  * `strings.xml` dosyalarından gelir ve dile göre değişir
- * (Türkçe cihazda "Köşe Kıraathanesi"). Mağaza başlığı ikisinden de gelmez, Play Console'da yazılır.
+ * (D-159: her iki dilde "Tea House Tycoon"). Mağaza başlığı ikisinden de gelmez, Play Console'da yazılır.
  */
 const config: CapacitorConfig = {
   appId: 'com.mutlubadem.teahouse',
   appName: 'Tea House Tycoon',
-  webDir: 'dist'
+  webDir: 'dist',
+  // Yerel açılış görseli → web yükleme ekranı arasında WebView'ın boş karesi beyaz değil oyunun moru olsun.
+  backgroundColor: '#221b52',
 };
 
 export default config;

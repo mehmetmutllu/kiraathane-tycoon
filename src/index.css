@@ -1432,23 +1432,19 @@ body,
 }
 .splash__glow {
   position: absolute;
-  top: 30%;
-  width: 280px;
-  height: 280px;
+  top: calc(50% - min(62vw, 270px, 34vh));
+  width: min(96vw, 420px);
+  height: min(96vw, 420px);
   border-radius: 50%;
   background: radial-gradient(circle, var(--parilti) 0%, transparent 70%);
   filter: blur(4px);
   animation: splash-pulse 2.4s ease-in-out infinite;
 }
-.splash__title {
+.splash__logo {
   position: relative;
-  font-family: var(--font-game);
-  font-weight: 800;
-  font-size: var(--p6);
-  line-height: 1.15;
-  color: var(--tx);
-  letter-spacing: 0.01em;
-  text-align: center;
+  width: min(86vw, 480px, 46vh);
+  height: auto;
+  filter: drop-shadow(0 10px 18px color-mix(in srgb, var(--ot) 55%, transparent));
 }
 .splash__bar {
   position: relative;

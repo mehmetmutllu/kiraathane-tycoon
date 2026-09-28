@@ -138,6 +138,13 @@ ayrı CC0 paket; eklenince ayrı modüler klasöre (`public/assets/models/<paket
 > UI fontları (Baloo 2 + Lilita One) npm `@fontsource/*` paketlerinden YEREL bundle'lanır
 > (main.tsx; CDN yok). İkisi de OFL 1.1.
 
+## Arayüz görselleri (`public/assets/ui/`)
+| Dosya | Açıklama | Kaynak | Lisans | Durum |
+|---|---|---|---|---|
+| logo-acilis.webp | Yükleme ekranı logo+maskot, saydam, 720 px (`SplashScreen.tsx`) | Kullanıcının ürettiği logo (`docs/logotasarim/logo-maskot-saydam.png`) | Projenin kendi görseli | ✅ 2026-09-28 |
+
+> iOS yerel açılış görseli (`ios/App/App/Assets.xcassets/Splash.imageset/`, 2732²) aynı logo + oyunun mor zemini.
+
 ## Sesler (`public/assets/audio/`) — **KLASÖR BİLEREK BOŞ**
 
 **Kaynak seçildi ve seçim "dosya değil KOD" oldu (E4 · D-096).** Sesler
