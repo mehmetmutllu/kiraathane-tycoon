@@ -118,7 +118,7 @@ Bütçe düzeltmelerinin tarihçesi (73 → 121) ve bitmiş fazların tam anlat�
 - ⏳ **F5 — mağaza vitrini + uyum** …
   · 2026-09-28 yayın sprinti (D-158): iOS önce, `com.mutlubadem.teahouse`, Codemagic · ASC kaydı + AdMob iOS + RevenueCat projesi kuruldu · mağaza taslağı artifact KfNEdtK71YzUupBjrvyxEj · 4 ajan dalı birleşti · ilk paket three'siz (1.633 → 396 kB) · tarama yüksekleri Y-16/17/23/25/34 ✅
   · 2026-09-28 (3.) D-159: ad her yerde Tea House Tycoon · ASC 5 IAP + metin + mor bantlı 24 görsel yüklendi · Codemagic uygulaması · gizlilik sitesi · ikon · iPad · i18n altyapı + UI sarıldı (config verisi sırada)
-  · 2026-09-28 (4.) D-160: i18n bitti (Dil ayarı + bekçi + EN duman) · yükleme ekranı + iOS açılış görseli · Luckiest Guy · ASC App Privacy yayımlandı · kalan: RevenueCat .p8 (kullanıcı) → TestFlight → inceleme
+  · 2026-09-28 (4.) D-160: i18n bitti (Dil ayarı + bekçi + EN duman) · yükleme ekranı + iOS açılış görseli · Luckiest Guy · ASC App Privacy yayımlandı · → RevenueCat kuruldu → Codemagic derleme 1 → **iOS 1.0.0 + 5 IAP incelemeye gönderildi (17:06)**
 - ✅ **F6 — açılış ekranı + ekran yönü + yatay/tablet HUD** (F1b iki tur + tur 3) …
 
 ## Faz T — TUR SERİSİ: GERİ BİLDİRİM + PERFORMANS (13/13) ✅

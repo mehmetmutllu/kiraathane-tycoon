@@ -13,15 +13,16 @@
 - Paid Apps sözleşmesi, banka, vergi formları zaten AKTİF (kontrol edildi).
 - İki makine senkron betiği: oturum aç/kapa aynı anda koşunca (/clear) yarış → kilit eklendi.
 
-## ⏭️ SIRADAKİ ADIM
-- ✅ RevenueCat: App Store uygulaması (IAP anahtarı 598KB7HRD8, "Valid credentials") · 5 ürün · reklamsiz/baslangic
-  haklarına bağlı · iOS public key `iap.config.ts`e girdi (57461ed). Ürünler "Could not check": RC'ye ASC API anahtarı
-  verilmedi (opsiyonel, yalnız içe aktarma/fiyat için).
-- 🔧 Codemagic `ios-yayin` derlemesi `6aba6bdacc1aa81a99853c6b` başlatıldı → TestFlight.
-1. Derleme bitince: TestFlight'ta işlenmesini bekle → kullanıcı telefonda dener (satın alma sandbox, reklam, ATT, açılış, dil).
-2. ASC sürüm sayfasında derlemeyi seç → incelemeye gönder (KULLANICI ONAYIYLA; "incelemeden sonra otomatik yayımla" açık).
-3. AdMob (hesap mutlubadem.dev — bu Chrome'da açık DEĞİL): GDPR mesajı + IDFA açıklayıcı + ödeme profili kontrolü →
-   kullanıcı o hesapla giriş yapınca. Yayını engellemez (ATT penceresi kod içinden açılıyor).
+## ⏭️ SIRADAKİ ADIM — İNCELEMEDE (2026-09-28 17:06)
+- ✅ **iOS 1.0.0 (derleme 1) + 5 IAP incelemeye GÖNDERİLDİ** (kullanıcı onayıyla). "İncelemeden sonra otomatik yayımla"
+  açık → onaylanınca mağazada. Fiyat Ücretsiz, 175 ülke, Mac/Vision Pro KAPALI (denenmedi), içerik hakları "var + hakkım
+  var", inceleme notu EN yazıldı, iletişim bilgisini kullanıcı girdi.
+- RevenueCat tamam (5 ürün + 2 hak + appl_ anahtar). TestFlight iç grup "Ekip" (kullanıcı eklendi, davet gitti).
+- Android test APK (debug, test reklam, IAP kapalı) kullanıcıya verildi.
+1. Apple sonucu (≤ 48 sa): RED gelirse gerekçeyi oku → düzelt → Codemagic yeni derleme (derleme no otomatik artar).
+2. AdMob (hesap mutlubadem.dev — Chrome'da açık DEĞİL): GDPR mesajı + IDFA açıklayıcı + ödeme profili → kullanıcı o
+   hesapla girince. (mutlubadem4456 AdMob hesabı ayrı, boş — orada bir şey yapılmadı.)
+3. Sonra: F5 kapanışı, v1.1 listesi.
 
 ## AÇIK KALEMLER
 - Duman erken akışı ara sıra düşüyor (bu oturum 3 koşuda 1: garson pad'i görünmedi) — yeniden koşunca geçiyor.
