@@ -9,8 +9,8 @@
  * Banner YOK (kullanıcı kararı, kalıcı). Ödüllü videonun ödül MİKTARI burada değil —
  * `economy.config.ts`te ve varyant kapısına tabi.
  */
-import { Capacitor } from '@capacitor/core';
 import { adsConfig } from '../config/ads.config';
+import { magazaPlatformu, type MagazaPlatformu } from './platform';
 
 export interface GecisliGirdi {
   simdi: number;
@@ -55,10 +55,12 @@ export function sahteArkaUc(): ReklamArkaUcu {
   };
 }
 
-async function admobArkaUcu(): Promise<ReklamArkaUcu> {
+/** Cihazda: AdMob. `platform` birimi ve iOS'un izin sırasını seçer (platform.ts tek kaynak). */
+export async function admobArkaUcu(platform: MagazaPlatformu): Promise<ReklamArkaUcu> {
   const { AdMob, AdmobConsentStatus, InterstitialAdPluginEvents, RewardAdPluginEvents } =
     await import('@capacitor-community/admob');
   const test = adsConfig.test;
+  const birim = (test ? adsConfig.testBirim : adsConfig.birim)[platform];
   /** `show*` çağrısı reklam AÇILINCA döner; oyun reklam KAPANANA dek beklemeli. */
   const kapanisiBekle = async (kapandi: string, basarisiz: string, goster: () => Promise<unknown>) => {
     const dinleyiciler: { remove: () => Promise<void> }[] = [];
@@ -79,9 +81,17 @@ async function admobArkaUcu(): Promise<ReklamArkaUcu> {
       // UMP (GDPR): rıza gerekiyorsa Google'ın kendi formu — AB/UK'de rızasız reklam hiç gelmez.
       const bilgi = await AdMob.requestConsentInfo();
       if (bilgi.status === AdmobConsentStatus.REQUIRED && bilgi.isConsentFormAvailable) await AdMob.showConsentForm();
+      // iOS · ATT (Apple zorunluluğu): Google'ın sırası ÖNCE UMP, SONRA ATT. AdMob panelinde "IDFA
+      // açıklama mesajı" kuruluysa UMP formu ATT penceresini kendisi açar; kurulu değilse (ya da
+      // oyuncu AB dışındaysa ve form gelmediyse) pencere burada açılır. Sistem bir kez sorar —
+      // karar verilmişse bu satır hiçbir şey göstermez. Reklam yüklemesi bundan SONRA başlar.
+      // ATT hatası reklamı kapatmaz: izin yoksa SDK kişiselleştirilmemiş reklam sunar.
+      if (platform === 'ios') await dene(async () => {
+        if ((await AdMob.trackingAuthorizationStatus()).status === 'notDetermined') await AdMob.requestTrackingAuthorization();
+      }, undefined);
     },
     gecisliHazirla: async () => {
-      await AdMob.prepareInterstitial({ adId: adsConfig.birim.gecisli, isTesting: test });
+      await AdMob.prepareInterstitial({ adId: birim.gecisli, isTesting: test });
       return true;
     },
     gecisliGoster: async () => {
@@ -90,7 +100,7 @@ async function admobArkaUcu(): Promise<ReklamArkaUcu> {
       return true;
     },
     odulluHazirla: async () => {
-      await AdMob.prepareRewardVideoAd({ adId: adsConfig.birim.odullu, isTesting: test });
+      await AdMob.prepareRewardVideoAd({ adId: birim.odullu, isTesting: test });
       return true;
     },
     odulluGoster: async () => {
@@ -150,7 +160,8 @@ export async function reklamBaslat(ozel?: ReklamArkaUcu): Promise<void> {
   reklamAcik = false;
   gecisliHazir = odulluHazir = false;
   sayac.gecisli = sayac.odullu = 0;
-  const secilen = ozel ?? (Capacitor.isNativePlatform() ? await dene(admobArkaUcu, null) : sahteArkaUc());
+  const platform = magazaPlatformu();
+  const secilen = ozel ?? (platform ? await dene(() => admobArkaUcu(platform), null) : sahteArkaUc());
   if (!secilen) return;
   const kuruldu = await dene(async () => { await secilen.kur(); return true; }, false);
   if (!kuruldu) return;

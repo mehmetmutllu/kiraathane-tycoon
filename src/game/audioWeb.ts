@@ -44,6 +44,16 @@ export function sesBaglami(): AudioContext | null {
   return ctx;
 }
 
+/**
+ * Bağlamı her dokunuşta UYANDIR — motorların `kilidiAc`ı yalnız İLK dokunuşta çalışır, ama iOS
+ * WebView'u bağlamı sonradan da durdurur: telefon çağrısı, Siri, arka plana geçiş bağlamı
+ * `interrupted` (Safari'ye özgü durum) ya da `suspended` yapar ve kendiliğinden geri açmaz.
+ * Bağlam henüz kurulmadıysa hiçbir şey yapmaz (kurulumu ilk ses çağrısı yapar).
+ */
+export function sesiUyandir(): void {
+  if (ctx && ctx.state !== 'running' && ctx.state !== 'closed') void ctx.resume().catch(() => {});
+}
+
 export function webSesArkaUcu(): SesArkaUc {
   const baglam = sesBaglami;
 
@@ -85,7 +95,7 @@ export function webSesArkaUcu(): SesArkaUc {
 
     kilidiAc() {
       const c = baglam();
-      if (c && c.state === 'suspended') void c.resume();
+      if (c && c.state !== 'running' && c.state !== 'closed') void c.resume().catch(() => {});
     },
 
     dosyaCal(yol, gain, yarimSes) {

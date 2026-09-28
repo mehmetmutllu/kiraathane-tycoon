@@ -1,0 +1,3 @@
+/* Cihaz dili İngilizce (ve Türkçe dışındaki her dil) — CFBundleDevelopmentRegion = en. */
+"CFBundleDisplayName" = "Tea House Tycoon";
+"NSUserTrackingUsageDescription" = "This identifier is used to show you more relevant ads. The game plays the same either way.";

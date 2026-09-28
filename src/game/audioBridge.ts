@@ -11,7 +11,7 @@
  */
 import { levelProgress } from '../config/economy.config';
 import { sesOlaylari, sesMotoruKur, type SesKesit, type SesMotoru } from './audio';
-import { sesBaglami, webSesArkaUcu } from './audioWeb';
+import { sesBaglami, sesiUyandir, webSesArkaUcu } from './audioWeb';
 import { muzikMotoruKur, SALON_MUZIGI, type MuzikMotoru } from './music';
 import { webMuzikArkaUcu } from './musicWeb';
 import { useGame } from './store';
@@ -63,12 +63,12 @@ export function sesiBagla(motor?: SesMotoru, muzik?: MuzikMotoru): () => void {
     webMuzikArkaUcu(sesBaglami), SALON_MUZIGI, ayar.music, ayar.musicVolume);
   let onceki: SesKesit | null = null;
 
-  // Mobil tarayıcı kullanıcı dokunmadan ses çalmaz; ilk dokunuş/tuş kilidi açar.
-  const ac = () => { m.kilidiAc(); mz.kilidiAc(); };
-  if (typeof window !== 'undefined') {
-    window.addEventListener('pointerdown', ac, { passive: true });
-    window.addEventListener('keydown', ac, { passive: true });
-  }
+  // Mobil tarayıcı kullanıcı dokunmadan ses çalmaz; ilk dokunuş/tuş kilidi açar. Sonraki her dokunuş
+  // bağlamı uyandırır (iOS: çağrı/arka plan sonrası). WebKit `pointerdown`ı her sürümde "kullanıcı
+  // jesti" saymıyor — `touchend` ve `click` iOS'un kesin saydığı olaylar.
+  const ac = () => { m.kilidiAc(); mz.kilidiAc(); sesiUyandir(); };
+  const olaylar = ['pointerdown', 'touchend', 'click', 'keydown'] as const;
+  if (typeof window !== 'undefined') for (const o of olaylar) window.addEventListener(o, ac, { passive: true });
 
   const cikar = useGame.subscribe((s: Durum) => {
     // Ayar KAYITTAN geliyor ve panelden değişebiliyor — her karede motora yansıtılır.
@@ -84,9 +84,6 @@ export function sesiBagla(motor?: SesMotoru, muzik?: MuzikMotoru): () => void {
 
   return () => {
     cikar();
-    if (typeof window !== 'undefined') {
-      window.removeEventListener('pointerdown', ac);
-      window.removeEventListener('keydown', ac);
-    }
+    if (typeof window !== 'undefined') for (const o of olaylar) window.removeEventListener(o, ac);
   };
 }
