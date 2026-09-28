@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { Suspense, lazy, useEffect, useRef, useState, useSyncExternalStore, type ComponentProps } from 'react';
 import { useGame, goalMetricsOf, tableThemeUnlocked, tableSoftMaxLevel, gorunenCuzdan } from '../../game/store';
 import { claimableGoals, collectionBonus, goalViewsForPanel, type GoalView } from '../../game/goals';
 import { dailyViews, claimableDailyCount, dayIndex, type DailyQuestView } from '../../game/dailyQuests';
 import { dailyCountersOf } from '../../game/store';
-import { adFreeDailyReady, cardQuestIndex, masterAdsLeft, masterCost, toastCizilir, questInTransition, videoReward, videoRights, type QuestView } from '../../game/rules';
+import { adFreeDailyReady, cardQuestIndex, masterAdsLeft, masterCost, toastCizilir, questInTransition, videoReward, videoRights, type GameNotice, type QuestView } from '../../game/rules';
 import { ogreticiAdimi, ogreticiMetni, yurudu } from '../../game/onboarding';
 import { LAYOUT } from '../../game/layout';
 import { Ogretici } from './Ogretici';
@@ -16,6 +16,7 @@ import { satinAl, satinAlimlariGeriYukle, satinAlmaAbone, satinAlmaSurumu, urunF
 import { basarimlariGoster, bulutAbone, bulutSifirla, bulutSurumu, girisYap, playGamesDurumu } from '../../game/bulut';
 import { iapConfig } from '../../config/iap.config';
 import { fmt } from '../../game/decimal';
+import { SAYAC_MS, sayacDegeri } from '../../game/sayac';
 import { SAVE_VERSION } from '../../game/save';
 import { levelProgress, reputationCarryMult, economyConfig, MAX_AREAS } from '../../config/economy.config';
 import { floorSwatch, WALL_THEMES } from '../../config/palette';
@@ -45,14 +46,46 @@ import {
   BasinIcon,
 } from './icons';
 import { Sheet } from './Sheet';
-import { CharacterPanel, SahipOnizleme } from './CharacterPanel';
 import { baslangicTeklifiGoster, dekorAcik, dekorSalonu, vitrinSahip, vitrinUrunleri, vitrinUrunu, type VitrinTuru } from '../../game/vitrin';
 import { dekorPulu, kiyafetPulu, tepsiPulu } from '../../config/kozmetik';
-import { DekorOnizleme } from './DekorOnizleme';
-import { TableThemePreview } from './TableThemePreview';
-import { DioramaPreview } from './DioramaPreview';
 import './hud.css';
 import { KafeAdiKutusu } from './KafeAdiKutusu';
+
+/* ── 3D ÖNİZLEMELER AYRI PARÇADA (Faz F kod-bölme) ──────────────────────────────────────────
+   Karakter paneli ve mağaza önizlemeleri kendi <Canvas>ını kurar → r3f + three'yi çeker. Arayüz
+   ilk pakette kalır, bunlar açıldıkları an iner (sahne parçasıyla aynı üçüncü taraf kodu paylaşır,
+   yani genelde zaten önbellekte). Yer tutucu önizleme kutusunun kendisi: iniş anında düzen oynamaz. */
+const CharacterPanel = lazy(() => import('./CharacterPanel').then((m) => ({ default: m.CharacterPanel })));
+const SahipOnizlemeParca = lazy(() => import('./CharacterPanel').then((m) => ({ default: m.SahipOnizleme })));
+const DekorOnizlemeParca = lazy(() => import('./DekorOnizleme').then((m) => ({ default: m.DekorOnizleme })));
+const TableThemePreviewParca = lazy(() => import('./TableThemePreview').then((m) => ({ default: m.TableThemePreview })));
+const DioramaPreviewParca = lazy(() => import('./DioramaPreview').then((m) => ({ default: m.DioramaPreview })));
+
+const OnizlemeYeri = () => (
+  <div className="shop-preview">
+    <div className="preview-canvas" />
+  </div>
+);
+const SahipOnizleme = (p: ComponentProps<typeof SahipOnizlemeParca>) => (
+  <Suspense fallback={<OnizlemeYeri />}>
+    <SahipOnizlemeParca {...p} />
+  </Suspense>
+);
+const DekorOnizleme = (p: ComponentProps<typeof DekorOnizlemeParca>) => (
+  <Suspense fallback={<OnizlemeYeri />}>
+    <DekorOnizlemeParca {...p} />
+  </Suspense>
+);
+const TableThemePreview = (p: ComponentProps<typeof TableThemePreviewParca>) => (
+  <Suspense fallback={<OnizlemeYeri />}>
+    <TableThemePreviewParca {...p} />
+  </Suspense>
+);
+const DioramaPreview = (p: ComponentProps<typeof DioramaPreviewParca>) => (
+  <Suspense fallback={<OnizlemeYeri />}>
+    <DioramaPreviewParca {...p} />
+  </Suspense>
+);
 import { KAFE_ADI_VARSAYILAN } from '../../game/kafeAdi';
 import { cihazSinifiOku, golgeAcikMi } from '../../game/cihazSinifi';
 
@@ -385,22 +418,8 @@ export function HUD() {
           bir tip daralmasıyla sessizce geri alındı (f4b1a52). Olay hâlâ üretiliyor, `tick.ts`e
           DOKUNULMADI (sunum katmanı kararı, E3/D-096 deseni): devHooks anlık görüntüsü ve ona
           bağlı testler değişmedi. Ölçüm: docs/serit-raporu-g1.md §Bulgular 1. */}
-      {toastCizilir(notice) && (
-        <div className={`notice${notice.kind === 'satin' ? ' satin' : ''}`} data-testid="notice" key={notice.text}>
-          <span className="notice-badge">
-            {notice.kind === 'level' ? <StarBadge size={28} /> : notice.kind === 'satin' ? <TickIcon size={22} /> : <BangBadge size={28} />}
-          </span>
-          <span className="notice-text">{notice.text}</span>
-          {notice.reward != null && (
-            <span className="notice-reward" data-testid="notice-reward">
-              {/* TAM SAYI: oto-toplama toplamı kesirli geliyordu ve "273.3333" Türkçe okumada
-                  binlik ayracı gibi görünüyordu (kullanıcı: *"273k para toplanmış gibi
-                  gözüküyor"*). Para zaten kuruşsuz sunuluyor; burada da yuvarlanır. */}
-              <CoinIcon size={16} />+{fmt(notice.reward)}
-            </span>
-          )}
-        </div>
-      )}
+      {/* Mağaza açıkken alım bildirimi mağazanın İÇİNDE çizilir (ShopPanel · `shop-bildirim-capa`). */}
+      {toastCizilir(notice) && !(notice.kind === 'satin' && sheet === 'shop') && <Bildirim key={notice.text} notice={notice} />}
 
       {/* ───────── USTA MODALİ (G-14) ─────────
           D8'de bu bir alt şeritti ve bandı devralıyordu; kullanıcı 2026-09-09'da şeridi reddedip
@@ -547,10 +566,12 @@ export function HUD() {
       {sheet === 'goals' && <GoalsSheet onClose={() => setSheet(null)} />}
       {sheet === 'shop' && <ShopPanel onClose={() => setSheet(null)} />}
       {sheet === 'char' && (
-        <CharacterPanel
-          onClose={() => setSheet(null)}
-          ilkSekme={quest?.target.type === 'waiterTray' || quest?.target.type === 'waiterSpeed' ? 'waiter' : 'player'}
-        />
+        <Suspense fallback={null}>
+          <CharacterPanel
+            onClose={() => setSheet(null)}
+            ilkSekme={quest?.target.type === 'waiterTray' || quest?.target.type === 'waiterSpeed' ? 'waiter' : 'player'}
+          />
+        </Suspense>
       )}
       {sheet === 'settings' && (
         <Sheet
@@ -688,6 +709,7 @@ export function HUD() {
           testid="offline"
           title="Sen yokken kıraathane çalıştı"
           amount={Math.floor(offlineEarned)}
+          sayac
           onClaim={() => claimOffline()}
           onIzle={offlineIzleEki > 0 ? () => claimOffline(true) : undefined}
           izleEtiket={`İzle, +${fmt(offlineIzleEki)}`}
@@ -1488,6 +1510,33 @@ function SatinOdulu({ urun, elmas, onClose }: { urun: string; elmas: number; onC
 
 /** ORTAK ÖDÜL EKRANI (plan §9): başlık · ödül · [Al] · [▶ İzle, 2× al].
  *  Reklam hazır değilse ikinci buton pasif görünür ama KAYBOLMAZ (D-039 kalıbı). */
+/**
+ * Çevrimdışı ₺ PARA DİLİ — tutar 0'dan hedefe sayılır (~1 sn, ease-out). Hareket azaltma açıksa
+ * anında hedef. Sayı her karede `fmt` ile (Decimal) biçimlenir; son kare birebir `fmt(hedef)`.
+ */
+function SayanPara({ hedef }: { hedef: number }) {
+  const azHareket = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const [gecen, setGecen] = useState(azHareket ? SAYAC_MS : 0);
+  useEffect(() => {
+    if (azHareket) return;
+    const t0 = performance.now();
+    let kare = 0;
+    const adim = (simdi: number) => {
+      const g = simdi - t0;
+      setGecen(g);
+      if (g < SAYAC_MS) kare = requestAnimationFrame(adim);
+    };
+    kare = requestAnimationFrame(adim);
+    return () => cancelAnimationFrame(kare);
+  }, [hedef, azHareket]);
+  return (
+    <span className="sayan-para" data-testid="sayan-para" data-bitti={gecen >= SAYAC_MS ? '1' : '0'}>
+      {/* "+" sayının İÇİNDE: satır flex, ayrı bir düğüm olsaydı araya `gap` girerdi ("+ 7.120"). */}
+      +{fmt(sayacDegeri(hedef, gecen))}
+    </span>
+  );
+}
+
 function RewardModal({
   testid,
   title,
@@ -1500,10 +1549,13 @@ function RewardModal({
   claimTestid,
   onIzle,
   izleEtiket,
+  sayac = false,
 }: {
   testid: string;
   title: string;
   amount: number;
+  /** ₺ tutarı 0'dan sayarak gelir (çevrimdışı dönüş ekranı). */
+  sayac?: boolean;
   /** 💎 ödülü (D3: hedefler iki para birimi verir; offline yalnız ₺ verdiği için varsayılan 0). */
   diamonds?: number;
   /** KALICI gelir artışı (oran; D-090). Offline ekranı ₺ verir → varsayılan 0, o ekran değişmedi. */
@@ -1539,7 +1591,7 @@ function RewardModal({
       key: 'para',
       icerik: (
         <>
-          <CoinIcon size={30} /> +{fmt(amount)}
+          <CoinIcon size={30} /> {sayac ? <SayanPara hedef={amount} /> : `+${fmt(amount)}`}
         </>
       ),
     });
@@ -1736,6 +1788,40 @@ const UYGULANDI_SATIRI: Record<Sekme, string> = {
 /** 💎 ile alınan sekmeler üst satırda (F4c-2) — ₺ sekmeleriyle karışmasın. */
 const ELMAS_SEKME: readonly Sekme[] = ['outfit', 'tray', 'decor', 'paket'];
 
+function Bildirim({ notice }: { notice: GameNotice }) {
+  return (
+    <div className={`notice${notice.kind === 'satin' ? ' satin' : ''}`} data-testid="notice">
+      <span className="notice-badge">
+        {notice.kind === 'level' ? <StarBadge size={28} /> : notice.kind === 'satin' ? <TickIcon size={22} /> : <BangBadge size={28} />}
+      </span>
+      <span className="notice-text">{notice.text}</span>
+      {notice.reward != null && (
+        <span className="notice-reward" data-testid="notice-reward">
+          {/* TAM SAYI: oto-toplama toplamı kesirli geliyordu ve "273.3333" Türkçe okumada
+              binlik ayracı gibi görünüyordu (kullanıcı: *"273k para toplanmış gibi
+              gözüküyor"*). Para zaten kuruşsuz sunuluyor; burada da yuvarlanır. */}
+          <CoinIcon size={16} />+{fmt(notice.reward)}
+        </span>
+      )}
+    </div>
+  );
+}
+
+/**
+ * F4c-4 alım bildirimi — MAĞAZANIN İÇİNDE, sekmelerin hemen altındaki sıfır yükseklikli çapada.
+ * Eskiden HUD kökünde sabit `top: 196px` ile duruyordu; sekme satırı ekran genişliğine göre bir ya da
+ * iki satır olduğundan önizlemenin üst kenarına biniyordu. Çapa önizlemenin başladığı yerde; bildirim
+ * oradan içeri doğru iner → kenarla çakışmaz, sekmeleri örtmez.
+ */
+function MagazaBildirimi() {
+  const notice = useGame((s) => s.notice);
+  return (
+    <div className="shop-bildirim-capa" data-testid="shop-bildirim-capa">
+      {toastCizilir(notice) && notice.kind === 'satin' && <Bildirim key={notice.text} notice={notice} />}
+    </div>
+  );
+}
+
 function ShopPanel({ onClose }: { onClose: () => void }) {
   const areasOpen = useGame((s) => s.areasOpen);
   const tables = useGame((s) => s.tables);
@@ -1922,6 +2008,7 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
             </button>
           ))}
         </div>
+        <MagazaBildirimi />
 
         {tab === 'paket' ? (
           <Paketler />

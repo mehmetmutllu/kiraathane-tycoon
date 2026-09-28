@@ -24,6 +24,7 @@
  *   node tools/pano-guncelle.mjs --tarih=09.09.2026
  */
 import { readFileSync, writeFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 
 // Türkçe büyük harf sınıfı: `İA` gibi bir faz kodu [A-Z] ile eşleşmez.
 const HARF = 'A-ZÇĞİÖŞÜ';
@@ -262,11 +263,34 @@ export function yazmaliMi(html, hedef, degisen) {
   return degisen.length > 0 || hedef !== html;
 }
 
-/** Panonun `yapilan`'ı arttıysa o tarihe yeni bir günlük kartı da yazılmış olmalı. */
-export function gunlukUyarisi(eskiYapilan, durum, tarih) {
-  if (durum.yapilan <= eskiYapilan) return null;
-  if (durum.gunluk?.[0]?.tarih === tarih) return null;
-  return `sayaç ${eskiYapilan} → ${durum.yapilan} arttı ama ${tarih} tarihli yeni günlük kartı yok (anlatı elle yazılır)`;
+/** Günlük kartının kimliği. Tarih TEK BAŞINA kimlik değil: aynı gün birden çok oturum kapanır. */
+const kartAnahtari = (k) => `${k.tarih}|${k.etiket ?? ''}|${k.baslik ?? ''}`;
+
+/**
+ * Sayaç kaç oturum arttıysa en az o kadar YENİ günlük kartı yazılmış olmalı.
+ *
+ * `taban` = son commit'teki pano ({ yapilan, gunluk }). Eskiden kural "en üstteki kart bugünün
+ * tarihini taşıyor mu" idi: aynı gün ikinci oturum kapanınca ilk oturumun kartı şartı karşılıyor
+ * ve uyarı SESSİZ kalıyordu. Kart sayısı da ölçü olamaz — pano son 8 kartı tutar, eskisi düşer.
+ * Ölçü: tabanda olmayan kartların sayısı ≥ sayaç artışı.
+ */
+export function gunlukUyarisi(taban, durum) {
+  const artis = durum.yapilan - taban.yapilan;
+  if (artis <= 0) return null;
+  const eski = new Set((taban.gunluk ?? []).map(kartAnahtari));
+  const yeni = (durum.gunluk ?? []).filter((k) => !eski.has(kartAnahtari(k))).length;
+  if (yeni >= artis) return null;
+  return `sayaç ${taban.yapilan} → ${durum.yapilan} (+${artis} oturum) arttı ama yalnız ${yeni} yeni günlük kartı var (anlatı elle yazılır)`;
+}
+
+/** Son commit'teki pano — `gunlukUyarisi`nin tabanı. Git yoksa / dosya izlenmiyorsa null. */
+function commitPanosu(panoYolu) {
+  try {
+    const html = execFileSync('git', ['show', `HEAD:${panoYolu.replace(/\\/g, '/')}`], { encoding: 'utf8', maxBuffer: 1e8, stdio: ['ignore', 'pipe', 'ignore'] });
+    return panoOku(html).durum;
+  } catch {
+    return null;
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -296,8 +320,11 @@ if (process.argv[1] && process.argv[1].replace(/\\/g, '/').endsWith('tools/pano-
     process.exit(1);
   }
 
+  // Taban son COMMIT: aynı oturumda araç iki kez koşsa da (ilk koşu sayacı zaten yazmış olur)
+  // artış commit'e göre sayılır. Git yoksa dosyanın koşu öncesi hâli (kartları aynı → sert uyarı).
+  const taban = commitPanosu(panoYolu) ?? { yapilan: eskiYapilan, gunluk: durum.gunluk };
   const degisen = panoyaUygula(durum, p, { tarih, simdi });
-  const gu = gunlukUyarisi(eskiYapilan, durum, tarih);
+  const gu = gunlukUyarisi(taban, durum);
   if (gu) uyarilar.push(gu);
 
   console.log(`Denetim temiz · ${p.butce.yapilan}/${p.butce.toplam} (%${p.butce.yuzde}) · ${p.program.length} program fazı`);

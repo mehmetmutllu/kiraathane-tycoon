@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
-import { useProgress } from '@react-three/drei';
+import { yuklemeOku } from '../../game/yukleme';
 import { OYUN_ADI } from '../../game/kafeAdi';
 
 // Açılış yükleme ekranı (talimat #2/#3): asset (KayKit gltf + atlas) yüklenene kadar sahneyi örter →
-// greybox→model "pop"u ve ilk-kare FPS sıçraması GÖRÜNMEZ. drei useProgress GLTFLoader ilerlemesini izler.
+// greybox→model "pop"u ve ilk-kare FPS sıçraması GÖRÜNMEZ. drei useProgress GLTFLoader ilerlemesini izler
+// — ama ekran onu DOĞRUDAN import etmez (three ilk pakete girerdi): 3D parçası `game/yukleme`ye kaydeder.
 // Gating fresh (yükleme olur) ve cache (hiç yükleme görünmez) durumlarını ayrı ele alır + sert üst sınır.
 const MIN_MS = 700; // markalı ekran en az bu kadar görünür (anlık flash olmasın)
 const MAX_MS = 6000; // güvenlik: asset takılsa bile oyun açılır
@@ -23,7 +24,8 @@ const YOKLAMA_MS = 100; // ilerleme bu aralıkla OKUNUR (abone olunmaz — gerek
  * İkinci bir çarpan daha vardı: tamamlanmayı denetleyen `useEffect`in bağımlılığı `progress`ti,
  * yani her ilerleme olayı `setInterval`i de söküp yeniden kuruyordu.
  *
- * Çözüm store'u OKUMAK ama ona abone OLMAMAK: `useProgress.getState()` aynı veriyi render'sız
+ * Çözüm store'u OKUMAK ama ona abone OLMAMAK: `useProgress.getState()` (Scene'in `yuklemeOku`ya
+ * kaydettiği okuyucu) aynı veriyi render'sız
  * verir. Ekran zaten 100 ms'lik bir yoklamayla güncelleniyordu; çubuk için bundan ince bir
  * çözünürlük gerekmiyor. Böylece render sayısı dosya sayısından BAĞIMSIZ hale geliyor.
  *
@@ -43,7 +45,10 @@ export function SplashScreen() {
     if (done) return;
     if (mount.current === 0) mount.current = performance.now();
     const check = () => {
-      const { active, progress } = useProgress.getState();
+      // 3D parçası henüz inmediyse (kod-bölme) sahnenin yükleyicisi de yok: hazır DEĞİL, çubuk 0.
+      const durum = yuklemeOku();
+      if (!durum) return;
+      const { active, progress } = durum;
       if (active) sawLoading.current = true;
       // Yüzde yalnız GÖRÜNÜR biçimde değiştiyse yazılır: aynı değeri yazmak boş render olurdu.
       const yeni = Math.min(100, Math.round(progress));

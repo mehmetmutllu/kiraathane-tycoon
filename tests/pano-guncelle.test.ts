@@ -201,10 +201,35 @@ describe('panoyaUygula — yalnız sayı yazar', () => {
 
   it('sayaç arttığı hâlde yeni günlük kartı yoksa uyarır', () => {
     const d = pano();
+    const taban = { yapilan: 12, gunluk: structuredClone(d.gunluk) };
     d.yapilan = 13;
-    expect(gunlukUyarisi(12, d, '09.09.2026')).toContain('günlük kartı yok');
+    expect(gunlukUyarisi(taban, d)).toContain('yalnız 0 yeni günlük kartı');
     d.gunluk.unshift({ tarih: '09.09.2026', baslik: 'yeni kart' });
-    expect(gunlukUyarisi(12, d, '09.09.2026')).toBeNull();
+    expect(gunlukUyarisi(taban, d)).toBeNull();
+  });
+
+  it('AYNI GÜN ikinci oturum: bugünün kartı zaten varken yeni kart yazılmadıysa da uyarır', () => {
+    // Eski kural yalnız tarihe bakıyordu: ilk oturumun kartı ikinciyi de "karşılıyordu".
+    const d = pano();
+    d.gunluk.unshift({ tarih: '09.09.2026', etiket: 'C3', baslik: 'sabah oturumu' });
+    const taban = { yapilan: 13, gunluk: structuredClone(d.gunluk) };
+    d.yapilan = 14;
+    expect(gunlukUyarisi(taban, d)).toContain('+1 oturum');
+    d.gunluk.unshift({ tarih: '09.09.2026', etiket: 'C4', baslik: 'akşam oturumu' });
+    expect(gunlukUyarisi(taban, d)).toBeNull();
+  });
+
+  it('iki oturum birden kapandıysa iki yeni kart ister; pencereden düşen eski kart sayılmaz', () => {
+    const d = pano();
+    d.gunluk = [{ tarih: '08.09.2026', baslik: 'a' }, { tarih: '07.09.2026', baslik: 'b' }];
+    const taban = { yapilan: 12, gunluk: structuredClone(d.gunluk) };
+    d.yapilan = 14;
+    d.gunluk = [{ tarih: '09.09.2026', baslik: 'yeni' }, { tarih: '08.09.2026', baslik: 'a' }]; // 'b' düştü
+    expect(gunlukUyarisi(taban, d)).toContain('yalnız 1 yeni');
+    d.gunluk.unshift({ tarih: '09.09.2026', baslik: 'yeni 2' });
+    expect(gunlukUyarisi(taban, d)).toBeNull();
+    d.yapilan = 12;
+    expect(gunlukUyarisi(taban, d)).toBeNull();
   });
 });
 

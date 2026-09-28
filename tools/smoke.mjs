@@ -620,9 +620,22 @@ try {
     if (dekor.elmas === 0 && dekor.dekor.includes('yilbasi-kirmizi')) pass('💎 dekor: yılbaşı koltuğu alındı ve salona kondu (100→0)');
     else fail(`💎 dekor: alım yanlış (${JSON.stringify(dekor)})`);
     // F4c-4 (D-157): alım SESSİZ bitmez — mağazanın üstünde bildirim; önizleme salondaki YERİNDEN çekilir.
-    const bildirim = await page.$eval('[data-testid="notice"]', (el) => el.textContent ?? '').catch(() => '');
-    if (bildirim.includes('salona kondu')) pass(`Alım bildirimi mağazanın üstünde (${bildirim.trim()})`);
-    else fail(`Alım bildirimi yok (${bildirim})`);
+    // Konum: bildirim önizlemenin ÇERÇEVESİNİN İÇİNDE (üst kenara binmez) ve sekmelerin altında.
+    // Giriş animasyonu (0,38 sn) bitince ölçülür.
+    await page.waitForTimeout(500);
+    const bildirim = await page
+      .evaluate(() => {
+        const n = document.querySelector('[data-testid="notice"]');
+        const o = document.querySelector('[data-testid="dekor-onizleme"] .preview-canvas');
+        const s = document.querySelector('.shop-tabs');
+        if (!n || !o || !s) return { metin: n?.textContent ?? '', pay: NaN, sekme: NaN };
+        const nr = n.getBoundingClientRect(), or = o.getBoundingClientRect();
+        return { metin: n.textContent ?? '', pay: Math.round(nr.top - or.top), sekme: Math.round(nr.top - s.getBoundingClientRect().bottom), alt: Math.round(or.bottom - nr.bottom) };
+      })
+      .catch(() => ({ metin: '', pay: NaN, sekme: NaN }));
+    if (bildirim.metin.includes('salona kondu') && bildirim.pay >= 8 && bildirim.sekme > 0 && bildirim.alt > 0)
+      pass(`Alım bildirimi önizlemenin içinde, üst kenardan ${bildirim.pay} px (${bildirim.metin.trim()})`);
+    else fail(`Alım bildirimi yok ya da önizlemenin kenarına biniyor (${JSON.stringify(bildirim)})`);
     const cekim = await page
       .waitForFunction(() => Number(document.querySelector('[data-testid="dekor-salonda"]')?.getAttribute('data-kare') ?? 0) > 0, null, { timeout: 5000 })
       .then(() => true)
