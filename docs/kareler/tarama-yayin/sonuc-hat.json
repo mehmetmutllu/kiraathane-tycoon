@@ -1,0 +1,5868 @@
+{
+  "toplamGorev": 50,
+  "dilimler": [
+    {
+      "t": 120,
+      "questIndex": 6,
+      "quest": "q_station1",
+      "wallet": 61,
+      "diamonds": 0,
+      "level": 2,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 240,
+      "questIndex": 8,
+      "quest": "q_table3",
+      "wallet": 103,
+      "diamonds": 0,
+      "level": 3,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 360,
+      "questIndex": 8,
+      "quest": "q_table3",
+      "wallet": 147,
+      "diamonds": 0,
+      "level": 3,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 480,
+      "questIndex": 10,
+      "quest": "q_waiter",
+      "wallet": 131,
+      "diamonds": 0,
+      "level": 4,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 600,
+      "questIndex": 10,
+      "quest": "q_waiter",
+      "wallet": 142,
+      "diamonds": 0,
+      "level": 4,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 720,
+      "questIndex": 12,
+      "quest": "q_table4",
+      "wallet": 251,
+      "diamonds": 0,
+      "level": 4,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 840,
+      "questIndex": 12,
+      "quest": "q_table4",
+      "wallet": 250,
+      "diamonds": 0,
+      "level": 4,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 960,
+      "questIndex": 14,
+      "quest": "q_waiter2",
+      "wallet": 196,
+      "diamonds": 0,
+      "level": 5,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 1080,
+      "questIndex": 14,
+      "quest": "q_waiter2",
+      "wallet": 331,
+      "diamonds": 0,
+      "level": 5,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 1200,
+      "questIndex": 14,
+      "quest": "q_waiter2",
+      "wallet": 446,
+      "diamonds": 0,
+      "level": 5,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 1320,
+      "questIndex": 14,
+      "quest": "q_waiter2",
+      "wallet": 522,
+      "diamonds": 0,
+      "level": 5,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 1440,
+      "questIndex": 14,
+      "quest": "q_waiter2",
+      "wallet": 668,
+      "diamonds": 0,
+      "level": 5,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 1560,
+      "questIndex": 14,
+      "quest": "q_waiter2",
+      "wallet": 485,
+      "diamonds": 0,
+      "level": 5,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 1680,
+      "questIndex": 14,
+      "quest": "q_waiter2",
+      "wallet": 685,
+      "diamonds": 0,
+      "level": 6,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 1800,
+      "questIndex": 15,
+      "quest": "q_zone2",
+      "wallet": 315,
+      "diamonds": 0,
+      "level": 6,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 1920,
+      "questIndex": 15,
+      "quest": "q_zone2",
+      "wallet": 465,
+      "diamonds": 0,
+      "level": 6,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 2040,
+      "questIndex": 15,
+      "quest": "q_zone2",
+      "wallet": 610,
+      "diamonds": 0,
+      "level": 6,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 2160,
+      "questIndex": 15,
+      "quest": "q_zone2",
+      "wallet": 750,
+      "diamonds": 0,
+      "level": 6,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 2280,
+      "questIndex": 15,
+      "quest": "q_zone2",
+      "wallet": 713,
+      "diamonds": 0,
+      "level": 6,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 2400,
+      "questIndex": 15,
+      "quest": "q_zone2",
+      "wallet": 731,
+      "diamonds": 0,
+      "level": 6,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 2520,
+      "questIndex": 19,
+      "quest": "q_tableL2",
+      "wallet": 576,
+      "diamonds": 0,
+      "level": 6,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 2640,
+      "questIndex": 20,
+      "quest": "q_z2table3",
+      "wallet": 490,
+      "diamonds": 0,
+      "level": 7,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 2760,
+      "questIndex": 21,
+      "quest": "q_dish",
+      "wallet": 594,
+      "diamonds": 0,
+      "level": 7,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 2880,
+      "questIndex": 21,
+      "quest": "q_dish",
+      "wallet": 756,
+      "diamonds": 0,
+      "level": 7,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 3000,
+      "questIndex": 21,
+      "quest": "q_dish",
+      "wallet": 934,
+      "diamonds": 0,
+      "level": 7,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 3120,
+      "questIndex": 21,
+      "quest": "q_dish",
+      "wallet": 868,
+      "diamonds": 0,
+      "level": 7,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 3240,
+      "questIndex": 22,
+      "quest": "q_z2table4",
+      "wallet": 559,
+      "diamonds": 0,
+      "level": 7,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 3360,
+      "questIndex": 22,
+      "quest": "q_z2table4",
+      "wallet": 768,
+      "diamonds": 0,
+      "level": 7,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 3480,
+      "questIndex": 22,
+      "quest": "q_z2table4",
+      "wallet": 938,
+      "diamonds": 0,
+      "level": 7,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 3600,
+      "questIndex": 22,
+      "quest": "q_z2table4",
+      "wallet": 1158,
+      "diamonds": 0,
+      "level": 7,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 3720,
+      "questIndex": 22,
+      "quest": "q_z2table4",
+      "wallet": 1350,
+      "diamonds": 0,
+      "level": 7,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 3840,
+      "questIndex": 22,
+      "quest": "q_z2table4",
+      "wallet": 1308,
+      "diamonds": 0,
+      "level": 7,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 3960,
+      "questIndex": 22,
+      "quest": "q_z2table4",
+      "wallet": 1319,
+      "diamonds": 0,
+      "level": 7,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 4080,
+      "questIndex": 22,
+      "quest": "q_z2table4",
+      "wallet": 1311,
+      "diamonds": 0,
+      "level": 7,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 4200,
+      "questIndex": 22,
+      "quest": "q_z2table4",
+      "wallet": 1276,
+      "diamonds": 0,
+      "level": 7,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 4320,
+      "questIndex": 22,
+      "quest": "q_z2table4",
+      "wallet": 1205,
+      "diamonds": 0,
+      "level": 7,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 4440,
+      "questIndex": 22,
+      "quest": "q_z2table4",
+      "wallet": 1398,
+      "diamonds": 0,
+      "level": 7,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 4560,
+      "questIndex": 24,
+      "quest": "q_zone3",
+      "wallet": 1369,
+      "diamonds": 0,
+      "level": 8,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 4680,
+      "questIndex": 24,
+      "quest": "q_zone3",
+      "wallet": 1722,
+      "diamonds": 0,
+      "level": 8,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 4800,
+      "questIndex": 24,
+      "quest": "q_zone3",
+      "wallet": 2173,
+      "diamonds": 0,
+      "level": 8,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 4920,
+      "questIndex": 24,
+      "quest": "q_zone3",
+      "wallet": 2467,
+      "diamonds": 0,
+      "level": 8,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 5040,
+      "questIndex": 24,
+      "quest": "q_zone3",
+      "wallet": 2483,
+      "diamonds": 0,
+      "level": 8,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 5160,
+      "questIndex": 24,
+      "quest": "q_zone3",
+      "wallet": 2488,
+      "diamonds": 0,
+      "level": 8,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 5280,
+      "questIndex": 24,
+      "quest": "q_zone3",
+      "wallet": 2366,
+      "diamonds": 0,
+      "level": 8,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 5400,
+      "questIndex": 24,
+      "quest": "q_zone3",
+      "wallet": 2381,
+      "diamonds": 0,
+      "level": 8,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 5520,
+      "questIndex": 26,
+      "quest": "q_counter",
+      "wallet": 1970,
+      "diamonds": 0,
+      "level": 8,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 5640,
+      "questIndex": 27,
+      "quest": "q_z3table3",
+      "wallet": 1764,
+      "diamonds": 0,
+      "level": 8,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 5760,
+      "questIndex": 27,
+      "quest": "q_z3table3",
+      "wallet": 2057,
+      "diamonds": 0,
+      "level": 8,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 5880,
+      "questIndex": 27,
+      "quest": "q_z3table3",
+      "wallet": 2051,
+      "diamonds": 0,
+      "level": 8,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 6000,
+      "questIndex": 27,
+      "quest": "q_z3table3",
+      "wallet": 2077,
+      "diamonds": 0,
+      "level": 8,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 6120,
+      "questIndex": 27,
+      "quest": "q_z3table3",
+      "wallet": 1965,
+      "diamonds": 0,
+      "level": 8,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 6240,
+      "questIndex": 27,
+      "quest": "q_z3table3",
+      "wallet": 2178,
+      "diamonds": 0,
+      "level": 8,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 6360,
+      "questIndex": 27,
+      "quest": "q_z3table3",
+      "wallet": 2090,
+      "diamonds": 0,
+      "level": 8,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 6480,
+      "questIndex": 27,
+      "quest": "q_z3table3",
+      "wallet": 2054,
+      "diamonds": 0,
+      "level": 8,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 6600,
+      "questIndex": 27,
+      "quest": "q_z3table3",
+      "wallet": 2025,
+      "diamonds": 0,
+      "level": 8,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 6720,
+      "questIndex": 27,
+      "quest": "q_z3table3",
+      "wallet": 2204,
+      "diamonds": 0,
+      "level": 8,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 6840,
+      "questIndex": 27,
+      "quest": "q_z3table3",
+      "wallet": 2103,
+      "diamonds": 0,
+      "level": 8,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 6960,
+      "questIndex": 28,
+      "quest": "q_tost",
+      "wallet": 0,
+      "diamonds": 0,
+      "level": 8,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 7080,
+      "questIndex": 28,
+      "quest": "q_tost",
+      "wallet": 0,
+      "diamonds": 0,
+      "level": 8,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 7200,
+      "questIndex": 29,
+      "quest": "q_tost5",
+      "wallet": 881,
+      "diamonds": 0,
+      "level": 8,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 7320,
+      "questIndex": 29,
+      "quest": "q_tost5",
+      "wallet": 1184,
+      "diamonds": 0,
+      "level": 8,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 7440,
+      "questIndex": 29,
+      "quest": "q_tost5",
+      "wallet": 1471,
+      "diamonds": 0,
+      "level": 8,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 7560,
+      "questIndex": 29,
+      "quest": "q_tost5",
+      "wallet": 1959,
+      "diamonds": 0,
+      "level": 9,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 7680,
+      "questIndex": 29,
+      "quest": "q_tost5",
+      "wallet": 2199,
+      "diamonds": 0,
+      "level": 9,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 7800,
+      "questIndex": 29,
+      "quest": "q_tost5",
+      "wallet": 2453,
+      "diamonds": 0,
+      "level": 9,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 7920,
+      "questIndex": 29,
+      "quest": "q_tost5",
+      "wallet": 2876,
+      "diamonds": 0,
+      "level": 9,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 8040,
+      "questIndex": 29,
+      "quest": "q_tost5",
+      "wallet": 3261,
+      "diamonds": 0,
+      "level": 9,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 8160,
+      "questIndex": 29,
+      "quest": "q_tost5",
+      "wallet": 3532,
+      "diamonds": 0,
+      "level": 9,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 8280,
+      "questIndex": 30,
+      "quest": "q_z3table4",
+      "wallet": 3053,
+      "diamonds": 0,
+      "level": 9,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 8400,
+      "questIndex": 30,
+      "quest": "q_z3table4",
+      "wallet": 2913,
+      "diamonds": 0,
+      "level": 9,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 8520,
+      "questIndex": 30,
+      "quest": "q_z3table4",
+      "wallet": 3150,
+      "diamonds": 0,
+      "level": 9,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 8640,
+      "questIndex": 30,
+      "quest": "q_z3table4",
+      "wallet": 3211,
+      "diamonds": 0,
+      "level": 9,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 8760,
+      "questIndex": 30,
+      "quest": "q_z3table4",
+      "wallet": 3189,
+      "diamonds": 0,
+      "level": 9,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 8880,
+      "questIndex": 30,
+      "quest": "q_z3table4",
+      "wallet": 2942,
+      "diamonds": 0,
+      "level": 9,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 9000,
+      "questIndex": 30,
+      "quest": "q_z3table4",
+      "wallet": 3144,
+      "diamonds": 0,
+      "level": 9,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 9120,
+      "questIndex": 30,
+      "quest": "q_z3table4",
+      "wallet": 3086,
+      "diamonds": 0,
+      "level": 9,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 9240,
+      "questIndex": 30,
+      "quest": "q_z3table4",
+      "wallet": 3069,
+      "diamonds": 0,
+      "level": 9,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 9360,
+      "questIndex": 30,
+      "quest": "q_z3table4",
+      "wallet": 3213,
+      "diamonds": 0,
+      "level": 9,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 9480,
+      "questIndex": 33,
+      "quest": "q_stationMax",
+      "wallet": 0,
+      "diamonds": 0,
+      "level": 9,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 9600,
+      "questIndex": 33,
+      "quest": "q_stationMax",
+      "wallet": 0,
+      "diamonds": 0,
+      "level": 9,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 9720,
+      "questIndex": 33,
+      "quest": "q_stationMax",
+      "wallet": 0,
+      "diamonds": 0,
+      "level": 9,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 9840,
+      "questIndex": 33,
+      "quest": "q_stationMax",
+      "wallet": 0,
+      "diamonds": 0,
+      "level": 9,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 9960,
+      "questIndex": 33,
+      "quest": "q_stationMax",
+      "wallet": 0,
+      "diamonds": 0,
+      "level": 9,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 10080,
+      "questIndex": 33,
+      "quest": "q_stationMax",
+      "wallet": 0,
+      "diamonds": 0,
+      "level": 9,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 10200,
+      "questIndex": 33,
+      "quest": "q_stationMax",
+      "wallet": 0,
+      "diamonds": 0,
+      "level": 9,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 10320,
+      "questIndex": 33,
+      "quest": "q_stationMax",
+      "wallet": 0,
+      "diamonds": 0,
+      "level": 9,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 10440,
+      "questIndex": 33,
+      "quest": "q_stationMax",
+      "wallet": 0,
+      "diamonds": 0,
+      "level": 9,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 10560,
+      "questIndex": 34,
+      "quest": "q_waiter3",
+      "wallet": 854,
+      "diamonds": 0,
+      "level": 9,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 10680,
+      "questIndex": 34,
+      "quest": "q_waiter3",
+      "wallet": 1255,
+      "diamonds": 0,
+      "level": 9,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 10800,
+      "questIndex": 34,
+      "quest": "q_waiter3",
+      "wallet": 1855,
+      "diamonds": 0,
+      "level": 9,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 10920,
+      "questIndex": 34,
+      "quest": "q_waiter3",
+      "wallet": 2379,
+      "diamonds": 0,
+      "level": 9,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 11040,
+      "questIndex": 34,
+      "quest": "q_waiter3",
+      "wallet": 2949,
+      "diamonds": 0,
+      "level": 9,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 11160,
+      "questIndex": 34,
+      "quest": "q_waiter3",
+      "wallet": 3382,
+      "diamonds": 0,
+      "level": 9,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 11280,
+      "questIndex": 34,
+      "quest": "q_waiter3",
+      "wallet": 3877,
+      "diamonds": 0,
+      "level": 9,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 11400,
+      "questIndex": 34,
+      "quest": "q_waiter3",
+      "wallet": 4305,
+      "diamonds": 0,
+      "level": 9,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 11520,
+      "questIndex": 34,
+      "quest": "q_waiter3",
+      "wallet": 4977,
+      "diamonds": 0,
+      "level": 9,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 11640,
+      "questIndex": 34,
+      "quest": "q_waiter3",
+      "wallet": 5639,
+      "diamonds": 0,
+      "level": 9,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 11760,
+      "questIndex": 34,
+      "quest": "q_waiter3",
+      "wallet": 5671,
+      "diamonds": 0,
+      "level": 9,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 11880,
+      "questIndex": 34,
+      "quest": "q_waiter3",
+      "wallet": 5376,
+      "diamonds": 0,
+      "level": 9,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 12000,
+      "questIndex": 34,
+      "quest": "q_waiter3",
+      "wallet": 5746,
+      "diamonds": 0,
+      "level": 9,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 12120,
+      "questIndex": 34,
+      "quest": "q_waiter3",
+      "wallet": 5443,
+      "diamonds": 0,
+      "level": 9,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 12240,
+      "questIndex": 34,
+      "quest": "q_waiter3",
+      "wallet": 5955,
+      "diamonds": 0,
+      "level": 9,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 12360,
+      "questIndex": 34,
+      "quest": "q_waiter3",
+      "wallet": 5599,
+      "diamonds": 0,
+      "level": 9,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 12480,
+      "questIndex": 34,
+      "quest": "q_waiter3",
+      "wallet": 5189,
+      "diamonds": 0,
+      "level": 9,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 12600,
+      "questIndex": 34,
+      "quest": "q_waiter3",
+      "wallet": 5601,
+      "diamonds": 0,
+      "level": 9,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 12720,
+      "questIndex": 34,
+      "quest": "q_waiter3",
+      "wallet": 5879,
+      "diamonds": 0,
+      "level": 9,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 12840,
+      "questIndex": 36,
+      "quest": "q_lavabo",
+      "wallet": 2913,
+      "diamonds": 0,
+      "level": 9,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 12960,
+      "questIndex": 36,
+      "quest": "q_lavabo",
+      "wallet": 2907,
+      "diamonds": 0,
+      "level": 9,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 13080,
+      "questIndex": 36,
+      "quest": "q_lavabo",
+      "wallet": 3003,
+      "diamonds": 0,
+      "level": 9,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 13200,
+      "questIndex": 37,
+      "quest": "q_z3table5",
+      "wallet": 3408,
+      "diamonds": 0,
+      "level": 9,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 13320,
+      "questIndex": 37,
+      "quest": "q_z3table5",
+      "wallet": 3302,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 13440,
+      "questIndex": 37,
+      "quest": "q_z3table5",
+      "wallet": 3331,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 13560,
+      "questIndex": 37,
+      "quest": "q_z3table5",
+      "wallet": 3596,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 13680,
+      "questIndex": 37,
+      "quest": "q_z3table5",
+      "wallet": 3545,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 13800,
+      "questIndex": 39,
+      "quest": "q_z3table6",
+      "wallet": 1310,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 13920,
+      "questIndex": 39,
+      "quest": "q_z3table6",
+      "wallet": 1781,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 14040,
+      "questIndex": 39,
+      "quest": "q_z3table6",
+      "wallet": 3036,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 14160,
+      "questIndex": 39,
+      "quest": "q_z3table6",
+      "wallet": 3591,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 14280,
+      "questIndex": 39,
+      "quest": "q_z3table6",
+      "wallet": 4317,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 14400,
+      "questIndex": 39,
+      "quest": "q_z3table6",
+      "wallet": 4338,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 14520,
+      "questIndex": 39,
+      "quest": "q_z3table6",
+      "wallet": 4282,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 14640,
+      "questIndex": 39,
+      "quest": "q_z3table6",
+      "wallet": 4279,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 14760,
+      "questIndex": 39,
+      "quest": "q_z3table6",
+      "wallet": 4159,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 14880,
+      "questIndex": 41,
+      "quest": "q_z3table7",
+      "wallet": 604,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 15000,
+      "questIndex": 41,
+      "quest": "q_z3table7",
+      "wallet": 938,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 15120,
+      "questIndex": 41,
+      "quest": "q_z3table7",
+      "wallet": 1806,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 15240,
+      "questIndex": 41,
+      "quest": "q_z3table7",
+      "wallet": 2580,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 15360,
+      "questIndex": 41,
+      "quest": "q_z3table7",
+      "wallet": 3546,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 15480,
+      "questIndex": 41,
+      "quest": "q_z3table7",
+      "wallet": 4601,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 15600,
+      "questIndex": 41,
+      "quest": "q_z3table7",
+      "wallet": 4933,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 15720,
+      "questIndex": 41,
+      "quest": "q_z3table7",
+      "wallet": 4907,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 15840,
+      "questIndex": 41,
+      "quest": "q_z3table7",
+      "wallet": 4856,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 15960,
+      "questIndex": 41,
+      "quest": "q_z3table7",
+      "wallet": 4770,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 16080,
+      "questIndex": 42,
+      "quest": "q_lavabo4",
+      "wallet": 0,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 16200,
+      "questIndex": 42,
+      "quest": "q_lavabo4",
+      "wallet": 0,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 16320,
+      "questIndex": 43,
+      "quest": "q_z3table8",
+      "wallet": 895,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 16440,
+      "questIndex": 43,
+      "quest": "q_z3table8",
+      "wallet": 1938,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 16560,
+      "questIndex": 43,
+      "quest": "q_z3table8",
+      "wallet": 2980,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 16680,
+      "questIndex": 43,
+      "quest": "q_z3table8",
+      "wallet": 4636,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 16800,
+      "questIndex": 43,
+      "quest": "q_z3table8",
+      "wallet": 5063,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 16920,
+      "questIndex": 43,
+      "quest": "q_z3table8",
+      "wallet": 5543,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 17040,
+      "questIndex": 43,
+      "quest": "q_z3table8",
+      "wallet": 5658,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 17160,
+      "questIndex": 43,
+      "quest": "q_z3table8",
+      "wallet": 4837,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 17280,
+      "questIndex": 43,
+      "quest": "q_z3table8",
+      "wallet": 5261,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 17400,
+      "questIndex": 44,
+      "quest": "q_lavabo5",
+      "wallet": 0,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 17520,
+      "questIndex": 44,
+      "quest": "q_lavabo5",
+      "wallet": 0,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 17640,
+      "questIndex": 44,
+      "quest": "q_lavabo5",
+      "wallet": 0,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 17760,
+      "questIndex": 45,
+      "quest": "q_z3table9",
+      "wallet": 1626,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 17880,
+      "questIndex": 45,
+      "quest": "q_z3table9",
+      "wallet": 2291,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 18000,
+      "questIndex": 45,
+      "quest": "q_z3table9",
+      "wallet": 3298,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 18120,
+      "questIndex": 45,
+      "quest": "q_z3table9",
+      "wallet": 4833,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 18240,
+      "questIndex": 45,
+      "quest": "q_z3table9",
+      "wallet": 6182,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 18360,
+      "questIndex": 45,
+      "quest": "q_z3table9",
+      "wallet": 6437,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 18480,
+      "questIndex": 45,
+      "quest": "q_z3table9",
+      "wallet": 5729,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 18600,
+      "questIndex": 45,
+      "quest": "q_z3table9",
+      "wallet": 6082,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 18720,
+      "questIndex": 45,
+      "quest": "q_z3table9",
+      "wallet": 6550,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 18840,
+      "questIndex": 46,
+      "quest": "q_lavabo6",
+      "wallet": 0,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 18960,
+      "questIndex": 46,
+      "quest": "q_lavabo6",
+      "wallet": 0,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 19080,
+      "questIndex": 47,
+      "quest": "q_z3table10",
+      "wallet": 1398,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 19200,
+      "questIndex": 47,
+      "quest": "q_z3table10",
+      "wallet": 2350,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 19320,
+      "questIndex": 47,
+      "quest": "q_z3table10",
+      "wallet": 4141,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 19440,
+      "questIndex": 47,
+      "quest": "q_z3table10",
+      "wallet": 7490,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 19560,
+      "questIndex": 47,
+      "quest": "q_z3table10",
+      "wallet": 9424,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 19680,
+      "questIndex": 47,
+      "quest": "q_z3table10",
+      "wallet": 7075,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 19800,
+      "questIndex": 47,
+      "quest": "q_z3table10",
+      "wallet": 7483,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 19920,
+      "questIndex": 47,
+      "quest": "q_z3table10",
+      "wallet": 7043,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 20040,
+      "questIndex": 48,
+      "quest": "q_z3table11",
+      "wallet": 7819,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 20160,
+      "questIndex": 48,
+      "quest": "q_z3table11",
+      "wallet": 8185,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 20280,
+      "questIndex": 48,
+      "quest": "q_z3table11",
+      "wallet": 7785,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 20400,
+      "questIndex": 48,
+      "quest": "q_z3table11",
+      "wallet": 8169,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 20520,
+      "questIndex": 49,
+      "quest": "q_z3table12",
+      "wallet": 8271,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 20640,
+      "questIndex": 49,
+      "quest": "q_z3table12",
+      "wallet": 8644,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 20760,
+      "questIndex": 49,
+      "quest": "q_z3table12",
+      "wallet": 9923,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 20880,
+      "questIndex": 49,
+      "quest": "q_z3table12",
+      "wallet": 9718,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 21000,
+      "questIndex": 49,
+      "quest": "q_z3table12",
+      "wallet": 9521,
+      "diamonds": 0,
+      "level": 10,
+      "glKayip": false,
+      "konsol": 2
+    },
+    {
+      "t": 21120,
+      "questIndex": 50,
+      "wallet": 12349,
+      "diamonds": 0,
+      "level": 11,
+      "glKayip": false,
+      "konsol": 2
+    }
+  ],
+  "takilmalar": [
+    {
+      "t": 4200,
+      "idx": 22,
+      "quest": {
+        "id": "q_z2table4",
+        "title": "Salon 2: 4. Masayı aç",
+        "cur": null,
+        "total": null
+      },
+      "wallet": 1276,
+      "padCost": 1400,
+      "currentPad": "z2table4",
+      "padFill": 880,
+      "activeSpot": null,
+      "tableLevels": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "stationLevel": 3,
+      "why": "",
+      "log": [
+        {
+          "t": 923.7000000001415,
+          "ev": "panel:char:magnet"
+        },
+        {
+          "t": 1583,
+          "ev": "levelUp",
+          "lv": 6,
+          "amount": 75
+        },
+        {
+          "t": 2517.199999998806,
+          "ev": "panel:waiterSpeed"
+        },
+        {
+          "t": 2589,
+          "ev": "levelUp",
+          "lv": 7,
+          "amount": 105
+        },
+        {
+          "t": 4111,
+          "ev": "TAKILMA",
+          "quest": {
+            "id": "q_z2table4",
+            "title": "Salon 2: 4. Masayı aç",
+            "cur": null,
+            "total": null
+          },
+          "why": "cay-al",
+          "wallet": 1370,
+          "padCost": 1400,
+          "currentPad": "z2table4",
+          "player": [
+            -3.79,
+            0.6,
+            12.74
+          ],
+          "goal": [
+            -14.790000000000001,
+            0,
+            6.4
+          ]
+        }
+      ],
+      "kare": "docs/kareler/tarama-yayin/takilma-q_z2table4.jpg",
+      "cozum": "para-verildi"
+    },
+    {
+      "t": 6600,
+      "idx": 27,
+      "quest": {
+        "id": "q_z3table3",
+        "title": "Salon 3: 3. Masayı aç",
+        "cur": null,
+        "total": null
+      },
+      "wallet": 2024.50000000005,
+      "padCost": 2200,
+      "currentPad": "z3table3",
+      "padFill": 1572,
+      "activeSpot": null,
+      "tableLevels": [
+        4,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "stationLevel": 4,
+      "why": "",
+      "log": [
+        {
+          "t": 2589,
+          "ev": "levelUp",
+          "lv": 7,
+          "amount": 105
+        },
+        {
+          "t": 4111,
+          "ev": "TAKILMA",
+          "quest": {
+            "id": "q_z2table4",
+            "title": "Salon 2: 4. Masayı aç",
+            "cur": null,
+            "total": null
+          },
+          "why": "cay-al",
+          "wallet": 1370,
+          "padCost": 1400,
+          "currentPad": "z2table4",
+          "player": [
+            -3.79,
+            0.6,
+            12.74
+          ],
+          "goal": [
+            -14.790000000000001,
+            0,
+            6.4
+          ]
+        },
+        {
+          "t": 4494,
+          "ev": "levelUp",
+          "lv": 8,
+          "amount": 295
+        },
+        {
+          "t": 5420,
+          "ev": "TAKILMA",
+          "quest": {
+            "id": "q_zone3",
+            "title": "3. Salonu aç",
+            "cur": null,
+            "total": null
+          },
+          "why": "bulasik-birak",
+          "wallet": 2420,
+          "padCost": 2500,
+          "currentPad": "zone3",
+          "player": [
+            -10.3,
+            0.6,
+            10.45
+          ],
+          "goal": [
+            -14.790000000000001,
+            0,
+            9
+          ]
+        },
+        {
+          "t": 6430,
+          "ev": "TAKILMA",
+          "quest": {
+            "id": "q_z3table3",
+            "title": "Salon 3: 3. Masayı aç",
+            "cur": null,
+            "total": null
+          },
+          "why": "para",
+          "wallet": 2182.60000000005,
+          "padCost": 2200,
+          "currentPad": "z3table3",
+          "player": [
+            -4.97,
+            0.6,
+            -7.37
+          ],
+          "goal": [
+            5.744564878611457,
+            0.3,
+            6.156922670008547
+          ]
+        }
+      ],
+      "kare": "docs/kareler/tarama-yayin/takilma-q_z3table3.jpg",
+      "cozum": "para-verildi"
+    },
+    {
+      "t": 8160,
+      "idx": 29,
+      "quest": {
+        "id": "q_tost5",
+        "title": "3 tost servis et",
+        "cur": 0,
+        "total": 3
+      },
+      "wallet": 3532.49999999997,
+      "padCost": 0,
+      "currentPad": null,
+      "padFill": 0,
+      "activeSpot": null,
+      "tableLevels": [
+        4,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "stationLevel": 5,
+      "why": "",
+      "log": [
+        {
+          "t": 4494,
+          "ev": "levelUp",
+          "lv": 8,
+          "amount": 295
+        },
+        {
+          "t": 5420,
+          "ev": "TAKILMA",
+          "quest": {
+            "id": "q_zone3",
+            "title": "3. Salonu aç",
+            "cur": null,
+            "total": null
+          },
+          "why": "bulasik-birak",
+          "wallet": 2420,
+          "padCost": 2500,
+          "currentPad": "zone3",
+          "player": [
+            -10.3,
+            0.6,
+            10.45
+          ],
+          "goal": [
+            -14.790000000000001,
+            0,
+            9
+          ]
+        },
+        {
+          "t": 6430,
+          "ev": "TAKILMA",
+          "quest": {
+            "id": "q_z3table3",
+            "title": "Salon 3: 3. Masayı aç",
+            "cur": null,
+            "total": null
+          },
+          "why": "para",
+          "wallet": 2182.60000000005,
+          "padCost": 2200,
+          "currentPad": "z3table3",
+          "player": [
+            -4.97,
+            0.6,
+            -7.37
+          ],
+          "goal": [
+            5.744564878611457,
+            0.3,
+            6.156922670008547
+          ]
+        },
+        {
+          "t": 7463,
+          "ev": "levelUp",
+          "lv": 9,
+          "amount": 180
+        },
+        {
+          "t": 7990,
+          "ev": "TAKILMA",
+          "quest": {
+            "id": "q_tost5",
+            "title": "3 tost servis et",
+            "cur": 0,
+            "total": 3
+          },
+          "why": "para",
+          "wallet": 3069.49999999997,
+          "padCost": 0,
+          "currentPad": null,
+          "player": [
+            6.82,
+            0.6,
+            5.85
+          ],
+          "goal": [
+            -5.165382522760098,
+            0.3,
+            12.738533595482478
+          ]
+        }
+      ],
+      "kare": "docs/kareler/tarama-yayin/takilma-q_tost5.jpg",
+      "cozum": "atlandi"
+    },
+    {
+      "t": 9240,
+      "idx": 30,
+      "quest": {
+        "id": "q_z3table4",
+        "title": "Salon 3: 4. Masayı aç",
+        "cur": null,
+        "total": null
+      },
+      "wallet": 3069.09999999997,
+      "padCost": 3200,
+      "currentPad": "z3table4",
+      "padFill": 2833,
+      "activeSpot": null,
+      "tableLevels": [
+        4,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "stationLevel": 5,
+      "why": "",
+      "log": [
+        {
+          "t": 5420,
+          "ev": "TAKILMA",
+          "quest": {
+            "id": "q_zone3",
+            "title": "3. Salonu aç",
+            "cur": null,
+            "total": null
+          },
+          "why": "bulasik-birak",
+          "wallet": 2420,
+          "padCost": 2500,
+          "currentPad": "zone3",
+          "player": [
+            -10.3,
+            0.6,
+            10.45
+          ],
+          "goal": [
+            -14.790000000000001,
+            0,
+            9
+          ]
+        },
+        {
+          "t": 6430,
+          "ev": "TAKILMA",
+          "quest": {
+            "id": "q_z3table3",
+            "title": "Salon 3: 3. Masayı aç",
+            "cur": null,
+            "total": null
+          },
+          "why": "para",
+          "wallet": 2182.60000000005,
+          "padCost": 2200,
+          "currentPad": "z3table3",
+          "player": [
+            -4.97,
+            0.6,
+            -7.37
+          ],
+          "goal": [
+            5.744564878611457,
+            0.3,
+            6.156922670008547
+          ]
+        },
+        {
+          "t": 7463,
+          "ev": "levelUp",
+          "lv": 9,
+          "amount": 180
+        },
+        {
+          "t": 7990,
+          "ev": "TAKILMA",
+          "quest": {
+            "id": "q_tost5",
+            "title": "3 tost servis et",
+            "cur": 0,
+            "total": 3
+          },
+          "why": "para",
+          "wallet": 3069.49999999997,
+          "padCost": 0,
+          "currentPad": null,
+          "player": [
+            6.82,
+            0.6,
+            5.85
+          ],
+          "goal": [
+            -5.165382522760098,
+            0.3,
+            12.738533595482478
+          ]
+        },
+        {
+          "t": 9063,
+          "ev": "TAKILMA",
+          "quest": {
+            "id": "q_z3table4",
+            "title": "Salon 3: 4. Masayı aç",
+            "cur": null,
+            "total": null
+          },
+          "why": "bulasik-birak",
+          "wallet": 2914.29999999997,
+          "padCost": 3200,
+          "currentPad": "z3table4",
+          "player": [
+            -7.77,
+            0.6,
+            -2.98
+          ],
+          "goal": [
+            -7.4,
+            0,
+            -9.5
+          ]
+        }
+      ],
+      "kare": "docs/kareler/tarama-yayin/takilma-q_z3table4.jpg",
+      "cozum": "para-verildi"
+    },
+    {
+      "t": 10440,
+      "idx": 33,
+      "quest": {
+        "id": "q_stationMax",
+        "title": "Tezgâhı son seviyeye çıkar",
+        "cur": null,
+        "total": null
+      },
+      "wallet": 0,
+      "padCost": 0,
+      "currentPad": null,
+      "padFill": 0,
+      "activeSpot": {
+        "kind": "upgrade",
+        "label": "Tezgâh L6 → L7"
+      },
+      "tableLevels": [
+        4,
+        4,
+        4,
+        4,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "stationLevel": 5,
+      "why": "",
+      "log": [
+        {
+          "t": 7463,
+          "ev": "levelUp",
+          "lv": 9,
+          "amount": 180
+        },
+        {
+          "t": 7990,
+          "ev": "TAKILMA",
+          "quest": {
+            "id": "q_tost5",
+            "title": "3 tost servis et",
+            "cur": 0,
+            "total": 3
+          },
+          "why": "para",
+          "wallet": 3069.49999999997,
+          "padCost": 0,
+          "currentPad": null,
+          "player": [
+            6.82,
+            0.6,
+            5.85
+          ],
+          "goal": [
+            -5.165382522760098,
+            0.3,
+            12.738533595482478
+          ]
+        },
+        {
+          "t": 9063,
+          "ev": "TAKILMA",
+          "quest": {
+            "id": "q_z3table4",
+            "title": "Salon 3: 4. Masayı aç",
+            "cur": null,
+            "total": null
+          },
+          "why": "bulasik-birak",
+          "wallet": 2914.29999999997,
+          "padCost": 3200,
+          "currentPad": "z3table4",
+          "player": [
+            -7.77,
+            0.6,
+            -2.98
+          ],
+          "goal": [
+            -7.4,
+            0,
+            -9.5
+          ]
+        },
+        {
+          "t": 9370.300000016558,
+          "ev": "panel:waiterTray"
+        },
+        {
+          "t": 10324,
+          "ev": "TAKILMA",
+          "quest": {
+            "id": "q_stationMax",
+            "title": "Tezgâhı son seviyeye çıkar",
+            "cur": null,
+            "total": null
+          },
+          "why": "gorev:stationLevel",
+          "wallet": 0,
+          "padCost": 0,
+          "currentPad": null,
+          "player": [
+            -15.65,
+            0.6,
+            -7.85
+          ],
+          "goal": [
+            -15.8,
+            0,
+            -8
+          ]
+        }
+      ],
+      "kare": "docs/kareler/tarama-yayin/takilma-q_stationMax.jpg",
+      "cozum": "atlandi"
+    },
+    {
+      "t": 11520,
+      "idx": 34,
+      "quest": {
+        "id": "q_waiter3",
+        "title": "3. Garsonu tut",
+        "cur": null,
+        "total": null
+      },
+      "wallet": 4977,
+      "padCost": 6000,
+      "currentPad": "waiter3",
+      "padFill": 0,
+      "activeSpot": null,
+      "tableLevels": [
+        4,
+        4,
+        4,
+        4,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "stationLevel": 5,
+      "why": "",
+      "log": [
+        {
+          "t": 7990,
+          "ev": "TAKILMA",
+          "quest": {
+            "id": "q_tost5",
+            "title": "3 tost servis et",
+            "cur": 0,
+            "total": 3
+          },
+          "why": "para",
+          "wallet": 3069.49999999997,
+          "padCost": 0,
+          "currentPad": null,
+          "player": [
+            6.82,
+            0.6,
+            5.85
+          ],
+          "goal": [
+            -5.165382522760098,
+            0.3,
+            12.738533595482478
+          ]
+        },
+        {
+          "t": 9063,
+          "ev": "TAKILMA",
+          "quest": {
+            "id": "q_z3table4",
+            "title": "Salon 3: 4. Masayı aç",
+            "cur": null,
+            "total": null
+          },
+          "why": "bulasik-birak",
+          "wallet": 2914.29999999997,
+          "padCost": 3200,
+          "currentPad": "z3table4",
+          "player": [
+            -7.77,
+            0.6,
+            -2.98
+          ],
+          "goal": [
+            -7.4,
+            0,
+            -9.5
+          ]
+        },
+        {
+          "t": 9370.300000016558,
+          "ev": "panel:waiterTray"
+        },
+        {
+          "t": 10324,
+          "ev": "TAKILMA",
+          "quest": {
+            "id": "q_stationMax",
+            "title": "Tezgâhı son seviyeye çıkar",
+            "cur": null,
+            "total": null
+          },
+          "why": "gorev:stationLevel",
+          "wallet": 0,
+          "padCost": 0,
+          "currentPad": null,
+          "player": [
+            -15.65,
+            0.6,
+            -7.85
+          ],
+          "goal": [
+            -15.8,
+            0,
+            -8
+          ]
+        },
+        {
+          "t": 11343,
+          "ev": "TAKILMA",
+          "quest": {
+            "id": "q_waiter3",
+            "title": "3. Garsonu tut",
+            "cur": null,
+            "total": null
+          },
+          "why": "bulasik-birak",
+          "wallet": 4114,
+          "padCost": 6000,
+          "currentPad": "waiter3",
+          "player": [
+            -6.74,
+            0.6,
+            -2.9
+          ],
+          "goal": [
+            -7.4,
+            0,
+            -9.5
+          ]
+        }
+      ],
+      "kare": "docs/kareler/tarama-yayin/takilma-q_waiter3.jpg",
+      "cozum": "para-verildi"
+    },
+    {
+      "t": 12480,
+      "idx": 34,
+      "quest": {
+        "id": "q_waiter3",
+        "title": "3. Garsonu tut",
+        "cur": null,
+        "total": null
+      },
+      "wallet": 5188.799999999999,
+      "padCost": 6000,
+      "currentPad": "waiter3",
+      "padFill": 4799,
+      "activeSpot": null,
+      "tableLevels": [
+        4,
+        4,
+        4,
+        4,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "stationLevel": 5,
+      "why": "",
+      "log": [
+        {
+          "t": 7990,
+          "ev": "TAKILMA",
+          "quest": {
+            "id": "q_tost5",
+            "title": "3 tost servis et",
+            "cur": 0,
+            "total": 3
+          },
+          "why": "para",
+          "wallet": 3069.49999999997,
+          "padCost": 0,
+          "currentPad": null,
+          "player": [
+            6.82,
+            0.6,
+            5.85
+          ],
+          "goal": [
+            -5.165382522760098,
+            0.3,
+            12.738533595482478
+          ]
+        },
+        {
+          "t": 9063,
+          "ev": "TAKILMA",
+          "quest": {
+            "id": "q_z3table4",
+            "title": "Salon 3: 4. Masayı aç",
+            "cur": null,
+            "total": null
+          },
+          "why": "bulasik-birak",
+          "wallet": 2914.29999999997,
+          "padCost": 3200,
+          "currentPad": "z3table4",
+          "player": [
+            -7.77,
+            0.6,
+            -2.98
+          ],
+          "goal": [
+            -7.4,
+            0,
+            -9.5
+          ]
+        },
+        {
+          "t": 9370.300000016558,
+          "ev": "panel:waiterTray"
+        },
+        {
+          "t": 10324,
+          "ev": "TAKILMA",
+          "quest": {
+            "id": "q_stationMax",
+            "title": "Tezgâhı son seviyeye çıkar",
+            "cur": null,
+            "total": null
+          },
+          "why": "gorev:stationLevel",
+          "wallet": 0,
+          "padCost": 0,
+          "currentPad": null,
+          "player": [
+            -15.65,
+            0.6,
+            -7.85
+          ],
+          "goal": [
+            -15.8,
+            0,
+            -8
+          ]
+        },
+        {
+          "t": 11343,
+          "ev": "TAKILMA",
+          "quest": {
+            "id": "q_waiter3",
+            "title": "3. Garsonu tut",
+            "cur": null,
+            "total": null
+          },
+          "why": "bulasik-birak",
+          "wallet": 4114,
+          "padCost": 6000,
+          "currentPad": "waiter3",
+          "player": [
+            -6.74,
+            0.6,
+            -2.9
+          ],
+          "goal": [
+            -7.4,
+            0,
+            -9.5
+          ]
+        }
+      ],
+      "kare": "docs/kareler/tarama-yayin/takilma-q_waiter3.jpg",
+      "cozum": "para-verildi"
+    },
+    {
+      "t": 14760,
+      "idx": 39,
+      "quest": {
+        "id": "q_z3table6",
+        "title": "Şerit: 6. Masayı aç",
+        "cur": null,
+        "total": null
+      },
+      "wallet": 4158.60000000013,
+      "padCost": 4250,
+      "currentPad": "z3table6",
+      "padFill": 3520,
+      "activeSpot": null,
+      "tableLevels": [
+        4,
+        4,
+        4,
+        4,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "stationLevel": 5,
+      "why": "",
+      "log": [
+        {
+          "t": 10324,
+          "ev": "TAKILMA",
+          "quest": {
+            "id": "q_stationMax",
+            "title": "Tezgâhı son seviyeye çıkar",
+            "cur": null,
+            "total": null
+          },
+          "why": "gorev:stationLevel",
+          "wallet": 0,
+          "padCost": 0,
+          "currentPad": null,
+          "player": [
+            -15.65,
+            0.6,
+            -7.85
+          ],
+          "goal": [
+            -15.8,
+            0,
+            -8
+          ]
+        },
+        {
+          "t": 11343,
+          "ev": "TAKILMA",
+          "quest": {
+            "id": "q_waiter3",
+            "title": "3. Garsonu tut",
+            "cur": null,
+            "total": null
+          },
+          "why": "bulasik-birak",
+          "wallet": 4114,
+          "padCost": 6000,
+          "currentPad": "waiter3",
+          "player": [
+            -6.74,
+            0.6,
+            -2.9
+          ],
+          "goal": [
+            -7.4,
+            0,
+            -9.5
+          ]
+        },
+        {
+          "t": 12770.800000028928,
+          "ev": "panel:waiterTray"
+        },
+        {
+          "t": 13224,
+          "ev": "levelUp",
+          "lv": 10,
+          "amount": 371
+        },
+        {
+          "t": 14661,
+          "ev": "TAKILMA",
+          "quest": {
+            "id": "q_z3table6",
+            "title": "Şerit: 6. Masayı aç",
+            "cur": null,
+            "total": null
+          },
+          "why": "bulasik-birak",
+          "wallet": 3806.60000000013,
+          "padCost": 4250,
+          "currentPad": "z3table6",
+          "player": [
+            -14.78,
+            0.6,
+            -4.39
+          ],
+          "goal": [
+            -7.4,
+            0,
+            -9.5
+          ]
+        }
+      ],
+      "kare": "docs/kareler/tarama-yayin/takilma-q_z3table6.jpg",
+      "cozum": "para-verildi"
+    },
+    {
+      "t": 15840,
+      "idx": 41,
+      "quest": {
+        "id": "q_z3table7",
+        "title": "Şerit: 7. Masayı aç",
+        "cur": null,
+        "total": null
+      },
+      "wallet": 4855.6000000000795,
+      "padCost": 4900,
+      "currentPad": "z3table7",
+      "padFill": 3080,
+      "activeSpot": null,
+      "tableLevels": [
+        4,
+        4,
+        4,
+        4,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "stationLevel": 5,
+      "why": "",
+      "log": [
+        {
+          "t": 11343,
+          "ev": "TAKILMA",
+          "quest": {
+            "id": "q_waiter3",
+            "title": "3. Garsonu tut",
+            "cur": null,
+            "total": null
+          },
+          "why": "bulasik-birak",
+          "wallet": 4114,
+          "padCost": 6000,
+          "currentPad": "waiter3",
+          "player": [
+            -6.74,
+            0.6,
+            -2.9
+          ],
+          "goal": [
+            -7.4,
+            0,
+            -9.5
+          ]
+        },
+        {
+          "t": 12770.800000028928,
+          "ev": "panel:waiterTray"
+        },
+        {
+          "t": 13224,
+          "ev": "levelUp",
+          "lv": 10,
+          "amount": 371
+        },
+        {
+          "t": 14661,
+          "ev": "TAKILMA",
+          "quest": {
+            "id": "q_z3table6",
+            "title": "Şerit: 6. Masayı aç",
+            "cur": null,
+            "total": null
+          },
+          "why": "bulasik-birak",
+          "wallet": 3806.60000000013,
+          "padCost": 4250,
+          "currentPad": "z3table6",
+          "player": [
+            -14.78,
+            0.6,
+            -4.39
+          ],
+          "goal": [
+            -7.4,
+            0,
+            -9.5
+          ]
+        },
+        {
+          "t": 15778,
+          "ev": "TAKILMA",
+          "quest": {
+            "id": "q_z3table7",
+            "title": "Şerit: 7. Masayı aç",
+            "cur": null,
+            "total": null
+          },
+          "why": "bulasik-birak",
+          "wallet": 4654.60000000008,
+          "padCost": 4900,
+          "currentPad": "z3table7",
+          "player": [
+            -10.55,
+            0.6,
+            6.69
+          ],
+          "goal": [
+            -7.4,
+            0,
+            -9.5
+          ]
+        }
+      ],
+      "kare": "docs/kareler/tarama-yayin/takilma-q_z3table7.jpg",
+      "cozum": "para-verildi"
+    },
+    {
+      "t": 17280,
+      "idx": 43,
+      "quest": {
+        "id": "q_z3table8",
+        "title": "Şerit: 8. Masayı aç",
+        "cur": null,
+        "total": null
+      },
+      "wallet": 5261.38479999998,
+      "padCost": 5650,
+      "currentPad": "z3table8",
+      "padFill": 4465,
+      "activeSpot": null,
+      "tableLevels": [
+        4,
+        4,
+        4,
+        4,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "stationLevel": 5,
+      "why": "",
+      "log": [
+        {
+          "t": 12770.800000028928,
+          "ev": "panel:waiterTray"
+        },
+        {
+          "t": 13224,
+          "ev": "levelUp",
+          "lv": 10,
+          "amount": 371
+        },
+        {
+          "t": 14661,
+          "ev": "TAKILMA",
+          "quest": {
+            "id": "q_z3table6",
+            "title": "Şerit: 6. Masayı aç",
+            "cur": null,
+            "total": null
+          },
+          "why": "bulasik-birak",
+          "wallet": 3806.60000000013,
+          "padCost": 4250,
+          "currentPad": "z3table6",
+          "player": [
+            -14.78,
+            0.6,
+            -4.39
+          ],
+          "goal": [
+            -7.4,
+            0,
+            -9.5
+          ]
+        },
+        {
+          "t": 15778,
+          "ev": "TAKILMA",
+          "quest": {
+            "id": "q_z3table7",
+            "title": "Şerit: 7. Masayı aç",
+            "cur": null,
+            "total": null
+          },
+          "why": "bulasik-birak",
+          "wallet": 4654.60000000008,
+          "padCost": 4900,
+          "currentPad": "z3table7",
+          "player": [
+            -10.55,
+            0.6,
+            6.69
+          ],
+          "goal": [
+            -7.4,
+            0,
+            -9.5
+          ]
+        },
+        {
+          "t": 17195,
+          "ev": "TAKILMA",
+          "quest": {
+            "id": "q_z3table8",
+            "title": "Şerit: 8. Masayı aç",
+            "cur": null,
+            "total": null
+          },
+          "why": "bulasik-birak",
+          "wallet": 5010.38479999998,
+          "padCost": 5650,
+          "currentPad": "z3table8",
+          "player": [
+            -6.32,
+            0.6,
+            -8.42
+          ],
+          "goal": [
+            -7.4,
+            0,
+            -9.5
+          ]
+        }
+      ],
+      "kare": "docs/kareler/tarama-yayin/takilma-q_z3table8.jpg",
+      "cozum": "para-verildi"
+    },
+    {
+      "t": 18720,
+      "idx": 45,
+      "quest": {
+        "id": "q_z3table9",
+        "title": "Şerit: 9. Masayı aç",
+        "cur": null,
+        "total": null
+      },
+      "wallet": 6550.31519999996,
+      "padCost": 6500,
+      "currentPad": "z3table9",
+      "padFill": 5385,
+      "activeSpot": null,
+      "tableLevels": [
+        4,
+        4,
+        4,
+        4,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "stationLevel": 5,
+      "why": "",
+      "log": [
+        {
+          "t": 13224,
+          "ev": "levelUp",
+          "lv": 10,
+          "amount": 371
+        },
+        {
+          "t": 14661,
+          "ev": "TAKILMA",
+          "quest": {
+            "id": "q_z3table6",
+            "title": "Şerit: 6. Masayı aç",
+            "cur": null,
+            "total": null
+          },
+          "why": "bulasik-birak",
+          "wallet": 3806.60000000013,
+          "padCost": 4250,
+          "currentPad": "z3table6",
+          "player": [
+            -14.78,
+            0.6,
+            -4.39
+          ],
+          "goal": [
+            -7.4,
+            0,
+            -9.5
+          ]
+        },
+        {
+          "t": 15778,
+          "ev": "TAKILMA",
+          "quest": {
+            "id": "q_z3table7",
+            "title": "Şerit: 7. Masayı aç",
+            "cur": null,
+            "total": null
+          },
+          "why": "bulasik-birak",
+          "wallet": 4654.60000000008,
+          "padCost": 4900,
+          "currentPad": "z3table7",
+          "player": [
+            -10.55,
+            0.6,
+            6.69
+          ],
+          "goal": [
+            -7.4,
+            0,
+            -9.5
+          ]
+        },
+        {
+          "t": 17195,
+          "ev": "TAKILMA",
+          "quest": {
+            "id": "q_z3table8",
+            "title": "Şerit: 8. Masayı aç",
+            "cur": null,
+            "total": null
+          },
+          "why": "bulasik-birak",
+          "wallet": 5010.38479999998,
+          "padCost": 5650,
+          "currentPad": "z3table8",
+          "player": [
+            -6.32,
+            0.6,
+            -8.42
+          ],
+          "goal": [
+            -7.4,
+            0,
+            -9.5
+          ]
+        },
+        {
+          "t": 18609,
+          "ev": "TAKILMA",
+          "quest": {
+            "id": "q_z3table9",
+            "title": "Şerit: 9. Masayı aç",
+            "cur": null,
+            "total": null
+          },
+          "why": "para",
+          "wallet": 6081.81519999996,
+          "padCost": 6500,
+          "currentPad": "z3table9",
+          "player": [
+            -2.17,
+            0.6,
+            -7.57
+          ],
+          "goal": [
+            8.892314860169474,
+            0.3,
+            -1.2038889220338083
+          ]
+        }
+      ],
+      "kare": "docs/kareler/tarama-yayin/takilma-q_z3table9.jpg",
+      "cozum": "para-verildi"
+    }
+  ],
+  "sayiHatasi": [],
+  "reklam": [
+    {
+      "t": 120,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 175.556,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 240,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 174.936,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 360,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 174.402,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 480,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 173.936,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 600,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 173.568,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 720,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 173.078,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 840,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 172.649,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 960,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 172.127,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 1080,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 171.531,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 1200,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 171.108,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 1320,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 170.709,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 1440,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 170.176,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 1560,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 169.676,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 1680,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 169.22,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 1800,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 168.718,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 1920,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 168.114,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 2040,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 167.636,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 2160,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 167.225,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 2280,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 166.737,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 2400,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 166.238,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 2520,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 165.706,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 2640,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 164.74,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 2760,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 163.948,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 2880,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 163.346,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 3000,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 162.706,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 3120,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 162.192,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 3240,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 161.651,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 3360,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 160.777,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 3480,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 160.148,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 3600,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 159.555,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 3720,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 158.603,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 3840,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 158.031,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 3960,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 157.28,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 4080,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 156.586,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 4200,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 155.846,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 4320,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 155.007,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 4440,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 154.348,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 4560,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 153.59199999999998,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 4680,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 153.018,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 4800,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 152.337,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 4920,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 151.793,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 5040,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 151.32999999999998,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 5160,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 150.847,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 5280,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 150.341,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 5400,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 149.91,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 5520,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 149.327,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 5640,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 148.264,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 5760,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 146.989,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 5880,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 145.688,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 6000,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 144.68099999999998,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 6120,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 143.635,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 6240,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 142.454,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 6360,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 141.148,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 6480,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 139.71699999999998,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 6600,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 138.489,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 6720,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 137.379,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 6840,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 136.327,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 6960,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 135.184,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 7080,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 134.637,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 7200,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 133.72899999999998,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 7320,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 132.62,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 7440,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 131.424,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 7560,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 130.308,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 7680,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 128.94400000000002,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 7800,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 126.739,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 7920,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 124.483,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 8040,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 122.574,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 8160,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 120.63300000000001,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 8280,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 118.65,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 8400,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 116.277,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 8520,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 114.531,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 8640,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 112.837,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 8760,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 110.814,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 8880,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 109.012,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 9000,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 107.652,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 9120,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 105.829,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 9240,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 104.143,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 9360,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 102.706,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 9480,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 101.65,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 9600,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 100.732,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 9720,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 100.142,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 9840,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 99.369,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 9960,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 98.802,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 10080,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 98.05,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 10200,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 97.544,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 10320,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 97.086,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 10440,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 96.28,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 10560,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 94.955,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 10680,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 93.612,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 10800,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 92.278,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 10920,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 90.909,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 11040,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 89.426,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 11160,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 88.238,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 11280,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 86.811,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 11400,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 85.482,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 11520,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 83.668,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 11640,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 82.006,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 11760,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 80.411,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 11880,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 79.125,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 12000,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 77.968,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 12120,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 76.559,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 12240,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 74.975,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 12360,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 73.502,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 12480,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 71.936,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 12600,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 70.727,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 12720,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 69.208,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 12840,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 67.56,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 12960,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 65.89,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 13080,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 64.183,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 13200,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 62.542,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 13320,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 61.099999999999994,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 13440,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 59.495000000000005,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 13560,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 58.214,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 13680,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 56.381,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 13800,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 54.840999999999994,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 13920,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 53.089,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 14040,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 51.21700000000001,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 14160,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 49.122000000000014,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 14280,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 47.605999999999995,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 14400,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 45.988,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 14520,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 44.32499999999999,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 14640,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 42.43899999999999,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 14760,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 40.66900000000001,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 14880,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 38.821,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 15000,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 37.40700000000001,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 15120,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 34.803,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 15240,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 32.62700000000001,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 15360,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 30.83699999999999,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 15480,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 27.01400000000001,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 15600,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 24.579000000000008,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 15720,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 21.144000000000005,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 15840,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 17.16300000000001,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 15960,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 12.788000000000011,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 16080,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 10.723000000000013,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 16200,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 8.288000000000011,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 16320,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 6.350999999999999,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 16440,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 3.0080000000000098,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 16560,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 0,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 16680,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 0,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 16800,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 0,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 16920,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 0,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 17040,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 0,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 17160,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 0,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 17280,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 0,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 17400,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 0,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 17520,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 0,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 17640,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 0,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 17760,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 0,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 17880,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 0,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 18000,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 0,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 18120,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 0,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 18240,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 0,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 18360,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 0,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 18480,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 0,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 18600,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 0,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 18720,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 0,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 18840,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 0,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 18960,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 0,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 19080,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 0,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 19200,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 0,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 19320,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 0,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 19440,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 0,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 19560,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 0,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 19680,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 0,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 19800,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 0,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 19920,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 0,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 20040,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 0,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 20160,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 0,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 20280,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 0,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 20400,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 0,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 20520,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 0,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 20640,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 0,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 20760,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 0,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 20880,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 0,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 21000,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 0,
+      "odulluHazir": true,
+      "reklamsiz": false
+    },
+    {
+      "t": 21120,
+      "kuruldu": true,
+      "gecisli": 0,
+      "odullu": 0,
+      "sogumaKalanSn": 0,
+      "odulluHazir": true,
+      "reklamsiz": false
+    }
+  ],
+  "kareler": [
+    "docs/kareler/tarama-yayin/hat-06-q_station1.jpg",
+    "docs/kareler/tarama-yayin/hat-14-q_waiter2.jpg",
+    "docs/kareler/tarama-yayin/hat-22-q_z2table4.jpg",
+    "docs/kareler/tarama-yayin/hat-30-q_z3table4.jpg",
+    "docs/kareler/tarama-yayin/hat-39-q_z3table6.jpg",
+    "docs/kareler/tarama-yayin/hat-47-q_z3table10.jpg",
+    "docs/kareler/tarama-yayin/hat-son.jpg"
+  ],
+  "son": {
+    "t": 21120,
+    "wallet": 12348.6151999999,
+    "diamonds": 0,
+    "lifetime": 136768.0152,
+    "questIndex": 50,
+    "quest": null,
+    "padsDone": [
+      "table2",
+      "table3",
+      "waiter",
+      "table4",
+      "waiter2",
+      "zone2",
+      "z2table2",
+      "z2table3",
+      "dishwasher",
+      "z2table4",
+      "zone3",
+      "z3table2",
+      "z3table3",
+      "z3table4",
+      "waiter3",
+      "lavabo",
+      "z3table5",
+      "z3table6",
+      "z3table7",
+      "z3table8",
+      "z3table9",
+      "z3table10",
+      "z3table11",
+      "z3table12"
+    ],
+    "tables": 20,
+    "tableLevels": [
+      4,
+      4,
+      4,
+      4,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "stationLevel": 5,
+    "level": 11,
+    "xp": 10257,
+    "goalsClaimed": [],
+    "mastersOwned": [],
+    "offlineEarned": 0,
+    "kafeAdi": "Tarama Kahvesi",
+    "charUpgrades": {
+      "tray": 2,
+      "magnet": 1,
+      "speed": 0
+    },
+    "waiterUpgrades": {
+      "tray": 2,
+      "speed": 1,
+      "dishCarry": 0,
+      "dishSpeed": 0
+    }
+  },
+  "qTimes": [
+    {
+      "t": 0,
+      "idx": 0,
+      "id": "q_pickup",
+      "wallet": 0
+    },
+    {
+      "t": 6,
+      "idx": 1,
+      "id": "q_serve1",
+      "wallet": 3
+    },
+    {
+      "t": 9,
+      "idx": 2,
+      "id": "q_coin",
+      "wallet": 6
+    },
+    {
+      "t": 14,
+      "idx": 3,
+      "id": "q_table2",
+      "wallet": 16
+    },
+    {
+      "t": 41,
+      "idx": 4,
+      "id": "q_charTray1",
+      "wallet": 11
+    },
+    {
+      "t": 73,
+      "idx": 5,
+      "id": "q_serve5",
+      "wallet": 16
+    },
+    {
+      "t": 115,
+      "idx": 6,
+      "id": "q_station1",
+      "wallet": 51
+    },
+    {
+      "t": 124,
+      "idx": 7,
+      "id": "q_wash",
+      "wallet": 51
+    },
+    {
+      "t": 149,
+      "idx": 8,
+      "id": "q_table3",
+      "wallet": 81
+    },
+    {
+      "t": 375,
+      "idx": 9,
+      "id": "q_charTray2",
+      "wallet": 136
+    },
+    {
+      "t": 376,
+      "idx": 10,
+      "id": "q_waiter",
+      "wallet": 36
+    },
+    {
+      "t": 640,
+      "idx": 11,
+      "id": "q_station2",
+      "wallet": 161
+    },
+    {
+      "t": 643,
+      "idx": 12,
+      "id": "q_table4",
+      "wallet": 171
+    },
+    {
+      "t": 923,
+      "idx": 13,
+      "id": "q_charMagnet",
+      "wallet": 311
+    },
+    {
+      "t": 925,
+      "idx": 14,
+      "id": "q_waiter2",
+      "wallet": 161
+    },
+    {
+      "t": 1686,
+      "idx": 15,
+      "id": "q_zone2",
+      "wallet": 546
+    },
+    {
+      "t": 2502,
+      "idx": 16,
+      "id": "q_z2table2",
+      "wallet": 881
+    },
+    {
+      "t": 2509,
+      "idx": 17,
+      "id": "q_station3",
+      "wallet": 731
+    },
+    {
+      "t": 2517,
+      "idx": 18,
+      "id": "q_waiterL2",
+      "wallet": 766
+    },
+    {
+      "t": 2519,
+      "idx": 19,
+      "id": "q_tableL2",
+      "wallet": 571
+    },
+    {
+      "t": 2523,
+      "idx": 20,
+      "id": "q_z2table3",
+      "wallet": 546
+    },
+    {
+      "t": 2713,
+      "idx": 21,
+      "id": "q_dish",
+      "wallet": 526
+    },
+    {
+      "t": 3211,
+      "idx": 22,
+      "id": "q_z2table4",
+      "wallet": 523
+    },
+    {
+      "t": 4479,
+      "idx": 23,
+      "id": "q_tableL2x2",
+      "wallet": 1584
+    },
+    {
+      "t": 4520,
+      "idx": 24,
+      "id": "q_zone3",
+      "wallet": 1223
+    },
+    {
+      "t": 5495,
+      "idx": 25,
+      "id": "q_z3table2",
+      "wallet": 2770
+    },
+    {
+      "t": 5500,
+      "idx": 26,
+      "id": "q_counter",
+      "wallet": 1970
+    },
+    {
+      "t": 5530,
+      "idx": 27,
+      "id": "q_z3table3",
+      "wallet": 1470
+    },
+    {
+      "t": 6915,
+      "idx": 28,
+      "id": "q_tost",
+      "wallet": 2374
+    },
+    {
+      "t": 7090,
+      "idx": 29,
+      "id": "q_tost5",
+      "wallet": 513
+    },
+    {
+      "t": 8163,
+      "idx": 30,
+      "id": "q_z3table4",
+      "wallet": 3532
+    },
+    {
+      "t": 9370,
+      "idx": 31,
+      "id": "q_waiterTray2",
+      "wallet": 3470
+    },
+    {
+      "t": 9372,
+      "idx": 32,
+      "id": "q_z1allL4",
+      "wallet": 2570
+    },
+    {
+      "t": 9424,
+      "idx": 33,
+      "id": "q_stationMax",
+      "wallet": 1044
+    },
+    {
+      "t": 10443,
+      "idx": 34,
+      "id": "q_waiter3",
+      "wallet": 0
+    },
+    {
+      "t": 12771,
+      "idx": 35,
+      "id": "q_waiterTray3",
+      "wallet": 6256
+    },
+    {
+      "t": 12772,
+      "idx": 36,
+      "id": "q_lavabo",
+      "wallet": 4356
+    },
+    {
+      "t": 13122,
+      "idx": 37,
+      "id": "q_z3table5",
+      "wallet": 3335
+    },
+    {
+      "t": 13728,
+      "idx": 38,
+      "id": "q_lavabo2",
+      "wallet": 4331
+    },
+    {
+      "t": 13761,
+      "idx": 39,
+      "id": "q_z3table6",
+      "wallet": 799
+    },
+    {
+      "t": 14870,
+      "idx": 40,
+      "id": "q_lavabo3",
+      "wallet": 4713
+    },
+    {
+      "t": 14878,
+      "idx": 41,
+      "id": "q_z3table7",
+      "wallet": 599
+    },
+    {
+      "t": 15969,
+      "idx": 42,
+      "id": "q_lavabo4",
+      "wallet": 5331
+    },
+    {
+      "t": 16295,
+      "idx": 43,
+      "id": "q_z3table8",
+      "wallet": 706
+    },
+    {
+      "t": 17294,
+      "idx": 44,
+      "id": "q_lavabo5",
+      "wallet": 6246
+    },
+    {
+      "t": 17709,
+      "idx": 45,
+      "id": "q_z3table9",
+      "wallet": 859
+    },
+    {
+      "t": 18785,
+      "idx": 46,
+      "id": "q_lavabo6",
+      "wallet": 7420
+    },
+    {
+      "t": 19001,
+      "idx": 47,
+      "id": "q_z3table10",
+      "wallet": 1099
+    },
+    {
+      "t": 19988,
+      "idx": 48,
+      "id": "q_z3table11",
+      "wallet": 8331
+    },
+    {
+      "t": 20459,
+      "idx": 49,
+      "id": "q_z3table12",
+      "wallet": 10039
+    },
+    {
+      "t": 21112,
+      "idx": 50,
+      "id": "SON",
+      "wallet": 12253
+    }
+  ],
+  "botOlay": [
+    {
+      "t": 72.80000000000014,
+      "ev": "panel:char:tray"
+    },
+    {
+      "t": 374.7000000000167,
+      "ev": "panel:char:tray"
+    },
+    {
+      "t": 923.7000000001415,
+      "ev": "panel:char:magnet"
+    },
+    {
+      "t": 2517.199999998806,
+      "ev": "panel:waiterSpeed"
+    },
+    {
+      "t": 4111,
+      "ev": "TAKILMA",
+      "quest": {
+        "id": "q_z2table4",
+        "title": "Salon 2: 4. Masayı aç",
+        "cur": null,
+        "total": null
+      },
+      "why": "cay-al",
+      "wallet": 1370,
+      "padCost": 1400,
+      "currentPad": "z2table4",
+      "player": [
+        -3.79,
+        0.6,
+        12.74
+      ],
+      "goal": [
+        -14.790000000000001,
+        0,
+        6.4
+      ]
+    },
+    {
+      "t": 5420,
+      "ev": "TAKILMA",
+      "quest": {
+        "id": "q_zone3",
+        "title": "3. Salonu aç",
+        "cur": null,
+        "total": null
+      },
+      "why": "bulasik-birak",
+      "wallet": 2420,
+      "padCost": 2500,
+      "currentPad": "zone3",
+      "player": [
+        -10.3,
+        0.6,
+        10.45
+      ],
+      "goal": [
+        -14.790000000000001,
+        0,
+        9
+      ]
+    },
+    {
+      "t": 6430,
+      "ev": "TAKILMA",
+      "quest": {
+        "id": "q_z3table3",
+        "title": "Salon 3: 3. Masayı aç",
+        "cur": null,
+        "total": null
+      },
+      "why": "para",
+      "wallet": 2182.60000000005,
+      "padCost": 2200,
+      "currentPad": "z3table3",
+      "player": [
+        -4.97,
+        0.6,
+        -7.37
+      ],
+      "goal": [
+        5.744564878611457,
+        0.3,
+        6.156922670008547
+      ]
+    },
+    {
+      "t": 7990,
+      "ev": "TAKILMA",
+      "quest": {
+        "id": "q_tost5",
+        "title": "3 tost servis et",
+        "cur": 0,
+        "total": 3
+      },
+      "why": "para",
+      "wallet": 3069.49999999997,
+      "padCost": 0,
+      "currentPad": null,
+      "player": [
+        6.82,
+        0.6,
+        5.85
+      ],
+      "goal": [
+        -5.165382522760098,
+        0.3,
+        12.738533595482478
+      ]
+    },
+    {
+      "t": 9063,
+      "ev": "TAKILMA",
+      "quest": {
+        "id": "q_z3table4",
+        "title": "Salon 3: 4. Masayı aç",
+        "cur": null,
+        "total": null
+      },
+      "why": "bulasik-birak",
+      "wallet": 2914.29999999997,
+      "padCost": 3200,
+      "currentPad": "z3table4",
+      "player": [
+        -7.77,
+        0.6,
+        -2.98
+      ],
+      "goal": [
+        -7.4,
+        0,
+        -9.5
+      ]
+    },
+    {
+      "t": 9370.300000016558,
+      "ev": "panel:waiterTray"
+    },
+    {
+      "t": 10324,
+      "ev": "TAKILMA",
+      "quest": {
+        "id": "q_stationMax",
+        "title": "Tezgâhı son seviyeye çıkar",
+        "cur": null,
+        "total": null
+      },
+      "why": "gorev:stationLevel",
+      "wallet": 0,
+      "padCost": 0,
+      "currentPad": null,
+      "player": [
+        -15.65,
+        0.6,
+        -7.85
+      ],
+      "goal": [
+        -15.8,
+        0,
+        -8
+      ]
+    },
+    {
+      "t": 11343,
+      "ev": "TAKILMA",
+      "quest": {
+        "id": "q_waiter3",
+        "title": "3. Garsonu tut",
+        "cur": null,
+        "total": null
+      },
+      "why": "bulasik-birak",
+      "wallet": 4114,
+      "padCost": 6000,
+      "currentPad": "waiter3",
+      "player": [
+        -6.74,
+        0.6,
+        -2.9
+      ],
+      "goal": [
+        -7.4,
+        0,
+        -9.5
+      ]
+    },
+    {
+      "t": 12770.800000028928,
+      "ev": "panel:waiterTray"
+    },
+    {
+      "t": 14661,
+      "ev": "TAKILMA",
+      "quest": {
+        "id": "q_z3table6",
+        "title": "Şerit: 6. Masayı aç",
+        "cur": null,
+        "total": null
+      },
+      "why": "bulasik-birak",
+      "wallet": 3806.60000000013,
+      "padCost": 4250,
+      "currentPad": "z3table6",
+      "player": [
+        -14.78,
+        0.6,
+        -4.39
+      ],
+      "goal": [
+        -7.4,
+        0,
+        -9.5
+      ]
+    },
+    {
+      "t": 15778,
+      "ev": "TAKILMA",
+      "quest": {
+        "id": "q_z3table7",
+        "title": "Şerit: 7. Masayı aç",
+        "cur": null,
+        "total": null
+      },
+      "why": "bulasik-birak",
+      "wallet": 4654.60000000008,
+      "padCost": 4900,
+      "currentPad": "z3table7",
+      "player": [
+        -10.55,
+        0.6,
+        6.69
+      ],
+      "goal": [
+        -7.4,
+        0,
+        -9.5
+      ]
+    },
+    {
+      "t": 17195,
+      "ev": "TAKILMA",
+      "quest": {
+        "id": "q_z3table8",
+        "title": "Şerit: 8. Masayı aç",
+        "cur": null,
+        "total": null
+      },
+      "why": "bulasik-birak",
+      "wallet": 5010.38479999998,
+      "padCost": 5650,
+      "currentPad": "z3table8",
+      "player": [
+        -6.32,
+        0.6,
+        -8.42
+      ],
+      "goal": [
+        -7.4,
+        0,
+        -9.5
+      ]
+    },
+    {
+      "t": 18609,
+      "ev": "TAKILMA",
+      "quest": {
+        "id": "q_z3table9",
+        "title": "Şerit: 9. Masayı aç",
+        "cur": null,
+        "total": null
+      },
+      "why": "para",
+      "wallet": 6081.81519999996,
+      "padCost": 6500,
+      "currentPad": "z3table9",
+      "player": [
+        -2.17,
+        0.6,
+        -7.57
+      ],
+      "goal": [
+        8.892314860169474,
+        0.3,
+        -1.2038889220338083
+      ]
+    },
+    {
+      "t": 19901,
+      "ev": "TAKILMA",
+      "quest": {
+        "id": "q_z3table10",
+        "title": "Şerit: 10. Masayı aç",
+        "cur": null,
+        "total": null
+      },
+      "why": "bulasik-birak",
+      "wallet": 6932.31519999992,
+      "padCost": 7500,
+      "currentPad": "z3table10",
+      "player": [
+        -3.18,
+        0.6,
+        -3.04
+      ],
+      "goal": [
+        -7.4,
+        0,
+        -9.5
+      ]
+    }
+  ],
+  "okSapma": [],
+  "hatSonuBant": "Görev hattı tamamlandı — kıraathane senin.",
+  "hedefler": {
+    "claimed": [],
+    "masters": [],
+    "diamonds": 0,
+    "goalsExport": [
+      "activeTier",
+      "claimGoalReward",
+      "claimableGoals",
+      "collectionBonus",
+      "collectionMult",
+      "goalCategories",
+      "goalId",
+      "goalViews",
+      "goalViewsForPanel",
+      "tierBonus",
+      "tierState",
+      "totalTiers"
+    ],
+    "liste": [
+      {
+        "id": "service:0",
+        "categoryId": "service",
+        "categoryName": "Servis",
+        "note": "Elden ve garsonla yapılan toplam servis",
+        "tier": 0,
+        "target": 25,
+        "bonus": 0.004,
+        "diamonds": 3,
+        "state": "progress"
+      },
+      {
+        "id": "space:0",
+        "categoryId": "space",
+        "categoryName": "Mekân",
+        "note": "Açılan masa · salon · personel",
+        "tier": 0,
+        "target": 3,
+        "bonus": 0.004,
+        "diamonds": 3,
+        "state": "progress"
+      },
+      {
+        "id": "earn:0",
+        "categoryId": "earn",
+        "categoryName": "Kazanç",
+        "note": "Toplam kazanılan ₺",
+        "tier": 0,
+        "target": 1000,
+        "cur": {
+          "mantissa": 1.367680152,
+          "exponent": 5
+        },
+        "bonus": 0.004,
+        "diamonds": 3,
+        "state": "claimable"
+      },
+      {
+        "id": "clean:0",
+        "categoryId": "clean",
+        "categoryName": "Temizlik",
+        "note": "Kendi elinle yıkadığın kirli bardak",
+        "tier": 0,
+        "target": 3,
+        "cur": [
+          {
+            "id": 11023,
+            "pos": [
+              11.948566308655778,
+              0.95,
+              11.795328073997586
+            ],
+            "tableIndex": 5,
+            "kind": "plate"
+          },
+          {
+            "id": 11151,
+            "pos": [
+              11.706896439189633,
+              0.95,
+              11.633163709914912
+            ],
+            "tableIndex": 5,
+            "kind": "cup"
+          },
+          {
+            "id": 12974,
+            "pos": [
+              -11.5907313265038,
+              0.95,
+              11.787058636253487
+            ],
+            "tableIndex": 0,
+            "kind": "cup"
+          },
+          {
+            "id": 14836,
+            "pos": [
+              11.79664854927588,
+              0.95,
+              11.633436201915725
+            ],
+            "tableIndex": 5,
+            "kind": "cup"
+          },
+          {
+            "id": 14974,
+            "pos": [
+              -11.523440380250273,
+              0.95,
+              11.970739837927999
+            ],
+            "tableIndex": 0,
+            "kind": "cup"
+          },
+          {
+            "id": 15649,
+            "pos": [
+              5.434250891747283,
+              0.95,
+              11.992015458963243
+            ],
+            "tableIndex": 4,
+            "kind": "cup"
+          },
+          {
+            "id": 15790,
+            "pos": [
+              5.208034324147205,
+              0.95,
+              11.918099221948193
+            ],
+            "tableIndex": 4,
+            "kind": "cup"
+          },
+          {
+            "id": 17012,
+            "pos": [
+              -11.816331673545761,
+              0.95,
+              11.797989993505894
+            ],
+            "tableIndex": 0,
+            "kind": "plate"
+          },
+          {
+            "id": 17014,
+            "pos": [
+              -11.720949911555408,
+              0.95,
+              11.688994591010136
+            ],
+            "tableIndex": 0,
+            "kind": "cup"
+          },
+          {
+            "id": 17016,
+            "pos": [
+              -11.410313571269175,
+              0.95,
+              11.826477277826202
+            ],
+            "tableIndex": 0,
+            "kind": "plate"
+          },
+          {
+            "id": 18311,
+            "pos": [
+              -11.785309455277055,
+              0.95,
+              11.969386621171074
+            ],
+            "tableIndex": 0,
+            "kind": "cup"
+          },
+          {
+            "id": 18315,
+            "pos": [
+              -11.408844925885177,
+              0.95,
+              11.700746737798223
+            ],
+            "tableIndex": 0,
+            "kind": "cup"
+          },
+          {
+            "id": 18621,
+            "pos": [
+              -11.963996193992802,
+              0.95,
+              11.620554319038488
+            ],
+            "tableIndex": 0,
+            "kind": "cup"
+          },
+          {
+            "id": 18663,
+            "pos": [
+              -11.62080142343058,
+              0.95,
+              11.737995538361579
+            ],
+            "tableIndex": 0,
+            "kind": "cup"
+          },
+          {
+            "id": 18665,
+            "pos": [
+              -11.65974058130293,
+              0.95,
+              11.768343445924499
+            ],
+            "tableIndex": 0,
+            "kind": "cup"
+          },
+          {
+            "id": 19681,
+            "pos": [
+              -5.248888619736054,
+              0.95,
+              11.871890272388763
+            ],
+            "tableIndex": 1,
+            "kind": "cup"
+          },
+          {
+            "id": 19683,
+            "pos": [
+              -5.038351609113635,
+              0.95,
+              11.618347389645184
+            ],
+            "tableIndex": 1,
+            "kind": "cup"
+          },
+          {
+            "id": 19706,
+            "pos": [
+              -5.51309360882019,
+              0.95,
+              11.859428124131535
+            ],
+            "tableIndex": 1,
+            "kind": "plate"
+          },
+          {
+            "id": 19744,
+            "pos": [
+              -5.291843391632388,
+              0.95,
+              11.899677384681244
+            ],
+            "tableIndex": 1,
+            "kind": "cup"
+          },
+          {
+            "id": 20027,
+            "pos": [
+              -5.56372294290549,
+              0.95,
+              11.690120750933936
+            ],
+            "tableIndex": 1,
+            "kind": "cup"
+          },
+          {
+            "id": 20029,
+            "pos": [
+              -5.065857300613751,
+              0.95,
+              11.770468917406259
+            ],
+            "tableIndex": 1,
+            "kind": "cup"
+          },
+          {
+            "id": 20067,
+            "pos": [
+              -5.410107065963668,
+              0.95,
+              11.643277678949405
+            ],
+            "tableIndex": 1,
+            "kind": "cup"
+          },
+          {
+            "id": 20069,
+            "pos": [
+              -5.043008301174254,
+              0.95,
+              11.936868951054715
+            ],
+            "tableIndex": 1,
+            "kind": "cup"
+          },
+          {
+            "id": 20407,
+            "pos": [
+              5.013820318423556,
+              0.95,
+              5.096885533255565
+            ],
+            "tableIndex": 6,
+            "kind": "cup"
+          },
+          {
+            "id": 20464,
+            "pos": [
+              -5.426546882058854,
+              0.95,
+              11.886758550383604
+            ],
+            "tableIndex": 1,
+            "kind": "cup"
+          },
+          {
+            "id": 20469,
+            "pos": [
+              11.413656333931307,
+              0.95,
+              5.353594251075706
+            ],
+            "tableIndex": 7,
+            "kind": "cup"
+          },
+          {
+            "id": 20503,
+            "pos": [
+              5.574316453341898,
+              0.95,
+              5.583603368144291
+            ],
+            "tableIndex": 6,
+            "kind": "cup"
+          },
+          {
+            "id": 20530,
+            "pos": [
+              -11.750854502725463,
+              0.95,
+              5.416373719082176
+            ],
+            "tableIndex": 2,
+            "kind": "cup"
+          },
+          {
+            "id": 20532,
+            "pos": [
+              -11.70467934529172,
+              0.95,
+              5.278858483218421
+            ],
+            "tableIndex": 2,
+            "kind": "cup"
+          },
+          {
+            "id": 20537,
+            "pos": [
+              5.206972126124701,
+              0.95,
+              -5.878754919996468
+            ],
+            "tableIndex": 11,
+            "kind": "cup"
+          }
+        ],
+        "bonus": 0.004,
+        "diamonds": 3,
+        "state": "progress"
+      },
+      {
+        "id": "master:0",
+        "categoryId": "master",
+        "categoryName": "Usta",
+        "note": "Son seviyeye çıkardığın masa",
+        "tier": 0,
+        "target": 1,
+        "bonus": 0.004,
+        "diamonds": 3,
+        "state": "progress"
+      }
+    ]
+  },
+  "konsol": [
+    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.",
+    "warning: THREE.WebGLShadowMap: PCFSoftShadowMap has been deprecated. Using PCFShadowMap instead."
+  ],
+  "konsolAdet": 2
+}
