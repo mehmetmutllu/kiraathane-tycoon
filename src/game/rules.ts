@@ -863,12 +863,18 @@ export function applyPurchase(s: SatinAlim, islem: string, urun: string): { sati
   const g = purchaseGrant(urun);
   if (!g || s.islenen.includes(islem)) return null;
   const diamonds = g.baslangic && s.baslangic ? 0 : g.diamonds;
+  const islenen = [...s.islenen, islem].slice(-ISLENEN_SINIRI);
+  const onceki = s.islemElmas ?? {};
+  const islemElmas: Record<string, number> = {};
+  for (const k of islenen) if (onceki[k]) islemElmas[k] = onceki[k];
+  if (diamonds > 0) islemElmas[islem] = diamonds;
   return {
     satin: {
       ...s,
       reklamsiz: s.reklamsiz || !!g.reklamsiz,
       baslangic: s.baslangic || !!g.baslangic,
-      islenen: [...s.islenen, islem].slice(-ISLENEN_SINIRI),
+      islenen,
+      islemElmas,
     },
     diamonds,
   };

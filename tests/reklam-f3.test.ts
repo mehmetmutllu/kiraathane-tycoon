@@ -158,7 +158,12 @@ describe('yapılandırma bekçileri', () => {
   it('panel kapanışı ve panel-içi ödüller reklam katmanına bağlı', () => {
     const hud = oku('src/components/ui/HUD.tsx');
     expect(hud).toMatch(/sheet == null\) void panelKapandi\(\)/);
-    expect(hud.match(/odulAlindi\(\)/g)?.length).toBe(3); // günlük Al · günlük İzle · hedef Al
+    // Y-16/Y-17: bayrak düğmede değil ÖDÜL EKRANININ KENDİSİNDE kalkar — ortak ödül ekranı (günlük ·
+    // hedef · seviye · çevrimdışı) ve gerçek para alım ekranı. Geri tuşu yolu da böylece kapsanır.
+    for (const ekran of ['function RewardModal', 'function SatinOdulu']) {
+      const govde = hud.slice(hud.indexOf(ekran), hud.indexOf('\n}\n', hud.indexOf(ekran)));
+      expect(govde, ekran).toMatch(/useEffect\(\(\) => odulAlindi\(\), \[\]\)/);
+    }
   });
 
   it('reklam ekrandayken görünürlük değişimi çevrimdışı sayılmaz', () => {

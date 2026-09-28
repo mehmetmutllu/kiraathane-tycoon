@@ -119,6 +119,9 @@ export interface SatinAlim {
   islenen: string[];
   /** F4c: başlangıç paketi teklifi (ilk Usta'dan sonra) gösterildi mi — bir kez çıkar. */
   teklif: boolean;
+  /** `islenen`deki işlemin verdiği 💎 (Y-25): bulut kaydı yereli ezerken bulutta olmayan işlemin
+   *  💎'ı taşınır. Eski kayıtta yok (additive) → o işlemler 0 sayılır. */
+  islemElmas?: Record<string, number>;
 }
 
 export const defaultSatinAlim = (): SatinAlim => ({ reklamsiz: false, baslangic: false, gunlukGun: -1, islenen: [], teklif: false });

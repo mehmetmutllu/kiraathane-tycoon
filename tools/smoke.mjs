@@ -673,6 +673,40 @@ try {
     else fail(`"İzle, 2× al" 2× vermedi (+${Math.round(sonra - once)} ₺, ödüllü ${odullu})`);
   }
 
+  // Y-16/Y-17: ödül ekranından SONRA geçişli yok. Soğuma dolu; (a) gerçek parayla 💎 → "Harika!" →
+  // mağazayı kapat, (b) panel açıkken çevrimdışı ödülü → "Al" → paneli kapat. İkisinde de sayaç sabit.
+  {
+    // Önceki seviye ekranının bayrağı hâlâ kalkık: bir kapanışla boşaltılır, yoksa (a) onu tüketip mutasyonu örter.
+    await adPaneliAcKapa();
+    await page.evaluate(() => window.__ads.saat(180_000));
+    const g0 = (await page.evaluate(() => window.__ads.durum())).gecisli;
+    await tikla('[data-testid="shop"]');
+    await tikla('[data-testid="shop-tab-paket"]');
+    const al = '[data-testid="paket-al-kiraathane_elmas_25"]';
+    await page.waitForSelector(`${al}:not([disabled])`, { timeout: 5000 });
+    await page.click(al);
+    await page.waitForSelector('[data-testid="satin-odul"]', { timeout: 5000 });
+    await page.click('[data-testid="satin-odul-tamam"]');
+    await tikla('[data-testid="shop-panel"] .sheet-back');
+    await page.waitForSelector('[data-testid="shop-panel"]', { state: 'detached', timeout: 5000 });
+    await page.waitForTimeout(200);
+    const g1 = (await page.evaluate(() => window.__ads.durum())).gecisli;
+
+    await page.evaluate(() => window.__ads.saat(180_000));
+    await tikla('[data-testid="gear"]');
+    await page.waitForSelector('[data-testid="menu"]', { timeout: 3000 });
+    await page.evaluate(() => window.__setState({ offlineEarned: 500 }));
+    await page.waitForSelector('[data-testid="offline-ok"]', { timeout: 5000 });
+    await page.click('[data-testid="offline-ok"]');
+    await page.waitForSelector('[data-testid="offline"]', { state: 'detached', timeout: 5000 });
+    await page.keyboard.press('Escape');
+    await page.waitForSelector('[data-testid="menu"]', { state: 'detached', timeout: 3000 });
+    await page.waitForTimeout(200);
+    const g2 = (await page.evaluate(() => window.__ads.durum())).gecisli;
+    if (g1 === g0 && g2 === g0) pass(`Ödül ekranından sonra geçişli yok: 💎 alımı + çevrimdışı ödül (${g0}→${g1}→${g2})`);
+    else fail(`Ödül ekranından sonra geçişli çıktı (💎 alımı ${g0}→${g1}, çevrimdışı →${g2})`);
+  }
+
   // F4a REKLAMLARI KALDIR (D-152): mağazanın Paketler sekmesinden sahte arka uçla satın alınır;
   // ödül kartı çıkar, düğme "Alındı" olur ve soğuma dolu olsa da panel kapanışı artık geçişli göstermez.
   {

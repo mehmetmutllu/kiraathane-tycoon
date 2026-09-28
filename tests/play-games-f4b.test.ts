@@ -15,6 +15,8 @@ import {
   playGamesDurumu, sahteArkaUc, type BulutKancasi, type SahtePlayGames,
 } from '../src/game/bulut';
 import { playGamesConfig } from '../src/config/playGames.config';
+import { iapConfig } from '../src/config/iap.config';
+import { applyPurchase } from '../src/game/rules';
 import { economyConfig as C } from '../src/config/economy.config';
 import { totalTiers } from '../src/game/goals';
 import { LAYOUT } from '../src/game/layout';
@@ -115,7 +117,25 @@ describe('çakışma kuralı: daha ileri kazanır', () => {
     const r = bulutlaBirlestir(bulut, yerel);
     expect(r.lifetime).toBe('900');
     expect(r.settings.music).toBe(false);
-    expect(r.satin).toEqual({ reklamsiz: true, baslangic: true, gunlukGun: 5, islenen: ['a', 'b'], teklif: false });
+    expect(r.satin).toEqual({ reklamsiz: true, baslangic: true, gunlukGun: 5, islenen: ['a', 'b'], teklif: false, islemElmas: {} });
+  });
+  it('Y-25: girişten önce alınan 💎 bulut yüklenince kaybolmaz, bulutun bildiği işlem iki kez sayılmaz', () => {
+    const bulut = kayit({ lifetime: '900', diamonds: '40', satin: { ...defaultSave().satin, islenen: ['a'], islemElmas: { a: 25 } } });
+    const yerel = kayit({ diamonds: '90', satin: { ...defaultSave().satin, islenen: ['a', 'b'], islemElmas: { a: 25, b: 60 } } });
+    const r = bulutlaBirlestir(bulut, yerel);
+    expect(r.diamonds).toBe('100'); // buluttaki 40 + yalnız yerelde olan b'nin 60'ı
+    expect(r.satin.islenen).toEqual(['a', 'b']);
+    // Eski kayıt (alan yok): taşınacak bilgi yok, bakiye bulutunki — patlamaz.
+    const eski = kayit({ satin: { ...defaultSave().satin, islenen: ['c'] } });
+    expect(bulutlaBirlestir(bulut, eski).diamonds).toBe('40');
+  });
+  it('Y-25: applyPurchase işlemin 💎 tutarını kaydeder, listeden düşen işlemin kaydı da düşer', () => {
+    let s = defaultSave().satin;
+    s = applyPurchase(s, 't0', iapConfig.urun.elmas[0])!.satin;
+    expect(s.islemElmas).toEqual({ t0: C.iap.diamondPacks[0] });
+    for (let i = 1; i <= 50; i++) s = applyPurchase(s, `t${i}`, iapConfig.urun.elmas[0])!.satin;
+    expect(s.islenen).not.toContain('t0');
+    expect(Object.keys(s.islemElmas ?? {})).toHaveLength(50);
   });
 });
 

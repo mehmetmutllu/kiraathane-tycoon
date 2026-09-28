@@ -101,12 +101,19 @@ export function kayitIleriMi(a: Pick<SaveData, 'lifetime' | 'xp'>, b: Pick<SaveD
   return k > 0 || (k === 0 && a.xp > b.xp);
 }
 
-/** Buluttaki kaydı yerelin üstüne koyarken yerelden KORUNANLAR: ayarlar + satın alımlar. */
+/**
+ * Buluttaki kaydı yerelin üstüne koyarken yerelden KORUNANLAR: ayarlar + satın alımlar. Bulutun
+ * bilmediği yerel işlemlerin 💎'ı buluttaki bakiyeye EKLENİR (Y-25): yoksa girişten önce alınan
+ * 💎 kaybolurdu — işlem kimliği `islenen`e birleştiği için mağaza onu bir daha da vermez.
+ */
 export function bulutlaBirlestir(bulut: SaveData, yerel: SaveData): SaveData {
   const a = bulut.satin;
   const b = yerel.satin;
+  const yereldeKalan = b.islenen.filter((i) => !a.islenen.includes(i));
+  const tasinan = yereldeKalan.reduce((t, i) => t + (b.islemElmas?.[i] ?? 0), 0);
   return {
     ...bulut,
+    diamonds: tasinan > 0 ? D(bulut.diamonds).add(tasinan).toString() : bulut.diamonds,
     settings: { ...yerel.settings },
     satin: {
       reklamsiz: a.reklamsiz || b.reklamsiz,
@@ -115,6 +122,7 @@ export function bulutlaBirlestir(bulut: SaveData, yerel: SaveData): SaveData {
       islenen: [...new Set([...a.islenen, ...b.islenen])],
       // Eski bulut kaydında alan yok (additive) — `!!` undefined'ı false sayar.
       teklif: !!a.teklif || !!b.teklif,
+      islemElmas: { ...a.islemElmas, ...b.islemElmas },
     },
   };
 }

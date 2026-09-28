@@ -898,7 +898,7 @@ function OgretmeBulasik({ onClose, onShow }: { onClose: () => void; onShow: () =
         <BasinIcon size={30} />
       </span>
       <span className="ogretme-body">
-        <b>Bulaşık biriyor</b>
+        <b>Bulaşık birikiyor</b>
         <span>
           Müşteriler çayını içince masada <u>kirli bardak</u> bırakır. Onları topla ve
           bulaşık tezgâhına götür — yıkanan bardaklar temiz rafa döner.
@@ -1150,12 +1150,10 @@ function QuestsSheet({ onClose }: { onClose: () => void }) {
           claimTestid="daily-reward-ok"
           onClaim={() => {
             claimDailyQuest(gunOdul.id);
-            odulAlindi();
             setGunOdul(null);
           }}
           onIzle={() => {
             claimDailyQuest(gunOdul.id, true);
-            odulAlindi();
             setGunOdul(null);
           }}
         />
@@ -1390,7 +1388,6 @@ function GoalsSheet({ onClose }: { onClose: () => void }) {
           claimTestid="goal-reward-ok"
           onClaim={() => {
             claimGoal(odul.id);
-            odulAlindi();
             setOdul(null);
           }}
         />
@@ -1476,6 +1473,7 @@ const MAGAZA_YOK = 'Mağazaya bağlanılamadı';
  * "Harika!") burada da — oyuncu ne aldığını görür.
  */
 function SatinOdulu({ urun, elmas, onClose }: { urun: string; elmas: number; onClose: () => void }) {
+  useEffect(() => odulAlindi(), []); // gerçek parayla alımın ardından reklam YOK (Y-16)
   const U = iapConfig.urun;
   const P = economyConfig.iap;
   const i = (U.elmas as readonly string[]).indexOf(urun);
@@ -1574,6 +1572,9 @@ function RewardModal({
   /** Düğme metni — çevrimdışında tavan eki 2×'ten az olabilir, o yüzden "+X" yazar. */
   izleEtiket?: string;
 }) {
+  // Ödül ekranından sonraki ilk panel kapanışı reklamsız (Y-16/Y-17). GÖRÜNÜNCE işaretlenir, "Al"da
+  // değil: geri tuşu ekranı `onClaim`e uğramadan kapatır, o yol da kapsansın.
+  useEffect(() => odulAlindi(), []);
   const hazir = useOdulluHazir();
   const [izleniyor, setIzleniyor] = useState(false);
   const izle = async () => {
