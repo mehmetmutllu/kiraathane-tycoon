@@ -41,3 +41,19 @@ export function activeQuestIndex(quests: readonly QuestDef[], completed: readonl
   for (let i = last + 1; i < quests.length; i++) if (!done.has(quests[i].id)) return i;
   return quests.length;
 }
+
+/**
+ * PAD ONARIMI (Y-23) — ekranda yalnız AKTİF görevin pad'i çizilir. Kaydın geçtiği bir pad görevinin
+ * pad'i `padsDone`'da yoksa (v31 göçü hat değiştikten sonra index'i bugünkü hatta çevirdi; ya da
+ * hattın ortasına sonradan pad görevi eklendi) o pad bir daha HİÇ görünmez ve oyun takılır.
+ * Aktif görev, pad'i eksik en erken görev olur. Kimlik listesi ellenmez: pad alınınca konum
+ * `activeQuestIndex`in "en geç görev" kuralıyla kaldığı yere döner.
+ */
+export function eksikPadGorevi(quests: readonly QuestDef[], index: number, padsDone: readonly string[]): number {
+  const alinan = new Set(padsDone);
+  for (let i = 0; i < Math.min(index, quests.length); i++) {
+    const t = quests[i].target;
+    if (t.type === 'pad' && !alinan.has(t.id)) return i;
+  }
+  return index;
+}

@@ -53,7 +53,7 @@ import {
   waiterHomeAt,
 } from './layout';
 import { areaOfTable as areaOfTableIdx, deriveWorld, defaultFloorTheme, MAX_AREAS, MAX_SERVICES, roomOpen, sellsTost, THE_SERVICE, type World } from './world';
-import { activeQuestIndex, completedQuestIds } from './questProgress';
+import { activeQuestIndex, completedQuestIds, eksikPadGorevi } from './questProgress';
 import {
   dayIndex,
   defaultDaily,
@@ -758,7 +758,7 @@ export const useGame = create<GameState>((set, get) => ({
       dishSpeed: Math.max(0, Math.min(save.waiterUpgrades?.dishSpeed ?? 0, dishSpeedMaxTier())),
     };
     // GÖREV KONUMU (v32, D-088): kayıtta index yok — aktif görev tamamlanan KİMLİKLERDEN türer.
-    const loadedQuestIndex = activeQuestIndex(C.quests, save.questsDone);
+    const loadedQuestIndex = eksikPadGorevi(C.quests, activeQuestIndex(C.quests, save.questsDone), save.padsDone);
     const loadedActive = C.quests[loadedQuestIndex];
     // Taban aktif göreve AİTTİR. Hat kayıt yazıldıktan sonra değiştiyse türetilen görev başkası
     // olabilir; o hâlde eski taban bayattır ve sayaç görevi hedefini SIFIRDAN sayar (delta 0).

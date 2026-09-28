@@ -67,7 +67,7 @@ vi.mock('@revenuecat/purchases-capacitor', () => ({
   },
 }));
 
-import { magazaPlatformu, playGamesVar } from '../src/game/platform';
+import { magazaHesabi, magazaPlatformu, playGamesVar } from '../src/game/platform';
 import { bulutBaslat, playGamesDurumu, sahteArkaUc as sahteBulut } from '../src/game/bulut';
 import { reklamBaslat, reklamDurumu } from '../src/game/ads';
 import { magazaHazir, satinAlmaBaslat } from '../src/game/iap';
@@ -92,6 +92,13 @@ describe('platform tek kaynak', () => {
     expect(magazaPlatformu('android')).toBe('android');
     expect(magazaPlatformu('ios')).toBe('ios');
     expect(magazaPlatformu('web')).toBeNull();
+  });
+  it('satın alım hesabı metni platforma göre: iOS’ta "Google" yazmaz (App Store red riski)', () => {
+    expect(magazaHesabi('ios')).toBe('Apple hesabında');
+    expect(magazaHesabi('android')).toBe('Google hesabında');
+    expect(magazaHesabi('web')).toBe('mağaza hesabında');
+    const hud = readFileSync('src/components/ui/HUD.tsx', 'utf8');
+    expect(hud).not.toMatch(/Google hesab/);
   });
   it('Play Games yalnız Android', () => {
     expect(playGamesVar('android')).toBe(true);

@@ -67,7 +67,7 @@ Bütçe düzeltmelerinin tarihçesi (73 → 121) ve bitmiş fazların tam anlat�
 - ✅ **E2 — duman testi `package.json`'a BAĞLANDI: `npm run duman`** …
 - ✅ **E3 — ses SİSTEMİ kuruldu; `tick.ts`e DOKUNULMADI**
 - ✅ **E4 — ses kaynağı seçildi: dosya değil KOD; motor büyütüldü (D-096)** *(tur adı `E3b`)*
-- ⏳ **E5 — hareketli onboarding**
+- 🔧 **E5 — hareketli onboarding** · kod birleşti (5 adım, Atla) · 4 küçük görsel soru kullanıcıda
 
 ## Faz S — SANAT VE ARAYÜZ GEÇİŞİ (24/24) ✅ — her kalem ≈ 1 oturum — kullanıcı geri bildirimi 2026-09-09
 - ✅ **S1 — pad ve yükseltme dili yeniden yazıldı** …
@@ -116,7 +116,7 @@ Bütçe düzeltmelerinin tarihçesi (73 → 121) ve bitmiş fazların tam anlat�
 - ✅ **F7 — Play Games: bulut kaydı + başarımlar (XP)** *(tur adı F4b)* · kendi native eklentimiz (PGS v2) · daha ileri kayıt kazanır · 19 başarım / 1000 XP ödülsüz · kimlik girilene dek KAPALI · D-153 · `docs/play-games-kurulum.md` · kalan: Console kurulumu + gerçek cihazda giriş/bulut turu
 - 🔧 **F8 — 💎 kozmetik vitrini + başlangıç paketinin kozmetiği** *(tur adı F4c)* · F4c-1 ✅ Kıyafet/Tepsi 💎 · Kurucu (K4) paketle · teklif ilk Usta sonrası · D-154 · fiyat TASLAK · F4c-2 ✅ dekor: 9 yuva bugünkü düzende (trafik %0) · sırt duvar profilinden (konsol/TV de düzeldi) · 3. Salon'a kadar kilitli · yılbaşı sol önde · D-155 · `docs/dekor-raporu-f4c2.md` · F4c-3 ✅ tabela: alınlığı dolduran levha + oyuncunun kafe adı (girişte bir kez, Ayarlar'dan), 💎 cephe yok, yükleniyor "Tea House Tycoon" · D-156 · `docs/tabela-raporu-f4c3.md` · mutasyon 11/11 · final K0 = K2 · F4c-4 ✅ dekor salondaki yerinde (çapraz uzak %25, oto kadraj) · teklif T3 · 14 metin + alım bildirimi/sesi/ödül kartı · D-157 · `docs/magaza-raporu-f4c4.md` · mutasyon 12/12 · duman 67/67
 - ⏳ **F5 — mağaza vitrini + uyum** …
-  · 2026-09-28 yayın sprinti (D-158): iOS önce, `com.mutlubadem.teahouse`, Codemagic · ASC kaydı + AdMob iOS + RevenueCat projesi kuruldu · mağaza taslağı artifact KfNEdtK71YzUupBjrvyxEj · 4 ajan dalı WIP (birleştirilecek)
+  · 2026-09-28 yayın sprinti (D-158): iOS önce, `com.mutlubadem.teahouse`, Codemagic · ASC kaydı + AdMob iOS + RevenueCat projesi kuruldu · mağaza taslağı artifact KfNEdtK71YzUupBjrvyxEj · 4 ajan dalı birleşti · ilk paket three'siz (1.633 → 396 kB) · tarama yüksekleri Y-16/17/23/25/34 ✅
 - ✅ **F6 — açılış ekranı + ekran yönü + yatay/tablet HUD** (F1b iki tur + tur 3) …
 
 ## Faz T — TUR SERİSİ: GERİ BİLDİRİM + PERFORMANS (13/13) ✅

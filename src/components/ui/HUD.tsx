@@ -15,6 +15,7 @@ import { screenPointer } from '../../game/screenPointer';
 import { satinAl, satinAlimlariGeriYukle, satinAlmaAbone, satinAlmaSurumu, urunFiyati } from '../../game/iap';
 import { basarimlariGoster, bulutAbone, bulutSifirla, bulutSurumu, girisYap, playGamesDurumu } from '../../game/bulut';
 import { iapConfig } from '../../config/iap.config';
+import { magazaHesabi } from '../../game/platform';
 import { fmt } from '../../game/decimal';
 import { SAYAC_MS, sayacDegeri } from '../../game/sayac';
 import { SAVE_VERSION } from '../../game/save';
@@ -1769,7 +1770,7 @@ function Paketler() {
           )}
       </ul>
       <div className="sheet-foot-note">
-        Aldıkların Google hesabında saklanır. Telefon değiştirirsen Ayarlar'dan geri yükleyebilirsin.
+        Aldıkların {magazaHesabi()} saklanır. Telefon değiştirirsen Ayarlar'dan geri yükleyebilirsin.
       </div>
     </div>
   );

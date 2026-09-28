@@ -22,6 +22,18 @@
 5. **Y-05** `viewport-fit=cover` yok → iOS'ta `env(safe-area-inset-*)` 0; üst şerit çentiğin/Dynamic Island'ın, alt gezinme ev çubuğunun altında kalır.
 6. **Y-06** Uygulama içinde Gizlilik Politikası bağlantısı ve UMP "reklam tercihleri" girişi yok (Guideline 5.1.1).
 
+## Düzeltme durumu (2026-09-28 ikinci oturum)
+
+| Bulgu | Durum | Nerede |
+|---|---|---|
+| Y-01…Y-05 | ✅ iOS dalında (birleşti) | `ios/`, `platform.ts`, `ads.ts` ATT/UMP |
+| Y-06 | 🔧 yarım: UMP girişi var mı doğrulanmadı; gizlilik bağlantısı gizlilik sayfası yayınlanınca | — |
+| Y-16 · Y-17 | ✅ bayrak ödül ekranının kendisinde (`RewardModal`, `SatinOdulu`) — geri tuşu da kapsanır | duman "Ödül ekranından sonra geçişli yok" · 2 mutasyon |
+| Y-23 | ✅ yüklemede pad onarımı `eksikPadGorevi` | `gorev-kimligi.test.ts` Y-23 · 2 mutasyon |
+| Y-25 | ✅ `satin.islemElmas` (additive) · bulut birleşirken yerel işlemin 💎'ı taşınır | `play-games-f4b.test.ts` Y-25 · 2 mutasyon |
+| Y-34 | ✅ "Bulaşık birikiyor" | — |
+| Paketler "Google hesabında" | ✅ `magazaHesabi()` iOS'ta "Apple hesabında" | `ios-platform.test.ts` |
+
 ## Yöntem
 
 - **hat** — taze kayıt → T9b botu (tek düzeltmeyle: hedefin tam üstünde 0/0 = NaN yön) gerçek `tick` + klavye girdisiyle

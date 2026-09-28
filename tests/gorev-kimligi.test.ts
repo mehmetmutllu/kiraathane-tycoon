@@ -11,9 +11,10 @@
  */
 import { describe, it, expect, beforeEach } from 'vitest';
 import { economyConfig as C, type QuestDef } from '../src/config/economy.config';
-import { activeQuestIndex, completedQuestIds } from '../src/game/questProgress';
+import { activeQuestIndex, completedQuestIds, eksikPadGorevi } from '../src/game/questProgress';
 import { loadSave, defaultSave, SAVE_VERSION } from '../src/game/save';
 import { useGame } from '../src/game/store';
+import { visiblePads } from '../src/game/rules';
 
 const KEY = 'kiraathane.save';
 
@@ -35,6 +36,9 @@ function withStorage(seed: string | null, fn: () => void): void {
 const q = (id: string): QuestDef =>
   ({ id, title: id, target: { type: 'collectCoin', count: 1 }, reward: 0 }) as QuestDef;
 const HAT = ['a', 'b', 'c', 'd', 'e'].map(q);
+/** Gerçek hatta `n`. görevden önceki pad görevlerinin pad'leri. */
+const padlar = (n: number) =>
+  C.quests.slice(0, n).flatMap((x) => (x.target.type === 'pad' ? [x.target.id] : []));
 
 describe('D-088 ① index ↔ kimlik gidiş-dönüşü', () => {
   it('gerçek hattın HER konumu kayıpsız dönüyor (0 … length)', () => {
@@ -156,7 +160,8 @@ describe('D-088 ④ kayıt ↔ oyun turu', () => {
     withStorage(null, () => {
       const idx = 9;
       useGame.getState().hardReset();
-      useGame.setState({ questIndex: idx, questBase: 4 });
+      // Gerçek oyunda geçilen pad görevinin pad'i alınmıştır (Y-23 onarımı eksik pad'e geri çeker).
+      useGame.setState({ questIndex: idx, questBase: 4, padsDone: padlar(idx) });
       useGame.getState().saveNow();
       const s = loadSave();
       expect(s.questsDone).toEqual(C.quests.slice(0, idx).map((x) => x.id));
@@ -246,5 +251,44 @@ describe('G-77 · görev başlığındaki seviye = ekrandaki seviye', () => {
       (q) => ekrandakiSeviye(q) != null && /\bL\s?\d|\bSv\.?\s?\d/i.test(q.title),
     );
     expect(supheli.map((q) => q.id)).toEqual([]);
+  });
+});
+
+describe('Y-23 pad onarımı — geçilmiş pad görevinin pad kaybolmaz', () => {
+  const ilkPad = C.quests.findIndex((x) => x.target.type === 'pad');
+  const padId = (i: number) => (C.quests[i].target as { id: string }).id;
+
+  it('eksik pad görevi aktif olur; pad listesi tamamsa konum değişmez', () => {
+    const idx = 12;
+    expect(eksikPadGorevi(C.quests, idx, padlar(idx))).toBe(idx);
+    const eksik = padlar(idx).filter((p) => p !== padId(ilkPad));
+    expect(eksikPadGorevi(C.quests, idx, eksik)).toBe(ilkPad);
+    // Aktif görevin kendisi ve sonrası onarımın konusu değil.
+    expect(eksikPadGorevi(C.quests, ilkPad, [])).toBe(ilkPad);
+  });
+
+  it('hattaki her pad görevi gerçek bir pad gösterir (onarım boşa işaret etmez)', () => {
+    const padIds = new Set((C.pads as readonly { id: string }[]).map((p) => p.id));
+    for (const id of padlar(C.quests.length)) expect(padIds.has(id), id).toBe(true);
+  });
+
+  it('v31 göçünde pad eksik kalan kayıt İLERLEYEBİLİR: o pad aktif ve ekranda', () => {
+    const eskiIdx = 12;
+    const sahip = padlar(eskiIdx).slice(0, 2); // ilk iki pad alınmış, sonrakiler yok
+    const beklenen = C.quests.findIndex((x) => x.target.type === 'pad' && !sahip.includes(x.target.id));
+    withStorage(JSON.stringify({
+      ...defaultSave(), saveVersion: 31, questsDone: undefined,
+      questIndex: eskiIdx, questBase: 0, padsDone: sahip, lastSaved: Date.now(),
+    }), () => {
+      useGame.getState().init();
+      const g = useGame.getState();
+      expect(g.questIndex).toBe(beklenen);
+      expect(g.quest?.target).toEqual({ type: 'pad', id: padId(beklenen) });
+      const gate = {
+        padsDone: g.padsDone, tables: g.tables, stationLevel: g.stationLevels[0], lifetime: g.lifetime.toNumber(),
+        waiterServed: g.stats.waiterServed, waiterServedByService: g.stats.waiterServedByService, tableLevels: g.tableLevels,
+      };
+      expect(visiblePads(g.questIndex, gate).map((p) => p.id)).toContain(padId(beklenen));
+    });
   });
 });
