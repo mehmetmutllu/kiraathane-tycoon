@@ -27,8 +27,13 @@ import { describe, expect, it } from 'vitest';
 const KOK = path.resolve(__dirname, '..');
 const oku = (...p: string[]) => fs.readFileSync(path.join(KOK, ...p), 'utf8');
 
-/** D-130 ile seçilen kalıcı kimlik. Play'de yayımlandıktan sonra DEĞİŞTİRİLEMEZ. */
-const PAKET = 'com.memedobro.teahousetycoon';
+/**
+ * Mağaza kimliği (appId · applicationId · iOS bundle id). Yayımlandıktan sonra DEĞİŞTİRİLEMEZ.
+ * D-130'da `com.memedobro.teahousetycoon` idi; kullanıcı 2026-09-28 `com.mutlubadem.teahouse` seçti.
+ */
+const PAKET = 'com.mutlubadem.teahouse';
+/** Android kaynak kodunun Java paketi + `namespace` — mağaza kimliğinden AYRI, bilerek değişmedi. */
+const JAVA_PAKET = 'com.memedobro.teahousetycoon';
 
 const capacitorConfig = oku('capacitor.config.ts');
 const appGradle = oku('android', 'app', 'build.gradle');
@@ -39,10 +44,14 @@ const gitignore = oku('.gitignore');
 const pkg = JSON.parse(oku('package.json')) as { version: string };
 
 describe('paket kimligi tek ve ayni (D-130)', () => {
-  it('capacitor, gradle ve namespace ayni kimligi soyluyor', () => {
+  it('capacitor, gradle ve iOS ayni kimligi soyluyor; namespace Java paketinde', () => {
     expect(capacitorConfig).toContain(`appId: '${PAKET}'`);
     expect(appGradle).toContain(`applicationId "${PAKET}"`);
-    expect(appGradle).toContain(`namespace = "${PAKET}"`);
+    expect(appGradle).toContain(`namespace = "${JAVA_PAKET}"`);
+    const pbx = oku('ios', 'App', 'App.xcodeproj', 'project.pbxproj');
+    expect(pbx.match(/PRODUCT_BUNDLE_IDENTIFIER = ([^;]+);/g)).toEqual([
+      `PRODUCT_BUNDLE_IDENTIFIER = ${PAKET};`, `PRODUCT_BUNDLE_IDENTIFIER = ${PAKET};`,
+    ]);
   });
 
   it('strings.xml kimlik alanlari da ayni', () => {
@@ -57,9 +66,9 @@ describe('paket kimligi tek ve ayni (D-130)', () => {
    * yapmamış olurdu.
    */
   it('MainActivity hem paketini hem yerini tasiyor', () => {
-    const yol = path.join(KOK, 'android', 'app', 'src', 'main', 'java', ...PAKET.split('.'), 'MainActivity.java');
+    const yol = path.join(KOK, 'android', 'app', 'src', 'main', 'java', ...JAVA_PAKET.split('.'), 'MainActivity.java');
     expect(fs.existsSync(yol)).toBe(true);
-    expect(fs.readFileSync(yol, 'utf8')).toContain(`package ${PAKET};`);
+    expect(fs.readFileSync(yol, 'utf8')).toContain(`package ${JAVA_PAKET};`);
   });
 
   it('eski kimlik hicbir yerde kalmadi', () => {
@@ -69,6 +78,7 @@ describe('paket kimligi tek ve ayni (D-130)', () => {
       ['strings.xml', stringsVarsayilan],
     ] as const) {
       expect(ad + ': ' + metin).not.toContain('com.kosekiraathanesi');
+      if (ad === 'strings.xml') expect(ad + ': ' + metin).not.toContain(JAVA_PAKET); // kimlik alanı eski pakette kalmasın
     }
     expect(fs.existsSync(path.join(KOK, 'android', 'app', 'src', 'main', 'java', 'com', 'kosekiraathanesi'))).toBe(false);
   });

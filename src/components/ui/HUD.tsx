@@ -138,6 +138,9 @@ export function HUD() {
   const [sheet, setSheet] = useState<Sheet>(null);
   // C5 (T9d): sıfırlama onayı OYUNUN kutusunda — `window.confirm` Capacitor'da çıplak sistem penceresiydi.
   const [sifirlaSor, setSifirlaSor] = useState(false);
+  // Bulut yedeği yalnız Play Games kullanılabilirken var (iOS'ta ve tarayıcıda hiç yok) — metin durumdan türer.
+  useSyncExternalStore(bulutAbone, bulutSurumu);
+  const bulutVar = playGamesDurumu().kullanilabilir;
   // F4c-3 (D-156): kafe adı — `null` = hiç sorulmadı (açılış kanalı); Ayarlar'dan düzenleme ayrı kip.
   const kafeAdi = useGame((s) => s.kafeAdi);
   const kafeAdiKoy = useGame((s) => s.kafeAdiKoy);
@@ -602,7 +605,9 @@ export function HUD() {
             <PlayGamesBolumu />
             <GeriYukle />
             <div className="sheet-foot-note">
-              Kayıt bu cihazda tutulur; Play Games'e bağlıysan buluta da yedeklenir. Oyunu sıfırlarsan geri alınamaz.
+              {bulutVar
+                ? "Kayıt bu cihazda tutulur; Play Games'e bağlıysan buluta da yedeklenir. Oyunu sıfırlarsan geri alınamaz."
+                : 'Kayıt bu cihazda tutulur. Oyunu sıfırlarsan geri alınamaz.'}
             </div>
             <button className="danger-btn" data-testid="reset" onClick={() => setSifirlaSor(true)}>
               <ResetIcon size={17} /> Oyunu sıfırla
@@ -611,7 +616,7 @@ export function HUD() {
               <div className="modal-backdrop" data-testid="reset-confirm" onClick={() => setSifirlaSor(false)}>
                 <div className="modal-card reward-card" onClick={(e) => e.stopPropagation()}>
                   <div className="reward-title">Oyunu sıfırla?</div>
-                  <p className="onay-metin">Tüm ilerleme silinecek (bulut yedeği dahil). Geri alınamaz.</p>
+                  <p className="onay-metin">Tüm ilerleme silinecek{bulutVar ? ' (bulut yedeği dahil)' : ''}. Geri alınamaz.</p>
                   <button className="danger-btn" data-testid="reset-yes" onClick={onReset}>
                     <ResetIcon size={17} /> Evet, sıfırla
                   </button>

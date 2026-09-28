@@ -8,8 +8,8 @@
  * (reklamsız · başlangıç) mağaza hesabında durur ve `sahiplikler`/`geriYukle` ile okunur; kayıt silinse
  * bile geri gelir. 💎 geri yüklenmez: tüketilmiş üründür (bulut kaydı F4b'de).
  */
-import { Capacitor } from '@capacitor/core';
 import { iapConfig } from '../config/iap.config';
+import { magazaPlatformu } from './platform';
 
 export interface Islem {
   /** Mağazanın işlem kimliği — aynı işlem iki kez ödül vermesin diye kayıtta tutulur. */
@@ -112,9 +112,10 @@ export async function satinAlmaBaslat(ozel?: SatinAlmaArkaUcu): Promise<Sahiplik
   arkaUc = null;
   fiyat = {};
   islemde = false;
-  const anahtar = iapConfig.revenueCatAnahtar;
+  const platform = magazaPlatformu();
+  const anahtar = platform ? iapConfig.revenueCatAnahtar[platform] : null;
   const secilen = ozel
-    ?? (Capacitor.isNativePlatform()
+    ?? (platform
       ? (anahtar ? await dene(() => revenueCatArkaUcu(anahtar), null) : null)
       : sahteArkaUc());
   if (!secilen) { bildir(); return null; }

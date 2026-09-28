@@ -51,7 +51,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.memedobro.teahousetycoon"
+        applicationId "com.mutlubadem.teahouse"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode surumKodu

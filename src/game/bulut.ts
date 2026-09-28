@@ -2,9 +2,10 @@
  * bulut.ts — PLAY GAMES KATMANI: giriş + bulut kaydı + başarımlar (F4b · D-153). Oyun Play Games'i
  * yalnız bu modülden görür.
  *
- * `iap.ts`in deseni: cihazda kendi native eklentimiz (`PlayGamesPlugin.java`), tarayıcı/testte SAHTE
- * arka uç. Cihazda Play Games kimliği (APP_ID) girilmemişse eklenti "kullanılamaz" der ve katman
- * KAPALI kalır — oyun olduğu gibi oynanır, Ayarlar'da bölüm görünmez.
+ * Yalnız ANDROID'de açılır (`platform.ts` · `playGamesVar`): orada kendi native eklentimiz
+ * (`PlayGamesPlugin.java`). iOS'ta ve tarayıcıda katman hiç kurulmaz — tek çağrı yapılmaz, Ayarlar'da
+ * bölüm görünmez. Testler SAHTE arka ucu `ozel` ile verir. Android'de Play Games kimliği (APP_ID)
+ * girilmemişse eklenti "kullanılamaz" der ve katman yine KAPALI kalır — oyun olduğu gibi oynanır.
  *
  * ÇAKIŞMA KURALI (kullanıcı kararı 2026-09-24): DAHA İLERİ kayıt kazanır. İlerleme = toplam kazanç,
  * eşitse XP (`kayitIleriMi`). Buluttaki daha ileriyse açılışta yüklenir; yereldeki ileriyse buluta
@@ -14,11 +15,12 @@
  * Satın alımlar mağaza hesabının malıdır: bulut kaydı yüklenirken yereldeki satın alım bilgisi ve
  * ayarlar KORUNUR (birleştirilir), yoksa telefondaki reklamsızlık eski bir kayıtla düşebilirdi.
  */
-import { Capacitor, registerPlugin } from '@capacitor/core';
+import { registerPlugin } from '@capacitor/core';
 import { levelProgress } from '../config/economy.config';
 import { playGamesConfig } from '../config/playGames.config';
 import { acikBasarimlar } from './basarim';
 import { D } from './decimal';
+import { playGamesVar } from './platform';
 import { kayitCoz, kayitKilitli, type SaveData } from './save';
 
 export interface PlayGamesArkaUcu {
@@ -176,7 +178,8 @@ export async function bulutBaslat(k: BulutKancasi, ozel?: PlayGamesArkaUcu): Pro
   sonImza = '';
   gonderilen.clear();
   kuyruk = Promise.resolve();
-  const secilen = ozel ?? (Capacitor.isNativePlatform() ? yerliArkaUc() : sahteArkaUc());
+  const secilen = ozel ?? (playGamesVar() ? yerliArkaUc() : null);
+  if (!secilen) { bildir(); return; }
   const d = await dene(() => secilen.durum(), null);
   if (!d?.kullanilabilir) { bildir(); return; }
   arkaUc = secilen;

@@ -8,7 +8,7 @@ kurulmaz, Ayarlar'da bölüm görünmez, oyun onsuz oynanır (emülatörde doğr
 1. **Play Games Services'ı aç:** Play Console → uygulama → *Büyüme → Play Games Services → Kurulum ve yönetim →
    Yapılandırma* → "Hayır, oyunum Google API'lerini kullanmıyor" → yeni oyun projesi.
 2. **Kimlik bilgisi (Android):** Yapılandırma → *Kimlik bilgisi ekle* → Android. Paket adı
-   `com.memedobro.teahousetycoon`. Bir OAuth istemcisi gerekiyor (Google Cloud'da oluşturma bağlantısı açılır).
+   `com.mutlubadem.teahouse`. Bir OAuth istemcisi gerekiyor (Google Cloud'da oluşturma bağlantısı açılır).
    **Her imza için ayrı kimlik bilgisi:**
    - **Uygulama imzalama anahtarı** (Play App Signing): SHA-1'i *Test ve yayınla → Uygulama bütünlüğü*'nde.
      Mağazadan indirilen sürüm bununla imzalanır.

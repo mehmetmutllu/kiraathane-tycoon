@@ -46,7 +46,7 @@ const MUTASYONLAR = [
   { ad: 'M14 garson sayaci yanlis', dosya: 'src/game/basarim.ts',
     bul: 'garson: s.stats.waiterServed,', koy: 'garson: s.stats.teasServed,', ne: 'garsonsuz ilk_garson' },
   { ad: 'M15 cihazda sahte bulut', dosya: 'src/game/bulut.ts',
-    bul: 'Capacitor.isNativePlatform() ? yerliArkaUc() : sahteArkaUc()', koy: 'sahteArkaUc()', ne: 'cihazda bellekte bulut, kayit kaybolur' },
+    bul: 'ozel ?? (playGamesVar() ? yerliArkaUc() : null)', koy: 'ozel ?? (playGamesVar() ? yerliArkaUc() : sahteArkaUc())', ne: 'iOS/tarayicida bellekte bulut, kayit kaybolur' },
   { ad: 'M16 APP_ID bosken SDK kurulur', dosya: 'android/app/src/main/java/com/memedobro/teahousetycoon/PlayGamesPlugin.java',
     bul: 'if (id == 0 || c.getString(id).trim().isEmpty()) return;', koy: 'if (id == 0) return;', ne: 'kimliksiz kurulum hata penceresi' },
   { ad: 'M17 sifirlama bulutu unutur', dosya: 'src/components/ui/HUD.tsx',

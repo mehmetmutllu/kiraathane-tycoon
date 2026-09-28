@@ -1,3 +1,5 @@
+import type { MagazaPlatformu } from '../game/platform';
+
 /**
  * iap.config.ts — SATIN ALMANIN KİMLİK AYARLARI (F4a).
  *
@@ -5,14 +7,18 @@
  * `economy.config.ts` `iap` bloğunda ve kapıya tabidir. FİYAT kodda YOK: mağazada ülke başına girilir,
  * oyun mağazanın yerel fiyat metnini gösterir.
  *
- * `revenueCatAnahtar` null iken cihazda satın alma KAPALIDIR (düğmeler "Mağaza hazır değil").
- * Tarayıcı/testte sahte arka uç çalışır. Anahtar RevenueCat panelinden (Android public SDK key) gelir.
+ * `revenueCatAnahtar` platform başınadır; o platformun anahtarı null iken cihazda satın alma KAPALIDIR
+ * (düğmeler "Mağaza hazır değil"). Tarayıcı/testte sahte arka uç çalışır. Anahtarlar RevenueCat
+ * panelinden gelir (proje → uygulama → "Public API key"): Android `goog_…`, iOS `appl_…`.
  */
 export const iapConfig = {
-  revenueCatAnahtar: null as string | null,
+  revenueCatAnahtar: { android: null, ios: null } as Record<MagazaPlatformu, string | null>,
   /** RevenueCat "entitlement" kimlikleri — kalıcı sahiplikler (geri yüklenir). */
   hak: { reklamsiz: 'reklamsiz', baslangic: 'baslangic' },
-  /** Play Console ürün kimlikleri. `elmas` sırası `economy.config.ts` `iap.diamondPacks` ile aynı. */
+  /**
+   * Mağaza ürün kimlikleri — Play Console'da ve App Store Connect'te AYNI adla açılır (iki mağaza
+   * da bu string'i görür). `elmas` sırası `economy.config.ts` `iap.diamondPacks` ile aynı.
+   */
   urun: {
     reklamsiz: 'kiraathane_reklamsiz',
     baslangic: 'kiraathane_baslangic',

@@ -174,8 +174,8 @@ describe('satın alma katmanı', () => {
   });
   it('cihazda anahtar yoksa arka uç KAPALI — sahte arka uç cihaza düşmez', () => {
     const src = oku('src/game/iap.ts');
-    expect(src).toMatch(/isNativePlatform\(\)\s*\n?\s*\?\s*\(anahtar \? await dene\(\(\) => revenueCatArkaUcu\(anahtar\), null\) : null\)/);
-    expect(iapConfig.revenueCatAnahtar).toBeNull();
+    expect(src).toMatch(/\?\? \(platform\s*\n?\s*\?\s*\(anahtar \? await dene\(\(\) => revenueCatArkaUcu\(anahtar\), null\) : null\)/);
+    expect(iapConfig.revenueCatAnahtar).toEqual({ android: null, ios: null });
   });
 });
 

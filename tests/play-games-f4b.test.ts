@@ -241,8 +241,8 @@ describe('kablolar', () => {
     expect(hud).toMatch(/if \(!kullanilabilir\) return null;/);
     expect(hud).toMatch(/hardReset\(\);[\s\S]{0,160}bulutSifirla\(\)/);
   });
-  it('cihazda sahte arka uç YOK', () => {
-    expect(bulut).toContain('Capacitor.isNativePlatform() ? yerliArkaUc() : sahteArkaUc()');
+  it('sahte arka uç yalnız testte; yerli yalnız Android\'de (iOS/tarayıcı: hiç kurulmaz)', () => {
+    expect(bulut).toContain('ozel ?? (playGamesVar() ? yerliArkaUc() : null)');
   });
   it('native: kayıtlı · APP_ID boşken SDK kurulmaz · en ileri çözüm politikası', () => {
     expect(oku('android/app/src/main/java/com/memedobro/teahousetycoon/MainActivity.java')).toContain('registerPlugin(PlayGamesPlugin.class)');
