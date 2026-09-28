@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { Suspense, lazy, useEffect, useRef, useState, useSyncExternalStore, type ComponentProps } from 'react';
 import { useGame, goalMetricsOf, tableThemeUnlocked, tableSoftMaxLevel, gorunenCuzdan } from '../../game/store';
 import { claimableGoals, collectionBonus, goalViewsForPanel, type GoalView } from '../../game/goals';
 import { dailyViews, claimableDailyCount, dayIndex, type DailyQuestView } from '../../game/dailyQuests';
@@ -43,14 +43,46 @@ import {
   BasinIcon,
 } from './icons';
 import { Sheet } from './Sheet';
-import { CharacterPanel, SahipOnizleme } from './CharacterPanel';
 import { baslangicTeklifiGoster, dekorAcik, dekorSalonu, vitrinSahip, vitrinUrunleri, vitrinUrunu, type VitrinTuru } from '../../game/vitrin';
 import { dekorPulu, kiyafetPulu, tepsiPulu } from '../../config/kozmetik';
-import { DekorOnizleme } from './DekorOnizleme';
-import { TableThemePreview } from './TableThemePreview';
-import { DioramaPreview } from './DioramaPreview';
 import './hud.css';
 import { KafeAdiKutusu } from './KafeAdiKutusu';
+
+/* ── 3D ÖNİZLEMELER AYRI PARÇADA (Faz F kod-bölme) ──────────────────────────────────────────
+   Karakter paneli ve mağaza önizlemeleri kendi <Canvas>ını kurar → r3f + three'yi çeker. Arayüz
+   ilk pakette kalır, bunlar açıldıkları an iner (sahne parçasıyla aynı üçüncü taraf kodu paylaşır,
+   yani genelde zaten önbellekte). Yer tutucu önizleme kutusunun kendisi: iniş anında düzen oynamaz. */
+const CharacterPanel = lazy(() => import('./CharacterPanel').then((m) => ({ default: m.CharacterPanel })));
+const SahipOnizlemeParca = lazy(() => import('./CharacterPanel').then((m) => ({ default: m.SahipOnizleme })));
+const DekorOnizlemeParca = lazy(() => import('./DekorOnizleme').then((m) => ({ default: m.DekorOnizleme })));
+const TableThemePreviewParca = lazy(() => import('./TableThemePreview').then((m) => ({ default: m.TableThemePreview })));
+const DioramaPreviewParca = lazy(() => import('./DioramaPreview').then((m) => ({ default: m.DioramaPreview })));
+
+const OnizlemeYeri = () => (
+  <div className="shop-preview">
+    <div className="preview-canvas" />
+  </div>
+);
+const SahipOnizleme = (p: ComponentProps<typeof SahipOnizlemeParca>) => (
+  <Suspense fallback={<OnizlemeYeri />}>
+    <SahipOnizlemeParca {...p} />
+  </Suspense>
+);
+const DekorOnizleme = (p: ComponentProps<typeof DekorOnizlemeParca>) => (
+  <Suspense fallback={<OnizlemeYeri />}>
+    <DekorOnizlemeParca {...p} />
+  </Suspense>
+);
+const TableThemePreview = (p: ComponentProps<typeof TableThemePreviewParca>) => (
+  <Suspense fallback={<OnizlemeYeri />}>
+    <TableThemePreviewParca {...p} />
+  </Suspense>
+);
+const DioramaPreview = (p: ComponentProps<typeof DioramaPreviewParca>) => (
+  <Suspense fallback={<OnizlemeYeri />}>
+    <DioramaPreviewParca {...p} />
+  </Suspense>
+);
 import { KAFE_ADI_VARSAYILAN } from '../../game/kafeAdi';
 import { cihazSinifiOku, golgeAcikMi } from '../../game/cihazSinifi';
 
@@ -511,10 +543,12 @@ export function HUD() {
       {sheet === 'goals' && <GoalsSheet onClose={() => setSheet(null)} />}
       {sheet === 'shop' && <ShopPanel onClose={() => setSheet(null)} />}
       {sheet === 'char' && (
-        <CharacterPanel
-          onClose={() => setSheet(null)}
-          ilkSekme={quest?.target.type === 'waiterTray' || quest?.target.type === 'waiterSpeed' ? 'waiter' : 'player'}
-        />
+        <Suspense fallback={null}>
+          <CharacterPanel
+            onClose={() => setSheet(null)}
+            ilkSekme={quest?.target.type === 'waiterTray' || quest?.target.type === 'waiterSpeed' ? 'waiter' : 'player'}
+          />
+        </Suspense>
       )}
       {sheet === 'settings' && (
         <Sheet

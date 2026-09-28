@@ -31,60 +31,18 @@ import type { WallTheme } from '../../config/palette';
  * lambri → `wainscot`, çıta → yeni `rail` (maketin `doorWood`'u; lambriden bir tık KOYU).
  */
 
-/** Duvar yüksekliği — maket v13 `WALL_H`. */
-export const WALL_H = 3.2;
-/** Lambri kuşağının yüksekliği — maket v13 `wall()` içindeki 0,9. */
-export const WAINSCOT_H = 0.9;
+import {
+  RAIL_H,
+  RAIL_Y,
+  WAINSCOT_H,
+  WALL_H,
+  WALL_T_BODY as T_BODY,
+  WALL_T_RAIL as T_RAIL,
+  WALL_T_WAINSCOT as T_WAINSCOT,
+} from './wallOlcu';
 
-/**
- * Duvar hattının alan kenarından dışarıdaki payı. **S6/② ile buraya taşındı:** `wallLook`ta
- * duruyordu ama `config/decor.ts`in de duvarın YÜZÜNÜ hesaplaması gerekti ve `wallLook` artık
- * `config/decor.ts`i import ediyor (pencere boşlukları) → döngü olurdu. `wallPanel` kimseyi
- * import etmiyor, sayının doğru yeri burası.
- */
-export const WALL_M = 0.5;
-
-/** Katman kalınlıkları (maketin kendi sayıları). Gövde en ince, çıta en kalın. */
-const T_BODY = 0.18;
-/** Gövde kalınlığı — duvarın oda tarafındaki YÜZÜ bundan türer (`config/decor.WALL_INNER`). */
-export const WALL_T_BODY = T_BODY;
-const T_WAINSCOT = 0.22;
-/** Lambri kalınlığı — zemin hizasında duvarın EN DIŞ yüzü buradan çıkar (gövde 0,18'den kalın). */
-export const WALL_T_WAINSCOT = T_WAINSCOT;
-const T_RAIL = 0.26;
-/** Çıta kalınlığı — duvarın EN KALIN katmanı; zemine yaslanan eşyanın sırtı buna değer (F4c-2). */
-export const WALL_T_RAIL = T_RAIL;
-/** Çıtanın yüksekliği ve merkez y'si — maket: box(...,0.08,...) @ y = 0.94. */
-const RAIL_H = 0.08;
-const RAIL_Y = 0.94;
-/**
- * Çıtanın ÜST kenarı (0,98). Cephe vitrininin kaidesi buradan türüyor (D-105/C4b): sınır tam
- * 0,90'a konsaydı `wallBoxes` çıta katmanını hiç üretmezdi (parçanın tepesi 0,90 → 0,90…0,98
- * penceresi boş kalır) ve "lambri korunur" kararı lambriyi çıtasız bırakırdı.
- */
-export const RAIL_TOP = RAIL_Y + RAIL_H / 2;
-
-/**
- * ANA KAPI BOŞLUĞU — maket v13'ün ana giriş bloğu (`DH = 2.65`, söveler dx ∓2,2).
- *
- * Duvar 1,2'den 3,2'ye çıkınca kapı boşluğu duvarla birlikte 3,2'ye uzamıştı: lento duvarın
- * tepesine yapışıyor, kapının üstünde maketteki **alınlık** hiç doğmuyordu. Makette kapı camla
- * aynı hizada (2,65) biter ve üstündeki 0,55'lik badana şeridi cepheyi tamamlar.
- *
- * `half` yalnız GÖRSEL kesme genişliğidir (nav ve NPC girişi `entranceAt`'tan gelir), ama tek
- * yerde durur: `Scene.Walls` da `tests/layout-b32` de buradan okur (D-015 — sayıyı iki yere yazma).
- */
-export const DOOR = { half: 2.2, height: 2.65 } as const;
-
-/**
- * Kapı SÖVESİNİN eni. `Scene.Walls` bu kutuyu çiziyordu ve sayı orada gömülüydü; cephe vitrini
- * (D-105) sövenin DIŞ kenarını bilmek zorunda (gözler oradan başlar) ve `Scene.tsx` vitest'te
- * import edilemiyor — yani bekçi testi sınırı ancak vitrinin KENDİ payından türetebilirdi, o da
- * testin kendi kendini doğrulaması olurdu. Sayı tek yerde (D-015).
- */
-export const SOVE_W = 0.4;
-/** Sövenin kapı ekseninden ölçülen DIŞ kenarı — vitrin gözlerinin başlayabileceği ilk nokta. */
-export const SOVE_DIS = DOOR.half + SOVE_W / 2;
+/** Ölçüler `wallOlcu.ts`te (saf, three'siz); buradan da okunabilsinler diye yeniden dışa verilir. */
+export { DOOR, RAIL_TOP, SOVE_DIS, SOVE_W, WAINSCOT_H, WALL_H, WALL_M, WALL_T_BODY, WALL_T_RAIL, WALL_T_WAINSCOT } from './wallOlcu';
 
 /**
  * Bir duvar parçasının taban dikdörtgeni (merkez + ölçüler) ve teması.

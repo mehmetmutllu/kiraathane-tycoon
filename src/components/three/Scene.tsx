@@ -75,6 +75,12 @@ import { devCam, devTimeScale, devTopDown, useSandbox } from '../../game/devSand
 import { screenPointer } from '../../game/screenPointer';
 import { activeStep } from '../../game/activeStep';
 import { CAMERA_LOOK_Y } from '../../config/actor';
+import { useProgress } from '@react-three/drei';
+import { yuklemeOkuyucusuKaydet } from '../../game/yukleme';
+
+// Açılış ekranı ilerlemeyi buradan OKUR (abone olmaz — `yukleme-dongusu` bekçisi). Kayıt modül
+// düzeyinde: bu parça indiği anda — `Tables`ın preload'ları zaten başlamış olarak — ekran görür.
+yuklemeOkuyucusuKaydet(() => useProgress.getState());
 
 /** GEÇİCİ (2026-09-07 ölçümü): maketle aynı ton eşlemesi (kapalı) — bkz. Canvas'taki not. */
 // Simülasyonu her karede ilerlet (tek kaynak; __advanceTime aynı tick'i çağırır).

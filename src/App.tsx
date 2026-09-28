@@ -1,5 +1,4 @@
 import { Suspense, lazy, useEffect } from 'react';
-import { Scene } from './components/three/Scene';
 import { HUD } from './components/ui/HUD';
 import { Joystick } from './components/ui/Joystick';
 import { SplashScreen } from './components/ui/SplashScreen';
@@ -32,6 +31,11 @@ const FurniturePrototype = import.meta.env.DEV
       import('./components/three/FurniturePrototype').then((m) => ({ default: m.FurniturePrototype })),
     )
   : null;
+
+// 3D SAHNE AYRI PARÇADA (Faz F kod-bölme): three · r3f · drei ilk paketin ~%70'iydi. İlk paket artık
+// React + arayüz + oyun mantığı; açılış ekranı hemen çizilir, sahne arkasından iner. Ekran sahnenin
+// yükleyicisini `game/yukleme` üzerinden bekler — parça inmeden "hazır" demez.
+const Scene = lazy(() => import('./components/three/Scene').then((m) => ({ default: m.Scene })));
 
 // Geliştirici sandbox'ı (her şeyin seviyesini elle ayarla) — yalnız dev; üretimde import edilmez.
 const DevSandbox = import.meta.env.DEV
@@ -129,7 +133,9 @@ export default function App() {
 
   return (
     <div className="app">
-      <Scene />
+      <Suspense fallback={null}>
+        <Scene />
+      </Suspense>
       <HUD />
       <Joystick />
       <SplashScreen />

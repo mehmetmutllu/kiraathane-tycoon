@@ -49,7 +49,7 @@
  */
 import type { RVec3 } from '../game/layout';
 import { BAND, FLOOR_HALF, LAVABO, LAYOUT, doorX } from '../game/layout';
-import { RAIL_TOP, WAINSCOT_H, WALL_H, WALL_M, WALL_T_BODY, WALL_T_RAIL, WALL_T_WAINSCOT } from '../components/three/wallPanel';
+import { RAIL_TOP, WAINSCOT_H, WALL_H, WALL_M, WALL_T_BODY, WALL_T_RAIL, WALL_T_WAINSCOT } from '../components/three/wallOlcu';
 
 /**
  * Duvar öğelerinin ASILDIĞI düzlem = duvarın oda tarafındaki GERÇEK YÜZÜ (`WALL_INNER`).
