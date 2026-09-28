@@ -84,6 +84,11 @@ try {
     else fail(`Kafe adı: store=${adSonra} kayıt=${kayitAd}`);
   }
 
+  // E5: taze oyunda öğretici ad kutusundan SONRA görünür — ilk adım "yürü" ve sürükleyen el.
+  const ogr = await page.waitForSelector('[data-testid="ogretici"][data-adim="yuru"]', { timeout: 5000 }).catch(() => null);
+  if (ogr && (await page.$('[data-testid="ogretici-el"]'))) pass('Taze oyunda öğretici göründü (yürü adımı + sürükleyen el)');
+  else fail(`Öğretici görünmedi (adim=${await page.evaluate(() => document.querySelector('[data-testid="ogretici"]')?.getAttribute('data-adim') ?? null)})`);
+
   // Klavye hareketi: D tuşu ile +x
   await page.keyboard.down('d');
   await page.waitForTimeout(600);
@@ -92,8 +97,30 @@ try {
   if (moved.player[0] > init.player[0] + 0.3) pass(`Klavye hareketi çalışıyor (x ${init.player[0]}→${moved.player[0]})`);
   else fail(`Klavye ile hareket olmadı (x ${init.player[0]}→${moved.player[0]})`);
 
+  // E5: yürüyünce el kalkar (süre değil HAREKET), satır bir sonraki adıma geçer; "Atla" kapatır ve kayda yazar.
+  const ogrAdim = await page.evaluate(() => document.querySelector('[data-testid="ogretici"]')?.getAttribute('data-adim') ?? null);
+  if (ogrAdim === 'cay-al' && !(await page.$('[data-testid="ogretici-el"]'))) pass('Öğretici: yürüyünce el kalktı, adım "çay al"');
+  else fail(`Öğretici yürüdükten sonra: adim=${ogrAdim}`);
+  if (ogrAdim) {
+    await page.click('[data-testid="ogretici-atla"]');
+    await page.waitForSelector('[data-testid="ogretici"]', { state: 'detached', timeout: 2000 }).catch(() => {});
+    const atlandiKayit = await page.evaluate(() => {
+      try { return JSON.parse(localStorage.getItem('kiraathane.save')).ogreticiAtlandi; } catch { return null; }
+    });
+    if (!(await page.$('[data-testid="ogretici"]')) && atlandiKayit === true) pass('Öğretici "Atla" ile kapandı ve kayda yazıldı');
+    else fail(`Öğretici atlanamadı (görünür=${!!(await page.$('[data-testid="ogretici"]'))}, kayıt=${atlandiKayit})`);
+  }
+
   // Zamanı ileri sar → müşteri otursun, ocak hazır-kuyruğa demlesin (D-011)
-  const seated = await page.evaluate(() => window.__advanceTime(15));
+  // 15 sn sonra müşteri ya oturmuş bekliyor ya da sabrı bitip kalkmış ve yenisi yolda olabilir —
+  // hangisi olduğu açılıştan bu yana geçen GERÇEK süreye bağlı (oyun döngüsü duman beklerken de
+  // akıyor). E5'in iki öğretici denetimi bu süreyi uzatınca ilk müşteri pencereyi kaçırdı; artık
+  // bekleyen biri çıkana kadar saniye saniye sarılır (en çok 20 sn).
+  const seated = await page.evaluate(() => {
+    let g = window.__advanceTime(15);
+    for (let i = 0; i < 20 && g.waitingCount === 0; i++) g = window.__advanceTime(1);
+    return g;
+  });
   if (seated.npcCount > 0) pass(`NPC akışı çalışıyor (npcCount=${seated.npcCount})`);
   else fail('NPC oluşmadı');
   if (seated.readyCups > 0) pass(`Ocak hazır-kuyruğa demledi (readyCups=${seated.readyCups})`);

@@ -262,6 +262,9 @@ export interface SaveData {
    * Mekanik (kirli bardak) ile GÖREV aynı anda doğuyordu; arada öğretme yoktu.
    */
   washTipSeen: boolean;
+  /** E5: oyuncu ilk dakikaların öğreticisini "Atla" ile kapattı. Öğreticinin BİTTİĞİ kayıtta
+   *  tutulmaz — görev hattından türer (`game/onboarding.ts`). Additive → sürüm ARTMADI. */
+  ogreticiAtlandi: boolean;
   /** T9c/A7: alınmamış seviye ödülü (yalnız ₺ > 0 iken). Ekran açıkken uygulama kapanırsa ödül
    *  yanıyordu; yüklemede ekran geri gelir. Additive → sürüm ARTMADI (`washTipSeen` deseni). */
   levelUp: LevelUpOdul | null;
@@ -315,6 +318,7 @@ export function defaultSave(): SaveData {
     charPanelSeen: false,
     trayTipSeen: false,
     washTipSeen: false,
+    ogreticiAtlandi: false,
     levelUp: null,
     lastSaved: Date.now(),
   };

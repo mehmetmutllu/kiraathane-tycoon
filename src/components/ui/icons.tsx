@@ -212,6 +212,24 @@ export function ToIcon({ size = 13 }: { size?: number }) {
   );
 }
 
+/** E5 — sürükleyen el (öğretici). Yukarıyı gösteren işaret parmağı; AKSAN parmak ucundaki dokunuş
+ *  izi — gözün gideceği yer "buraya bas". Kontur 2,2, düz dolgu (D-108). */
+export function HandIcon({ size = 44 }: { size?: number }) {
+  return (
+    <Ic size={size}>
+      <path d="M4.2 5.2l-1.6-1M4 8.4H2.2M6.4 2.6l-.8-1.4" fill="none" stroke={AC} strokeWidth="1.8" strokeLinecap="round" />
+      <path
+        d="M9 13.2V4.3a2 2 0 0 1 4 0v6.3a1.8 1.8 0 0 1 3.6.4v.3a1.8 1.8 0 0 1 3.4.8V16c0 3.6-2.5 6-6 6h-1.3c-2.1 0-3.6-.9-4.8-2.6L3.8 15.2a1.7 1.7 0 0 1 2.7-2.1z"
+        fill="var(--tx)"
+        stroke={OT}
+        strokeWidth="2.2"
+        strokeLinejoin="round"
+      />
+      <path d="M13 10.6v2.6M16.6 11.3v2" fill="none" stroke={OT} strokeWidth="1.6" strokeLinecap="round" />
+    </Ic>
+  );
+}
+
 /* ══════════════ ROZETLER ══════════════ */
 
 /** Seviye rozeti — içine seviye rakamı oturur (CSS .lvl-num). Yıldız 5 uçlu ve kalın:

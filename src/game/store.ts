@@ -282,6 +282,7 @@ export function kayitVerisi(s: GameState): SaveData {
     charPanelSeen: s.charPanelSeen,
     trayTipSeen: s.trayTipSeen,
     washTipSeen: s.washTipSeen,
+    ogreticiAtlandi: s.ogreticiAtlandi,
     // A7: alınmamış ₺'li seviye ödülü kayda gider (ekran açıkken kapanırsa yanmasın).
     levelUp: s.levelUp && s.levelUp.amount > 0 ? { ...s.levelUp } : null,
     lastSaved: Date.now(),
@@ -479,6 +480,8 @@ export interface GameState {
   trayTipSeen: boolean;
   /** Bulaşık öğretme kartı görüldü mü (G-63; `trayTipSeen` deseni — persist, additive). */
   washTipSeen: boolean;
+  /** E5: ilk dakikaların öğreticisi atlandı (persist). */
+  ogreticiAtlandi: boolean;
   /** Üst görev barı görünümü (transient; her tick türetilir; null = hat bitti). */
   quest: QuestView | null;
   /** Görev geçiş fazı (transient): active=normal, completing=bitiş flash, gap=yeni görev öncesi boşluk. */
@@ -589,6 +592,8 @@ export interface GameState {
   markTrayTipSeen: () => void;
   /** G-63: bulaşık öğretme kartı kapatıldı (bir daha çıkmaz; anında kaydedilir). */
   markWashTipSeen: () => void;
+  /** E5: öğreticiyi atla (bir daha çıkmaz; anında kaydedilir). */
+  ogreticiAtla: () => void;
   saveNow: () => void;
   /** T9c/A3: sayfa gizlendi (arka plan) → anı tut + kaydet. */
   arkaPlanaGec: () => void;
@@ -714,6 +719,7 @@ export const useGame = create<GameState>((set, get) => ({
   charPanelSeen: false,
   trayTipSeen: false,
   washTipSeen: false,
+  ogreticiAtlandi: false,
   quest: null,
   camFocus: null,
   camBekleyen: null,
@@ -900,6 +906,7 @@ export const useGame = create<GameState>((set, get) => ({
       charPanelSeen: save.charPanelSeen,
       trayTipSeen: save.trayTipSeen,
       washTipSeen: save.washTipSeen ?? false,
+      ogreticiAtlandi: save.ogreticiAtlandi === true,
       quest:
         loadedQuestIndex < C.quests.length
           ? questView(C.quests[loadedQuestIndex], {
@@ -1429,6 +1436,12 @@ export const useGame = create<GameState>((set, get) => ({
   markWashTipSeen: () => {
     if (get().washTipSeen) return;
     set({ washTipSeen: true });
+    get().saveNow();
+  },
+
+  ogreticiAtla: () => {
+    if (get().ogreticiAtlandi) return;
+    set({ ogreticiAtlandi: true });
     get().saveNow();
   },
 
