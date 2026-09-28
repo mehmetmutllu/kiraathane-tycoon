@@ -1938,11 +1938,20 @@
   vertical-align: 2px;
 }
 /* Satın alma bildirimi (F4c-4): mağaza tam ekran — alttaki toast yerinde kalsa ekranın ARKASINDA kalır. */
-.notice.satin {
+/* Mağazanın içindeki alım bildirimi çapası: sekmelerle önizleme arasında, yüksekliği SIFIR —
+   yerleşimi kaydırmaz. Bildirim çapadan aşağı, önizlemenin çerçevesinin İÇİNE iner (14 px =
+   önizlemenin 2 px üst payı + 3 px çerçeve + nefes). Sabit `top` sekme satırı sayısına bağlıydı. */
+.shop-bildirim-capa {
+  position: relative;
+  height: 0;
   z-index: 45;
-  /* Sekmelerin ALTINA, önizlemenin üst kenarına: sekmeleri örtmez, ad satırını ve düğmeyi de örtmez. */
-  top: calc(var(--sat) + 196px);
+}
+.shop-bildirim-capa .notice {
+  top: 14px;
   bottom: auto;
+  /* Kök bildirimin tavanı EKRAN yüzdesiyle kenar düğmelerinden kaçıyordu; burada % kartın genişliği
+     ve kenarda düğme yok → tavan önizlemenin iç genişliği. */
+  max-width: calc(100% - 24px);
 }
 .notice.satin .notice-badge {
   color: var(--ok);

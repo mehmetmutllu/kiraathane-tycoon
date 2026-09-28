@@ -3,7 +3,7 @@ import { useGame, goalMetricsOf, tableThemeUnlocked, tableSoftMaxLevel, gorunenC
 import { claimableGoals, collectionBonus, goalViewsForPanel, type GoalView } from '../../game/goals';
 import { dailyViews, claimableDailyCount, dayIndex, type DailyQuestView } from '../../game/dailyQuests';
 import { dailyCountersOf } from '../../game/store';
-import { adFreeDailyReady, masterAdsLeft, masterCost, toastCizilir, questInTransition, videoReward, videoRights, type QuestView } from '../../game/rules';
+import { adFreeDailyReady, masterAdsLeft, masterCost, toastCizilir, questInTransition, videoReward, videoRights, type GameNotice, type QuestView } from '../../game/rules';
 import { ekranKanali, geriTusu, tepsiIpucuZamani } from '../../game/ekranKanali';
 import { Capacitor } from '@capacitor/core';
 import { App as CapApp } from '@capacitor/app';
@@ -367,22 +367,8 @@ export function HUD() {
           bir tip daralmasıyla sessizce geri alındı (f4b1a52). Olay hâlâ üretiliyor, `tick.ts`e
           DOKUNULMADI (sunum katmanı kararı, E3/D-096 deseni): devHooks anlık görüntüsü ve ona
           bağlı testler değişmedi. Ölçüm: docs/serit-raporu-g1.md §Bulgular 1. */}
-      {toastCizilir(notice) && (
-        <div className={`notice${notice.kind === 'satin' ? ' satin' : ''}`} data-testid="notice" key={notice.text}>
-          <span className="notice-badge">
-            {notice.kind === 'level' ? <StarBadge size={28} /> : notice.kind === 'satin' ? <TickIcon size={22} /> : <BangBadge size={28} />}
-          </span>
-          <span className="notice-text">{notice.text}</span>
-          {notice.reward != null && (
-            <span className="notice-reward" data-testid="notice-reward">
-              {/* TAM SAYI: oto-toplama toplamı kesirli geliyordu ve "273.3333" Türkçe okumada
-                  binlik ayracı gibi görünüyordu (kullanıcı: *"273k para toplanmış gibi
-                  gözüküyor"*). Para zaten kuruşsuz sunuluyor; burada da yuvarlanır. */}
-              <CoinIcon size={16} />+{fmt(notice.reward)}
-            </span>
-          )}
-        </div>
-      )}
+      {/* Mağaza açıkken alım bildirimi mağazanın İÇİNDE çizilir (ShopPanel · `shop-bildirim-capa`). */}
+      {toastCizilir(notice) && !(notice.kind === 'satin' && sheet === 'shop') && <Bildirim key={notice.text} notice={notice} />}
 
       {/* ───────── USTA MODALİ (G-14) ─────────
           D8'de bu bir alt şeritti ve bandı devralıyordu; kullanıcı 2026-09-09'da şeridi reddedip
@@ -1711,6 +1697,40 @@ const UYGULANDI_SATIRI: Record<Sekme, string> = {
 /** 💎 ile alınan sekmeler üst satırda (F4c-2) — ₺ sekmeleriyle karışmasın. */
 const ELMAS_SEKME: readonly Sekme[] = ['outfit', 'tray', 'decor', 'paket'];
 
+function Bildirim({ notice }: { notice: GameNotice }) {
+  return (
+    <div className={`notice${notice.kind === 'satin' ? ' satin' : ''}`} data-testid="notice">
+      <span className="notice-badge">
+        {notice.kind === 'level' ? <StarBadge size={28} /> : notice.kind === 'satin' ? <TickIcon size={22} /> : <BangBadge size={28} />}
+      </span>
+      <span className="notice-text">{notice.text}</span>
+      {notice.reward != null && (
+        <span className="notice-reward" data-testid="notice-reward">
+          {/* TAM SAYI: oto-toplama toplamı kesirli geliyordu ve "273.3333" Türkçe okumada
+              binlik ayracı gibi görünüyordu (kullanıcı: *"273k para toplanmış gibi
+              gözüküyor"*). Para zaten kuruşsuz sunuluyor; burada da yuvarlanır. */}
+          <CoinIcon size={16} />+{fmt(notice.reward)}
+        </span>
+      )}
+    </div>
+  );
+}
+
+/**
+ * F4c-4 alım bildirimi — MAĞAZANIN İÇİNDE, sekmelerin hemen altındaki sıfır yükseklikli çapada.
+ * Eskiden HUD kökünde sabit `top: 196px` ile duruyordu; sekme satırı ekran genişliğine göre bir ya da
+ * iki satır olduğundan önizlemenin üst kenarına biniyordu. Çapa önizlemenin başladığı yerde; bildirim
+ * oradan içeri doğru iner → kenarla çakışmaz, sekmeleri örtmez.
+ */
+function MagazaBildirimi() {
+  const notice = useGame((s) => s.notice);
+  return (
+    <div className="shop-bildirim-capa" data-testid="shop-bildirim-capa">
+      {toastCizilir(notice) && notice.kind === 'satin' && <Bildirim key={notice.text} notice={notice} />}
+    </div>
+  );
+}
+
 function ShopPanel({ onClose }: { onClose: () => void }) {
   const areasOpen = useGame((s) => s.areasOpen);
   const tables = useGame((s) => s.tables);
@@ -1897,6 +1917,7 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
             </button>
           ))}
         </div>
+        <MagazaBildirimi />
 
         {tab === 'paket' ? (
           <Paketler />

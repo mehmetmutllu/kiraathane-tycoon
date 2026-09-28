@@ -85,8 +85,11 @@ describe('G1/1 · tebrik TEK yerde: bant', () => {
 
   it('HUD bildirimi kapıdan geçirmeden çizmiyor', () => {
     const src = oku(HUD);
-    // Ada değil KULLANIMA bakar: `data-testid="notice"` bloğunu açan koşul kapının kendisi olmalı.
-    expect(src).toContain('toastCizilir(notice) && (');
+    // Ada değil KULLANIMA bakar: `data-testid="notice"` kutusu `Bildirim` bileşeninde; onu çizen
+    // HER satır (HUD kökü + mağaza çapası, F4c-4) kapının kendisiyle açılmalı.
+    const cizimler = src.split('\n').filter((l) => l.includes('<Bildirim '));
+    expect(cizimler.length).toBeGreaterThanOrEqual(2);
+    for (const l of cizimler) expect(l).toContain('toastCizilir(notice) &&');
     // Kapısız bir `{notice && (` geri gelirse bu satır yakalar — f4b1a52'nin yaptığı tam buydu.
     expect(src).not.toMatch(/\{notice && \(/);
   });
