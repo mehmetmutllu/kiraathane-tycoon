@@ -8,8 +8,8 @@ import type { MagazaPlatformu } from '../game/platform';
  *
  * AdMob'da her platform AYRI uygulamadır: birimler platform başına ayrı durur (`platform.ts` hangisinin
  * seçileceğini söyler). `test` true iken HER platformda `testBirim` (Google'ın RESMÎ test birimleri)
- * kullanılır — gerçek birimle geliştirme/test yapmak hesabın askıya alınma sebebidir. Yayın derlemesinde
- * `test` false olur ve `birim` devreye girer. Kimliklerin durduğu yerler — başka yer YOK:
+ * kullanılır — gerçek birimle geliştirme/test yapmak hesabın askıya alınma sebebidir. Yalnız Codemagic yayın
+ * derlemesinde `test` false olur ve `birim` devreye girer; elle değiştirilmez. Kimliklerin durduğu yerler — başka yer YOK:
  *  - iOS:     `birim.ios` (GERÇEK, AdMob iOS uygulaması) + `ios/App/App/Info.plist` → `GADApplicationIdentifier`
  *  - Android: `birim.android` + `AndroidManifest.xml` → `APPLICATION_ID`. Android AdMob uygulaması
  *    henüz AÇILMADI: ikisi de hâlâ Google test kimliği (Android yayını sonraya bırakıldı).
@@ -17,7 +17,8 @@ import type { MagazaPlatformu } from '../game/platform';
 type Birimler = Record<MagazaPlatformu, { gecisli: string; odullu: string }>;
 
 export const adsConfig = {
-  test: true,
+  /** Yayın derlemesi (`VITE_REKLAM=gercek`, codemagic.yaml) dışında HER ZAMAN test — tarayıcı, test, yerel cihaz. */
+  test: (import.meta as { env?: Record<string, string | undefined> }).env?.VITE_REKLAM !== 'gercek',
   birim: {
     android: {
       gecisli: 'ca-app-pub-3940256099942544/1033173712',

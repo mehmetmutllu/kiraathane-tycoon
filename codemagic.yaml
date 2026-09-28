@@ -1,0 +1,82 @@
+# Codemagic — iOS derleme + TestFlight yükleme (D-158: yayın önce App Store).
+#
+# Elle başlatılır (otomatik tetik yok: macOS dakikası sınırlı). Tek sır App Store Connect API anahtarı;
+# Codemagic'te takım entegrasyonu `appstore` olarak durur, depoya ASLA girmez (depo herkese açık).
+# `appstore_kimlik` grubunda CERTIFICATE_PRIVATE_KEY: dağıtım sertifikasının SABİT özel anahtarı —
+# her derlemede yenisi üretilirse Apple'ın 3 sertifikalık kotası dolar.
+#
+# Bu projede `ios/` git'te durur (SPM, Podfile yok): derlemede yeniden üretilmez, yalnız eşitlenir.
+
+workflows:
+  ios-yayin:
+    name: iOS yayın (TestFlight)
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+
+    # `integrations` iş akışı seviyesinde durur, `environment` altında DEĞİL (Codemagic reddeder).
+    integrations:
+      app_store_connect: appstore
+
+    environment:
+      groups:
+        - appstore_kimlik
+      vars:
+        BUNDLE_ID: "com.mutlubadem.teahouse"
+        # ads.config.ts `test` bayrağını kapatır: yalnız bu derleme gerçek AdMob birimlerini ister.
+        VITE_REKLAM: "gercek"
+      node: 22
+      xcode: latest
+
+    triggering:
+      events: []
+
+    scripts:
+      - name: Bağımlılıklar
+        script: npm ci --no-audit --no-fund
+
+      - name: Web derlemesi + iOS eşitleme
+        # ios:sync = vite build → cap sync ios → tools/ios-duzelt.mjs (sürüm package.json'dan).
+        script: npm run ios:sync
+
+      - name: Yayın derlemesinde test reklamı yok
+        # İki birim takımı da her derlemede pakettedir; hangisinin seçildiğini küçültülmüş `test` bayrağı
+        # söyler (`test:!1` = gerçek). Test kipi sızarsa App Store'daki oyunda hep test reklamı çıkar.
+        script: |
+          grep -q "test:!1,birim" dist/assets/*.js || { echo "HATA: reklam test kipinde kaldi (VITE_REKLAM?)" >&2; exit 1; }
+          echo "reklam: gercek birimler"
+
+      - name: Derleme numarası
+        # TestFlight aynı numarayı ikinci kez kabul etmez → Codemagic'in artan sayacı. Sürüm adı
+        # (MARKETING_VERSION) package.json'dan gelir; her App Store gönderiminde package.json artırılır.
+        script: |
+          cd ios/App
+          agvtool new-version -all "${BUILD_NUMBER:?}"
+          echo "surum $(agvtool what-marketing-version -terse1 | head -1) · derleme $BUILD_NUMBER"
+
+      - name: İmza dosyaları (API anahtarıyla otomatik)
+        # Anahtar rolü en az App Manager olmalı; Developer rolü profil üretemez (burada 403).
+        script: |
+          keychain initialize
+          app-store-connect fetch-signing-files "$BUNDLE_ID" \
+            --type IOS_APP_STORE \
+            --certificate-key=@env:CERTIFICATE_PRIVATE_KEY \
+            --create
+          keychain add-certificates
+          xcode-project use-profiles
+
+      - name: Derle ve imzala
+        script: |
+          xcode-project build-ipa \
+            --project "ios/App/App.xcodeproj" \
+            --scheme "App"
+
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+
+    publishing:
+      app_store_connect:
+        auth: integration
+        # TestFlight'a yükler, incelemeye GÖNDERMEZ — inceleme ayrı, kullanıcı onayıyla.
+        submit_to_testflight: true
+        submit_to_app_store: false

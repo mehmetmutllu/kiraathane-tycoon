@@ -42,6 +42,8 @@ export interface ReklamArkaUcu {
   odulluHazirla(): Promise<boolean>;
   /** Oyuncu videoyu sonuna dek izleyip ödülü hak ettiyse true. */
   odulluGoster(): Promise<boolean>;
+  /** UMP "gizlilik seçenekleri": rıza verilen bölgede (AB/UK) oyuncu kararını sonradan değiştirebilmeli. */
+  tercihler?: { gerekli(): boolean; ac(): Promise<void> };
 }
 
 /** Tarayıcı / test: her istek anında "gösterildi" sayılır, hiçbir ağ çağrısı yok. */
@@ -59,6 +61,7 @@ export function sahteArkaUc(): ReklamArkaUcu {
 export async function admobArkaUcu(platform: MagazaPlatformu): Promise<ReklamArkaUcu> {
   const { AdMob, AdmobConsentStatus, InterstitialAdPluginEvents, RewardAdPluginEvents } =
     await import('@capacitor-community/admob');
+  let tercihGerekli = false;
   const test = adsConfig.test;
   const birim = (test ? adsConfig.testBirim : adsConfig.birim)[platform];
   /** `show*` çağrısı reklam AÇILINCA döner; oyun reklam KAPANANA dek beklemeli. */
@@ -81,6 +84,7 @@ export async function admobArkaUcu(platform: MagazaPlatformu): Promise<ReklamArk
       // UMP (GDPR): rıza gerekiyorsa Google'ın kendi formu — AB/UK'de rızasız reklam hiç gelmez.
       const bilgi = await AdMob.requestConsentInfo();
       if (bilgi.status === AdmobConsentStatus.REQUIRED && bilgi.isConsentFormAvailable) await AdMob.showConsentForm();
+      tercihGerekli = bilgi.privacyOptionsRequirementStatus === 'REQUIRED';
       // iOS · ATT (Apple zorunluluğu): Google'ın sırası ÖNCE UMP, SONRA ATT. AdMob panelinde "IDFA
       // açıklama mesajı" kuruluysa UMP formu ATT penceresini kendisi açar; kurulu değilse (ya da
       // oyuncu AB dışındaysa ve form gelmediyse) pencere burada açılır. Sistem bir kez sorar —
@@ -114,6 +118,10 @@ export async function admobArkaUcu(platform: MagazaPlatformu): Promise<ReklamArk
         await dinle.remove();
       }
       return hakEtti;
+    },
+    tercihler: {
+      gerekli: () => tercihGerekli,
+      ac: () => AdMob.showPrivacyOptionsForm(),
     },
   };
 }
@@ -232,6 +240,14 @@ export async function odulluIzle(): Promise<boolean> {
   if (hakEtti) sayac.odullu++;
   void odulluYukle();
   return hakEtti;
+}
+
+/** Ayarlar'daki "Reklam tercihleri" satırı yalnız UMP isterse (AB/UK) görünür. */
+export const reklamTercihleriGerekli = () => arkaUc?.tercihler?.gerekli() ?? false;
+
+export async function reklamTercihleriniAc(): Promise<void> {
+  const t = arkaUc?.tercihler;
+  if (t) await dene(t.ac, undefined);
 }
 
 /** Dev/duman: sayaçlar + soğumanın kalan süresi. */

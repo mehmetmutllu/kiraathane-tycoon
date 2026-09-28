@@ -1041,6 +1041,31 @@
   color: var(--tx2);
   text-align: center;
 }
+.yasal-satir {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 18px;
+  margin-top: 8px;
+}
+.yasal-satir a,
+.yasal-satir button {
+  pointer-events: auto;
+  min-height: 44px;
+  padding: 0 4px;
+  display: inline-flex;
+  align-items: center;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: var(--p1);
+  font-weight: 800;
+  color: var(--tx2);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
 .sheet-cta {
   pointer-events: auto;
   display: inline-flex;

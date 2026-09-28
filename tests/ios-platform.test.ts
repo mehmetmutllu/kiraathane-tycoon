@@ -16,6 +16,7 @@ const h = vi.hoisted(() => ({
   adId: [] as string[],
   att: 'notDetermined',
   rcAnahtar: [] as string[],
+  tercih: 'REQUIRED',
 }));
 
 vi.mock('@capacitor/core', () => ({
@@ -44,7 +45,11 @@ vi.mock('@capacitor-community/admob', () => {
     RewardAdPluginEvents: { Dismissed: 'd', FailedToShow: 'f', Rewarded: 'r' },
     AdMob: {
       initialize: kaydet('initialize'),
-      requestConsentInfo: kaydet('requestConsentInfo', { status: 'REQUIRED', isConsentFormAvailable: true }),
+      requestConsentInfo: async () => {
+        h.admob.push('requestConsentInfo');
+        return { status: 'REQUIRED', isConsentFormAvailable: true, privacyOptionsRequirementStatus: h.tercih };
+      },
+      showPrivacyOptionsForm: kaydet('showPrivacyOptionsForm'),
       showConsentForm: kaydet('showConsentForm'),
       trackingAuthorizationStatus: async () => {
         h.admob.push('trackingAuthorizationStatus');
@@ -69,7 +74,7 @@ vi.mock('@revenuecat/purchases-capacitor', () => ({
 
 import { magazaHesabi, magazaPlatformu, playGamesVar } from '../src/game/platform';
 import { bulutBaslat, playGamesDurumu, sahteArkaUc as sahteBulut } from '../src/game/bulut';
-import { reklamBaslat, reklamDurumu } from '../src/game/ads';
+import { reklamBaslat, reklamDurumu, reklamTercihleriGerekli, reklamTercihleriniAc } from '../src/game/ads';
 import { magazaHazir, satinAlmaBaslat } from '../src/game/iap';
 import { adsConfig } from '../src/config/ads.config';
 import { iapConfig } from '../src/config/iap.config';
@@ -85,6 +90,7 @@ beforeEach(() => {
   h.adId = [];
   h.att = 'notDetermined';
   h.rcAnahtar = [];
+  h.tercih = 'REQUIRED';
 });
 
 describe('platform tek kaynak', () => {
@@ -171,6 +177,29 @@ describe('reklam: platforma göre birim + iOS izin sırası', () => {
     await reklamBaslat();
     expect(h.admob.some((a) => a.startsWith('tracking') || a === 'requestTrackingAuthorization')).toBe(false);
     expect(h.adId.sort()).toEqual([adsConfig.testBirim.android.gecisli, adsConfig.testBirim.android.odullu].sort());
+  });
+  it('yerel/test derlemesinde reklam HEP test kipinde — gerçek birim yalnız VITE_REKLAM=gercek', () => {
+    expect(testKipi).toBe(true);
+    expect(oku('codemagic.yaml')).toMatch(/VITE_REKLAM: "gercek"/);
+    expect(oku('codemagic.yaml')).toContain('test:!1,birim');
+  });
+  it('Y-06: UMP gizlilik seçeneği isterse (AB/UK) Ayarlar’da "Reklam tercihleri" açılır ve formu gösterir', async () => {
+    h.platform = 'ios';
+    h.tercih = 'REQUIRED';
+    await reklamBaslat();
+    expect(reklamTercihleriGerekli()).toBe(true);
+    await reklamTercihleriniAc();
+    expect(h.admob).toContain('showPrivacyOptionsForm');
+  });
+  it('Y-06: UMP istemezse "Reklam tercihleri" görünmez; tarayıcıda da görünmez', async () => {
+    h.platform = 'ios';
+    h.tercih = 'NOT_REQUIRED';
+    await reklamBaslat();
+    expect(reklamTercihleriGerekli()).toBe(false);
+    h.platform = 'web';
+    h.tercih = 'REQUIRED';
+    await reklamBaslat();
+    expect(reklamTercihleriGerekli()).toBe(false);
   });
   it('tarayıcı: AdMob hiç çağrılmaz (sahte arka uç)', async () => {
     h.platform = 'web';

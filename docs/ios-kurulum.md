@@ -47,7 +47,9 @@ yapılır. Android/Play tarafına bu işte dokunulmadı; Play Games iOS'ta tamam
    - *Privacy & messaging → IDFA explainer* mesajı **önerilir**: kuruluysa UMP, ATT penceresinden önce kendi
      açıklama ekranını gösterir ve ATT'yi kendisi açar. Kurulu değilse kod ATT'yi rıza formundan sonra kendisi ister.
    - `app-ads.txt` — geliştirici web sitesinde (App Store'daki "Developer Website" alanı).
-10. **Yayın derlemesi için:** `src/config/ads.config.ts` → `test: false`, `npm run ios:sync`.
+10. **Yayın derlemesi:** Codemagic `ios-yayin` iş akışı (`codemagic.yaml`, elle başlatılır) — `VITE_REKLAM=gercek`
+    ile gerçek AdMob birimleri, imza ASC API anahtarıyla otomatik, TestFlight'a yükler. `ads.config.ts` elle değiştirilmez.
+    Mac'le elle derlemek gerekirse: `VITE_REKLAM=gercek npm run ios:sync`, sonra 11.
 11. **Arşiv ve yükleme:** Xcode → cihaz hedefi *Any iOS Device (arm64)* → *Product → Archive* →
     Organizer → *Distribute App → App Store Connect → Upload*. İşlendikten sonra TestFlight'ta dene.
 12. **App Store Connect formları:**

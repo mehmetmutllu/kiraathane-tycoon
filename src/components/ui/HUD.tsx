@@ -10,7 +10,8 @@ import { Ogretici } from './Ogretici';
 import { ekranKanali, geriTusu, tepsiIpucuZamani } from '../../game/ekranKanali';
 import { Capacitor } from '@capacitor/core';
 import { App as CapApp } from '@capacitor/app';
-import { odulAlindi, odulluIzle, odulluReklamHazir, panelKapandi, reklamAbone, sogumaSifirla } from '../../game/ads';
+import { odulAlindi, odulluIzle, odulluReklamHazir, panelKapandi, reklamAbone, reklamTercihleriGerekli, reklamTercihleriniAc, sogumaSifirla } from '../../game/ads';
+import { yasalConfig } from '../../config/yasal.config';
 import { screenPointer } from '../../game/screenPointer';
 import { satinAl, satinAlimlariGeriYukle, satinAlmaAbone, satinAlmaSurumu, urunFiyati } from '../../game/iap';
 import { basarimlariGoster, bulutAbone, bulutSifirla, bulutSurumu, girisYap, playGamesDurumu } from '../../game/bulut';
@@ -646,6 +647,7 @@ export function HUD() {
             </div>
             <PlayGamesBolumu />
             <GeriYukle />
+            <YasalSatir />
             <div className="sheet-foot-note">
               {bulutVar
                 ? "Kayıt bu cihazda tutulur; Play Games'e bağlıysan buluta da yedeklenir. Oyunu sıfırlarsan geri alınamaz."
@@ -2184,6 +2186,29 @@ function GeriYukle() {
           ? 'Mağazaya ulaşılamadı'
           : 'Satın alımları geri yükle'}
     </button>
+  );
+}
+
+/**
+ * Gizlilik politikası + (AB/UK'de) reklam tercihleri — Y-06. Apple 5.1.1(i): politika uygulama İÇİNDEN
+ * de açılabilmeli. Bağlantı cihazda sistem tarayıcısında açılır (Capacitor `target=_blank`'i Safari'ye verir).
+ */
+function YasalSatir() {
+  const tercih = useSyncExternalStore(reklamAbone, reklamTercihleriGerekli);
+  return (
+    <div className="yasal-satir">
+      <a href={yasalConfig.gizlilik} target="_blank" rel="noopener noreferrer" data-testid="gizlilik-link">
+        Gizlilik politikası
+      </a>
+      <a href={yasalConfig.destek} target="_blank" rel="noopener noreferrer" data-testid="destek-link">
+        Destek
+      </a>
+      {tercih && (
+        <button type="button" data-testid="reklam-tercih" onClick={() => void reklamTercihleriniAc()}>
+          Reklam tercihleri
+        </button>
+      )}
+    </div>
   );
 }
 
