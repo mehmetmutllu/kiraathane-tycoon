@@ -8,7 +8,7 @@
   /* Piyasa kalıbı (My Perfect Hotel · Eatventure · Burger Please · Pizza Ready incelendi, 2026-09-28):
      tam ekran YAKIN sahne, canlı renk, altta EĞİK bant + 2-3 kelimelik ünlemli başlık, banttan TAŞAN maskot.
      ?c=iphone|ipad &i=1-6 &v=M|N|P &d=tr|en
-     M mavi bant · N amber bant · P yazısız (Burger Please/Pizza Ready gibi saf oynanış + maskot)
+     M mavi bant · N amber bant · O mor bant (oyunun HUD moru) · P yazısız (Burger Please/Pizza Ready gibi saf oynanış + maskot)
      Ham: KIP=reklam node tools/kare-oyun-ici.mjs · maskot: node tools/maskot-cek.mjs */
   *{margin:0;padding:0;box-sizing:border-box}
   html,body{overflow:hidden;background:#000}
@@ -17,9 +17,12 @@
   .bant{position:absolute;left:-8%;right:-8%;transform:rotate(-5deg);transform-origin:50% 50%}
   .v-M .bant{background:linear-gradient(180deg,#39d0ff 0%,#1a9fe0 100%);border-top:14px solid #fff;box-shadow:0 -10px 0 rgba(0,0,0,.12)}
   .v-N .bant{background:linear-gradient(180deg,#ffd36a 0%,#f39a1e 100%);border-top:14px solid #100b2e}
+  .v-O .bant{background:linear-gradient(180deg,#463c86 0%,#221b52 100%);border-top:14px solid #ffc24b;box-shadow:0 -8px 0 #100b2e}
+  .bant{display:flex;align-items:center}
   .yazi{position:absolute;font-family:'Luckiest Guy',sans-serif;color:#fff;line-height:.95;letter-spacing:.015em;text-wrap:balance;
-    paint-order:stroke fill;-webkit-text-stroke:var(--k) #0b3b6e;text-shadow:0 var(--g) 0 #0b3b6e;transform:rotate(-5deg) skewX(-7deg)}
-  .v-N .yazi{-webkit-text-stroke:var(--k) #100b2e;text-shadow:0 var(--g) 0 #100b2e}
+    paint-order:stroke fill;-webkit-text-stroke:var(--k) #0b3b6e;text-shadow:0 var(--g) 0 #0b3b6e;transform:skewX(-7deg)}
+  .v-N .yazi,.v-O .yazi{-webkit-text-stroke:var(--k) #100b2e;text-shadow:0 var(--g) 0 #100b2e}
+  .v-O .yazi{color:#fff}
   .maskot{position:absolute;filter:drop-shadow(0 18px 24px rgba(0,0,0,.35))}
   .isik{position:absolute;inset:0;background:radial-gradient(90% 55% at 50% 38%,rgba(255,255,255,.14),rgba(255,255,255,0) 70%);pointer-events:none}
 </style>
@@ -50,7 +53,7 @@ el('sahne', { backgroundImage: `url(../docs/magaza-kareleri/${E.k.replace('{c}',
 el('isik');
 
 const bantH = H * (C === 'ipad' ? .26 : .24);
-if (V !== 'P') el('bant', { bottom: `${-bantH * .18}px`, height: `${bantH}px` });
+const bant = V !== 'P' ? el('bant', { bottom: `${-bantH * .18}px`, height: `${bantH}px` }) : null;
 
 /* Maskot: bantın ARKASINDAN değil ÖNÜNDEN taşar (My Perfect Hotel kalıbı), yazının karşı yanında. */
 const mH = H * (C === 'ipad' ? .50 : .46);
@@ -58,12 +61,21 @@ const m = el('img', { height: `${mH}px`, bottom: `${-mH * .06}px`, [E.yan === 's
 m.className = 'maskot'; m.src = `../docs/magaza-kareleri/maskot/${E.m}.png`;
 if (E.yan === 'sag') m.style.transform = 'scaleX(-1)';
 
-if (V !== 'P') {
+if (bant) {
+  /* YAZI BANDIN İÇİNDE: bantla birlikte döner, dışına taşamaz. Bant tuvalden %8 taşkın; görünür iç alan
+     bu payı ve maskotun kapladığı yanı düşerek hesaplanır. Yazı iç alana sığana dek küçülür. */
   const metin = E[D].toLocaleUpperCase(D === 'tr' ? 'tr-TR' : 'en-US');
-  const y = el('yazi', { '--k': `${28 * u}px`, '--g': `${13 * u}px`, fontSize: `${180 * u}px`,
-    bottom: `${bantH * .26}px`, [E.yan === 'sol' ? 'right' : 'left']: `${44 * u}px`, width: `${W * (C === 'ipad' ? .56 : .58)}px`, textAlign: 'center' }, metin);
+  const bantW = W * 1.16, kenar = W * .08;
+  const maskotPay = W * (C === 'ipad' ? .40 : .44);
+  const ic = bantH * .16;
+  const y = el('yazi', { '--k': `${28 * u}px`, '--g': `${13 * u}px`, fontSize: `${180 * u}px`, position: 'relative',
+    width: `${bantW - 2 * kenar - maskotPay - 90 * u}px`, textAlign: 'center',
+    [E.yan === 'sol' ? 'marginLeft' : 'marginRight']: `${kenar + maskotPay}px`, [E.yan === 'sol' ? 'marginRight' : 'marginLeft']: `${kenar + 60 * u}px`,
+    marginTop: `${-bantH * .10}px` }, metin);
+  bant.appendChild(y);
+  const sinir = bantH * .82 - 2 * ic;
   let f = 180 * u;
-  while ((y.scrollWidth > y.clientWidth + 1 || y.offsetHeight > bantH * .72) && f > 60) { f -= 4; y.style.fontSize = f + 'px'; }
+  while ((y.scrollWidth > y.clientWidth + 1 || y.offsetHeight > sinir) && f > 50) { f -= 3; y.style.fontSize = f + 'px'; }
 }
 window.HAZIR = true;
 </script>

@@ -15,7 +15,7 @@ const liste = (ad, vars) => (process.env[ad] ?? vars).split(',');
 const VS = liste('V', 'A,B,C'), CS = liste('C', 'iphone,ipad'), DS = liste('D', 'tr,en'), IS = liste('I', '1,2,3,4,5,6');
 // V içinde D/E/F varsa tam kadraj şablonu (magaza-tasarim2.html), yoksa çerçeveli şablon. C iki şablonda da var:
 // SAYFA=2 ile yeni hâli seçilir.
-const sayfaUrl = (v) => pathToFileURL(path.join(KOK, 'tools', 'MNP'.includes(v) ? 'magaza-tasarim3.html' : 'DEF'.includes(v) || process.env.SAYFA === '2' ? 'magaza-tasarim2.html' : 'magaza-tasarim.html')).href;
+const sayfaUrl = (v) => pathToFileURL(path.join(KOK, 'tools', 'MNOP'.includes(v) ? 'magaza-tasarim3.html' : 'DEF'.includes(v) || process.env.SAYFA === '2' ? 'magaza-tasarim2.html' : 'magaza-tasarim.html')).href;
 
 const t = await chromium.launch({ args: ['--allow-file-access-from-files'] });
 for (const v of VS) for (const c of CS) {
