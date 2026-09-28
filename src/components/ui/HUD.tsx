@@ -13,6 +13,7 @@ import { satinAl, satinAlimlariGeriYukle, satinAlmaAbone, satinAlmaSurumu, urunF
 import { basarimlariGoster, bulutAbone, bulutSifirla, bulutSurumu, girisYap, playGamesDurumu } from '../../game/bulut';
 import { iapConfig } from '../../config/iap.config';
 import { fmt } from '../../game/decimal';
+import { SAYAC_MS, sayacDegeri } from '../../game/sayac';
 import { SAVE_VERSION } from '../../game/save';
 import { levelProgress, reputationCarryMult, economyConfig, MAX_AREAS } from '../../config/economy.config';
 import { floorSwatch, WALL_THEMES } from '../../config/palette';
@@ -649,6 +650,7 @@ export function HUD() {
           testid="offline"
           title="Sen yokken kıraathane çalıştı"
           amount={Math.floor(offlineEarned)}
+          sayac
           onClaim={() => claimOffline()}
           onIzle={offlineIzleEki > 0 ? () => claimOffline(true) : undefined}
           izleEtiket={`İzle, +${fmt(offlineIzleEki)}`}
@@ -1449,6 +1451,33 @@ function SatinOdulu({ urun, elmas, onClose }: { urun: string; elmas: number; onC
 
 /** ORTAK ÖDÜL EKRANI (plan §9): başlık · ödül · [Al] · [▶ İzle, 2× al].
  *  Reklam hazır değilse ikinci buton pasif görünür ama KAYBOLMAZ (D-039 kalıbı). */
+/**
+ * Çevrimdışı ₺ PARA DİLİ — tutar 0'dan hedefe sayılır (~1 sn, ease-out). Hareket azaltma açıksa
+ * anında hedef. Sayı her karede `fmt` ile (Decimal) biçimlenir; son kare birebir `fmt(hedef)`.
+ */
+function SayanPara({ hedef }: { hedef: number }) {
+  const azHareket = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const [gecen, setGecen] = useState(azHareket ? SAYAC_MS : 0);
+  useEffect(() => {
+    if (azHareket) return;
+    const t0 = performance.now();
+    let kare = 0;
+    const adim = (simdi: number) => {
+      const g = simdi - t0;
+      setGecen(g);
+      if (g < SAYAC_MS) kare = requestAnimationFrame(adim);
+    };
+    kare = requestAnimationFrame(adim);
+    return () => cancelAnimationFrame(kare);
+  }, [hedef, azHareket]);
+  return (
+    <span className="sayan-para" data-testid="sayan-para" data-bitti={gecen >= SAYAC_MS ? '1' : '0'}>
+      {/* "+" sayının İÇİNDE: satır flex, ayrı bir düğüm olsaydı araya `gap` girerdi ("+ 7.120"). */}
+      +{fmt(sayacDegeri(hedef, gecen))}
+    </span>
+  );
+}
+
 function RewardModal({
   testid,
   title,
@@ -1461,10 +1490,13 @@ function RewardModal({
   claimTestid,
   onIzle,
   izleEtiket,
+  sayac = false,
 }: {
   testid: string;
   title: string;
   amount: number;
+  /** ₺ tutarı 0'dan sayarak gelir (çevrimdışı dönüş ekranı). */
+  sayac?: boolean;
   /** 💎 ödülü (D3: hedefler iki para birimi verir; offline yalnız ₺ verdiği için varsayılan 0). */
   diamonds?: number;
   /** KALICI gelir artışı (oran; D-090). Offline ekranı ₺ verir → varsayılan 0, o ekran değişmedi. */
@@ -1500,7 +1532,7 @@ function RewardModal({
       key: 'para',
       icerik: (
         <>
-          <CoinIcon size={30} /> +{fmt(amount)}
+          <CoinIcon size={30} /> {sayac ? <SayanPara hedef={amount} /> : `+${fmt(amount)}`}
         </>
       ),
     });

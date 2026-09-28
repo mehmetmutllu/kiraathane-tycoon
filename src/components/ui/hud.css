@@ -1946,6 +1946,10 @@
   height: 0;
   z-index: 45;
 }
+/* Çevrimdışı ₺ sayacı: rakam genişliği sabit — sayarken satır titremez. */
+.sayan-para {
+  font-variant-numeric: tabular-nums;
+}
 .shop-bildirim-capa .notice {
   top: 14px;
   bottom: auto;
