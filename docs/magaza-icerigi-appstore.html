@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>App Store Taslağı</title>
+<style>
+:root{
+  --bg:#f7f3ec; --panel:#fffdf9; --ink:#2a2118; --muted:#6f6257; --line:#e4dacd;
+  --accent:#b4531f; --accent-soft:#f6e4d6; --ok:#2f7a45; --warn:#a4461a; --warn-soft:#fbe7dc;
+  --code:#f1ebe2; --radius:12px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#17130f; --panel:#211b16; --ink:#efe6db; --muted:#b3a597; --line:#3a3029;
+    --accent:#e98a4f; --accent-soft:#3a261a; --ok:#7cc792; --warn:#f0a077; --warn-soft:#3b2419; --code:#2a231d;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#17130f; --panel:#211b16; --ink:#efe6db; --muted:#b3a597; --line:#3a3029;
+  --accent:#e98a4f; --accent-soft:#3a261a; --ok:#7cc792; --warn:#f0a077; --warn-soft:#3b2419; --code:#2a231d;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:880px;margin:0 auto;padding:24px 16px 64px}
+h1{font-size:1.7rem;line-height:1.2;margin:.2em 0 .3em}
+h2{font-size:1.25rem;margin:2.2em 0 .6em;padding-top:.6em;border-top:1px solid var(--line)}
+h3{font-size:1.02rem;margin:1.5em 0 .5em}
+p,li{max-width:70ch}
+.lede{color:var(--muted)}
+.pill{display:inline-block;font-size:.78rem;font-weight:600;padding:2px 9px;border-radius:99px;background:var(--accent-soft);color:var(--accent)}
+.todo{counter-reset:t;list-style:none;padding:0;margin:0}
+.todo li{counter-increment:t;position:relative;padding:10px 12px 10px 44px;margin:6px 0;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius)}
+.todo li::before{content:counter(t);position:absolute;left:12px;top:10px;width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-size:.8rem;font-weight:700;display:grid;place-items:center}
+.todo li.warn{background:var(--warn-soft);border-color:transparent}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;margin:10px 0}
+.field{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:6px}
+.field b{font-size:.85rem;color:var(--muted);font-weight:600}
+.count{font-size:.78rem;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.copy{position:relative}
+.copy pre{margin:0;padding-right:84px !important;white-space:pre-wrap;word-break:break-word;background:var(--code);padding:10px 12px;border-radius:8px;font:14px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace}
+.copy button{position:absolute;top:6px;right:6px;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:6px;font-size:.75rem;padding:3px 8px;cursor:pointer}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:640px){.two{grid-template-columns:1fr}}
+.tbl{overflow-x:auto;margin:10px 0}
+table{border-collapse:collapse;width:100%;font-size:.92rem;background:var(--panel);border-radius:var(--radius);overflow:hidden}
+th,td{text-align:left;vertical-align:top;padding:8px 10px;border-bottom:1px solid var(--line)}
+th{font-size:.8rem;color:var(--muted);font-weight:600;background:var(--code)}
+td code,p code,li code{font-size:.85em;background:var(--code);padding:1px 5px;border-radius:4px}
+.yes{color:var(--warn);font-weight:600}.no{color:var(--ok);font-weight:600}
+details{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:10px 14px;margin:10px 0}
+summary{cursor:pointer;font-weight:600}
+.shots{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media (max-width:640px){.shots{grid-template-columns:repeat(2,1fr)}}
+figure{margin:0}
+figure img{width:100%;height:auto;display:block;border-radius:10px;border:1px solid var(--line);background:var(--code)}
+figcaption{font-size:.8rem;color:var(--muted);margin-top:4px}
+.ipad{grid-template-columns:repeat(3,1fr)}
+.note{font-size:.9rem;color:var(--muted)}
+.big{font-size:2rem;font-weight:800;color:var(--accent)}
+</style>
+</head>
+<body>
+<main>
+<span class="pill">TASLAK · 28 Eylül 2026</span>
+<h1>Köşe Kıraathanesi — App Store mağaza içeriği</h1>
+<p class="lede">Mağaza sayfasına girecek her şey tek yerde: metinler, kategori, yaş anketi, gizlilik etiketi, satın alma ürünleri, ekran görüntüleri ve inceleme notu. App Store Connect'e hiçbir şey girilmedi. Fiyatlar öneridir. Metinlerin yanındaki <b>Kopyala</b> düğmesiyle doğrudan yapıştırabilirsin.</p>
+
+<h2>Senin yapman gerekenler</h2>
+<ol class="todo">
+<li class="warn"><b>iOS derlemesi henüz yok.</b> Projede yalnız Android var. iOS paketi için Mac + Xcode ya da bulutta derleme gerekir. Bu bir geliştirme turu.</li>
+<li class="warn"><b>Oyunun arayüzü yalnız Türkçe.</b> İngilizce sayfa açılacaksa ya önce İngilizce arayüz gelmeli ya da açıklamaya "şimdilik Türkçe" satırı girmeli.</li>
+<li>App Store Connect'te yeni uygulama aç: Bundle ID <code>com.memedobro.teahousetycoon</code>, SKU (ör. <code>teahouse-001</code>), birincil dil Türkçe.</li>
+<li><b>Ücretli Uygulamalar Sözleşmesi</b> + banka + vergi formu. Bunlar olmadan satın alımlar çalışmaz.</li>
+<li>Üç adres hazırla: Gizlilik Politikası (zorunlu), Destek (zorunlu), Pazarlama (isteğe bağlı; AdMob'un <code>app-ads.txt</code> dosyası bu alan adında durur).</li>
+<li>AdMob'da iOS uygulaması + iOS reklam birimleri aç; iOS için rıza (UMP) ve IDFA açıklama mesajını yayımla.</li>
+<li>RevenueCat'e iOS uygulamasını ekle, Apple SDK anahtarını geliştirmeye ver.</li>
+<li>Aşağıdaki 5 ürünü Connect'te aç, fiyat seç, her birine inceleme ekran görüntüsü yükle.</li>
+<li>Yaş anketini ve gizlilik etiketini buradaki cevaplarla doldur.</li>
+<li>Metinleri yapıştır, kareleri yükle, inceleme notunu yapıştır → incelemeye gönder.</li>
+</ol>
+
+<h2>1 · Metinler</h2>
+<p class="note">Apple sınırları: ad 30 · alt başlık 30 · tanıtım metni 170 · açıklama 4000 · anahtar kelimeler 100 karakter.</p>
+
+<h3>Uygulama adı</h3>
+<div class="two">
+<div class="card"><div class="field"><b>TR</b><span class="count">25 / 30</span></div><div class="copy"><pre>Köşe Kıraathanesi: Tycoon</pre></div></div>
+<div class="card"><div class="field"><b>EN-US</b><span class="count">27 / 30</span></div><div class="copy"><pre>Tea House Tycoon: Idle Cafe</pre></div></div>
+</div>
+<p class="note">Ad başkasındaysa yedek: <code>Köşe Kıraathanesi: Çay Tycoon</code> (29) · <code>Tea House Tycoon: Cozy Cafe</code> (27).</p>
+
+<h3>Alt başlık</h3>
+<div class="two">
+<div class="card"><div class="field"><b>TR</b><span class="count">30 / 30</span></div><div class="copy"><pre>Çay Ocağından Koca Kahvehaneye</pre></div></div>
+<div class="card"><div class="field"><b>EN-US</b><span class="count">27 / 30</span></div><div class="copy"><pre>Run a Cozy Turkish Tea Shop</pre></div></div>
+</div>
+
+<h3>Tanıtım metni <span class="note">(sürüm göndermeden değiştirilebilir)</span></h3>
+<div class="two">
+<div class="card"><div class="field"><b>TR</b><span class="count">138 / 170</span></div><div class="copy"><pre>Semaver kaynadı! Mahallenin köşesindeki küçük çay ocağını yeni masalar, garsonlar ve salonlarla şehrin en sevilen kıraathanesine dönüştür.</pre></div></div>
+<div class="card"><div class="field"><b>EN-US</b><span class="count">145 / 170</span></div><div class="copy"><pre>The samovar is boiling! Turn a tiny corner tea stall into the busiest tea house in town with new tables, waiters, a kitchen and three cozy halls.</pre></div></div>
+</div>
+
+<h3>Açıklama</h3>
+<details open>
+<summary>TR <span class="count">· 1478 / 4000</span></summary>
+<div class="copy" style="margin-top:8px"><pre>Mahallenin köşesinde küçük bir çay ocağı… Onu şehrin en sevilen kıraathanesine sen dönüştür!
+
+Köşe Kıraathanesi, sıcak bir Türk kahvehanesini sıfırdan büyüttüğün 3D bir işletme (tycoon) oyunu. İnce belli bardaklarda çayı demle, tepsini doldur, müşterilerine servis et; kazandığın parayla yeni masalar, garsonlar ve salonlar aç.
+
+NASIL OYNANIR
+• Ocaktan çayı al, tepsiyle masalara taşı.
+• Müşteriler çayını içip hesabı öder; parayı topla.
+• Parayı mekânın içindeki noktalarda harca: yeni masa, daha hızlı ocak, garson, bulaşıkçı.
+• Masaları yükselt; sade tabureler kanepeye, masalar daha şık hâllerine dönüşsün.
+
+KIRAATHANENİ BÜYÜT
+• Üç salon, yirmi masa: tek odadan kalabalık bir kahvehaneye.
+• Mutfak açılınca menüye tost girer; garsonlar ve bulaşıkçı yükünü hafifletir.
+• Masaları Usta'ya çıkar: o masanın bahşişi kalıcı olarak artar.
+• Günlük görevler, hedefler ve seviye ödülleriyle her gün yeni bir amaç.
+
+SENİN MEKÂNIN
+• Kıraathaneye kendi adını ver; tabelada o yazsın.
+• Radyo, semaver, gramofon, sarkaçlı saat, kanarya kafesi… Salonu kendi zevkine göre döşe.
+• Çaycına yeni kıyafetler, tepsine yeni desenler seç.
+• Masa, zemin ve duvar temalarıyla salonun rengini değiştir.
+
+RAHAT OYNA
+• Tek elle, dikey ekranda oynanır.
+• Oyun kapalıyken de kıraathane bir süre kazanmaya devam eder.
+• Reklam izlemek her zaman isteğe bağlı; ilerlemek için zorunlu değil.
+• Sürpriz kutusu, şans çarkı ya da kumar yok. Ne aldığını görerek alırsın.
+
+Bir çay daha? Kıraathane seni bekliyor.</pre></div>
+</details>
+<details>
+<summary>EN-US <span class="count">· 1705 / 4000 (dil satırı dahil)</span></summary>
+<div class="copy" style="margin-top:8px"><pre>A tiny tea stall on the corner of the street… Turn it into the most loved tea house in town!
+
+Tea House Tycoon is a cozy 3D tycoon game where you grow a traditional Turkish tea house from scratch. Brew tea in tulip-shaped glasses, load your tray, serve your customers, and spend what you earn on new tables, waiters and whole new halls.
+
+HOW TO PLAY
+• Pick up fresh tea from the stove and carry it to the tables.
+• Customers drink up and pay. Collect the coins.
+• Spend your coins right where things happen: new tables, a faster stove, waiters, a dishwasher.
+• Upgrade your tables: simple stools become sofas and tables get fancier.
+
+GROW YOUR TEA HOUSE
+• Three halls and twenty tables: from a single room to a bustling tea house.
+• Open the kitchen to add toast to the menu. Waiters and a dishwasher take work off your hands.
+• Make a table a Master table and its tips grow for good.
+• Daily tasks, goals and level rewards give you something new to aim for every day.
+
+MAKE IT YOURS
+• Name your tea house and see it on the sign above the door.
+• Radio, samovar, gramophone, pendulum clock, canary cage… Decorate the hall your way.
+• Pick new outfits for your tea maker and new designs for your tray.
+• Change the look of the hall with table, floor and wall themes.
+
+PLAY AT YOUR PACE
+• One-handed, portrait play.
+• Your tea house keeps earning for a while even when you are away.
+• Watching ads is always optional and never required to progress.
+• No mystery boxes, no wheels of fortune, no gambling. You always see what you buy.
+
+Language: the game is currently available in Turkish. English is coming soon.
+
+Fancy another glass of tea? Your tea house is waiting.</pre></div>
+<p class="note">"Language:" satırı yalnız arayüz hâlâ Türkçeyken kalır; İngilizce arayüz gelince silinir.</p>
+</details>
+
+<h3>Anahtar kelimeler <span class="note">(virgüllü, boşluksuz; addaki kelimeler tekrar edilmez)</span></h3>
+<div class="two">
+<div class="card"><div class="field"><b>TR</b><span class="count">98 / 100</span></div><div class="copy"><pre>kahvehane,çayhane,kafe,idle,işletme,simülasyon,restoran,garson,mutfak,tost,yönetim,semaver,offline</pre></div></div>
+<div class="card"><div class="field"><b>EN-US</b><span class="count">95 / 100</span></div><div class="copy"><pre>coffee,restaurant,simulator,manager,business,waiter,kitchen,diner,chai,empire,offline,3d,casual</pre></div></div>
+</div>
+
+<h3>Yenilikler (What's New)</h3>
+<p class="note">İlk sürümde bu alan yoktur. Metin ilk güncelleme (1.0.1) içindir.</p>
+<div class="two">
+<div class="card"><div class="field"><b>TR</b><span class="count">168</span></div><div class="copy"><pre>Köşe Kıraathanesi açıldı! İlk sürümde üç salon, yirmi masa, mutfak ve tost, Usta masalar, günlük görevler ve salonu süsleyen dekor eşyaları var. Görüşlerini bekliyoruz!</pre></div></div>
+<div class="card"><div class="field"><b>EN-US</b><span class="count">181</span></div><div class="copy"><pre>Tea House Tycoon is open! The first version brings three halls, twenty tables, a kitchen with toast, Master tables, daily tasks and décor for your hall. We would love your feedback!</pre></div></div>
+</div>
+
+<h3>Adresler (sen dolduracaksın)</h3>
+<div class="tbl"><table>
+<tr><th>Alan</th><th>Zorunlu</th><th>Ne olmalı</th></tr>
+<tr><td>Gizlilik Politikası URL</td><td class="yes">Evet</td><td>Herkese açık sayfa: hangi veriler (AdMob, RevenueCat), neden, üçüncü taraflar, iletişim e-postası, çocuklar bölümü. TR + EN.</td></tr>
+<tr><td>Destek URL</td><td class="yes">Evet</td><td>İletişim e-postası ya da formu olan sayfa.</td></tr>
+<tr><td>Pazarlama URL</td><td>Hayır</td><td>Tanıtım sayfası. AdMob'un <code>app-ads.txt</code> dosyası bu alan adının kökünde olmalı.</td></tr>
+<tr><td>Telif hakkı</td><td class="yes">Evet</td><td><code>2026 &lt;adın ya da şirketin&gt;</code></td></tr>
+</table></div>
+
+<h2>2 · Kategori</h2>
+<div class="tbl"><table>
+<tr><th></th><th>Öneri</th><th>Neden</th></tr>
+<tr><td>Birincil</td><td><b>Oyunlar</b> → Simülasyon + Gündelik</td><td>Tycoon oyunlar Simülasyon'da listelenir; Gündelik ek görünürlük verir.</td></tr>
+<tr><td>İkincil</td><td>Eğlence (isteğe bağlı)</td><td>Etkisi küçük; boş bırakılabilir.</td></tr>
+<tr><td>Kids kategorisi</td><td class="no">Hayır</td><td>Kids, kişiselleştirilmiş reklamı fiilen yasaklar; reklam kurulumuyla (SDK'da kısıt yok) çelişir.</td></tr>
+</table></div>
+
+<h2>3 · Yaş derecelendirmesi</h2>
+<div class="card" style="display:flex;gap:16px;align-items:center"><span class="big">4+</span><span>Beklenen derece. "Reklam: Evet" cevabı 4+'da izinli. Okey/tavla masası v1 kodunda yok; nargile ve tütün yok; alkol yok; şiddet yok.</span></div>
+<div class="tbl"><table>
+<tr><th>Soru</th><th>Cevap</th><th>Not</th></tr>
+<tr><td>Küfür/kaba mizah · Korku · Tıbbi bilgi · Sağlık/esenlik · Olgun temalar · Cinsellik (3 soru) · Şiddet (3 soru) · Silah</td><td class="no">Yok</td><td>Hepsi "Yok".</td></tr>
+<tr><td>Alkol, tütün, uyuşturucu</td><td class="no">Yok</td><td>Yalnız çay ve tost. Nargile oyundan çıkarıldı.</td></tr>
+<tr><td>Kumar (gerçek para)</td><td class="no">Hayır</td><td></td></tr>
+<tr><td>Kumar simülasyonu</td><td class="no">Yok</td><td>Okey/tavla v1'de yok. İleride oynanabilir okey gelirse 13+ olur — yalnız dekor/servis kalırsa 4+ korunur.</td></tr>
+<tr><td>Yarışmalar</td><td class="no">Yok</td><td>Günlük görevler kişisel, yarışma değil.</td></tr>
+<tr><td>Ganimet kutusu</td><td class="no">Hayır</td><td>💎 ile belli bir eşya alınır; rastgele içerik yok.</td></tr>
+<tr><td>Ebeveyn denetimi · Yaş doğrulama · Kısıtsız web · Kullanıcı içeriği · Sosyal medya · Sohbet</td><td class="no">Hayır</td><td>Kafe adı yalnız oyuncunun kendi cihazında görünür.</td></tr>
+<tr><td>Reklam</td><td class="yes">Evet</td><td>Geçişli + ödüllü video (AdMob).</td></tr>
+</table></div>
+
+<h2>4 · Gizlilik etiketi (App Privacy)</h2>
+<p>Oyunun kendi analitiği yok, kayıt cihazda. Veriyi toplayan iki araç var: <b>AdMob</b> (reklam) ve <b>RevenueCat</b> (satın alma). "Veri topluyor musunuz?" sorusunun cevabı <b>Evet</b>.</p>
+<div class="tbl"><table>
+<tr><th>Veri türü</th><th>Kim</th><th>Amaç</th><th>Kişiye bağlı</th><th>İzleme</th></tr>
+<tr><td>Cihaz Kimliği (IDFA)</td><td>AdMob</td><td>3. taraf reklam, analitik</td><td class="yes">Evet</td><td class="yes">Evet</td></tr>
+<tr><td>Kaba Konum (IP'den)</td><td>AdMob</td><td>3. taraf reklam, analitik</td><td class="no">Hayır</td><td class="yes">Evet*</td></tr>
+<tr><td>Ürün Etkileşimi</td><td>AdMob</td><td>3. taraf reklam, analitik</td><td class="yes">Evet</td><td class="yes">Evet*</td></tr>
+<tr><td>Reklam Verisi</td><td>AdMob</td><td>3. taraf reklam, analitik</td><td class="yes">Evet</td><td class="yes">Evet</td></tr>
+<tr><td>Çökme · Performans · Diğer tanılama</td><td>AdMob</td><td>Analitik, uygulama işlevi</td><td class="no">Hayır</td><td class="no">Hayır</td></tr>
+<tr><td>Satın Alma Geçmişi</td><td>RevenueCat</td><td>Uygulama işlevi, analitik</td><td class="no">Hayır</td><td class="no">Hayır</td></tr>
+</table></div>
+<p class="note">* İhtiyatlı cevap: Google bu iki satırı net yazmıyor. Fazla beyan reddedilmez, eksik beyan reddedilir.</p>
+<h3>İzleme izni (ATT) metni</h3>
+<p>AdMob reklam kimliğini okuduğu için iOS'ta izin penceresi gerekir (oyun henüz sormuyor — geliştirme işi). İzin verilmezse oyun aynen çalışır.</p>
+<div class="two">
+<div class="card"><div class="field"><b>TR</b><span class="count">107</span></div><div class="copy"><pre>Bu izin yalnızca sana daha ilgili reklamlar göstermek için kullanılır. İzin vermesen de oyun aynen çalışır.</pre></div></div>
+<div class="card"><div class="field"><b>EN-US</b><span class="count">95</span></div><div class="copy"><pre>This is only used to show you more relevant ads. The game works exactly the same if you say no.</pre></div></div>
+</div>
+
+<h2>5 · Satın alma ürünleri</h2>
+<p class="note">Kimlikler oyunun kodundakiyle aynı. Apple'da silinen ürün kimliği bir daha kullanılamaz. Görünen ad ≤ 35, açıklama ≤ 55 karakter.</p>
+<div class="tbl"><table>
+<tr><th>Ürün kimliği</th><th>Tür</th><th>TR ad · açıklama</th><th>EN ad · açıklama</th><th>İçerik</th></tr>
+<tr><td><code>kiraathane_reklamsiz</code></td><td>Tüketilmeyen</td><td>Reklamları Kaldır · Geçiş reklamları kalkar, her gün 10 elmas hediye.</td><td>Remove Ads · No more interstitial ads, plus 10 gems every day.</td><td>Geçişli reklam yok; ödüllü video isteğe bağlı kalır; günde 10 💎</td></tr>
+<tr><td><code>kiraathane_baslangic</code></td><td>Tüketilmeyen</td><td>Başlangıç Paketi · 100 elmas ve yalnız bu pakette olan Kurucu kıyafeti.</td><td>Starter Pack · 100 gems and the Founder outfit, only in this pack.</td><td>100 💎 (bir kez) + Kurucu kıyafeti (bordo yelek + fes)</td></tr>
+<tr><td><code>kiraathane_elmas_25</code></td><td>Tüketilen</td><td>Bir Avuç Elmas · 25 elmas.</td><td>Handful of Gems · 25 gems.</td><td>25 💎</td></tr>
+<tr><td><code>kiraathane_elmas_60</code></td><td>Tüketilen</td><td>Elmas Kesesi · 60 elmas.</td><td>Pouch of Gems · 60 gems.</td><td>60 💎</td></tr>
+<tr><td><code>kiraathane_elmas_150</code></td><td>Tüketilen</td><td>Elmas Sandığı · 150 elmas.</td><td>Chest of Gems · 150 gems.</td><td>150 💎</td></tr>
+</table></div>
+<h3>Fiyat — öneri <span class="pill">karar senin</span></h3>
+<div class="tbl"><table>
+<tr><th>Ürün</th><th>USD</th><th>Türkiye (elle)</th><th>💎 / $</th><th>Neden</th></tr>
+<tr><td>Elmas 25</td><td>0,99 $</td><td>34,99 ₺</td><td>25</td><td>Bir Usta = 25 💎 → en ucuz alım bir Usta'lık.</td></tr>
+<tr><td>Elmas 60</td><td>1,99 $</td><td>64,99 ₺</td><td>30</td><td>Birim fiyat %20 iyi.</td></tr>
+<tr><td>Elmas 150</td><td>3,99 $</td><td>129,99 ₺</td><td>38</td><td>Birim fiyat %50 iyi. 4,99 $ olsa 60'lıkla aynı değeri verirdi.</td></tr>
+<tr><td>Başlangıç</td><td>1,99 $</td><td>64,99 ₺</td><td>50 + kıyafet</td><td>Bir kezlik en iyi değer; türde alışılmış başlangıç fırsatı.</td></tr>
+<tr><td>Reklamları Kaldır</td><td>3,99 $</td><td>129,99 ₺</td><td>+10/gün</td><td>Türde 2,99–4,99 $ bandı; günlük 💎 hediyesi 3,99'u haklı çıkarır.</td></tr>
+</table></div>
+<p class="note">Apple her ülke için otomatik eşdeğer fiyat üretir; Türkiye'de bu, alım gücüne göre yüksek kalabilir. ₺ sütunu "elle fiyat" önerisidir — Connect'teki otomatik karşılıkla karşılaştır.</p>
+
+<h2>6 · Ekran görüntüleri</h2>
+<p><b>Zorunlu:</b> iPhone 6,9" (1320×2868). iPad 13" (2064×2752) yalnız uygulama iPad'de de çalışacaksa. Her dil için 1–10 kare, saydamlık yok. Çekilen kareler oyunun gerçek görüntüsü, çerçevesiz.</p>
+<p><b>Öneri: ilk sürüm yalnız iPhone.</b> iPad'de mağaza paneli telefon genişliğinde ortada kalıyor (aşağıdaki iPad karelerinin 5.'si); iPad için ayrı bir arayüz turu gerekir.</p>
+<h3>iPhone 6,9"</h3>
+<div class="shots">
+<figure><img src="magaza-kareleri/appstore/iphone69-1-ilk-servis.png" alt="İlk dakikalar: ocak, ilk masalar ve çay bekleyen müşteri" loading="lazy"><figcaption>1 · İlk servis</figcaption></figure>
+<figure><img src="magaza-kareleri/appstore/iphone69-2-dolu-salon.png" alt="Dolu salon: kanepeler, garsonlar ve sipariş balonları" loading="lazy"><figcaption>2 · Dolu salon</figcaption></figure>
+<figure><img src="magaza-kareleri/appstore/iphone69-3-siparisler.png" alt="Masa başında çay ve tost siparişleri" loading="lazy"><figcaption>3 · Siparişler</figcaption></figure>
+<figure><img src="magaza-kareleri/appstore/iphone69-4-mutfak.png" alt="Mutfak: semaverler, ocak ve tost tezgâhı" loading="lazy"><figcaption>4 · Mutfak</figcaption></figure>
+<figure><img src="magaza-kareleri/appstore/iphone69-5-dekor-magazasi.png" alt="Dekor mağazası: kanarya kafesi salondaki yerinde" loading="lazy"><figcaption>5 · Dekor mağazası</figcaption></figure>
+<figure><img src="magaza-kareleri/appstore/iphone69-6-usta.png" alt="Usta onayı: masanın bahşişi kalıcı ×1,5" loading="lazy"><figcaption>6 · Usta</figcaption></figure>
+</div>
+<details>
+<summary>iPad 13" kareleri (iPad desteği açılırsa)</summary>
+<div class="shots ipad" style="margin-top:10px">
+<figure><img src="magaza-kareleri/appstore/ipad13-1-ilk-servis.png" alt="iPad: ilk servis" loading="lazy"><figcaption>1 · İlk servis</figcaption></figure>
+<figure><img src="magaza-kareleri/appstore/ipad13-2-dolu-salon.png" alt="iPad: dolu salon" loading="lazy"><figcaption>2 · Dolu salon</figcaption></figure>
+<figure><img src="magaza-kareleri/appstore/ipad13-3-siparisler.png" alt="iPad: siparişler" loading="lazy"><figcaption>3 · Siparişler</figcaption></figure>
+<figure><img src="magaza-kareleri/appstore/ipad13-4-mutfak.png" alt="iPad: mutfak" loading="lazy"><figcaption>4 · Mutfak</figcaption></figure>
+<figure><img src="magaza-kareleri/appstore/ipad13-5-dekor-magazasi.png" alt="iPad: dekor mağazası, panel telefon genişliğinde" loading="lazy"><figcaption>5 · Dekor (panel dar)</figcaption></figure>
+<figure><img src="magaza-kareleri/appstore/ipad13-6-usta.png" alt="iPad: Usta onayı" loading="lazy"><figcaption>6 · Usta</figcaption></figure>
+</div>
+</details>
+<h3>Pazarlama çerçevesi — öneri (yapılmadı)</h3>
+<p>Mağazanın güçlü tycoon sayfaları kareyi ham koymaz: üstte 2–4 kelimelik büyük başlık, altta oyun karesi. Arama sonucunda ilk 3 kare görünür, en güçlüleri başa.</p>
+<div class="tbl"><table>
+<tr><th>Sıra</th><th>Kare</th><th>TR başlık</th><th>EN başlık</th></tr>
+<tr><td>1</td><td>Dolu salon</td><td>Kıraathaneni büyüt</td><td>Grow your tea house</td></tr>
+<tr><td>2</td><td>İlk servis</td><td>Çayı demle, servis et</td><td>Brew tea, serve smiles</td></tr>
+<tr><td>3</td><td>Mutfak</td><td>Mutfağı aç, tost ekle</td><td>Open the kitchen</td></tr>
+<tr><td>4</td><td>Usta</td><td>Masalarını Usta yap</td><td>Make Master tables</td></tr>
+<tr><td>5</td><td>Dekor</td><td>Salonunu kendin döşe</td><td>Decorate your way</td></tr>
+<tr><td>6</td><td>Siparişler</td><td>Her masa ayrı hikâye</td><td>Every table has a story</td></tr>
+</table></div>
+
+<h2>7 · İnceleme notu ve risk listesi</h2>
+<div class="card"><div class="field"><b>App Review notu (İngilizce)</b></div><div class="copy"><pre>No account or login is needed. The game starts immediately; you will be asked to name your tea house once (any name works).
+
+How to play: walk with the on-screen joystick, stand at the tea stove to pick up tea, then stand next to a customer's table to serve. Coins drop on the table; walk over them to collect.
+
+In-app purchases: open "Mağaza" (Shop, bottom bar) → "Paketler" (Packs) tab. All five products are listed there: Remove Ads, Starter Pack and three gem packs. Gems buy cosmetic items in the other Shop tabs. "Satın alımları geri yükle" (Restore Purchases) is in Settings (gear icon, top right).
+
+Ads: rewarded videos are always optional ("İzle" buttons on reward screens and on a Master table). Interstitial ads can appear at most once every 3 minutes, only when a panel is closed, never during gameplay and never after a reward screen. Remove Ads removes interstitials only.
+
+The user interface is in Turkish. Tapping any button is safe; there is no destructive action outside Settings → "Oyunu Sıfırla" (reset game).</pre></div></div>
+<div class="tbl"><table>
+<tr><th>Kural</th><th>Risk</th><th>Yapılacak</th></tr>
+<tr><td>2.1 Bütünlük</td><td class="yes">Yüksek</td><td>Test reklam kimlikleri ve boş RevenueCat anahtarıyla gönderilirse satın alma çalışmaz → red. Gerçek iOS kimlikleriyle derle.</td></tr>
+<tr><td>2.3.10 Başka platform adı</td><td class="yes">Yüksek</td><td>Mağaza → Paketler altındaki "Aldıkların <b>Google hesabında</b> saklanır" notu iOS'ta "Apple hesabında" demeli. İnceleme ekibinin ilk bakacağı yer.</td></tr>
+<tr><td>5.1.1 ATT + gizlilik</td><td class="yes">Yüksek</td><td>ATT izni eklenmeli; gizlilik politikası bağlantısı uygulama içinde (Ayarlar) de olmalı — ikisi de şu an yok.</td></tr>
+<tr><td>2.3.1 Doğru meta veri</td><td>Orta</td><td>EN sayfada "şimdilik Türkçe" satırı ya da İngilizce arayüz.</td></tr>
+<tr><td>3.1.1 Satın alma</td><td class="no">Düşük</td><td>StoreKit (RevenueCat) ✔ · geri yükleme düğmesi ✔ · loot box yok ✔.</td></tr>
+<tr><td>4.3 Spam</td><td class="no">Düşük</td><td>Özgün tema ve sanat; aynı oyunun ikinci kopyası gönderilmemeli.</td></tr>
+<tr><td>4.2 Asgari işlev</td><td class="no">Düşük</td><td>Tam oyun, yerel reklam ve satın alma.</td></tr>
+<tr><td>2.3.7 Anahtar kelime</td><td class="no">Düşük</td><td>Rakip adı yok ✔.</td></tr>
+</table></div>
+
+<h2>Emin olunmayan noktalar</h2>
+<ul>
+<li>AdMob'un "kaba konum" ve "ürün etkileşimi" verisinin izleme sayılıp sayılmadığı Google'ın sayfasında net değil — ihtiyatlı "Evet".</li>
+<li>Türkiye mağazasının anahtar kelimede hangi ikinci dili dizinlediği doğrulanmadı.</li>
+<li>₺ önerilerinin Apple fiyat noktalarına tam denk gelişi Connect'te görülmeden kesinleşmez.</li>
+<li>Yaş anketi Apple'ın Eylül 2026 başvuru sayfasından; Connect ekranında küçük ad farkları olabilir.</li>
+</ul>
+<p class="note">Kaynak dosya: <code>docs/magaza-icerigi-appstore.md</code> · kareler: <code>node tools/shot-appstore.mjs</code></p>
+</main>
+<script>
+document.querySelectorAll('.copy').forEach(function (box) {
+  var pre = box.querySelector('pre');
+  var btn = document.createElement('button');
+  btn.type = 'button';
+  btn.textContent = 'Kopyala';
+  btn.addEventListener('click', function () {
+    var done = function () { btn.textContent = 'Kopyalandı'; setTimeout(function () { btn.textContent = 'Kopyala'; }, 1500); };
+    try {
+      if (navigator.clipboard) navigator.clipboard.writeText(pre.textContent).then(done, function () {});
+    } catch (e) {}
+  });
+  box.appendChild(btn);
+});
+</script>
+</body>
+</html>
