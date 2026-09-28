@@ -5,6 +5,7 @@
  * Kullanım: node tools/kare-oyun-ici.mjs  (SADECE=iphone|ipad) → docs/magaza-kareleri/ham/<cihaz>-<an>.png
  * KIP=tam      → arayüzsüz, tuval ölçüsünde (iPhone 440×956 @3 = 1320×2868) → ham-tam/
  * KIP=panorama → arayüzsüz, 6 tuval enine tek kare (kesintisiz mağaza şeridi) → ham-pano/
+ * KIP=reklam   → arayüzsüz, YAKIN kamera, bolluk anları (yerde para, tepeleme tepsi) → ham-reklam/
  */
 import { spawn } from 'node:child_process';
 import { chromium } from 'playwright';
@@ -15,7 +16,7 @@ import { fileURLToPath } from 'node:url';
 const KOK = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PORT = Number(process.env.BAK_PORT ?? 5305);
 const KIP = process.env.KIP ?? 'cerceve';
-const OUT = path.join(KOK, 'docs/magaza-kareleri', KIP === 'tam' ? 'ham-tam' : KIP === 'panorama' ? 'ham-pano' : 'ham');
+const OUT = path.join(KOK, 'docs/magaza-kareleri', KIP === 'tam' ? 'ham-tam' : KIP === 'panorama' ? 'ham-pano' : KIP === 'reklam' ? 'ham-reklam' : 'ham');
 mkdirSync(OUT, { recursive: true });
 const PADS = 'table2 table3 waiter table4 waiter2 zone2 z2table2 z2table3 dishwasher z2table4 zone3 z3table2 z3table3 z3table4 waiter3 lavabo z3table5 z3table6 z3table7 z3table8 z3table9 z3table10 z3table11 z3table12'.split(' ');
 const DEKOR = ['radyo', 'koltuk', 'lamba', 'tablo', 'semaver', 'gramofon', 'kanarya', 'saat'];
@@ -25,6 +26,7 @@ const CIHAZLAR = [
 ].filter((c) => !process.env.SADECE || c.ad.startsWith(process.env.SADECE));
 // Tam/panorama: çerçeve yok → görüntü tuvalin kendisi. iPhone tuvali 440×956 (@3 = 1320×2868).
 if (KIP !== 'cerceve') for (const c of CIHAZLAR) {
+  if (KIP === 'reklam' && c.ad === 'ipad') c.viewport = { width: 1032, height: 1376 };
   if (c.ad === 'iphone') c.viewport = { width: 440, height: 956 };
   if (KIP === 'panorama') c.viewport = { width: c.viewport.width * 6, height: c.viewport.height };
 }
@@ -64,6 +66,34 @@ try {
     await s.click('[data-testid="kafe-adi-tamam"]');
     await s.waitForTimeout(1500);
     await arayuzGizle();
+
+    if (KIP === 'reklam') {
+      // Piyasa kalıbı (Burger Please · Pizza Ready · My Perfect Hotel): kamera yakın, an BOLLUK anı.
+      await s.evaluate(([pads, dekor]) => window.__setState({
+        padsDone: pads, padFills: {}, stationLevels: [6], tableLevels: new Array(24).fill(3), diamonds: 320, wallet: 48250, xp: 60000, questIndex: 999,
+        ownedCosmetics: dekor.map((d) => `decor:${d}`), dekor: Object.fromEntries(dekor.map((d) => [d, d])),
+        charUpgrades: { tray: 9, magnet: 3, speed: 3 },
+      }), [PADS, DEKOR]);
+      await s.waitForTimeout(2000);
+      await sar(60);
+      await temizle();
+      await s.evaluate(() => window.__devCam({ distMul: 0.62 }));
+      const paraYagmuru = (x, z, n) => s.evaluate(([x0, z0, k]) => {
+        const coins = [];
+        for (let i = 0; i < k; i++) { const a = i * 2.39996, r = 0.25 + Math.sqrt(i) * 0.19; coins.push({ id: 900000 + i, pos: [x0 + Math.cos(a) * r, 0.05 + Math.max(0, 1.7 - r) * 0.42, z0 + Math.sin(a) * r], value: 25, age: 0 }); }
+        window.__setState({ coins });
+      }, [x, z, n]);
+      const cek = async (ad, x, z, ek) => { await git(x, z, 3); if (ek) await ek(); await s.evaluate(() => window.__zaman(0)); await kare(ad, 1800); await s.evaluate(() => window.__zaman(1)); };
+      await cek('para', -3, 8.6, () => paraYagmuru(-2.2, 8.0, 150));
+      await cek('tepsi', -8.5, 4.5, () => s.evaluate(() => window.__setState({ coins: [], tray: 12 })));
+      await cek('salon', -1.6, 6.2, () => s.evaluate(() => window.__setState({ tray: 6 })));
+      await cek('garson', -8.5, 7.5, () => s.evaluate(() => window.__setState({ tray: 0 })));
+      await cek('mutfak', -13.0, -8.6);
+      await cek('yeni-salon', 3.5, -2.5);
+      await s.evaluate(() => window.__devCam({ distMul: 0 }));
+      await baglam.close();
+      continue;
+    }
 
     if (KIP === 'panorama') {
       await s.evaluate(([pads, dekor]) => window.__setState({
