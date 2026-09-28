@@ -1,0 +1,51 @@
+{
+  "baslangic": {
+    "kuruldu": true,
+    "gecisli": 0,
+    "odullu": 0,
+    "sogumaKalanSn": 174.791,
+    "odulluHazir": true,
+    "reklamsiz": false
+  },
+  "R0_duzKapanis": {
+    "gecisliArtti": 1,
+    "beklenen": 1
+  },
+  "R1_kare": "docs/kareler/tarama-yayin/reklam-r1-satin-odul.jpg",
+  "R1_satinAlmaSonrasi": {
+    "paket": "paket-al-kiraathane_elmas_25",
+    "odulEkrani": true,
+    "gecisliArtti": 1,
+    "beklenen": 0
+  },
+  "R2_kare": "docs/kareler/tarama-yayin/reklam-r2-cevrimdisi-panel-ustu.jpg",
+  "R2_cevrimdisiOdulSonrasi": {
+    "odulEkrani": true,
+    "gecisliArtti": 1,
+    "beklenen": 0
+  },
+  "R3_odulluSonrasi15sn": {
+    "videoIzlendi": true,
+    "odulluArtti": 1,
+    "gecisliArtti": 0,
+    "beklenen": 0
+  },
+  "R4_seviyeOdulSonrasi": {
+    "odulEkrani": true,
+    "gecisliArtti": 0,
+    "beklenen": 0
+  },
+  "son": {
+    "kuruldu": true,
+    "gecisli": 4,
+    "odullu": 1,
+    "sogumaKalanSn": 0,
+    "odulluHazir": true,
+    "reklamsiz": false
+  },
+  "konsol": [
+    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.",
+    "warning: THREE.WebGLShadowMap: PCFSoftShadowMap has been deprecated. Using PCFShadowMap instead.",
+    "error: The result of getSnapshot should be cached to avoid an infinite loop"
+  ]
+}
