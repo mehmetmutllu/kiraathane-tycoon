@@ -4862,3 +4862,13 @@ Metin tablosunun 14 satırı; 14. = alımda kısa bildirim + satın alma sesi, p
 %22'de lamba/kanarya incelir + duvar üstünden dış girer. Satın alma sonrası geri bildirim 0'dı.
 **Kurallar:** önizleme eşyası geçicidir (kayda/ekonomiye girmez, mağaza kapanınca kalkar) · sayılar `config/decor.ts` `DEKOR_KADRAJ`.
 **Bekçi:** `tests/magaza-f4c4.test.ts` 24 · mutasyon 12/12 · duman 67/67 · vitest 1670 · `docs/magaza-raporu-f4c4.md`.
+
+## D-158 · Yayın ÖNCE App Store (iOS) · kimlik `com.mutlubadem.teahouse` · derleme Codemagic (2026-09-28)
+
+**Karar (kullanıcı):** İlk yayın Apple App Store; Android/Play sonra ve yalnız kullanıcı isteyince. **Play Console'a hiçbir
+şekilde girilmez.** Tüm hesaplar mutlubadem.dev Google hesabıyla. Uygulama kimliği her platformda `com.mutlubadem.teahouse`
+(D-130'daki `com.memedobro.teahousetycoon` kalktı; Android'de yalnız applicationId, Java paketi aynı). iOS derlemesi
+Codemagic'te; Codemagic API + App Store Connect API ile uzaktan (kalıp: wordmaster `codemagic.yaml` + `memory/yayin_sureci.md`;
+anahtarlar dev-ortam gizli klasöründe). iOS'ta Play Games kapalı (Game Center yok). ASC: ad "Tea House Tycoon", Apple ID
+6816790079, SKU teahouse001, birincil dil en-US. AdMob iOS: app `~4395129824`, geçişli `/3082048152`, ödüllü `/3787876732`.
+RevenueCat: ayrı proje "Tea House Tycoon" (a54ea25c), hak `reklamsiz` + `baslangic`.
