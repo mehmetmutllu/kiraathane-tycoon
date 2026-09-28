@@ -32,6 +32,7 @@ p,li{max-width:70ch}
 .todo{counter-reset:t;list-style:none;padding:0;margin:0}
 .todo li{counter-increment:t;position:relative;padding:10px 12px 10px 44px;margin:6px 0;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius)}
 .todo li::before{content:counter(t);position:absolute;left:12px;top:10px;width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-size:.8rem;font-weight:700;display:grid;place-items:center}
+.todo li.ok{opacity:.75}
 .todo li.warn{background:var(--warn-soft);border-color:transparent}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;margin:10px 0}
 .field{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:6px}
@@ -70,11 +71,11 @@ figcaption{font-size:.8rem;color:var(--muted);margin-top:4px}
 <ol class="todo">
 <li class="warn"><b>iOS derlemesi henüz yok.</b> Projede yalnız Android var. iOS paketi için Mac + Xcode ya da bulutta derleme gerekir. Bu bir geliştirme turu.</li>
 <li class="warn"><b>Oyunun arayüzü yalnız Türkçe.</b> İngilizce sayfa açılacaksa ya önce İngilizce arayüz gelmeli ya da açıklamaya "şimdilik Türkçe" satırı girmeli.</li>
-<li>App Store Connect'te yeni uygulama aç: Bundle ID <code>com.memedobro.teahousetycoon</code>, SKU (ör. <code>teahouse-001</code>), birincil dil Türkçe.</li>
+<li class="ok">✓ App Store Connect'te uygulama açıldı: "Tea House Tycoon", Bundle ID <code>com.mutlubadem.teahouse</code>, SKU <code>teahouse001</code>, birincil dil İngilizce (ABD) — Türkçe yerelleştirme ayrıca eklenir.</li>
 <li><b>Ücretli Uygulamalar Sözleşmesi</b> + banka + vergi formu. Bunlar olmadan satın alımlar çalışmaz.</li>
 <li>Üç adres hazırla: Gizlilik Politikası (zorunlu), Destek (zorunlu), Pazarlama (isteğe bağlı; AdMob'un <code>app-ads.txt</code> dosyası bu alan adında durur).</li>
-<li>AdMob'da iOS uygulaması + iOS reklam birimleri aç; iOS için rıza (UMP) ve IDFA açıklama mesajını yayımla.</li>
-<li>RevenueCat'e iOS uygulamasını ekle, Apple SDK anahtarını geliştirmeye ver.</li>
+<li>✓ AdMob'da iOS uygulaması + geçişli/ödüllü birimler açıldı. Kalan: iOS için rıza (UMP) ve IDFA açıklama mesajını yayımla.</li>
+<li>RevenueCat'te "Tea House Tycoon" projesi + 2 hak hazır. Kalan: In-App Purchase anahtarı (.p8) + Key ID + Issuer ID yüklenince iOS uygulaması kaydedilir.</li>
 <li>Aşağıdaki 5 ürünü Connect'te aç, fiyat seç, her birine inceleme ekran görüntüsü yükle.</li>
 <li>Yaş anketini ve gizlilik etiketini buradaki cevaplarla doldur.</li>
 <li>Metinleri yapıştır, kareleri yükle, inceleme notunu yapıştır → incelemeye gönder.</li>
