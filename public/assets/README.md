@@ -135,8 +135,9 @@ ayrı CC0 paket; eklenince ayrı modüler klasöre (`public/assets/models/<paket
 |---|---|---|---|---|
 | Baloo2.ttf | 3D zemin yazıları (drei Text/troika; TR latin-ext) — variable | Google Fonts (google/fonts repo) | OFL 1.1 | ✅ eklendi |
 
-> UI fontları (Baloo 2 + Lilita One) npm `@fontsource/*` paketlerinden YEREL bundle'lanır
-> (main.tsx; CDN yok). İkisi de OFL 1.1.
+> UI fontları YEREL bundle'lanır (main.tsx; CDN yok): Baloo 2 (metin, npm `@fontsource/baloo-2`, OFL 1.1) ·
+> Luckiest Guy (rakam, `src/assets/fonts/`, Astigmatic, **Apache 2.0**, Google Fonts). 2026-09-28'e kadar rakam
+> fontu Lilita One'dı; onda İ ı Ğ ğ Ş ş yoktu.
 
 ## Arayüz görselleri (`public/assets/ui/`)
 | Dosya | Açıklama | Kaynak | Lisans | Durum |

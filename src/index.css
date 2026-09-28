@@ -12,7 +12,7 @@
 
 :root {
   --font-game: 'Baloo 2', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --font-num: 'Lilita One', 'Baloo 2', system-ui, sans-serif;
+  --font-num: 'Luckiest Guy', 'Baloo 2', system-ui, sans-serif;
 
   /* ── PALET (D-107) ── */
   --g1: #463c86; /* gövde gradyanı üst — ekran/alt bar zemini */
@@ -1214,7 +1214,8 @@ body,
   justify-content: center;
 }
 .shop-locked-reqs .req {
-  font-family: var(--font-num);
+  /* Yazı → metin fontu: rakam fontu (Luckiest Guy) tümü büyük harf, küçük i'si noktasız — "GIYIYORSUN". */
+  font-family: var(--font-game);
   font-weight: 800;
   font-size: var(--p1);
   padding: 5px 10px;
@@ -1296,7 +1297,8 @@ body,
 }
 .shop-name-row span {
   flex: none;
-  font-family: var(--font-num);
+  font-family: var(--font-game);
+  font-weight: 800;
   font-size: var(--p2);
   color: var(--tx2);
 }
