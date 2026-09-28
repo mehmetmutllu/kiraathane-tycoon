@@ -4883,3 +4883,14 @@ mikrometin + terim sözlüğü ChatGPT'ye danışılarak — kullanıcı isteği
 tycoon'lar incelendi (MPH/Eatventure/Burger Please) → tam kadraj + altta eğik MOR bant + ünlemli kısa başlık + banttan
 taşan maskot (oyunun KayActor'ü, `tools/maskot-cek.mjs`); başlık fontu Luckiest Guy (Lilita One'da İ/ğ/ş YOK).
 İkon: kullanıcının ChatGPT görseli, çerçeve dışı köşeler en yakın çerçeve rengiyle dolduruldu. iPad açık, tablette HUD zoom 1,4.
+
+## D-160 · i18n bitti + yükleme ekranı + rakam fontu Luckiest Guy + App Privacy (2026-09-28)
+
+**i18n:** ayar verisi (görev/pad/hedef/kozmetik/öğretici) ekranda `t()` ile — pad etiketi hem çizimde hem tetikte `t(pad.label)`
+(çerçeve dile göre, bekçi tetik-s24). Ayarlar › Dil (Otomatik/Türkçe/English). Bekçi `tests/i18n.test.ts` + İngilizce duman
+`tools/smoke-en.mjs` (`npm run duman` ikisini koşar). **Yükleme ekranı:** kullanıcı seçeneği 2 (mor + amber hâle + saydam
+logo-maskot); iOS yerel açılış görseli aynı. **Font:** rakam fontu Luckiest Guy (kullanıcı seçimi) — AMA tümü büyük harf ve
+küçük i'si noktasız: yazı olan yerde KULLANILMAZ (yalnız rakam; "Şu an giyiyorsun" "GIYIYORSUN" okunuyordu).
+**App Privacy (yayımlandı):** takip = yaklaşık konum, cihaz kimliği, ürün etkileşimi, reklam verisi (AdMob); takip değil =
+kullanıcı kimliği + satın alma geçmişi (RevenueCat, uygulama işlevi), çökme/performans/diğer tanılama (analiz); hiçbiri
+kimliğe bağlı değil. Paid Apps sözleşmesi/banka/vergi zaten aktifti.
