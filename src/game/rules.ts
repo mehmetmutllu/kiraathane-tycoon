@@ -544,7 +544,7 @@ export function revealKeys(
       isCounter(lv) ? t('Yeni: Tezgâhı yükseltebilirsin 🍞') : t('Yeni: Çay ocağını yükseltebilirsin ☕'),
       servicePlace(areasOpen).upgradeSpot,
     ]);
-  for (const op of availableOptionalPads(g)) out.push([`opt:${op.id}`, t('Yeni: {1} 🔓', op.label), null]);
+  for (const op of availableOptionalPads(g)) out.push([`opt:${op.id}`, t('Yeni: {1} 🔓', t(op.label)), null]);
   return out;
 }
 

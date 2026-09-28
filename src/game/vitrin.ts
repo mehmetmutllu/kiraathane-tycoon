@@ -115,7 +115,8 @@ export function dekorDegistir(dekor: DekorYerlesim, id: string): DekorYerlesim {
  * değişir, ad başta olunca ek gerekmez.
  */
 export type BildirimTuru = VitrinTuru | 'table' | 'kitchen' | 'floor' | 'wall';
-export function satinBildirimi(tur: BildirimTuru, ad: string, o: { kaldirildi?: boolean; salon?: number } = {}): string {
+export function satinBildirimi(tur: BildirimTuru, adTr: string, o: { kaldirildi?: boolean; salon?: number } = {}): string {
+  const ad = t(adTr);
   if (tur === 'decor') return o.kaldirildi ? t('{1} salondan kaldırıldı', ad) : t('{1} salona kondu', ad);
   if (tur === 'outfit') return t('{1} giyildi', ad);
   if (tur === 'tray') return t('{1} artık elinde', ad);

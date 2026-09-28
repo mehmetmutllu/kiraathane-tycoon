@@ -461,8 +461,8 @@ export function HUD() {
           <span className="band-body">
             {/* G-05: üstte kısa LAKAP (bu hedefin hangi bölüm olduğu), altında NET hedef.
                 Eskiden yalnız hedef vardı ve oyuncu "neredeyim"i okuyamıyordu. */}
-            <span className="band-kicker">{quest.kicker}</span>
-            <span className="band-title">{quest.title}</span>
+            <span className="band-kicker">{t(quest.kicker)}</span>
+            <span className="band-title">{t(quest.title)}</span>
             {/* G-04: tamamlanma bandın KENDİ hâlidir — ayrı bir toast yok. */}
             {quest.done ? (
               <span className="band-sub done-sub" data-testid="quest-done">
@@ -601,6 +601,33 @@ export function HUD() {
               >
                 {kafeAdi ?? KAFE_ADI_VARSAYILAN}
               </button>
+            </div>
+            <div className="setting-row dil-satir">
+              <span className="setting-label">
+                {t('Dil')}
+                <small>{t('Dil değişince oyun yeniden yüklenir')}</small>
+              </span>
+              <span className="dil-secim" role="radiogroup" aria-label={t('Dil')}>
+                {(
+                  [
+                    ['oto', t('Otomatik'), undefined],
+                    ['tr', 'Türkçe', 'tr'],
+                    ['en', 'English', 'en'],
+                  ] as const
+                ).map(([k, ad, lang]) => (
+                  <button
+                    key={k}
+                    role="radio"
+                    lang={lang}
+                    aria-checked={settings.dil === k}
+                    className={`dil-secenek${settings.dil === k ? ' secili' : ''}`}
+                    data-testid={`set-dil-${k}`}
+                    onClick={() => settings.dil !== k && setSetting('dil', k)}
+                  >
+                    {ad}
+                  </button>
+                ))}
+              </span>
             </div>
             <SettingRow label={t('Ses')} value={settings.sound} onChange={(v) => setSetting('sound', v)} testid="set-sound" />
             <SettingSlider
@@ -899,6 +926,8 @@ function OgretmeBulasik({ onClose, onShow }: { onClose: () => void; onShow: () =
     // `onShow` store eylemi (kimliği sabit) — bağımlılık listesi bilerek boş: "açılışta bir kez".
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  // Vurgulu kelimenin yeri dile göre değişir: cümle tek metin, {1} = altı çizili "kirli bardak".
+  const bulasikMetni = t('Müşteriler çayını içince masada {1} bırakır. Onları topla ve bulaşık tezgâhına götür — yıkanan bardaklar temiz rafa döner.').split('{1}');
   return (
     <div className="ogretme" data-testid="ogretme-bulasik">
       <span className="ogretme-ikon">
@@ -907,7 +936,7 @@ function OgretmeBulasik({ onClose, onShow }: { onClose: () => void; onShow: () =
       <span className="ogretme-body">
         <b>{t('Bulaşık birikiyor')}</b>
         <span>
-          {t('Müşteriler çayını içince masada')} <u>kirli bardak</u> {t('bırakır. Onları topla ve bulaşık tezgâhına götür — yıkanan bardaklar temiz rafa döner.')}
+          {bulasikMetni[0]}<u>{t('kirli bardak')}</u>{bulasikMetni[1]}
         </span>
       </span>
       <button className="ogretme-ok" data-testid="ogretme-ok" onClick={onClose}>
@@ -937,7 +966,7 @@ function VideoKarti({ onClose }: { onClose: () => void }) {
     setIzleniyor(false);
   };
   const dk = Math.ceil(yenilenmeMs / 60000);
-  const sure = dk >= 60 ? `${Math.floor(dk / 60)} sa ${dk % 60} dk` : `${dk} dk`;
+  const sure = dk >= 60 ? t('{1} sa {2} dk', Math.floor(dk / 60), dk % 60) : t('{1} dk', dk);
   return (
     <div className="usta-backdrop" data-testid="video-kart" onClick={onClose}>
       <div className="usta-card" onClick={(e) => e.stopPropagation()}>
@@ -1001,7 +1030,7 @@ function UstaModal({ id, onClose }: { id: string; onClose: () => void }) {
           <GemIcon size={34} />
         </span>
         <span className="usta-head">{t('Masa')} {masaNo} {t('· Usta')}</span>
-        <span className="usta-note">{t('Bu masanın bahşişi kalıcı olarak ×')}{kat} olur</span>
+        <span className="usta-note">{t('Bu masanın bahşişi kalıcı olarak ×{1} olur', kat)}</span>
         <div className="usta-acts">
           <button
             className={`master-buy${yeter ? '' : ' off'}`}
@@ -1030,7 +1059,7 @@ function UstaModal({ id, onClose }: { id: string; onClose: () => void }) {
         {!yeter && (
           <span className="eksik" data-testid="eksik">
             <GemIcon size={12} />
-            {fmt(fiyat - Math.floor(diamonds.toNumber()))} eksik
+            {t('{1} eksik', fmt(fiyat - Math.floor(diamonds.toNumber())))}
           </span>
         )}
       </div>
@@ -1179,8 +1208,8 @@ function QuestsSheet({ onClose }: { onClose: () => void }) {
             <QuestPhoto target={quest.target} size={62} />
           </span>
           <span className="qbig-body">
-            <span className="qbig-kicker">{quest.kicker}</span>
-            <span className="qbig-title">{quest.title}</span>
+            <span className="qbig-kicker">{t(quest.kicker)}</span>
+            <span className="qbig-title">{t(quest.title)}</span>
             {quest.total != null ? (
               <span className="band-track big">
                 <span
@@ -1215,7 +1244,7 @@ function QuestsSheet({ onClose }: { onClose: () => void }) {
             {upcoming.map((q) => (
               <li className="qrow next" key={q.id}>
                 <span className="qrow-dot" />
-                <span className="qrow-title">{q.title}</span>
+                <span className="qrow-title">{t(q.title)}</span>
               </li>
             ))}
           </ul>
@@ -1234,7 +1263,7 @@ function QuestsSheet({ onClose }: { onClose: () => void }) {
                   <span className="qrow-check">
                     <CheckBadge size={20} />
                   </span>
-                  <span className="qrow-title">{q.title}</span>
+                  <span className="qrow-title">{t(q.title)}</span>
                   {q.reward != null && (
                     <span className="qrow-reward">
                       <CoinIcon size={13} />+{fmt(q.reward)}
@@ -1349,7 +1378,7 @@ function GoalsSheet({ onClose }: { onClose: () => void }) {
             >
               <span className="goal-top">
                 <b>
-                  {g.categoryName} <i className="goal-tier">{g.tier + 1}/5</i>
+                  {t(g.categoryName)} <i className="goal-tier">{g.tier + 1}/5</i>
                 </b>
                 <span className="goal-num">
                   {fmt(g.cur)}
@@ -1360,7 +1389,7 @@ function GoalsSheet({ onClose }: { onClose: () => void }) {
                 <span className="goal-fill" style={{ width: `${pct}%` }} />
               </span>
               <span className="goal-foot">
-                <span className="goal-note">{g.note}</span>
+                <span className="goal-note">{t(g.note)}</span>
                 {g.state === 'claimable' ? (
                   <button
                     className="goal-claim"
@@ -1445,7 +1474,7 @@ function BaslangicTeklifi({ onClose }: { onClose: () => void }) {
               <GemIcon size={20} />
             </span>
             <span>
-              <b>{economyConfig.iap.starterDiamonds} elmas</b>
+              <b>{t('{1} elmas', economyConfig.iap.starterDiamonds)}</b>
               <br />
               {t('Kıyafet, tepsi ve dekor için')}
             </span>
@@ -1484,7 +1513,7 @@ function SatinOdulu({ urun, elmas, onClose }: { urun: string; elmas: number; onC
   const P = economyConfig.iap;
   const i = (U.elmas as readonly string[]).indexOf(urun);
   const baslik =
-    urun === U.baslangic ? t('Başlangıç Paketi senin') : urun === U.reklamsiz ? t('Reklamlar kaldırıldı') : (P.diamondPackLabels[i] ?? t('Elmas'));
+    urun === U.baslangic ? t('Başlangıç Paketi senin') : urun === U.reklamsiz ? t('Reklamlar kaldırıldı') : t(P.diamondPackLabels[i] ?? 'Elmas');
   const not =
     urun === U.baslangic
       ? t('Kurucu kıyafetini giydin.')
@@ -1771,7 +1800,7 @@ function Paketler() {
             P.starterDiamonds, satin.baslangic)}
         {iapConfig.vitrin.elmas &&
           U.elmas.map((u, i) =>
-            kart(u, P.diamondPackLabels[i] ?? t('Elmas'), t('Kıyafet, tepsi ve dekor almak için.'), P.diamondPacks[i] ?? 0, false),
+            kart(u, t(P.diamondPackLabels[i] ?? 'Elmas'), t('Kıyafet, tepsi ve dekor almak için.'), P.diamondPacks[i] ?? 0, false),
           )}
       </ul>
       <div className="sheet-foot-note">
@@ -1906,7 +1935,7 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
       const uygulanan = tab === 'outfit' ? outfit : tab === 'tray' ? trayLook : u.yuva ? dekor[u.yuva] : undefined;
       return {
         id,
-        label: u.label,
+        label: t(u.label),
         cost: u.diamonds,
         owned,
         applied: uygulanan === id && owned,
@@ -1918,17 +1947,17 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
       };
     }
     if (tab === 'table') {
-      const t = economyConfig.cosmetics.tableThemes.find((x) => x.id === id);
-      if (!t) return null;
-      const owned = t.cost === 0 || ownedCosmetics.includes(`table:${id}`);
-      return { id, label: t.label, cost: t.cost, owned, applied: tableTheme === id, alan: 0 };
+      const tema = economyConfig.cosmetics.tableThemes.find((x) => x.id === id);
+      if (!tema) return null;
+      const owned = tema.cost === 0 || ownedCosmetics.includes(`table:${id}`);
+      return { id, label: t(tema.label), cost: tema.cost, owned, applied: tableTheme === id, alan: 0 };
     }
     const themes = tab === 'floor' ? economyConfig.cosmetics.floorThemes : economyConfig.cosmetics.wallThemes;
-    const t = themes.find((x) => x.id === id);
-    if (!t) return null;
+    const tema = themes.find((x) => x.id === id);
+    if (!tema) return null;
     const applied = (tab === 'floor' ? floorThemeByArea : wallThemeByArea)[zn] === id;
-    const owned = t.cost === 0 || ownedCosmetics.includes(`${tab}:${id}:z${zn}`);
-    return { id, label: t.label, cost: t.cost, owned, applied, alan: zn };
+    const owned = tema.cost === 0 || ownedCosmetics.includes(`${tab}:${id}:z${zn}`);
+    return { id, label: t(tema.label), cost: tema.cost, owned, applied, alan: zn };
   })();
   const elmasli = !!secili && 'elmas' in secili;
   const paketUrunu = !!secili && 'paket' in secili && !!secili.paket && !secili.owned;
@@ -2084,7 +2113,7 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
                       : paketUrunu
                         ? t('Başlangıç Paketi\'nde')
                         : elmasli
-                          ? `${fmt(secili.cost)} elmas`
+                          ? t('{1} elmas', fmt(secili.cost))
                           : t('{1} ₺', fmt(secili.cost))}
                 </span>
               </div>
@@ -2093,7 +2122,7 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
             {secili && !secili.owned && !afford && !paketUrunu && !kilitSalon && (
               <span className="eksik shop-eksik" data-testid="eksik">
                 {elmasli ? <GemIcon size={12} /> : <CoinIcon size={12} />}
-                {fmt(Math.ceil(secili.cost - bakiye))} eksik
+                {t('{1} eksik', fmt(Math.ceil(secili.cost - bakiye)))}
               </span>
             )}
           </>
@@ -2259,7 +2288,7 @@ function SettingSlider({
         aria-label={label}
         onChange={(e) => onChange(Number(e.target.value) / 100)}
       />
-      <span className="setting-val">%{yuzde}</span>
+      <span className="setting-val">{dil() === 'tr' ? `%${yuzde}` : `${yuzde}%`}</span>
     </div>
   );
 }

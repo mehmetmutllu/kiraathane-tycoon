@@ -173,10 +173,10 @@ describe('ekran kabuğu — K3 (D-106)', () => {
       expect(q.title.length, `${q.id} hedefi çok uzun`).toBeGreaterThan(4);
     }
     const kod = yorumsuz(oku(HUD));
-    expect(kod).toContain('className="band-kicker">{quest.kicker}');
-    expect(kod).toContain('className="band-title">{quest.title}');
+    expect(kod).toContain('className="band-kicker">{t(quest.kicker)}');
+    expect(kod).toContain('className="band-title">{t(quest.title)}');
     // Görevler ekranındaki lakap da görevin kendisinden gelir (sabit "ŞU AN" değil).
-    expect(kod).toContain('className="qbig-kicker">{quest.kicker}');
+    expect(kod).toContain('className="qbig-kicker">{t(quest.kicker)}');
   });
 
   it('7 · G-18: masanın yükseltme noktası SEVİYEYİ yazar (havada kart yok)', () => {

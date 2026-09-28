@@ -1227,7 +1227,7 @@ function revealSystem(c: TickCtx): void {
   let onFillId: string | null = null;
   for (const pad of activePads) {
     const pp = LAYOUT.padPos[pad.id];
-    if (pp && inFrame(player[0], player[2], pp, padCercevesi(pad.label))) { onFillId = pad.id; break; }
+    if (pp && inFrame(player[0], player[2], pp, padCercevesi(t(pad.label)))) { onFillId = pad.id; break; }
   }
   // GUARD (gece fix 2026-06-10): oyuncu AÇIK bir ocağın pickup yarıçapındaysa niyeti ÇAY ALMAK'tır —
   // yükseltme dolumu kesinlikle başlamaz (mekânsal ayrımın yanında ikinci emniyet).
@@ -1332,7 +1332,7 @@ function padFillSystem(c: TickCtx): void {
       }
     } else {
       padFills = { ...padFills, [activePad.id]: fill };
-      activeSpot = { kind: 'pad', label: activePad.label, fill, cost: activePad.cost };
+      activeSpot = { kind: 'pad', label: t(activePad.label), fill, cost: activePad.cost };
     }
   }
   c.wallet = wallet;
@@ -1526,7 +1526,7 @@ function questSystem(c: TickCtx): void {
         wallet = wallet.add(qReward);
         lifetime = lifetime.add(qReward);
       }
-      enqueueNotice({ text: C.quests[questIndex].title, ttl: 3.5, kind: 'quest', reward: qReward > 0 ? qReward : undefined });
+      enqueueNotice({ text: t(C.quests[questIndex].title), ttl: 3.5, kind: 'quest', reward: qReward > 0 ? qReward : undefined });
       xp += C.xp.perQuest;
       // GÖREV BU ANDA İLERLER (kutlama yalnız görsel). Yoksa 1,3 sn'lik kutlama penceresinde
       // yapılan eylem yeni görevin TABANINA yazılır ve sayaç 0/1'de kilitlenirdi (q_coin domino'su).

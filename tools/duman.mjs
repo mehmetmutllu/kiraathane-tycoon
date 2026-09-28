@@ -164,12 +164,18 @@ if (dogrudan) {
     process.exit(1);
   }
 
-  const duman = spawn(process.execPath, [path.join(KOK, 'tools', 'smoke.mjs')], {
-    cwd: KOK,
-    stdio: 'inherit',
-    env: { ...process.env, SMOKE_URL: url },
-  });
-  const kod = await new Promise((c) => duman.on('exit', c));
+  // Türkçe akış (54+ denetim) + İngilizce tarama (i18n bekçisi: tools/smoke-en.mjs). İkisi de koşar.
+  const kos = (betik) =>
+    new Promise((c) =>
+      spawn(process.execPath, [path.join(KOK, 'tools', betik)], {
+        cwd: KOK,
+        stdio: 'inherit',
+        env: { ...process.env, SMOKE_URL: url },
+      }).on('exit', c),
+    );
+  const kodTr = await kos('smoke.mjs');
+  const kodEn = await kos('smoke-en.mjs');
+  const kod = kodTr || kodEn;
 
   indir();
   process.exit(cikisKodu(kod));

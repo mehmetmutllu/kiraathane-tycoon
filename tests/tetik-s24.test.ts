@@ -164,8 +164,8 @@ describe('S24 · çerçeve TEK yerde hesaplanır', () => {
     expect(scene).toMatch(/label=\{ETIKET_LAVABO\}/);
     expect(scene, 'masa işaretinin yarıçapı da paylaşılan sabitten').toMatch(/radius=\{MASA_ISARET_R\}/);
     // Pad işareti pad'in KENDİ etiketini çizer; tick de aynı alanı okur.
-    expect(yorumsuz(oku('src/components/three/Pad.tsx'))).toMatch(/label=\{pad\.label\}/);
-    expect(yorumsuz(oku(TICK))).toMatch(/padCercevesi\(pad\.label\)/);
+    expect(yorumsuz(oku('src/components/three/Pad.tsx'))).toMatch(/label=\{t\(pad\.label\)\}/);
+    expect(yorumsuz(oku(TICK))).toMatch(/padCercevesi\(t\(pad\.label\)\)/);
   });
 
   it('8 · etiket üreticileri gerçekten seviye/sabit taşır', () => {

@@ -102,7 +102,7 @@ function Eksik({ cost, cash }: { cost: number | null; cash: number }) {
   return (
     <span className="eksik" data-testid="eksik">
       <CoinIcon size={12} />
-      {fmt(Math.ceil(cost - cash))} eksik
+      {t('{1} eksik', fmt(Math.ceil(cost - cash)))}
     </span>
   );
 }
@@ -230,10 +230,10 @@ function DishTab() {
           <span className="char-stat-val" data-testid="waiter-val-dish">
             {cost != null ? (
               <>
-                {cap} <i><ToIcon /> {cap + 2}</i> bardak
+                {cap} <i><ToIcon /> {cap + 2}</i> {t('bardak')}
               </>
             ) : (
-              <>{cap} bardak</>
+              <>{t('{1} bardak', cap)}</>
             )}
           </span>
           <Eksik cost={cost} cash={cash} />

@@ -2054,6 +2054,35 @@
   cursor: pointer;
 }
 
+/* Dil (i18n): üç seçenek yan yana; seçili olan kafe adı düğmesinin çerçevesiyle, vurgu renginde. */
+.dil-satir .setting-label small {
+  display: block;
+  margin-top: 2px;
+  font-size: var(--p1);
+  font-weight: 600;
+  color: var(--tx2);
+}
+.dil-secim {
+  display: flex;
+  flex-shrink: 0;
+  gap: 4px;
+}
+.dil-secenek {
+  padding: 6px 9px;
+  border: 2px solid var(--ot);
+  border-radius: var(--r1);
+  background: linear-gradient(180deg, var(--kart), var(--kart2));
+  color: var(--tx2);
+  font-family: var(--font-game);
+  font-size: var(--p1);
+  font-weight: 800;
+  cursor: pointer;
+}
+.dil-secenek.secili {
+  border-color: var(--ac);
+  color: var(--tx);
+}
+
 /* ═══════════════ E5 · ÖĞRETİCİ (ilk dakikalar) ═══════════════
    Ekranı KESMEZ: kap `pointer-events: none`, yalnız "Atla" dokunur — sürükleme alttaki joystick
    katmanına geçer. Satır ÜST şeritte (G-63 öğretme kartının yeri), doğal genişlikte ve ortada

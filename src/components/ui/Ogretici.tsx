@@ -49,7 +49,7 @@ export function Ogretici({
           ))}
         </span>
         <span className="ogretici-metin" data-testid="ogretici-metin">
-          {ONBOARDING.metin[metin]}
+          {t(ONBOARDING.metin[metin])}
         </span>
         <button className="ogretici-atla" data-testid="ogretici-atla" onClick={onAtla}>
           {t('Atla')}
