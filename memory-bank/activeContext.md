@@ -12,7 +12,7 @@ Orkestratör + 6 paralel ajan (worktree). Kullanıcı gece PC'yi kapattı; ajanl
 | `aff4ff65cadd3400c` | iOS platformu (`ios/`, plist, ATT/UMP sırası, platform.ts, ios:sync) | WIP de7b860 · vitest 1695 · build ✅ · duman 66/67 (worktree font 403) |
 | `aefd746525239279b` | E5 onboarding (5 adım, Atla, `ogreticiAtlandi`) | WIP e20fdb2 · vitest 1698 · duman 70/70 · build koşulmadı |
 | `a3f497b96e0f6164b` | açık kalemler: pano ✅ · bildirim konumu ✅ · offline sayaç ✅ · bundle bölme WIP | 9903f3b WIP: `yukleme-dongusu.test.ts` kırmızı beklenir |
-| `a112be0549e49cfbc` | yayın öncesi tam tarama (bulgu raporu) | bkz. dal son commit'i |
+| `a112be0549e49cfbc` | tarama `docs/tarama-raporu-sprint-yayin.md` 45 bulgu (6 engelleyici=iOS işi, çoğu iOS dalında çözüldü) | WIP 813d145 · kayıt/UI/perf fazları koşmadı: `TARAMA_FAZ=kayit,ui,perf node tools/tarama-yayin.mjs` |
 | (birleşti) | 💎 fiyat ölçümü `docs/elmas-fiyat-raporu-f4c5.md` | karar bekliyor (K2 önerildi) |
 | (birleşti) | App Store içerik taslağı — artifact KfNEdtK71YzUupBjrvyxEj | ✅ |
 
@@ -22,7 +22,9 @@ Orkestratör + 6 paralel ajan (worktree). Kullanıcı gece PC'yi kapattı; ajanl
 ## ⏭️ SIRADAKİ ADIM (yeni oturum)
 1. Dalları sırayla main'e birleştir: iOS → E5 → açık kalemler (bundle WIP'i bitir: bekçi + 2 mutasyon) → tarama raporu.
    Çakışma beklenen: `HUD.tsx`, `hud.css`, `tools/smoke.mjs`. Her birleşmeden sonra test; sonunda build + duman.
-2. Tarama bulgularını ikinci dalgada dağıt + şu iki red riski: Paketler'deki "Google hesabında saklanır" → iOS'ta Apple;
+2. ÖNCE yüksekler: Y-16/Y-17 (💎 alım + çevrimdışı ödül ekranından SONRA geçişli reklam çıkıyor — kural ihlali), Y-25 (bulut yüklenince
+   alınan 💎 kayboluyor), Y-23 (v31 göçünde hat kilidi), Y-34 yazım. Rapordaki G1…G11 dosya grupları paralel dağıtım içindir.
+   Tarama bulgularını ikinci dalgada dağıt + şu iki red riski: Paketler'deki "Google hesabında saklanır" → iOS'ta Apple;
    Ayarlar'a gizlilik politikası bağlantısı.
 3. Codemagic: wordmaster `codemagic.yaml` kalıbıyla kiraathane iş akışı (ASC entegrasyonu `appstore`), Codemagic API ile
    uygulamayı ekle; ASC API ile 5 IAP ürünü + metinler + gizlilik/yaş cevapları (taslaktan). Anahtarlar: `C:\dev-ortam\gizli\wordmaster`.
