@@ -17,7 +17,7 @@ import { satinAl, satinAlimlariGeriYukle, satinAlmaAbone, satinAlmaSurumu, urunF
 import { basarimlariGoster, bulutAbone, bulutSifirla, bulutSurumu, girisYap, playGamesDurumu } from '../../game/bulut';
 import { iapConfig } from '../../config/iap.config';
 import { magazaHesabi } from '../../game/platform';
-import { fmt } from '../../game/decimal';
+import { fmt, sayi } from '../../game/decimal';
 import { SAYAC_MS, sayacDegeri } from '../../game/sayac';
 import { SAVE_VERSION } from '../../game/save';
 import { levelProgress, reputationCarryMult, economyConfig, MAX_AREAS } from '../../config/economy.config';
@@ -90,14 +90,18 @@ const DioramaPreview = (p: ComponentProps<typeof DioramaPreviewParca>) => (
 );
 import { KAFE_ADI_VARSAYILAN } from '../../game/kafeAdi';
 import { cihazSinifiOku, golgeAcikMi } from '../../game/cihazSinifi';
+import { dil, t } from '../../i18n';
 
 /** Oran → yüzde etiketi (0,004 → "+%0,4"). Gelir bonusu tek biçimde yazılsın diye TEK yerde. */
 const yuzde = (oran: number): string => `+${oranYuzde(oran)}`;
 
 /** Oran → İŞARETSİZ yüzde (0,036 → "%3,6"). Ödül ekranı ARTIŞI değil TOPLAMI yazıyor (D-128),
  *  yani oradaki sayının başında "+" olmaz: "+%3,6 → +%4,0" iki kez artış vaat ederdi. */
-const oranYuzde = (oran: number): string =>
-  `%${(oran * 100).toLocaleString('tr-TR', { maximumFractionDigits: 1 })}`;
+const oranYuzde = (oran: number): string => {
+  // Türkçede işaret önde ("%3,6"), İngilizcede arkada ("3.6%") — sayı dilin ondalık ayracıyla.
+  const s = sayi(Math.round(oran * 1000) / 10);
+  return dil() === 'tr' ? `%${s}` : `${s}%`;
+};
 
 /**
  * B8 (T9d · D-146): pad görevinde bant ZEMİNLE AYNI tutarı yazar — kalan (maliyet − dolum).
@@ -315,7 +319,7 @@ export function HUD() {
         <button
           className="rep"
           data-testid="level"
-          title="Seviye"
+          title={t('Seviye')}
           onClick={() => setSheet('goals')}
         >
           <span className="rep-medal">
@@ -343,7 +347,7 @@ export function HUD() {
           </div>
         </div>
 
-        <button className="round-btn gear" data-testid="gear" title="Ayarlar" onClick={() => setSheet('settings')}>
+        <button className="round-btn gear" data-testid="gear" title={t('Ayarlar')} onClick={() => setSheet('settings')}>
           <GearIcon size={20} />
         </button>
       </div>
@@ -356,7 +360,7 @@ export function HUD() {
         <button
           className={`round-btn${camZoomOut ? ' on' : ''}`}
           data-testid="cam-zoom"
-          title={camZoomOut ? 'Yakınlaş' : 'Genel bakış'}
+          title={camZoomOut ? t('Yakınlaş') : t('Genel bakış')}
           onClick={toggleCamZoomOut}
         >
           <CamZoomIcon size={24} out={camZoomOut} />
@@ -365,7 +369,7 @@ export function HUD() {
           <button
             className={`round-btn tray-btn video-btn${videoKalan > 0 ? '' : ' bos'}`}
             data-testid="video-btn"
-            title="Reklam izle, para kazan"
+            title={t('Reklam izle, para kazan')}
             onClick={() => setVideoAcik(true)}
           >
             <PlayAdIcon size={22} />
@@ -380,7 +384,7 @@ export function HUD() {
           <button
             className="round-btn tray-btn"
             data-testid="empty-tray-food"
-            title="Tostları bırak"
+            title={t('Tostları bırak')}
             onClick={() => {
               markTrayTipSeen();
               emptyTray('food');
@@ -396,7 +400,7 @@ export function HUD() {
           <button
             className="round-btn tray-btn"
             data-testid="empty-tray"
-            title="Çayları bırak"
+            title={t('Çayları bırak')}
             onClick={() => {
               markTrayTipSeen();
               emptyTray('tea');
@@ -411,7 +415,7 @@ export function HUD() {
       </div>
       {traySpot && <div className="spotlight-backdrop" data-testid="tray-spotlight" onClick={markTrayTipSeen} />}
       {traySpot && (
-        <div className="tray-tip">Müşteri kalmadıysa tepsini boşaltabilirsin — kaplar temiz rafa döner.</div>
+        <div className="tray-tip">{t('Müşteri kalmadıysa tepsini boşaltabilirsin — kaplar temiz rafa döner.')}</div>
       )}
 
       {/* ───────── BİLDİRİM (toast) ─────────
@@ -462,7 +466,7 @@ export function HUD() {
             {/* G-04: tamamlanma bandın KENDİ hâlidir — ayrı bir toast yok. */}
             {quest.done ? (
               <span className="band-sub done-sub" data-testid="quest-done">
-                Tamamlandı
+                {t('Tamamlandı')}
               </span>
             ) : questPct != null ? (
               <span className="band-track">
@@ -477,7 +481,7 @@ export function HUD() {
                 {fmt(gorevTutari(quest, padFills) ?? 0)}
               </span>
             ) : (
-              <span className="band-sub dim">{charQuestActive ? 'Çaycı panelinden al' : 'Hedefe git'}</span>
+              <span className="band-sub dim">{charQuestActive ? t('Çaycı panelinden al') : t('Hedefe git')}</span>
             )}
           </span>
           {quest.reward != null && (
@@ -492,7 +496,7 @@ export function HUD() {
       ) : bitisGorunur ? (
         <div className="band idle">
           <span className="band-body">
-            <span className="band-title">Görev hattı tamamlandı — kıraathane senin.</span>
+            <span className="band-title">{t('Görev hattı tamamlandı — mekân senin.')}</span>
           </span>
         </div>
       ) : (
@@ -508,7 +512,7 @@ export function HUD() {
             penceresinin KENDİSİ (0,5 + 0,8 sn) — yeni bir sayaç/zamanlayıcı eklenmedi. */}
         <NavTab
           id="quests"
-          label="Görevler"
+          label={t('Görevler')}
           icon={<QuestListIcon size={25} />}
           active={sheet === 'quests'}
           bang={dailyReady}
@@ -519,7 +523,7 @@ export function HUD() {
             ("hâlâ var"), halka ANIN kendisidir ("az önce oldu"). */}
         <NavTab
           id="goals"
-          label="Hedefler"
+          label={t('Hedefler')}
           icon={<TargetIcon size={25} />}
           active={sheet === 'goals'}
           bang={goalsReady}
@@ -528,14 +532,14 @@ export function HUD() {
         />
         <NavTab
           id="shop"
-          label="Mağaza"
+          label={t('Mağaza')}
           icon={<ShopAwningIcon size={25} />}
           active={sheet === 'shop'}
           onClick={() => setSheet(sheet === 'shop' ? null : 'shop')}
         />
         <NavTab
           id="char"
-          label="Çaycı"
+          label={t('Çaycı')}
           icon={<CharIcon size={25} />}
           active={sheet === 'char'}
           bang={charQuestActive}
@@ -558,8 +562,8 @@ export function HUD() {
       {spotlight && <div className="spotlight-backdrop" data-testid="char-spotlight" onClick={markCharPanelSeen} />}
       {spotlight && (
         <div className="char-tip" data-testid="char-tip">
-          <b>Buradan yükselt</b>
-          Bu yükseltme <u>Çaycı</u> sekmesinde — dokun ve satın al.
+          <b>{t('Buradan yükselt')}</b>
+          {t('Bu yükseltme')} <u>{t('Çaycı')}</u> {t('sekmesinde — dokun ve satın al.')}
         </div>
       )}
 
@@ -577,7 +581,7 @@ export function HUD() {
       )}
       {sheet === 'settings' && (
         <Sheet
-          title="Ayarlar"
+          title={t('Ayarlar')}
           testid="menu"
           onClose={() => {
             setSifirlaSor(false);
@@ -586,7 +590,7 @@ export function HUD() {
         >
           <div className="sheet-pad">
             <div className="setting-row">
-              <span className="setting-label">Kafenin adı</span>
+              <span className="setting-label">{t('Kafenin adı')}</span>
               <button
                 className="kafe-adi-degistir"
                 data-testid="set-kafe-adi"
@@ -598,17 +602,17 @@ export function HUD() {
                 {kafeAdi ?? KAFE_ADI_VARSAYILAN}
               </button>
             </div>
-            <SettingRow label="Ses" value={settings.sound} onChange={(v) => setSetting('sound', v)} testid="set-sound" />
+            <SettingRow label={t('Ses')} value={settings.sound} onChange={(v) => setSetting('sound', v)} testid="set-sound" />
             <SettingSlider
-              label="Ses seviyesi"
+              label={t('Ses seviyesi')}
               value={settings.soundVolume}
               disabled={!settings.sound}
               onChange={(v) => setSetting('soundVolume', v)}
               testid="set-sound-vol"
             />
-            <SettingRow label="Müzik" value={settings.music} onChange={(v) => setSetting('music', v)} testid="set-music" />
+            <SettingRow label={t('Müzik')} value={settings.music} onChange={(v) => setSetting('music', v)} testid="set-music" />
             <SettingSlider
-              label="Müzik seviyesi"
+              label={t('Müzik seviyesi')}
               value={settings.musicVolume}
               disabled={!settings.music}
               onChange={(v) => setSetting('musicVolume', v)}
@@ -622,7 +626,7 @@ export function HUD() {
                 hakkı. Gölge D-073'te kullanıcı tarafından özellikle geri istendi, o yüzden
                 burada kapatılabilir ama varsayılan olarak kapatılmaz. */}
             <SettingRow
-              label="Gölgeler"
+              label={t('Gölgeler')}
               value={golgeAcikMi(settings.golge, cihazSinifiOku())}
               onChange={(v) => setSetting('golge', v ? 'acik' : 'kapali')}
               testid="set-golge"
@@ -637,35 +641,35 @@ export function HUD() {
                 migrasyonun sözleşmesi ve sayaçlar oyuncunun kendi geçmişi. Ayrıca yıkıcı
                 düğme artık anahtarların DİBİNDE değil ekranın sonunda — eskiden "FPS Sayacı"
                 ile "Oyunu Sıfırla" arasında bir parmak boşluk vardı. */}
-            <div className="sheet-sec">KÜNYE</div>
+            <div className="sheet-sec">{t('KÜNYE')}</div>
             <div className="kunye" data-testid="kunye">
-              <div><span>Kayıt şeması</span><b>v{SAVE_VERSION}</b></div>
-              <div><span>Toplam kazanç</span><b>{fmt(lifetime)} ₺</b></div>
-              <div><span>Servis edilen çay</span><b>{fmt(stats.teasServed + stats.waiterServed)}</b></div>
-              <div><span>Yıkanan bulaşık</span><b>{fmt(stats.dishesWashed)}</b></div>
-              <div><span>Açılan nokta</span><b>{padsDone.length}</b></div>
+              <div><span>{t('Kayıt şeması')}</span><b>v{SAVE_VERSION}</b></div>
+              <div><span>{t('Toplam kazanç')}</span><b>{fmt(lifetime)} ₺</b></div>
+              <div><span>{t('Servis edilen çay')}</span><b>{fmt(stats.teasServed + stats.waiterServed)}</b></div>
+              <div><span>{t('Yıkanan bulaşık')}</span><b>{fmt(stats.dishesWashed)}</b></div>
+              <div><span>{t('Açılan nokta')}</span><b>{padsDone.length}</b></div>
             </div>
             <PlayGamesBolumu />
             <GeriYukle />
             <YasalSatir />
             <div className="sheet-foot-note">
               {bulutVar
-                ? "Kayıt bu cihazda tutulur; Play Games'e bağlıysan buluta da yedeklenir. Oyunu sıfırlarsan geri alınamaz."
-                : 'Kayıt bu cihazda tutulur. Oyunu sıfırlarsan geri alınamaz.'}
+                ? t('Kayıt bu cihazda tutulur; Play Games\'e bağlıysan buluta da yedeklenir. Oyunu sıfırlarsan geri alınamaz.')
+                : t('Kayıt bu cihazda tutulur. Oyunu sıfırlarsan geri alınamaz.')}
             </div>
             <button className="danger-btn" data-testid="reset" onClick={() => setSifirlaSor(true)}>
-              <ResetIcon size={17} /> Oyunu sıfırla
+              <ResetIcon size={17} /> {t('Oyunu sıfırla')}
             </button>
             {sifirlaSor && (
               <div className="modal-backdrop" data-testid="reset-confirm" onClick={() => setSifirlaSor(false)}>
                 <div className="modal-card reward-card" onClick={(e) => e.stopPropagation()}>
-                  <div className="reward-title">Oyunu sıfırla?</div>
-                  <p className="onay-metin">Tüm ilerleme silinecek{bulutVar ? ' (bulut yedeği dahil)' : ''}. Geri alınamaz.</p>
+                  <div className="reward-title">{t('Oyunu sıfırla?')}</div>
+                  <p className="onay-metin">{t('Tüm ilerleme silinecek')}{bulutVar ? ` ${t('(bulut yedeği dahil)')}` : ''}{t('. Geri alınamaz.')}</p>
                   <button className="danger-btn" data-testid="reset-yes" onClick={onReset}>
-                    <ResetIcon size={17} /> Evet, sıfırla
+                    <ResetIcon size={17} /> {t('Evet, sıfırla')}
                   </button>
                   <button className="sheet-cta" data-testid="reset-no" onClick={() => setSifirlaSor(false)}>
-                    Vazgeç
+                    {t('Vazgeç')}
                   </button>
                 </div>
               </div>
@@ -678,11 +682,11 @@ export function HUD() {
       {kanal === 'seviye' && levelUp && (
         <RewardModal
           testid="level-up"
-          title={`Seviye ${levelUp.level}!`}
+          title={t('Seviye {1}!', levelUp.level)}
           amount={levelUp.amount}
           bonus={levelUp.carryAfter - levelUp.carryBefore}
           bonusBefore={levelUp.carryBefore}
-          bonusLabel="Servis hızı"
+          bonusLabel={t('Servis hızı')}
           onClaim={() => claimLevelUp()}
           onIzle={() => claimLevelUp(true)}
           claimTestid="level-up-ok"
@@ -710,12 +714,12 @@ export function HUD() {
       {showOffline && (
         <RewardModal
           testid="offline"
-          title="Sen yokken kıraathane çalıştı"
+          title={t('Sen yokken mekân çalıştı')}
           amount={Math.floor(offlineEarned)}
           sayac
           onClaim={() => claimOffline()}
           onIzle={offlineIzleEki > 0 ? () => claimOffline(true) : undefined}
-          izleEtiket={`İzle, +${fmt(offlineIzleEki)}`}
+          izleEtiket={t('İzle, +{1}', fmt(offlineIzleEki))}
           claimTestid="offline-ok"
         />
       )}
@@ -744,8 +748,8 @@ function GunlukBant({ onClick }: { onClick: () => void }) {
           <CheckBadge size={26} />
         </span>
         <span className="band-body">
-          <span className="band-kicker">BUGÜN</span>
-          <span className="band-title">Bugünkü görevleri tamamladın — yenileri yarın</span>
+          <span className="band-kicker">{t('BUGÜN')}</span>
+          <span className="band-title">{t('Bugünkü görevleri tamamladın — yenileri yarın')}</span>
         </span>
       </button>
     );
@@ -755,10 +759,10 @@ function GunlukBant({ onClick }: { onClick: () => void }) {
     <button className={`band${hazir ? ' done' : ''}`} data-testid="daily-band" data-state={g.state} onClick={onClick}>
       <span className="band-photo">{hazir ? <CheckBadge size={26} /> : <QuestListIcon size={30} />}</span>
       <span className="band-body">
-        <span className="band-kicker">GÜNLÜK GÖREV</span>
+        <span className="band-kicker">{t('GÜNLÜK GÖREV')}</span>
         <span className="band-title">{g.label}</span>
         {hazir ? (
-          <span className="band-sub done-sub">Ödülünü al</span>
+          <span className="band-sub done-sub">{t('Ödülünü al')}</span>
         ) : (
           <span className="band-track">
             <span className="band-fill" style={{ width: `${Math.min(100, (g.cur / g.target) * 100)}%` }} />
@@ -850,7 +854,7 @@ function EdgeArrow({ onClick }: { onClick: () => void }) {
   }, []);
   if (!shown) return null;
   return (
-    <button className="edge-arrow" data-testid="edge-arrow" ref={ref} onClick={onClick} title="Hedefe bak">
+    <button className="edge-arrow" data-testid="edge-arrow" ref={ref} onClick={onClick} title={t('Hedefe bak')}>
       <span className="edge-arrow-glyph">
         <ChevronIcon size={22} />
       </span>
@@ -901,14 +905,13 @@ function OgretmeBulasik({ onClose, onShow }: { onClose: () => void; onShow: () =
         <BasinIcon size={30} />
       </span>
       <span className="ogretme-body">
-        <b>Bulaşık birikiyor</b>
+        <b>{t('Bulaşık birikiyor')}</b>
         <span>
-          Müşteriler çayını içince masada <u>kirli bardak</u> bırakır. Onları topla ve
-          bulaşık tezgâhına götür — yıkanan bardaklar temiz rafa döner.
+          {t('Müşteriler çayını içince masada')} <u>kirli bardak</u> {t('bırakır. Onları topla ve bulaşık tezgâhına götür — yıkanan bardaklar temiz rafa döner.')}
         </span>
       </span>
       <button className="ogretme-ok" data-testid="ogretme-ok" onClick={onClose}>
-        Anladım
+        {t('Anladım')}
       </button>
     </div>
   );
@@ -938,14 +941,14 @@ function VideoKarti({ onClose }: { onClose: () => void }) {
   return (
     <div className="usta-backdrop" data-testid="video-kart" onClick={onClose}>
       <div className="usta-card" onClick={(e) => e.stopPropagation()}>
-        <button className="sheet-x usta-x" onClick={onClose} aria-label="Kapat">
+        <button className="sheet-x usta-x" onClick={onClose} aria-label={t('Kapat')}>
           <CloseIcon size={16} />
         </button>
         <span className="usta-badge">
           <CoinIcon size={34} />
         </span>
         <span className="usta-head">+{fmt(odul)}</span>
-        <span className="usta-note">Bir reklam izle, son dakikada kazandığın kadar para al</span>
+        <span className="usta-note">{t('Bir reklam izle, son dakikada kazandığın kadar para al')}</span>
         <div className="usta-acts">
           <button
             className={`master-buy ad${hazir && kalan > 0 && odul > 0 && !izleniyor ? '' : ' off'}`}
@@ -954,15 +957,15 @@ function VideoKarti({ onClose }: { onClose: () => void }) {
             onClick={izle}
           >
             <PlayAdIcon size={15} />
-            İzle
+            {t('İzle')}
           </button>
         </div>
         <span className="usta-note" data-testid="video-not">
           {kalan <= 0
-            ? `Yeni haklar ${sure} sonra`
+            ? t('Yeni haklar {1} sonra', sure)
             : odul <= 0
-              ? 'Önce biraz servis yap — ödül son dakikanın kazancı'
-              : `Kalan hak: ${kalan}/${toplam}`}
+              ? t('Önce biraz servis yap — ödül son dakikanın kazancı')
+              : t('Kalan hak: {1}/{2}', kalan, toplam)}
         </span>
       </div>
     </div>
@@ -987,18 +990,18 @@ function UstaModal({ id, onClose }: { id: string; onClose: () => void }) {
   const fiyat = masterCost();
   const yeter = diamonds.toNumber() >= fiyat;
   const masaNo = Number(id.split(':')[1] ?? 0) + 1;
-  const kat = economyConfig.master.tipMult.toLocaleString('tr-TR');
+  const kat = sayi(economyConfig.master.tipMult);
   return (
     <div className="usta-backdrop" data-testid="master-bar" data-master={id} onClick={onClose}>
       <div className="usta-card" onClick={(e) => e.stopPropagation()}>
-        <button className="sheet-x usta-x" onClick={onClose} aria-label="Kapat">
+        <button className="sheet-x usta-x" onClick={onClose} aria-label={t('Kapat')}>
           <CloseIcon size={16} />
         </button>
         <span className="usta-badge">
           <GemIcon size={34} />
         </span>
-        <span className="usta-head">Masa {masaNo} · Usta</span>
-        <span className="usta-note">Bu masanın bahşişi kalıcı olarak ×{kat} olur</span>
+        <span className="usta-head">{t('Masa')} {masaNo} {t('· Usta')}</span>
+        <span className="usta-note">{t('Bu masanın bahşişi kalıcı olarak ×')}{kat} olur</span>
         <div className="usta-acts">
           <button
             className={`master-buy${yeter ? '' : ' off'}`}
@@ -1016,12 +1019,12 @@ function UstaModal({ id, onClose }: { id: string; onClose: () => void }) {
             onClick={izle}
           >
             <PlayAdIcon size={15} />
-            İzle
+            {t('İzle')}
           </button>
         </div>
         {reklamHakki <= 0 && (
           <span className="usta-note" data-testid="master-ad-yarin">
-            Reklamla Usta yarın yeniden
+            {t('Reklamla Usta yarın yeniden')}
           </span>
         )}
         {!yeter && (
@@ -1050,13 +1053,13 @@ function ReklamsizHediye() {
         data-state={hazir ? 'claimable' : 'claimed'}
       >
         <span className="goal-top">
-          <b>Reklamsız paket hediyesi</b>
+          <b>{t('Reklamsız paket hediyesi')}</b>
         </span>
         <span className="goal-foot">
-          <span className="goal-note">{hazir ? 'Her gün yenilenir' : 'Bugün alındı'}</span>
+          <span className="goal-note">{hazir ? t('Her gün yenilenir') : t('Bugün alındı')}</span>
           {hazir ? (
             <button className="goal-claim" data-testid="reklamsiz-hediye-al" onClick={() => claimAdFreeDaily()}>
-              Al · {odul} <GemIcon size={13} />
+              {t('Al ·')} {odul} <GemIcon size={13} />
             </button>
           ) : (
             <span className="goal-reward">
@@ -1091,9 +1094,9 @@ function QuestsSheet({ onClose }: { onClose: () => void }) {
   const gunKalan = gunler.filter((g) => g.state !== 'claimed').reduce((a, g) => a + g.diamonds, 0);
 
   return (
-    <Sheet title="Görevler" testid="quests-panel" onClose={onClose}>
+    <Sheet title={t('Görevler')} testid="quests-panel" onClose={onClose}>
       <div className="sheet-sec" data-testid="daily-sec">
-        BUGÜN{gunHazir > 0 ? ` · ${gunHazir} ÖDÜL HAZIR` : ''}
+        {t('BUGÜN')}{gunHazir > 0 ? ` ${t('· {1} ÖDÜL HAZIR', gunHazir)}` : ''}
       </div>
       <ul className="goals" data-testid="daily-list">
         {gunler.map((g) => (
@@ -1114,14 +1117,14 @@ function QuestsSheet({ onClose }: { onClose: () => void }) {
               <span className="goal-fill" style={{ width: `${Math.min(100, (g.cur / g.target) * 100)}%` }} />
             </span>
             <span className="goal-foot">
-              <span className="goal-note">{g.state === 'claimed' ? 'Bugün alındı' : 'Her gün yenilenir'}</span>
+              <span className="goal-note">{g.state === 'claimed' ? t('Bugün alındı') : t('Her gün yenilenir')}</span>
               {g.state === 'claimable' ? (
                 <button
                   className="goal-claim"
                   data-testid={`daily-claim-${g.id}`}
                   onClick={() => setGunOdul(g)}
                 >
-                  Ödülü al
+                  {t('Ödülü al')}
                 </button>
               ) : (
                 <span className="goal-reward">
@@ -1137,10 +1140,10 @@ function QuestsSheet({ onClose }: { onClose: () => void }) {
       <div className="sheet-foot-note" data-testid="daily-left">
         {gunKalan > 0 ? (
           <>
-            Bugün kalan ödül: {gunKalan} <GemIcon size={12} /> · yarın üç yeni görev
+            {t('Bugün kalan ödül:')} {gunKalan} <GemIcon size={12} /> {t('· yarın üç yeni görev')}
           </>
         ) : (
-          'Bugünün görevleri bitti — yarın üç yeni görev'
+          t('Bugünün görevleri bitti — yarın üç yeni görev')
         )}
       </div>
 
@@ -1162,7 +1165,7 @@ function QuestsSheet({ onClose }: { onClose: () => void }) {
         />
       )}
 
-      <div className="sheet-sec">KIRAATHANE</div>
+      <div className="sheet-sec">{t('MEKÂN')}</div>
       {quest ? (
         <button
           className="qbig"
@@ -1202,12 +1205,12 @@ function QuestsSheet({ onClose }: { onClose: () => void }) {
           )}
         </button>
       ) : (
-        <div className="sheet-empty">Görev hattı tamamlandı — kıraathane senin.</div>
+        <div className="sheet-empty">{t('Görev hattı tamamlandı — mekân senin.')}</div>
       )}
 
       {upcoming.length > 0 && (
         <>
-          <div className="sheet-sec">SIRADA</div>
+          <div className="sheet-sec">{t('SIRADA')}</div>
           <ul className="qlist">
             {upcoming.map((q) => (
               <li className="qrow next" key={q.id}>
@@ -1221,7 +1224,7 @@ function QuestsSheet({ onClose }: { onClose: () => void }) {
 
       {done.length > 0 && (
         <>
-          <div className="sheet-sec">TAMAMLANAN · {done.length}</div>
+          <div className="sheet-sec">{t('TAMAMLANAN ·')} {done.length}</div>
           <ul className="qlist">
             {done
               .slice()
@@ -1286,14 +1289,14 @@ function GoalsSheet({ onClose }: { onClose: () => void }) {
     tableLevels.slice(0, tables).filter((l) => l >= tableSoftMaxLevel()).length - ustaSahip;
 
   return (
-    <Sheet title="Hedefler" testid="goals-panel" onClose={onClose}>
+    <Sheet title={t('Hedefler')} testid="goals-panel" onClose={onClose}>
       <div className="rep-hero">
         <span className="rep-hero-medal">
           <ReputationIcon size={54} />
           <i>{lvl.level}</i>
         </span>
         <span className="rep-hero-body">
-          <b>Seviye {lvl.level}</b>
+          <b>{t('Seviye')} {lvl.level}</b>
           <span className="rep-bar wide">
             <span className="rep-fill" style={{ width: `${Math.min(100, (lvl.cur / lvl.need) * 100)}%` }} />
             <span className="rep-text">
@@ -1301,9 +1304,9 @@ function GoalsSheet({ onClose }: { onClose: () => void }) {
             </span>
           </span>
           <small>
-            Her hedef seviyeni yükseltir · seviye bonusu{' '}
-            {yuzde(reputationCarryMult(lvl.level) - 1)} servis hızı
-            {bonus > 0 ? ` · koleksiyon bonusu ${yuzde(bonus)} gelir` : ''}.
+            {t('Her hedef seviyeni yükseltir · seviye bonusu')}{' '}
+            {yuzde(reputationCarryMult(lvl.level) - 1)} {t('servis hızı')}
+            {bonus > 0 ? ` ${t('· koleksiyon bonusu {1} gelir', yuzde(bonus))}` : ''}.
           </small>
         </span>
       </div>
@@ -1317,11 +1320,11 @@ function GoalsSheet({ onClose }: { onClose: () => void }) {
           <i>/{tables}</i>
         </span>
         <span className="usta-body">
-          <b>Usta masalar</b>
+          <b>{t('Usta masalar')}</b>
           <small>
             {ustaBekleyen > 0
-              ? `${ustaBekleyen} masa hazır — yanındaki mavi noktaya git`
-              : 'Masayı para tavanına çıkarınca Usta noktası açılır'}
+              ? t('{1} masa hazır — yanındaki mavi noktaya git', ustaBekleyen)
+              : t('Masayı para tavanına çıkarınca Usta noktası açılır')}
           </small>
         </span>
         <span className="usta-price" data-testid="usta-price">
@@ -1331,7 +1334,7 @@ function GoalsSheet({ onClose }: { onClose: () => void }) {
       </div>
 
       <div className="sheet-sec">
-        KATEGORİLER{toplanabilir > 0 ? ` · ${toplanabilir} ÖDÜL HAZIR` : ''}
+        {t('KATEGORİLER')}{toplanabilir > 0 ? ` ${t('· {1} ÖDÜL HAZIR', toplanabilir)}` : ''}
       </div>
       <ul className="goals">
         {goals.map((g) => {
@@ -1364,7 +1367,7 @@ function GoalsSheet({ onClose }: { onClose: () => void }) {
                     data-testid={`goal-claim-${g.categoryId}`}
                     onClick={() => setOdul(g)}
                   >
-                    Ödülü al
+                    {t('Ödülü al')}
                   </button>
                 ) : (
                   <span className="goal-reward">
@@ -1383,7 +1386,7 @@ function GoalsSheet({ onClose }: { onClose: () => void }) {
       {odul && (
         <RewardModal
           testid="goal-reward"
-          title={`${odul.categoryName} · ${odul.tier + 1}. kademe`}
+          title={t('{1} · {2}. kademe', odul.categoryName, odul.tier + 1)}
           amount={0}
           bonus={odul.bonus}
           bonusBefore={bonus}
@@ -1433,8 +1436,8 @@ function BaslangicTeklifi({ onClose }: { onClose: () => void }) {
   return (
     <div className="modal-backdrop" data-testid="baslangic-teklif">
       <div className="modal-card reward-card teklif-card">
-        <div className="teklif-ust">Bir kez alınabilir</div>
-        <div className="reward-title">Başlangıç Paketi</div>
+        <div className="teklif-ust">{t('Bir kez alınabilir')}</div>
+        <div className="reward-title">{t('Başlangıç Paketi')}</div>
         <SahipOnizleme kiyafet="kurucu" tepsi={trayLook} />
         <ul className="teklif-liste">
           <li>
@@ -1444,23 +1447,23 @@ function BaslangicTeklifi({ onClose }: { onClose: () => void }) {
             <span>
               <b>{economyConfig.iap.starterDiamonds} elmas</b>
               <br />
-              Kıyafet, tepsi ve dekor için
+              {t('Kıyafet, tepsi ve dekor için')}
             </span>
           </li>
           <li>
             <span className="teklif-ik" style={{ background: `linear-gradient(135deg, ${pulA} 0 55%, ${pulB} 55% 100%)` }} />
             <span>
-              <b>Kurucu kıyafeti</b> <span className="teklif-etiket">Yalnız bu pakette</span>
+              <b>{t('Kurucu kıyafeti')}</b> <span className="teklif-etiket">{t('Yalnız bu pakette')}</span>
               <br />
-              Bordo yelek ve fes
+              {t('Bordo yelek ve fes')}
             </span>
           </li>
         </ul>
         <button className="sheet-cta" data-testid="teklif-al" disabled={!fiyat || bekle} onClick={() => void al()}>
-          {fiyat ? `Al · ${fiyat}` : MAGAZA_YOK}
+          {fiyat ? t('Al · {1}', fiyat) : MAGAZA_YOK}
         </button>
         <button className="sheet-cta ad" data-testid="teklif-kapat" onClick={onClose}>
-          Şimdi değil
+          {t('Şimdi değil')}
         </button>
       </div>
     </div>
@@ -1468,7 +1471,7 @@ function BaslangicTeklifi({ onClose }: { onClose: () => void }) {
 }
 
 /** Mağaza fiyat vermediyse (bağlantı yok / hesap yok) — sebep + ne yapılacağı (metin 3). */
-const MAGAZA_YOK = 'Mağazaya bağlanılamadı';
+const MAGAZA_YOK = t('Mağazaya bağlanılamadı');
 
 /**
  * GERÇEK PARAYLA ALIMIN KARŞILIĞI (F4c-4 · D-157 · metin 14). Eskiden alım sessizdi: paket kartı
@@ -1481,12 +1484,12 @@ function SatinOdulu({ urun, elmas, onClose }: { urun: string; elmas: number; onC
   const P = economyConfig.iap;
   const i = (U.elmas as readonly string[]).indexOf(urun);
   const baslik =
-    urun === U.baslangic ? 'Başlangıç Paketi senin' : urun === U.reklamsiz ? 'Reklamlar kaldırıldı' : (P.diamondPackLabels[i] ?? 'Elmas');
+    urun === U.baslangic ? t('Başlangıç Paketi senin') : urun === U.reklamsiz ? t('Reklamlar kaldırıldı') : (P.diamondPackLabels[i] ?? t('Elmas'));
   const not =
     urun === U.baslangic
-      ? 'Kurucu kıyafetini giydin.'
+      ? t('Kurucu kıyafetini giydin.')
       : urun === U.reklamsiz
-        ? `Her gün ${P.removeAdsDiamondsPerDay} elmas Görevler'de seni bekliyor.`
+        ? t('Her gün {1} elmas Görevler\'de seni bekliyor.', P.removeAdsDiamondsPerDay)
         : null;
   return (
     <div className="modal-backdrop" data-testid="satin-odul">
@@ -1502,7 +1505,7 @@ function SatinOdulu({ urun, elmas, onClose }: { urun: string; elmas: number; onC
         )}
         {not && <div className="teklif-not">{not}</div>}
         <button className="sheet-cta" data-testid="satin-odul-tamam" onClick={onClose}>
-          Harika!
+          {t('Harika!')}
         </button>
       </div>
     </div>
@@ -1545,7 +1548,7 @@ function RewardModal({
   diamonds = 0,
   bonus = 0,
   bonusBefore = 0,
-  bonusLabel = 'Kalıcı gelir',
+  bonusLabel = t('Kalıcı gelir'),
   onClaim,
   claimTestid,
   onIzle,
@@ -1669,7 +1672,7 @@ function RewardModal({
           ])}
         </div>
         <button className="sheet-cta" data-testid={claimTestid} onClick={onClaim}>
-          {katlanir ? 'Al' : 'Harika!'}
+          {katlanir ? t('Al') : t('Harika!')}
         </button>
         {katlanir && onIzle && (
           <button
@@ -1678,7 +1681,7 @@ function RewardModal({
             disabled={!hazir || izleniyor}
             onClick={izle}
           >
-            <PlayAdIcon size={18} /> {izleEtiket ?? `İzle, ${economyConfig.rewarded.claimMult}× al`}
+            <PlayAdIcon size={18} /> {izleEtiket ?? t('İzle, {1}× al', economyConfig.rewarded.claimMult)}
           </button>
         )}
       </div>
@@ -1739,7 +1742,7 @@ function Paketler() {
           >
             {sahip ? (
               <>
-                <TickIcon size={13} /> Alındı
+                <TickIcon size={13} /> {t('Alındı')}
               </>
             ) : (fiyat ?? '—')}
           </button>
@@ -1752,27 +1755,27 @@ function Paketler() {
       {alinan && <SatinOdulu urun={alinan.urun} elmas={alinan.elmas} onClose={() => setAlinan(null)} />}
       {baglantiYok && (
         <div className="sheet-foot-note paket-baglanti" data-testid="paket-baglanti-yok">
-          {MAGAZA_YOK}. İnternetini kontrol edip tekrar dene.
+          {MAGAZA_YOK}{t('. İnternetini kontrol edip tekrar dene.')}
         </div>
       )}
       <ul className="goals">
         {kart(
           U.reklamsiz,
-          'Reklamları Kaldır',
-          `Oyunun arasına giren reklamlar kalkar. Ödüllü videoları yine istediğinde izlersin. Her gün ${P.removeAdsDiamondsPerDay} elmas hediye.`,
+          t('Reklamları Kaldır'),
+          t('Oyunun arasına giren reklamlar kalkar. Ödüllü videoları yine istediğinde izlersin. Her gün {1} elmas hediye.', P.removeAdsDiamondsPerDay),
           null,
           satin.reklamsiz,
         )}
         {iapConfig.vitrin.baslangic &&
-          kart(U.baslangic, 'Başlangıç Paketi', `${P.starterDiamonds} elmas ve yalnız bu pakette olan Kurucu kıyafeti. Bir kez alınabilir.`,
+          kart(U.baslangic, t('Başlangıç Paketi'), t('{1} elmas ve yalnız bu pakette olan Kurucu kıyafeti. Bir kez alınabilir.', P.starterDiamonds),
             P.starterDiamonds, satin.baslangic)}
         {iapConfig.vitrin.elmas &&
           U.elmas.map((u, i) =>
-            kart(u, P.diamondPackLabels[i] ?? 'Elmas', 'Kıyafet, tepsi ve dekor almak için.', P.diamondPacks[i] ?? 0, false),
+            kart(u, P.diamondPackLabels[i] ?? t('Elmas'), t('Kıyafet, tepsi ve dekor almak için.'), P.diamondPacks[i] ?? 0, false),
           )}
       </ul>
       <div className="sheet-foot-note">
-        Aldıkların {magazaHesabi()} saklanır. Telefon değiştirirsen Ayarlar'dan geri yükleyebilirsin.
+        {t('Aldıkların')} {magazaHesabi()} {t('saklanır. Telefon değiştirirsen Ayarlar\'dan geri yükleyebilirsin.')}
       </div>
     </div>
   );
@@ -1781,12 +1784,12 @@ function Paketler() {
 type Sekme = VitrinTuru | 'table' | 'floor' | 'wall' | 'paket';
 /** Seçili ürün zaten kullanımdaysa ad satırının sağı (metin 12): neyin "uygulandığı" sekmeye göre söylenir. */
 const UYGULANDI_SATIRI: Record<Sekme, string> = {
-  outfit: 'Şu an giyiyorsun',
-  tray: 'Şu an elinde',
-  decor: 'Salonda duruyor',
-  table: 'Şu an salonda',
-  floor: 'Şu an salonda',
-  wall: 'Şu an salonda',
+  outfit: t('Şu an giyiyorsun'),
+  tray: t('Şu an elinde'),
+  decor: t('Salonda duruyor'),
+  table: t('Şu an salonda'),
+  floor: t('Şu an salonda'),
+  wall: t('Şu an salonda'),
   paket: '',
 };
 /** 💎 ile alınan sekmeler üst satırda (F4c-2) — ₺ sekmeleriyle karışmasın. */
@@ -1878,13 +1881,13 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
   useEffect(() => () => setDekorOnizleme(null), [setDekorOnizleme]);
 
   const TABS: { k: Sekme; label: string }[] = [
-    { k: 'outfit', label: 'Kıyafet' },
-    { k: 'tray', label: 'Tepsi' },
-    { k: 'decor', label: 'Dekor' },
-    { k: 'paket', label: 'Paketler' },
-    { k: 'table', label: 'Masa' },
-    { k: 'floor', label: 'Zemin' },
-    { k: 'wall', label: 'Duvar' },
+    { k: 'outfit', label: t('Kıyafet') },
+    { k: 'tray', label: t('Tepsi') },
+    { k: 'decor', label: t('Dekor') },
+    { k: 'paket', label: t('Paketler') },
+    { k: 'table', label: t('Masa') },
+    { k: 'floor', label: t('Zemin') },
+    { k: 'wall', label: t('Duvar') },
   ];
 
   const kilitli = tab === 'table' && !tableUnlocked;
@@ -1993,7 +1996,7 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
   };
 
   return (
-    <Sheet title={tab === 'paket' ? 'Paketler' : 'Mağaza'} testid="shop-panel" onClose={onClose}>
+    <Sheet title={tab === 'paket' ? t('Paketler') : t('Mağaza')} testid="shop-panel" onClose={onClose}>
       <div className="shop-card">
         <div className="shop-tabs">
           {TABS.map(({ k, label }) => (
@@ -2021,18 +2024,17 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
             <div className="shop-locked-icon">
               <LockIcon size={46} />
             </div>
-            <div className="shop-locked-title">Masa temaları kilitli</div>
+            <div className="shop-locked-title">{t('Masa temaları kilitli')}</div>
             <div className="shop-locked-desc">
-              Tüm salonları aç ve bütün masaları son seviyeye getir; sonra masalarını renklendirebilirsin.
+              {t('Tüm salonları aç ve bütün masaları son seviyeye getir; sonra masalarını renklendirebilirsin.')}
             </div>
             <div className="shop-locked-reqs">
               <span className={areasOpen >= MAX_AREAS ? 'req done' : 'req'}>
-                {areasOpen >= MAX_AREAS ? <TickIcon size={12} /> : <DotIcon size={12} />} Salon{' '}
+                {areasOpen >= MAX_AREAS ? <TickIcon size={12} /> : <DotIcon size={12} />} {t('Salon')}{' '}
                 {areasOpen}/{MAX_AREAS}
               </span>
               <span className={maxedTables >= tables && tables > 0 ? 'req done' : 'req'}>
-                {maxedTables >= tables && tables > 0 ? <TickIcon size={12} /> : <DotIcon size={12} />} Son seviye
-                masa {maxedTables}/{tables}
+                {maxedTables >= tables && tables > 0 ? <TickIcon size={12} /> : <DotIcon size={12} />} {t('Son seviye masa')} {maxedTables}/{tables}
               </span>
             </div>
           </div>
@@ -2061,7 +2063,7 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
                     data-testid={`shop-zone-${z}`}
                     onClick={() => setZone(z)}
                   >
-                    Salon {z + 1}
+                    {t('Salon')} {z + 1}
                   </button>
                 ))}
               </div>
@@ -2076,14 +2078,14 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
                   {secili.applied
                     ? UYGULANDI_SATIRI[tab]
                     : kilitSalon
-                      ? `${kilitSalon}. Salon'u açınca alabilirsin`
+                      ? t('{1}. Salon\'u açınca alabilirsin', kilitSalon)
                     : secili.owned
-                      ? 'Sahipsin'
+                      ? t('Sahipsin')
                       : paketUrunu
-                        ? "Başlangıç Paketi'nde"
+                        ? t('Başlangıç Paketi\'nde')
                         : elmasli
                           ? `${fmt(secili.cost)} elmas`
-                          : `${fmt(secili.cost)} ₺`}
+                          : t('{1} ₺', fmt(secili.cost))}
                 </span>
               </div>
             )}
@@ -2112,22 +2114,22 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
           }}
         >
           {kaldirilir ? (
-            'Salondan Kaldır'
+            t('Salondan Kaldır')
           ) : secili.applied ? (
             <>
-              <TickIcon size={18} /> Uygulandı
+              <TickIcon size={18} /> {t('Uygulandı')}
             </>
           ) : kilitSalon ? (
             <>
-              <LockIcon size={16} /> {kilitSalon}. Salon'da açılır
+              <LockIcon size={16} /> {kilitSalon}{t('. Salon\'da açılır')}
             </>
           ) : secili.owned ? (
-            tab === 'decor' ? 'Salona Koy' : 'Uygula'
+            tab === 'decor' ? t('Salona Koy') : t('Uygula')
           ) : paketUrunu ? (
-            'Paketi Gör'
+            t('Paketi Gör')
           ) : (
             <>
-              Satın Al · {fmt(secili.cost)} {elmasli ? <GemIcon size={18} /> : <CoinIcon size={18} />}
+              {t('Satın Al ·')} {fmt(secili.cost)} {elmasli ? <GemIcon size={18} /> : <CoinIcon size={18} />}
             </>
           )}
         </button>
@@ -2151,17 +2153,17 @@ function PlayGamesBolumu() {
   };
   return (
     <>
-      <div className="sheet-sec">PLAY GAMES</div>
+      <div className="sheet-sec">{t('PLAY GAMES')}</div>
       {girisli ? (
         <>
-          <div className="sheet-foot-note" data-testid="pg-bagli">Bağlısın — ilerlemen buluta yedekleniyor.</div>
+          <div className="sheet-foot-note" data-testid="pg-bagli">{t('Bağlısın — ilerlemen buluta yedekleniyor.')}</div>
           <button className="sheet-cta" data-testid="pg-basarim" onClick={() => void basarimlariGoster()}>
-            Başarımlar
+            {t('Başarımlar')}
           </button>
         </>
       ) : (
         <button className="sheet-cta" data-testid="pg-baglan" disabled={durum === 'bekle'} onClick={() => void baglan()}>
-          {durum === 'hata' ? 'Bağlanamadı — tekrar dene' : "Play Games'e bağlan"}
+          {durum === 'hata' ? t('Bağlanamadı — tekrar dene') : t('Play Games\'e bağlan')}
         </button>
       )}
     </>
@@ -2181,10 +2183,10 @@ function GeriYukle() {
   return (
     <button className="sheet-cta" data-testid="geri-yukle" disabled={durum === 'bekle'} onClick={() => void yukle()}>
       {durum === 'tamam'
-        ? 'Satın alımlar geri yüklendi'
+        ? t('Satın alımlar geri yüklendi')
         : durum === 'hata'
-          ? 'Mağazaya ulaşılamadı'
-          : 'Satın alımları geri yükle'}
+          ? t('Mağazaya ulaşılamadı')
+          : t('Satın alımları geri yükle')}
     </button>
   );
 }
@@ -2198,14 +2200,14 @@ function YasalSatir() {
   return (
     <div className="yasal-satir">
       <a href={yasalConfig.gizlilik} target="_blank" rel="noopener noreferrer" data-testid="gizlilik-link">
-        Gizlilik politikası
+        {t('Gizlilik politikası')}
       </a>
       <a href={yasalConfig.destek} target="_blank" rel="noopener noreferrer" data-testid="destek-link">
-        Destek
+        {t('Destek')}
       </a>
       {tercih && (
         <button type="button" data-testid="reklam-tercih" onClick={() => void reklamTercihleriniAc()}>
-          Reklam tercihleri
+          {t('Reklam tercihleri')}
         </button>
       )}
     </div>

@@ -139,8 +139,8 @@ describe('Play Games: iOS ve tarayıcıda kapalı', () => {
   it('Ayarlar metinleri bulut durumundan türer (iOS\'ta "Play Games"/"bulut" yazmaz)', () => {
     const hud = oku('src/components/ui/HUD.tsx');
     expect(hud).toContain('const bulutVar = playGamesDurumu().kullanilabilir;');
-    expect(hud).toMatch(/\{bulutVar\s*\n?\s*\? "Kayıt bu cihazda tutulur; Play Games'e/);
-    expect(hud).toContain("{bulutVar ? ' (bulut yedeği dahil)' : ''}");
+    expect(hud).toMatch(/\{bulutVar\s*\n?\s*\? t\('Kayıt bu cihazda tutulur; Play Games\\'e/);
+    expect(hud).toContain("{bulutVar ? ` ${t('(bulut yedeği dahil)')}` : ''}");
   });
 });
 
@@ -249,7 +249,7 @@ describe('Xcode projesi', () => {
     expect(plist).not.toContain('<key>GADIsAdManagerApp</key>');
   });
   it('ATT metni ve ad Türkçe + İngilizce, projeye bağlı', () => {
-    expect(oku('ios/App/App/tr.lproj/InfoPlist.strings')).toMatch(/"CFBundleDisplayName" = "Köşe Kıraathanesi";/);
+    expect(oku('ios/App/App/tr.lproj/InfoPlist.strings')).toMatch(/"CFBundleDisplayName" = "Tea House Tycoon";/);
     expect(oku('ios/App/App/tr.lproj/InfoPlist.strings')).toContain('"NSUserTrackingUsageDescription"');
     expect(oku('ios/App/App/en.lproj/InfoPlist.strings')).toContain('"NSUserTrackingUsageDescription"');
     expect(pbx).toContain('path = tr.lproj/InfoPlist.strings;');

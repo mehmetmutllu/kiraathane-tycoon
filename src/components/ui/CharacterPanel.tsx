@@ -27,6 +27,7 @@ import { FixedCam, SalonLights, FloorPatch, WallBack } from './SalonSlice';
 import { PREVIEW_GL } from '../../config/palette';
 import { CoinIcon, TrayIcon, BasinIcon, MagnetIcon, BootIcon, ToIcon } from './icons';
 import { Sheet } from './Sheet';
+import { t } from '../../i18n';
 
 /**
  * Karakter paneli (v20 + Y3 SEKMELER; docs/yemek-alani-garson-plan.md §3): Oyuncu | Çay Garsonu |
@@ -107,9 +108,9 @@ function Eksik({ cost, cash }: { cost: number | null; cash: number }) {
 }
 
 const STAT_ROWS: { stat: CharStat; name: string; unit: string; icon: React.ReactNode }[] = [
-  { stat: 'tray', name: 'Tepsi', unit: 'bardak', icon: <TrayIcon size={34} /> },
-  { stat: 'magnet', name: 'Para Mıknatısı', unit: 'alan', icon: <MagnetIcon size={34} /> },
-  { stat: 'speed', name: 'Hareket Hızı', unit: 'hız', icon: <BootIcon size={34} /> },
+  { stat: 'tray', name: t('Tepsi'), unit: 'bardak', icon: <TrayIcon size={34} /> },
+  { stat: 'magnet', name: t('Para Mıknatısı'), unit: 'alan', icon: <MagnetIcon size={34} /> },
+  { stat: 'speed', name: t('Hareket Hızı'), unit: t('hız'), icon: <BootIcon size={34} /> },
 ];
 
 export type Tab = 'player' | 'waiter' | 'dish';
@@ -133,13 +134,13 @@ function WaiterTab() {
   const spd = waiterSpeedFor(spdTier);
   const spdNext = waiterSpeedFor(spdTier + 1);
   const spdCost = waiterSpeedNextCost(spdTier);
-  const unit = 'ürün';
+  const unit = t('ürün');
   return (
     <>
       <div className="char-stat">
         <span className="char-stat-icon"><TrayIcon size={34} food={false} /></span>
         <span className="char-stat-info">
-          <span className="char-stat-name">Tepsi</span>
+          <span className="char-stat-name">{t('Tepsi')}</span>
           <span className="char-stat-val" data-testid="waiter-val">
             {cost != null ? (
               <>
@@ -165,21 +166,21 @@ function WaiterTab() {
           </button>
         ) : (
           <span className="char-max" data-testid="waiter-buy">
-            Son seviye
+            {t('Son seviye')}
           </span>
         )}
       </div>
       <div className="char-stat">
         <span className="char-stat-icon"><BootIcon size={34} /></span>
         <span className="char-stat-info">
-          <span className="char-stat-name">Hız</span>
+          <span className="char-stat-name">{t('Hız')}</span>
           <span className="char-stat-val" data-testid="waiter-speed-val">
             {spdCost != null ? (
               <>
-                {sayi(spd)} <i><ToIcon /> {sayi(spdNext)}</i> hız
+                {sayi(spd)} <i><ToIcon /> {sayi(spdNext)}</i> {t('hız')}
               </>
             ) : (
-              <>{sayi(spd)} hız</>
+              <>{sayi(spd)} {t('hız')}</>
             )}
           </span>
           <Eksik cost={spdCost} cash={cash} />
@@ -196,11 +197,11 @@ function WaiterTab() {
           </button>
         ) : (
           <span className="char-max" data-testid="waiter-speed-buy">
-            Son seviye
+            {t('Son seviye')}
           </span>
         )}
       </div>
-      <div className="char-note">Garsonların ortak tepsisi ve hızı — hepsi tek havuzdan, her masaya.</div>
+      <div className="char-note">{t('Garsonların ortak tepsisi ve hızı — hepsi tek havuzdan, her masaya.')}</div>
     </>
   );
 }
@@ -225,7 +226,7 @@ function DishTab() {
       <div className="char-stat">
         <span className="char-stat-icon"><BasinIcon size={34} /></span>
         <span className="char-stat-info">
-          <span className="char-stat-name">Leğen</span>
+          <span className="char-stat-name">{t('Leğen')}</span>
           <span className="char-stat-val" data-testid="waiter-val-dish">
             {cost != null ? (
               <>
@@ -249,21 +250,21 @@ function DishTab() {
           </button>
         ) : (
           <span className="char-max" data-testid="waiter-buy-dish">
-            Son seviye
+            {t('Son seviye')}
           </span>
         )}
       </div>
       <div className="char-stat">
         <span className="char-stat-icon"><BootIcon size={34} /></span>
         <span className="char-stat-info">
-          <span className="char-stat-name">Hız</span>
+          <span className="char-stat-name">{t('Hız')}</span>
           <span className="char-stat-val" data-testid="waiter-speed-val-dish">
             {spdCost != null ? (
               <>
-                {sayi(spd)} <i><ToIcon /> {sayi(spdNext)}</i> hız
+                {sayi(spd)} <i><ToIcon /> {sayi(spdNext)}</i> {t('hız')}
               </>
             ) : (
-              <>{sayi(spd)} hız</>
+              <>{sayi(spd)} {t('hız')}</>
             )}
           </span>
           <Eksik cost={spdCost} cash={cash} />
@@ -280,12 +281,12 @@ function DishTab() {
           </button>
         ) : (
           <span className="char-max" data-testid="waiter-speed-buy-dish">
-            Son seviye
+            {t('Son seviye')}
           </span>
         )}
       </div>
       <div className="char-note">
-        Tüm salonların bulaşıkçılarına ortak: leğen tek turda daha çok taşır, hız turu kısaltır.
+        {t('Tüm salonların bulaşıkçılarına ortak: leğen tek turda daha çok taşır, hız turu kısaltır.')}
       </div>
     </>
   );
@@ -319,20 +320,20 @@ export function CharacterPanel({ onClose, ilkSekme = 'player' }: { onClose: () =
   const tab: Tab =
     (secili === 'waiter' && !waiterHired) || (secili === 'dish' && !dishHired) ? 'player' : secili;
   const tabs: { id: Tab; label: string }[] = [
-    { id: 'player', label: 'Çaycı' },
-    ...(waiterHired ? [{ id: 'waiter' as Tab, label: 'Garson' }] : []),
-    ...(dishHired ? [{ id: 'dish' as Tab, label: 'Bulaşıkçı' }] : []),
+    { id: 'player', label: t('Çaycı') },
+    ...(waiterHired ? [{ id: 'waiter' as Tab, label: t('Garson') }] : []),
+    ...(dishHired ? [{ id: 'dish' as Tab, label: t('Bulaşıkçı') }] : []),
   ];
 
   return (
     <Sheet
-      title={tab === 'player' ? 'Çaycı' : tab === 'waiter' ? 'Garson' : 'Bulaşıkçı'}
+      title={tab === 'player' ? t('Çaycı') : tab === 'waiter' ? t('Garson') : t('Bulaşıkçı')}
       testid="char-panel"
       onClose={onClose}
     >
       <div className="char-card">
         <div className="char-head">
-          <span className="char-lvl" data-testid="char-level" title="Çaycı seviyesi">
+          <span className="char-lvl" data-testid="char-level" title={t('Çaycı seviyesi')}>
             {/* Karakter madalyonu — D-108: aksan disk + koyu kontur + içinde karakter.
                 Eskiden 48'lik kutuya 24 ızgaralı bir tepsi çiziliyordu ve köşeye sıkışıyordu. */}
             <svg width="34" height="34" viewBox="0 0 24 24" aria-hidden>
@@ -433,7 +434,7 @@ export function CharacterPanel({ onClose, ilkSekme = 'player' }: { onClose: () =
                     </button>
                   ) : (
                     <span className="char-max" data-testid={`char-buy-${stat}`}>
-                      Son seviye
+                      {t('Son seviye')}
                     </span>
                   )}
                 </div>

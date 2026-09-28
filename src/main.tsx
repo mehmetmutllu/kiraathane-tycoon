@@ -1,3 +1,4 @@
+import './i18n/baslat';
 import { createRoot } from 'react-dom/client';
 // Oyun fontları YEREL bundle (D-018 dersi: CDN yok — offline APK'da da çalışır).
 // Baloo 2 = metin (TR latin-ext), Lilita One = iri rakamlar/sayılar.

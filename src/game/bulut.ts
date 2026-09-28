@@ -22,6 +22,7 @@ import { acikBasarimlar } from './basarim';
 import { D } from './decimal';
 import { playGamesVar } from './platform';
 import { kayitCoz, kayitKilitli, type SaveData } from './save';
+import { t } from '../i18n';
 
 export interface PlayGamesArkaUcu {
   /** `kullanilabilir`: APP_ID girilmiş ve SDK kuruldu. `girisli`: oyuncu Play Games'e bağlı. */
@@ -245,7 +246,7 @@ export async function bulutKaydet(o: { zorla: boolean } = { zorla: false }): Pro
   const a = arkaUc;
   const veri = JSON.stringify(yerel);
   const ok = await dene(async () => {
-    await sirada(() => a.yaz(veri, ilerlemeDegeri(yerel), `Seviye ${levelProgress(yerel.xp).level}`));
+    await sirada(() => a.yaz(veri, ilerlemeDegeri(yerel), t('Seviye {1}', levelProgress(yerel.xp).level)));
     return true;
   }, false);
   if (ok) {

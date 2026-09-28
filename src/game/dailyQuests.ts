@@ -26,6 +26,8 @@
  * `şimdi − base` olarak okunur (`questBase` deseni, v16). Kalıcı sayaçlar sıfırlanmaz.
  */
 import { economyConfig as C, type DailyMetric, type DailyQuestDef } from '../config/economy.config';
+import { t as ceviri } from '../i18n';
+import { sayi } from './decimal';
 
 /** Bir günün, kayıtta duran hâli. ADDITIVE kayıt alanı — sürüm ARTMAZ. */
 export interface DailyState {
@@ -188,7 +190,7 @@ export function dailyViews(daily: DailyState, tables: number, counters: DailyCou
     const cur = Math.max(0, Math.floor((counters[t.metric] ?? 0) - (daily.base[id] ?? 0)));
     out.push({
       id,
-      label: t.label.replace('{N}', target.toLocaleString('tr-TR')),
+      label: ceviri(t.label).replace('{N}', sayi(target)),
       target,
       cur: Math.min(cur, target),
       diamonds: diamondsFor(i, daily.ids.length),

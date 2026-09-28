@@ -122,6 +122,7 @@ import {
 } from './rules';
 import type { LevelUpOdul } from './rules';
 import type { NavGrid } from './nav';
+import { t } from '../i18n';
 import type { GameState } from './store'; // yalnız TİP (derlemede silinir → döngüsel import YOK)
 
 /**
@@ -789,7 +790,7 @@ function coinSystem(c: TickCtx): void {
   // Oto-toplama bildirimi TOPLU çıkar (en sık autoCollectToastEvery sn'de bir) — kullanıcı
   // paranın kendiliğinden toplandığını GÖRSÜN ama toast spam'ı olmasın.
   if (autoCollectSum > 0 && autoCollectToastCooldown <= 0) {
-    enqueueNotice({ text: 'Bekleyen paralar otomatik toplandı', ttl: 4, kind: 'reveal', reward: autoCollectSum });
+    enqueueNotice({ text: t('Bekleyen paralar otomatik toplandı'), ttl: 4, kind: 'reveal', reward: autoCollectSum });
     autoCollectSum = 0;
     autoCollectToastCooldown = C.money.autoCollectToastEvery;
   }
@@ -1371,11 +1372,11 @@ function stationUpgradeSystem(c: TickCtx): void {
     const lv = stationLevels[z];
     const nextCost = lv < stationSoftMaxLevel() ? stationUpgradeCostAt(z, lv) : cost;
     // Etiket seviyenin KİMLİĞİNİ söyler (tek merdiven, iki kimlik): L4'ten önce ocak, sonra tezgâh.
-    const unitName = isCounter(lv) ? 'Tezgâh' : 'Çay Ocağı';
+    const unitName = isCounter(lv) ? t('Tezgâh') : t('Çay Ocağı');
     // GÖRSEL: istasyon L1'den başlar (iç seviye 0-tabanlı; etiket +1). Soft max → "Usta" (💎/video, Faz 4).
     activeSpot = {
       kind: 'upgrade',
-      label: `${unitName} L${lv + 1}${lv < stationSoftMaxLevel() ? ` → L${lv + 2}` : ' (Usta 💎)'}`,
+      label: t('{1} L{2}{3}', unitName, lv + 1, lv < stationSoftMaxLevel() ? ` → L${lv + 2}` : ' (Usta 💎)'),
       fill: upgradeFills[z],
       cost: nextCost,
     };
@@ -1418,7 +1419,7 @@ function tableUpgradeSystem(c: TickCtx): void {
     // GÖRSEL: masa L1'den başlar (iç tableLevels 0-tabanlı; etiket +1). Soft max → "Usta" (💎/video, Faz 4).
     activeSpot = {
       kind: 'upgrade',
-      label: `Masa ${i + 1}: L${tableLevels[i] + 1}${tableLevels[i] < tableSoftMaxLevel() ? ` → L${tableLevels[i] + 2} (+${C.tables.tipBase} bahşiş)` : ' (Usta 💎)'}`,
+      label: t('Masa {1}: L{2}{3}', i + 1, tableLevels[i] + 1, tableLevels[i] < tableSoftMaxLevel() ? ` → L${tableLevels[i] + 2} (+${C.tables.tipBase} bahşiş)` : ' (Usta 💎)'),
       fill,
       cost: nextCost,
     };
@@ -1460,7 +1461,7 @@ function lavaboUpgradeSystem(c: TickCtx): void {
       const nextCost = lavaboUpgradeCost(c.lavaboLevel) ?? cost;
       activeSpot = {
         kind: 'upgrade',
-        label: `Lavabo L${c.lavaboLevel}${c.lavaboLevel < lavaboMaxLevel() ? ` → L${c.lavaboLevel + 1}` : ''}`,
+        label: t('Lavabo L{1}{2}', c.lavaboLevel, c.lavaboLevel < lavaboMaxLevel() ? ` → L${c.lavaboLevel + 1}` : ''),
         fill,
         cost: nextCost,
       };

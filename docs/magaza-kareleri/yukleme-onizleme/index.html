@@ -1,0 +1,46 @@
+<title>Tea House Tycoon Yükleme Ekranı</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Lilita+One&display=swap">
+<style>
+  :root{color-scheme:dark;--zemin:#1b1443;--yuzey:#2e2764;--kontur:#100b2e;--metin:#eae3ff;--soluk:#a99fd8;--amber:#ffc24b;--amber2:#e09415}
+  body{background:var(--zemin);color:var(--metin);font:600 16px/1.5 'Baloo 2',system-ui,sans-serif}
+  .sar{max-width:1240px;margin:0 auto;padding-inline:16px;padding-block:28px 64px}
+  h1{font:400 clamp(28px,5vw,44px)/1.05 'Lilita One','Baloo 2',sans-serif;text-wrap:balance}
+  .giris{color:var(--soluk);max-width:64ch;margin-top:10px}
+  .araclar{display:flex;gap:8px;margin-top:20px}
+  button{font:800 15px 'Baloo 2',sans-serif;color:var(--metin);background:var(--yuzey);border:2px solid var(--kontur);border-radius:12px;padding:6px 16px;cursor:pointer;box-shadow:0 3px 0 var(--kontur)}
+  button[aria-pressed="true"]{background:linear-gradient(180deg,var(--amber),var(--amber2));color:#3a2206}
+  button:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+  .izgara{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:22px;margin-top:22px}
+  .izgara.tab{grid-template-columns:repeat(auto-fill,minmax(270px,1fr))}
+  figure{display:flex;flex-direction:column;gap:10px}
+  figure img{width:100%;height:auto;border-radius:16px;border:3px solid var(--kontur);background:var(--yuzey)}
+  figcaption b{display:flex;align-items:center;gap:10px;font:400 22px/1.1 'Lilita One',sans-serif}
+  figcaption b span{font:400 20px/1 'Lilita One',sans-serif;color:var(--kontur);background:var(--amber);border:3px solid var(--kontur);border-radius:10px;padding:3px 10px 1px}
+  figcaption p{color:var(--soluk);font-size:15px;margin-top:4px}
+</style>
+<div class="sar">
+  <h1>Yükleme ekranı: 4 seçenek</h1>
+  <p class="giris">Hepsinde senin ürettiğin görseller var. Logonun lacivert zeminini saydama çevirdim, böylece oyunun moru üstünde de kullanılabiliyor. Çubuk ve yazı oyunun kendi arayüz diliyle çizildi. Seçtiğin ekranın ilk karesi, iOS'un açılış görseli olarak da kullanılacak; şu an orada Capacitor'ın beyaz zeminli mavi X'i duruyor.</p>
+  <div class="araclar" role="toolbar" aria-label="Cihaz">
+    <button id="c-iphone" data-c="iphone" aria-pressed="true">iPhone</button>
+    <button id="c-ipad" data-c="ipad" aria-pressed="false">iPad</button>
+  </div>
+  <div class="izgara" id="izgara"></div>
+</div>
+<script>
+  const S = [
+    ['1', 'Lacivert sahne', 'Ürettiğin görsel olduğu gibi, kendi lacivert zemininde. En sade hâli.'],
+    ['2', 'Oyun moru + ışık', 'Maskot ve logo, oyunun arayüz morunun üstünde; arkasında amber bir ışık hâlesi var. Oyunun içiyle en uyumlu olanı.'],
+    ['3', 'İkon + tabela', 'Uygulama ikonu yukarıda, logo tabelası altında. Mağazada gördüğün ikonla açılış aynı görünüyor.'],
+    ['4', 'Sade tabela', 'Maskot yok, yalnız logo tabelası ve üstünde çay buharı.'],
+  ];
+  let cih = 'iphone';
+  function ciz() {
+    const g = document.getElementById('izgara');
+    g.className = 'izgara' + (cih === 'ipad' ? ' tab' : '');
+    g.innerHTML = S.map(([n, ad, not]) => `<figure><img src="k/${cih}-${n}.jpg" alt="Seçenek ${n}: ${ad}" width="402" height="${cih === 'iphone' ? 874 : 688}"><figcaption><b><span>${n}</span>${ad}</b><p>${not}</p></figcaption></figure>`).join('');
+    document.querySelectorAll('[data-c]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.c === cih));
+  }
+  document.querySelectorAll('[data-c]').forEach((b) => b.addEventListener('click', () => { cih = b.dataset.c; ciz(); }));
+  ciz();
+</script>

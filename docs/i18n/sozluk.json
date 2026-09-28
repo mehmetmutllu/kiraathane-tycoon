@@ -1,0 +1,3130 @@
+[
+ {
+  "no": 1,
+  "kaynak": "Tepsi",
+  "gorunen": "Tepsi",
+  "tr": "Tepsi",
+  "en": "Tray",
+  "yer": "CharacterPanel:110, CharacterPanel:142, HUD:1882"
+ },
+ {
+  "no": 2,
+  "kaynak": "Para Mıknatısı",
+  "gorunen": "Para Mıknatısı",
+  "tr": "Para Mıknatısı",
+  "en": "Money Magnet",
+  "yer": "CharacterPanel:111"
+ },
+ {
+  "no": 3,
+  "kaynak": "Hareket Hızı",
+  "gorunen": "Hareket Hızı",
+  "tr": "Hareket Hızı",
+  "en": "Move Speed",
+  "yer": "CharacterPanel:112"
+ },
+ {
+  "no": 4,
+  "kaynak": "hız",
+  "gorunen": "hız",
+  "tr": "hız",
+  "en": "speed",
+  "yer": "CharacterPanel:112, CharacterPanel:179, CharacterPanel:182"
+ },
+ {
+  "no": 5,
+  "kaynak": "ürün",
+  "gorunen": "ürün",
+  "tr": "ürün",
+  "en": "item",
+  "yer": "CharacterPanel:136"
+ },
+ {
+  "no": 6,
+  "kaynak": "Son seviye",
+  "gorunen": "Son seviye",
+  "tr": "Son seviye",
+  "en": "Max Level",
+  "yer": "CharacterPanel:168, CharacterPanel:199, CharacterPanel:252"
+ },
+ {
+  "no": 7,
+  "kaynak": "Hız",
+  "gorunen": "Hız",
+  "tr": "Hız",
+  "en": "Speed",
+  "yer": "CharacterPanel:175, CharacterPanel:259"
+ },
+ {
+  "no": 8,
+  "kaynak": "Garsonların ortak tepsisi ve hızı — hepsi tek havuzdan, her masaya.",
+  "gorunen": "Garsonların ortak tepsisi ve hızı — hepsi tek havuzdan, her masaya.",
+  "tr": "Garsonların ortak tepsisi ve hızı — hepsi tek havuzdan, her masaya.",
+  "en": "All waiters share one tray and speed pool across every table.",
+  "yer": "CharacterPanel:203"
+ },
+ {
+  "no": 9,
+  "kaynak": "Leğen",
+  "gorunen": "Leğen",
+  "tr": "Leğen",
+  "en": "Tub",
+  "yer": "CharacterPanel:228"
+ },
+ {
+  "no": 10,
+  "kaynak": "Tüm salonların bulaşıkçılarına ortak: leğen tek turda daha çok taşır, hız turu kısaltır.",
+  "gorunen": "Tüm salonların bulaşıkçılarına ortak: leğen tek turda daha çok taşır, hız turu kısaltır.",
+  "tr": "Tüm salonların bulaşıkçılarına ortak: leğen tek turda daha çok taşır, hız turu kısaltır.",
+  "en": "Shared by all dishwashers: the tub carries more per trip, while speed shortens each trip.",
+  "yer": "CharacterPanel:288"
+ },
+ {
+  "no": 11,
+  "kaynak": "Çaycı",
+  "gorunen": "Çaycı",
+  "tr": "Çaycı",
+  "en": "Tea Maker",
+  "yer": "CharacterPanel:322, CharacterPanel:329, HUD:538"
+ },
+ {
+  "no": 12,
+  "kaynak": "Garson",
+  "gorunen": "Garson",
+  "tr": "Garson",
+  "en": "Waiter",
+  "yer": "CharacterPanel:323, CharacterPanel:329"
+ },
+ {
+  "no": 13,
+  "kaynak": "Bulaşıkçı",
+  "gorunen": "Bulaşıkçı",
+  "tr": "Bulaşıkçı",
+  "en": "Dishwasher",
+  "yer": "CharacterPanel:324, CharacterPanel:329"
+ },
+ {
+  "no": 14,
+  "kaynak": "Çaycı seviyesi",
+  "gorunen": "Çaycı seviyesi",
+  "tr": "Çaycı seviyesi",
+  "en": "Tea Maker Level",
+  "yer": "CharacterPanel:335"
+ },
+ {
+  "no": 15,
+  "kaynak": "Seviye",
+  "gorunen": "Seviye",
+  "tr": "Seviye",
+  "en": "Level",
+  "yer": "HUD:318, HUD:1296"
+ },
+ {
+  "no": 16,
+  "kaynak": "Ayarlar",
+  "gorunen": "Ayarlar",
+  "tr": "Ayarlar",
+  "en": "Settings",
+  "yer": "HUD:346, HUD:580"
+ },
+ {
+  "no": 17,
+  "kaynak": "Yakınlaş",
+  "gorunen": "Yakınlaş",
+  "tr": "Yakınlaş",
+  "en": "Zoom In",
+  "yer": "HUD:359"
+ },
+ {
+  "no": 18,
+  "kaynak": "Genel bakış",
+  "gorunen": "Genel bakış",
+  "tr": "Genel bakış",
+  "en": "Overview",
+  "yer": "HUD:359"
+ },
+ {
+  "no": 19,
+  "kaynak": "Reklam izle, para kazan",
+  "gorunen": "Reklam izle, para kazan",
+  "tr": "Reklam izle, para kazan",
+  "en": "Watch Ad, Earn Coins",
+  "yer": "HUD:368"
+ },
+ {
+  "no": 20,
+  "kaynak": "Tostları bırak",
+  "gorunen": "Tostları bırak",
+  "tr": "Tostları bırak",
+  "en": "Drop Toasts",
+  "yer": "HUD:383"
+ },
+ {
+  "no": 21,
+  "kaynak": "Çayları bırak",
+  "gorunen": "Çayları bırak",
+  "tr": "Çayları bırak",
+  "en": "Drop Tea",
+  "yer": "HUD:399"
+ },
+ {
+  "no": 22,
+  "kaynak": "Müşteri kalmadıysa tepsini boşaltabilirsin — kaplar temiz rafa döner.",
+  "gorunen": "Müşteri kalmadıysa tepsini boşaltabilirsin — kaplar temiz rafa döner.",
+  "tr": "Müşteri kalmadıysa tepsini boşaltabilirsin — kaplar temiz rafa döner.",
+  "en": "If no customers are left, you can empty your tray — dishes return to the clean shelf.",
+  "yer": "HUD:414"
+ },
+ {
+  "no": 23,
+  "kaynak": "Tamamlandı",
+  "gorunen": "Tamamlandı",
+  "tr": "Tamamlandı",
+  "en": "Completed",
+  "yer": "HUD:465"
+ },
+ {
+  "no": 24,
+  "kaynak": "Çaycı panelinden al",
+  "gorunen": "Çaycı panelinden al",
+  "tr": "Çaycı panelinden al",
+  "en": "Get from Tea Maker Panel",
+  "yer": "HUD:480"
+ },
+ {
+  "no": 25,
+  "kaynak": "Hedefe git",
+  "gorunen": "Hedefe git",
+  "tr": "Hedefe git",
+  "en": "Go to Goal",
+  "yer": "HUD:480"
+ },
+ {
+  "no": 26,
+  "kaynak": "Görev hattı tamamlandı — mekân senin.",
+  "gorunen": "Görev hattı tamamlandı — mekân senin.",
+  "tr": "Görev hattı tamamlandı — mekân senin.",
+  "en": "Task line complete — the place is yours.",
+  "yer": "HUD:495, HUD:1205"
+ },
+ {
+  "no": 27,
+  "kaynak": "Görevler",
+  "gorunen": "Görevler",
+  "tr": "Görevler",
+  "en": "Tasks",
+  "yer": "HUD:511, HUD:1094"
+ },
+ {
+  "no": 28,
+  "kaynak": "Hedefler",
+  "gorunen": "Hedefler",
+  "tr": "Hedefler",
+  "en": "Goals",
+  "yer": "HUD:522, HUD:1289"
+ },
+ {
+  "no": 29,
+  "kaynak": "Mağaza",
+  "gorunen": "Mağaza",
+  "tr": "Mağaza",
+  "en": "Shop",
+  "yer": "HUD:531, HUD:1996"
+ },
+ {
+  "no": 30,
+  "kaynak": "Buradan yükselt",
+  "gorunen": "Buradan yükselt",
+  "tr": "Buradan yükselt",
+  "en": "Upgrade Here",
+  "yer": "HUD:561"
+ },
+ {
+  "no": 31,
+  "kaynak": "Bu yükseltme",
+  "gorunen": "Bu yükseltme",
+  "tr": "Bu yükseltme",
+  "en": "This upgrade",
+  "yer": "HUD:562"
+ },
+ {
+  "no": 32,
+  "kaynak": "sekmesinde — dokun ve satın al.",
+  "gorunen": "sekmesinde — dokun ve satın al.",
+  "tr": "sekmesinde — dokun ve satın al.",
+  "en": "in this tab — tap to buy.",
+  "yer": "HUD:562"
+ },
+ {
+  "no": 33,
+  "kaynak": "Kafenin adı",
+  "gorunen": "Kafenin adı",
+  "tr": "Kafenin adı",
+  "en": "Place Name",
+  "yer": "HUD:589, KafeAdiKutusu:33, KafeAdiKutusu:48"
+ },
+ {
+  "no": 34,
+  "kaynak": "Ses",
+  "gorunen": "Ses",
+  "tr": "Ses",
+  "en": "Sound",
+  "yer": "HUD:601"
+ },
+ {
+  "no": 35,
+  "kaynak": "Ses seviyesi",
+  "gorunen": "Ses seviyesi",
+  "tr": "Ses seviyesi",
+  "en": "Volume",
+  "yer": "HUD:603"
+ },
+ {
+  "no": 36,
+  "kaynak": "Müzik",
+  "gorunen": "Müzik",
+  "tr": "Müzik",
+  "en": "Music",
+  "yer": "HUD:609"
+ },
+ {
+  "no": 37,
+  "kaynak": "Müzik seviyesi",
+  "gorunen": "Müzik seviyesi",
+  "tr": "Müzik seviyesi",
+  "en": "Music Volume",
+  "yer": "HUD:611"
+ },
+ {
+  "no": 38,
+  "kaynak": "Gölgeler",
+  "gorunen": "Gölgeler",
+  "tr": "Gölgeler",
+  "en": "Shadows",
+  "yer": "HUD:625"
+ },
+ {
+  "no": 39,
+  "kaynak": "KÜNYE",
+  "gorunen": "KÜNYE",
+  "tr": "KÜNYE",
+  "en": "PROFILE",
+  "yer": "HUD:640"
+ },
+ {
+  "no": 40,
+  "kaynak": "Kayıt şeması",
+  "gorunen": "Kayıt şeması",
+  "tr": "Kayıt şeması",
+  "en": "Save Data",
+  "yer": "HUD:642"
+ },
+ {
+  "no": 41,
+  "kaynak": "Toplam kazanç",
+  "gorunen": "Toplam kazanç",
+  "tr": "Toplam kazanç",
+  "en": "Total Earnings",
+  "yer": "HUD:643"
+ },
+ {
+  "no": 42,
+  "kaynak": "Servis edilen çay",
+  "gorunen": "Servis edilen çay",
+  "tr": "Servis edilen çay",
+  "en": "Tea Served",
+  "yer": "HUD:644"
+ },
+ {
+  "no": 43,
+  "kaynak": "Yıkanan bulaşık",
+  "gorunen": "Yıkanan bulaşık",
+  "tr": "Yıkanan bulaşık",
+  "en": "Dishes Washed",
+  "yer": "HUD:645"
+ },
+ {
+  "no": 44,
+  "kaynak": "Açılan nokta",
+  "gorunen": "Açılan nokta",
+  "tr": "Açılan nokta",
+  "en": "Points Unlocked",
+  "yer": "HUD:646"
+ },
+ {
+  "no": 45,
+  "kaynak": "Kayıt bu cihazda tutulur; Play Games'e bağlıysan buluta da yedeklenir. Oyunu sıfırlarsan geri alınamaz.",
+  "gorunen": "Kayıt bu cihazda tutulur; Play Games'e bağlıysan buluta da yedeklenir. Oyunu sıfırlarsan geri alınamaz.",
+  "tr": "Kayıt bu cihazda tutulur; Play Games'e bağlıysan buluta da yedeklenir. Oyunu sıfırlarsan geri alınamaz.",
+  "en": "Save data is stored on this device; if you're connected to Play Games, it's also backed up to the cloud. Resetting the game can't be undone.",
+  "yer": "HUD:653"
+ },
+ {
+  "no": 46,
+  "kaynak": "Kayıt bu cihazda tutulur. Oyunu sıfırlarsan geri alınamaz.",
+  "gorunen": "Kayıt bu cihazda tutulur. Oyunu sıfırlarsan geri alınamaz.",
+  "tr": "Kayıt bu cihazda tutulur. Oyunu sıfırlarsan geri alınamaz.",
+  "en": "Save data is stored on this device. Resetting the game can't be undone.",
+  "yer": "HUD:654"
+ },
+ {
+  "no": 47,
+  "kaynak": "Oyunu sıfırla",
+  "gorunen": "Oyunu sıfırla",
+  "tr": "Oyunu sıfırla",
+  "en": "Reset Game",
+  "yer": "HUD:657"
+ },
+ {
+  "no": 48,
+  "kaynak": "Oyunu sıfırla?",
+  "gorunen": "Oyunu sıfırla?",
+  "tr": "Oyunu sıfırla?",
+  "en": "Reset Game?",
+  "yer": "HUD:662"
+ },
+ {
+  "no": 49,
+  "kaynak": "Tüm ilerleme silinecek",
+  "gorunen": "Tüm ilerleme silinecek",
+  "tr": "Tüm ilerleme silinecek",
+  "en": "All progress will be deleted",
+  "yer": "HUD:663"
+ },
+ {
+  "no": 50,
+  "kaynak": "(bulut yedeği dahil)",
+  "gorunen": "(bulut yedeği dahil)",
+  "tr": "(bulut yedeği dahil)",
+  "en": "(including cloud backup)",
+  "yer": "HUD:663"
+ },
+ {
+  "no": 51,
+  "kaynak": ". Geri alınamaz.",
+  "gorunen": ". Geri alınamaz.",
+  "tr": ". Geri alınamaz.",
+  "en": ". This can't be undone.",
+  "yer": "HUD:663"
+ },
+ {
+  "no": 52,
+  "kaynak": "Evet, sıfırla",
+  "gorunen": "Evet, sıfırla",
+  "tr": "Evet, sıfırla",
+  "en": "Yes, Reset",
+  "yer": "HUD:665"
+ },
+ {
+  "no": 53,
+  "kaynak": "Vazgeç",
+  "gorunen": "Vazgeç",
+  "tr": "Vazgeç",
+  "en": "Cancel",
+  "yer": "HUD:668, KafeAdiKutusu:60"
+ },
+ {
+  "no": 54,
+  "kaynak": "Seviye ${levelUp.level}!",
+  "gorunen": "Seviye {1}!",
+  "tr": "Seviye {1}!",
+  "en": "Level {1}!",
+  "yer": "HUD:681"
+ },
+ {
+  "no": 55,
+  "kaynak": "Servis hızı",
+  "gorunen": "Servis hızı",
+  "tr": "Servis hızı",
+  "en": "Service Speed",
+  "yer": "HUD:685"
+ },
+ {
+  "no": 56,
+  "kaynak": "Sen yokken mekân çalıştı",
+  "gorunen": "Sen yokken mekân çalıştı",
+  "tr": "Sen yokken mekân çalıştı",
+  "en": "The place kept running while you were away",
+  "yer": "HUD:713"
+ },
+ {
+  "no": 57,
+  "kaynak": "İzle, +${fmt(offlineIzleEki)}",
+  "gorunen": "İzle, +{1}",
+  "tr": "İzle, +{1}",
+  "en": "Watch, +{1}",
+  "yer": "HUD:718"
+ },
+ {
+  "no": 58,
+  "kaynak": "BUGÜN",
+  "gorunen": "BUGÜN",
+  "tr": "BUGÜN",
+  "en": "TODAY",
+  "yer": "HUD:747, HUD:1096"
+ },
+ {
+  "no": 59,
+  "kaynak": "Bugünkü görevleri tamamladın — yenileri yarın",
+  "gorunen": "Bugünkü görevleri tamamladın — yenileri yarın",
+  "tr": "Bugünkü görevleri tamamladın — yenileri yarın",
+  "en": "You've completed today's tasks — new ones tomorrow",
+  "yer": "HUD:748"
+ },
+ {
+  "no": 60,
+  "kaynak": "GÜNLÜK GÖREV",
+  "gorunen": "GÜNLÜK GÖREV",
+  "tr": "GÜNLÜK GÖREV",
+  "en": "DAILY TASK",
+  "yer": "HUD:758"
+ },
+ {
+  "no": 61,
+  "kaynak": "Ödülünü al",
+  "gorunen": "Ödülünü al",
+  "tr": "Ödülünü al",
+  "en": "Claim Reward",
+  "yer": "HUD:761"
+ },
+ {
+  "no": 62,
+  "kaynak": "Hedefe bak",
+  "gorunen": "Hedefe bak",
+  "tr": "Hedefe bak",
+  "en": "View Goal",
+  "yer": "HUD:853"
+ },
+ {
+  "no": 63,
+  "kaynak": "Bulaşık birikiyor",
+  "gorunen": "Bulaşık birikiyor",
+  "tr": "Bulaşık birikiyor",
+  "en": "Dishes Are Piling Up",
+  "yer": "HUD:904"
+ },
+ {
+  "no": 64,
+  "kaynak": "Müşteriler çayını içince masada",
+  "gorunen": "Müşteriler çayını içince masada",
+  "tr": "Müşteriler çayını içince masada",
+  "en": "After customers finish their tea,",
+  "yer": "HUD:906"
+ },
+ {
+  "no": 65,
+  "kaynak": "bırakır. Onları topla ve bulaşık tezgâhına götür — yıkanan bardaklar temiz rafa döner.",
+  "gorunen": "bırakır. Onları topla ve bulaşık tezgâhına götür — yıkanan bardaklar temiz rafa döner.",
+  "tr": "bırakır. Onları topla ve bulaşık tezgâhına götür — yıkanan bardaklar temiz rafa döner.",
+  "en": "they leave the cups on the table. Collect them and take them to the dish counter — washed cups return to the clean shelf.",
+  "yer": "HUD:906"
+ },
+ {
+  "no": 66,
+  "kaynak": "Anladım",
+  "gorunen": "Anladım",
+  "tr": "Anladım",
+  "en": "Got It",
+  "yer": "HUD:911"
+ },
+ {
+  "no": 67,
+  "kaynak": "Kapat",
+  "gorunen": "Kapat",
+  "tr": "Kapat",
+  "en": "Close",
+  "yer": "HUD:941, HUD:994"
+ },
+ {
+  "no": 68,
+  "kaynak": "Bir reklam izle, son dakikada kazandığın kadar para al",
+  "gorunen": "Bir reklam izle, son dakikada kazandığın kadar para al",
+  "tr": "Bir reklam izle, son dakikada kazandığın kadar para al",
+  "en": "Watch an ad to earn as many coins as you made in the last minute",
+  "yer": "HUD:948"
+ },
+ {
+  "no": 69,
+  "kaynak": "İzle",
+  "gorunen": "İzle",
+  "tr": "İzle",
+  "en": "Watch",
+  "yer": "HUD:957, HUD:1019"
+ },
+ {
+  "no": 70,
+  "kaynak": "Yeni haklar ${sure} sonra",
+  "gorunen": "Yeni haklar {1} sonra",
+  "tr": "Yeni haklar {1} sonra",
+  "en": "New chances in {1}",
+  "yer": "HUD:962"
+ },
+ {
+  "no": 71,
+  "kaynak": "Önce biraz servis yap — ödül son dakikanın kazancı",
+  "gorunen": "Önce biraz servis yap — ödül son dakikanın kazancı",
+  "tr": "Önce biraz servis yap — ödül son dakikanın kazancı",
+  "en": "Serve a little first — the reward matches your last-minute earnings",
+  "yer": "HUD:964"
+ },
+ {
+  "no": 72,
+  "kaynak": "Kalan hak: ${kalan}/${toplam}",
+  "gorunen": "Kalan hak: {1}/{2}",
+  "tr": "Kalan hak: {1}/{2}",
+  "en": "Chances left: {1}/{2}",
+  "yer": "HUD:965"
+ },
+ {
+  "no": 73,
+  "kaynak": "Masa",
+  "gorunen": "Masa",
+  "tr": "Masa",
+  "en": "Table",
+  "yer": "HUD:1000, HUD:1885"
+ },
+ {
+  "no": 74,
+  "kaynak": "· Usta",
+  "gorunen": "· Usta",
+  "tr": "· Usta",
+  "en": "· Master",
+  "yer": "HUD:1000"
+ },
+ {
+  "no": 75,
+  "kaynak": "Bu masanın bahşişi kalıcı olarak ×",
+  "gorunen": "Bu masanın bahşişi kalıcı olarak ×",
+  "tr": "Bu masanın bahşişi kalıcı olarak ×",
+  "en": "This table's tip is permanently ×",
+  "yer": "HUD:1001"
+ },
+ {
+  "no": 76,
+  "kaynak": "Reklamla Usta yarın yeniden",
+  "gorunen": "Reklamla Usta yarın yeniden",
+  "tr": "Reklamla Usta yarın yeniden",
+  "en": "Become Master with an ad again tomorrow",
+  "yer": "HUD:1024"
+ },
+ {
+  "no": 77,
+  "kaynak": "Reklamsız paket hediyesi",
+  "gorunen": "Reklamsız paket hediyesi",
+  "tr": "Reklamsız paket hediyesi",
+  "en": "Ad-free pack bonus",
+  "yer": "HUD:1053"
+ },
+ {
+  "no": 78,
+  "kaynak": "Her gün yenilenir",
+  "gorunen": "Her gün yenilenir",
+  "tr": "Her gün yenilenir",
+  "en": "Resets every day",
+  "yer": "HUD:1056, HUD:1117"
+ },
+ {
+  "no": 79,
+  "kaynak": "Bugün alındı",
+  "gorunen": "Bugün alındı",
+  "tr": "Bugün alındı",
+  "en": "Claimed today",
+  "yer": "HUD:1056, HUD:1117"
+ },
+ {
+  "no": 80,
+  "kaynak": "Al ·",
+  "gorunen": "Al ·",
+  "tr": "Al ·",
+  "en": "Claim ·",
+  "yer": "HUD:1059"
+ },
+ {
+  "no": 81,
+  "kaynak": "· ${gunHazir} ÖDÜL HAZIR",
+  "gorunen": "· {1} ÖDÜL HAZIR",
+  "tr": "· {1} ÖDÜL HAZIR",
+  "en": "· {1} REWARD READY",
+  "yer": "HUD:1096"
+ },
+ {
+  "no": 82,
+  "kaynak": "Ödülü al",
+  "gorunen": "Ödülü al",
+  "tr": "Ödülü al",
+  "en": "Claim Reward",
+  "yer": "HUD:1124, HUD:1367"
+ },
+ {
+  "no": 83,
+  "kaynak": "Bugün kalan ödül:",
+  "gorunen": "Bugün kalan ödül:",
+  "tr": "Bugün kalan ödül:",
+  "en": "Today's remaining reward:",
+  "yer": "HUD:1140"
+ },
+ {
+  "no": 84,
+  "kaynak": "· yarın üç yeni görev",
+  "gorunen": "· yarın üç yeni görev",
+  "tr": "· yarın üç yeni görev",
+  "en": "· three new tasks tomorrow",
+  "yer": "HUD:1140"
+ },
+ {
+  "no": 85,
+  "kaynak": "Bugünün görevleri bitti — yarın üç yeni görev",
+  "gorunen": "Bugünün görevleri bitti — yarın üç yeni görev",
+  "tr": "Bugünün görevleri bitti — yarın üç yeni görev",
+  "en": "Today's tasks are done — three new tasks tomorrow",
+  "yer": "HUD:1143"
+ },
+ {
+  "no": 86,
+  "kaynak": "MEKÂN",
+  "gorunen": "MEKÂN",
+  "tr": "MEKÂN",
+  "en": "PLACE",
+  "yer": "HUD:1165"
+ },
+ {
+  "no": 87,
+  "kaynak": "SIRADA",
+  "gorunen": "SIRADA",
+  "tr": "SIRADA",
+  "en": "UP NEXT",
+  "yer": "HUD:1210"
+ },
+ {
+  "no": 88,
+  "kaynak": "TAMAMLANAN ·",
+  "gorunen": "TAMAMLANAN ·",
+  "tr": "TAMAMLANAN ·",
+  "en": "COMPLETED ·",
+  "yer": "HUD:1224"
+ },
+ {
+  "no": 89,
+  "kaynak": "Her hedef seviyeni yükseltir · seviye bonusu",
+  "gorunen": "Her hedef seviyeni yükseltir · seviye bonusu",
+  "tr": "Her hedef seviyeni yükseltir · seviye bonusu",
+  "en": "Each goal raises your level · level bonus",
+  "yer": "HUD:1304"
+ },
+ {
+  "no": 90,
+  "kaynak": "servis hızı",
+  "gorunen": "servis hızı",
+  "tr": "servis hızı",
+  "en": "service speed",
+  "yer": "HUD:1305"
+ },
+ {
+  "no": 91,
+  "kaynak": "· koleksiyon bonusu ${yuzde(bonus)} gelir",
+  "gorunen": "· koleksiyon bonusu {1} gelir",
+  "tr": "· koleksiyon bonusu {1} gelir",
+  "en": "· collection bonus +{1}",
+  "yer": "HUD:1306"
+ },
+ {
+  "no": 92,
+  "kaynak": "Usta masalar",
+  "gorunen": "Usta masalar",
+  "tr": "Usta masalar",
+  "en": "Master Tables",
+  "yer": "HUD:1320"
+ },
+ {
+  "no": 93,
+  "kaynak": "${ustaBekleyen} masa hazır — yanındaki mavi noktaya git",
+  "gorunen": "{1} masa hazır — yanındaki mavi noktaya git",
+  "tr": "{1} masa hazır — yanındaki mavi noktaya git",
+  "en": "{1} tables ready — go to the blue dot next to one",
+  "yer": "HUD:1323"
+ },
+ {
+  "no": 94,
+  "kaynak": "Masayı para tavanına çıkarınca Usta noktası açılır",
+  "gorunen": "Masayı para tavanına çıkarınca Usta noktası açılır",
+  "tr": "Masayı para tavanına çıkarınca Usta noktası açılır",
+  "en": "Reach the table's coin cap to unlock its Master point",
+  "yer": "HUD:1324"
+ },
+ {
+  "no": 95,
+  "kaynak": "KATEGORİLER",
+  "gorunen": "KATEGORİLER",
+  "tr": "KATEGORİLER",
+  "en": "CATEGORIES",
+  "yer": "HUD:1334"
+ },
+ {
+  "no": 96,
+  "kaynak": "· ${toplanabilir} ÖDÜL HAZIR",
+  "gorunen": "· {1} ÖDÜL HAZIR",
+  "tr": "· {1} ÖDÜL HAZIR",
+  "en": "· {1} REWARD READY",
+  "yer": "HUD:1334"
+ },
+ {
+  "no": 97,
+  "kaynak": "${odul.categoryName} · ${odul.tier + 1}. kademe",
+  "gorunen": "{1} · {2}. kademe",
+  "tr": "{1} · {2}. kademe",
+  "en": "{1} · Tier {2}",
+  "yer": "HUD:1386"
+ },
+ {
+  "no": 98,
+  "kaynak": "Bir kez alınabilir",
+  "gorunen": "Bir kez alınabilir",
+  "tr": "Bir kez alınabilir",
+  "en": "One-time purchase",
+  "yer": "HUD:1436"
+ },
+ {
+  "no": 99,
+  "kaynak": "Başlangıç Paketi",
+  "gorunen": "Başlangıç Paketi",
+  "tr": "Başlangıç Paketi",
+  "en": "Starter Pack",
+  "yer": "HUD:1437, HUD:1767"
+ },
+ {
+  "no": 100,
+  "kaynak": "Kıyafet, tepsi ve dekor için",
+  "gorunen": "Kıyafet, tepsi ve dekor için",
+  "tr": "Kıyafet, tepsi ve dekor için",
+  "en": "For outfits, trays, and decor",
+  "yer": "HUD:1447"
+ },
+ {
+  "no": 102,
+  "kaynak": "Kurucu kıyafeti",
+  "gorunen": "Kurucu kıyafeti",
+  "tr": "Kurucu kıyafeti",
+  "en": "Founder Outfit",
+  "yer": "HUD:1453"
+ },
+ {
+  "no": 103,
+  "kaynak": "Yalnız bu pakette",
+  "gorunen": "Yalnız bu pakette",
+  "tr": "Yalnız bu pakette",
+  "en": "Only in this pack",
+  "yer": "HUD:1453"
+ },
+ {
+  "no": 104,
+  "kaynak": "Bordo yelek ve fes",
+  "gorunen": "Bordo yelek ve fes",
+  "tr": "Bordo yelek ve fes",
+  "en": "Burgundy Vest and Fez",
+  "yer": "HUD:1455"
+ },
+ {
+  "no": 105,
+  "kaynak": "Al · ${fiyat}",
+  "gorunen": "Al · {1}",
+  "tr": "Al · {1}",
+  "en": "Buy · {1}",
+  "yer": "HUD:1460"
+ },
+ {
+  "no": 106,
+  "kaynak": "Şimdi değil",
+  "gorunen": "Şimdi değil",
+  "tr": "Şimdi değil",
+  "en": "Not Now",
+  "yer": "HUD:1463"
+ },
+ {
+  "no": 107,
+  "kaynak": "Mağazaya bağlanılamadı",
+  "gorunen": "Mağazaya bağlanılamadı",
+  "tr": "Mağazaya bağlanılamadı",
+  "en": "Couldn't connect to the Shop",
+  "yer": "HUD:1471"
+ },
+ {
+  "no": 108,
+  "kaynak": "Başlangıç Paketi senin",
+  "gorunen": "Başlangıç Paketi senin",
+  "tr": "Başlangıç Paketi senin",
+  "en": "Starter Pack is yours",
+  "yer": "HUD:1484"
+ },
+ {
+  "no": 109,
+  "kaynak": "Reklamlar kaldırıldı",
+  "gorunen": "Reklamlar kaldırıldı",
+  "tr": "Reklamlar kaldırıldı",
+  "en": "Ads removed",
+  "yer": "HUD:1484"
+ },
+ {
+  "no": 110,
+  "kaynak": "Elmas",
+  "gorunen": "Elmas",
+  "tr": "Elmas",
+  "en": "Gems",
+  "yer": "HUD:1484, HUD:1771"
+ },
+ {
+  "no": 111,
+  "kaynak": "Kurucu kıyafetini giydin.",
+  "gorunen": "Kurucu kıyafetini giydin.",
+  "tr": "Kurucu kıyafetini giydin.",
+  "en": "You're wearing the Founder Outfit.",
+  "yer": "HUD:1487"
+ },
+ {
+  "no": 112,
+  "kaynak": "Her gün ${P.removeAdsDiamondsPerDay} elmas Görevler'de seni bekliyor.",
+  "gorunen": "Her gün {1} elmas Görevler'de seni bekliyor.",
+  "tr": "Her gün {1} elmas Görevler'de seni bekliyor.",
+  "en": "{1} Gems await you in Tasks every day.",
+  "yer": "HUD:1489"
+ },
+ {
+  "no": 113,
+  "kaynak": "Harika!",
+  "gorunen": "Harika!",
+  "tr": "Harika!",
+  "en": "Awesome!",
+  "yer": "HUD:1505, HUD:1672"
+ },
+ {
+  "no": 115,
+  "kaynak": "Kalıcı gelir",
+  "gorunen": "Kalıcı gelir",
+  "tr": "Kalıcı gelir",
+  "en": "Permanent Income",
+  "yer": "HUD:1548"
+ },
+ {
+  "no": 116,
+  "kaynak": "Al",
+  "gorunen": "Al",
+  "tr": "Al",
+  "en": "Buy",
+  "yer": "HUD:1672"
+ },
+ {
+  "no": 117,
+  "kaynak": "İzle, ${economyConfig.rewarded.claimMult}× al",
+  "gorunen": "İzle, {1}× al",
+  "tr": "İzle, {1}× al",
+  "en": "Watch, get {1}×",
+  "yer": "HUD:1681"
+ },
+ {
+  "no": 118,
+  "kaynak": "Alındı",
+  "gorunen": "Alındı",
+  "tr": "Alındı",
+  "en": "Claimed",
+  "yer": "HUD:1742"
+ },
+ {
+  "no": 119,
+  "kaynak": ". İnternetini kontrol edip tekrar dene.",
+  "gorunen": ". İnternetini kontrol edip tekrar dene.",
+  "tr": ". İnternetini kontrol edip tekrar dene.",
+  "en": ". Check your internet connection and try again.",
+  "yer": "HUD:1755"
+ },
+ {
+  "no": 120,
+  "kaynak": "Reklamları Kaldır",
+  "gorunen": "Reklamları Kaldır",
+  "tr": "Reklamları Kaldır",
+  "en": "Remove Ads",
+  "yer": "HUD:1761"
+ },
+ {
+  "no": 121,
+  "kaynak": "Oyunun arasına giren reklamlar kalkar. Ödüllü videoları yine istediğinde izlersin. Her gün ${P.removeAdsDiamondsPerDay} elmas hediye.",
+  "gorunen": "Oyunun arasına giren reklamlar kalkar. Ödüllü videoları yine istediğinde izlersin. Her gün {1} elmas hediye.",
+  "tr": "Oyunun arasına giren reklamlar kalkar. Ödüllü videoları yine istediğinde izlersin. Her gün {1} elmas hediye.",
+  "en": "Ads between gameplay are removed. You can still watch rewarded videos whenever you want. Get {1} Gems every day.",
+  "yer": "HUD:1762"
+ },
+ {
+  "no": 122,
+  "kaynak": "${P.starterDiamonds} elmas ve yalnız bu pakette olan Kurucu kıyafeti. Bir kez alınabilir.",
+  "gorunen": "{1} elmas ve yalnız bu pakette olan Kurucu kıyafeti. Bir kez alınabilir.",
+  "tr": "{1} elmas ve yalnız bu pakette olan Kurucu kıyafeti. Bir kez alınabilir.",
+  "en": "{1} Gems and the Founder Outfit, only available in this pack. One-time purchase.",
+  "yer": "HUD:1767"
+ },
+ {
+  "no": 123,
+  "kaynak": "Kıyafet, tepsi ve dekor almak için.",
+  "gorunen": "Kıyafet, tepsi ve dekor almak için.",
+  "tr": "Kıyafet, tepsi ve dekor almak için.",
+  "en": "For buying outfits, trays, and decor.",
+  "yer": "HUD:1771"
+ },
+ {
+  "no": 124,
+  "kaynak": "Aldıkların",
+  "gorunen": "Aldıkların",
+  "tr": "Aldıkların",
+  "en": "Your Purchases",
+  "yer": "HUD:1775"
+ },
+ {
+  "no": 125,
+  "kaynak": "saklanır. Telefon değiştirirsen Ayarlar'dan geri yükleyebilirsin.",
+  "gorunen": "saklanır. Telefon değiştirirsen Ayarlar'dan geri yükleyebilirsin.",
+  "tr": "saklanır. Telefon değiştirirsen Ayarlar'dan geri yükleyebilirsin.",
+  "en": "are saved. If you change phones, you can restore them from Settings.",
+  "yer": "HUD:1775"
+ },
+ {
+  "no": 126,
+  "kaynak": "Şu an giyiyorsun",
+  "gorunen": "Şu an giyiyorsun",
+  "tr": "Şu an giyiyorsun",
+  "en": "Currently Wearing",
+  "yer": "HUD:1784"
+ },
+ {
+  "no": 127,
+  "kaynak": "Şu an elinde",
+  "gorunen": "Şu an elinde",
+  "tr": "Şu an elinde",
+  "en": "Currently Holding",
+  "yer": "HUD:1785"
+ },
+ {
+  "no": 128,
+  "kaynak": "Salonda duruyor",
+  "gorunen": "Salonda duruyor",
+  "tr": "Salonda duruyor",
+  "en": "In the Hall",
+  "yer": "HUD:1786"
+ },
+ {
+  "no": 129,
+  "kaynak": "Şu an salonda",
+  "gorunen": "Şu an salonda",
+  "tr": "Şu an salonda",
+  "en": "Currently in the Hall",
+  "yer": "HUD:1787, HUD:1788, HUD:1789"
+ },
+ {
+  "no": 130,
+  "kaynak": "Kıyafet",
+  "gorunen": "Kıyafet",
+  "tr": "Kıyafet",
+  "en": "Outfit",
+  "yer": "HUD:1881"
+ },
+ {
+  "no": 131,
+  "kaynak": "Dekor",
+  "gorunen": "Dekor",
+  "tr": "Dekor",
+  "en": "Decor",
+  "yer": "HUD:1883"
+ },
+ {
+  "no": 132,
+  "kaynak": "Paketler",
+  "gorunen": "Paketler",
+  "tr": "Paketler",
+  "en": "Packs",
+  "yer": "HUD:1884, HUD:1996"
+ },
+ {
+  "no": 133,
+  "kaynak": "Zemin",
+  "gorunen": "Zemin",
+  "tr": "Zemin",
+  "en": "Floor",
+  "yer": "HUD:1886"
+ },
+ {
+  "no": 134,
+  "kaynak": "Duvar",
+  "gorunen": "Duvar",
+  "tr": "Duvar",
+  "en": "Wall",
+  "yer": "HUD:1887"
+ },
+ {
+  "no": 137,
+  "kaynak": "Masa temaları kilitli",
+  "gorunen": "Masa temaları kilitli",
+  "tr": "Masa temaları kilitli",
+  "en": "Table themes locked",
+  "yer": "HUD:2024"
+ },
+ {
+  "no": 138,
+  "kaynak": "Tüm salonları aç ve bütün masaları son seviyeye getir; sonra masalarını renklendirebilirsin.",
+  "gorunen": "Tüm salonları aç ve bütün masaları son seviyeye getir; sonra masalarını renklendirebilirsin.",
+  "tr": "Tüm salonları aç ve bütün masaları son seviyeye getir; sonra masalarını renklendirebilirsin.",
+  "en": "Unlock all Halls and max out every table; then you can customize your tables.",
+  "yer": "HUD:2026"
+ },
+ {
+  "no": 139,
+  "kaynak": "Salon",
+  "gorunen": "Salon",
+  "tr": "Salon",
+  "en": "Hall",
+  "yer": "HUD:2030, HUD:2064"
+ },
+ {
+  "no": 140,
+  "kaynak": "Son seviye masa",
+  "gorunen": "Son seviye masa",
+  "tr": "Son seviye masa",
+  "en": "Max Level Table",
+  "yer": "HUD:2034"
+ },
+ {
+  "no": 141,
+  "kaynak": "${kilitSalon}. Salon'u açınca alabilirsin",
+  "gorunen": "{1}. Salon'u açınca alabilirsin",
+  "tr": "{1}. Salon'u açınca alabilirsin",
+  "en": "Available after unlocking Hall {1}",
+  "yer": "HUD:2079"
+ },
+ {
+  "no": 142,
+  "kaynak": "Sahipsin",
+  "gorunen": "Sahipsin",
+  "tr": "Sahipsin",
+  "en": "Owned",
+  "yer": "HUD:2081"
+ },
+ {
+  "no": 143,
+  "kaynak": "Başlangıç Paketi'nde",
+  "gorunen": "Başlangıç Paketi'nde",
+  "tr": "Başlangıç Paketi'nde",
+  "en": "In the Starter Pack",
+  "yer": "HUD:2083"
+ },
+ {
+  "no": 144,
+  "kaynak": "${fmt(secili.cost)} ₺",
+  "gorunen": "{1} ₺",
+  "tr": "{1}",
+  "en": "{1}",
+  "yer": "HUD:2086"
+ },
+ {
+  "no": 145,
+  "kaynak": "Salondan Kaldır",
+  "gorunen": "Salondan Kaldır",
+  "tr": "Salondan Kaldır",
+  "en": "Remove from Hall",
+  "yer": "HUD:2115"
+ },
+ {
+  "no": 146,
+  "kaynak": "Uygulandı",
+  "gorunen": "Uygulandı",
+  "tr": "Uygulandı",
+  "en": "Applied",
+  "yer": "HUD:2118"
+ },
+ {
+  "no": 147,
+  "kaynak": ". Salon'da açılır",
+  "gorunen": ". Salon'da açılır",
+  "tr": ". Salon'da açılır",
+  "en": ". Unlocked in Hall",
+  "yer": "HUD:2122"
+ },
+ {
+  "no": 148,
+  "kaynak": "Salona Koy",
+  "gorunen": "Salona Koy",
+  "tr": "Salona Koy",
+  "en": "Place in Hall",
+  "yer": "HUD:2125"
+ },
+ {
+  "no": 149,
+  "kaynak": "Uygula",
+  "gorunen": "Uygula",
+  "tr": "Uygula",
+  "en": "Apply",
+  "yer": "HUD:2125"
+ },
+ {
+  "no": 150,
+  "kaynak": "Paketi Gör",
+  "gorunen": "Paketi Gör",
+  "tr": "Paketi Gör",
+  "en": "View Pack",
+  "yer": "HUD:2127"
+ },
+ {
+  "no": 151,
+  "kaynak": "Satın Al ·",
+  "gorunen": "Satın Al ·",
+  "tr": "Satın Al ·",
+  "en": "Buy ·",
+  "yer": "HUD:2130"
+ },
+ {
+  "no": 152,
+  "kaynak": "PLAY GAMES",
+  "gorunen": "PLAY GAMES",
+  "tr": "PLAY GAMES",
+  "en": "PLAY GAMES",
+  "yer": "HUD:2154"
+ },
+ {
+  "no": 153,
+  "kaynak": "Bağlısın — ilerlemen buluta yedekleniyor.",
+  "gorunen": "Bağlısın — ilerlemen buluta yedekleniyor.",
+  "tr": "Bağlısın — ilerlemen buluta yedekleniyor",
+  "en": "Connected — your progress is backed up to the cloud.",
+  "yer": "HUD:2157"
+ },
+ {
+  "no": 154,
+  "kaynak": "Başarımlar",
+  "gorunen": "Başarımlar",
+  "tr": "Başarımlar",
+  "en": "Achievements",
+  "yer": "HUD:2159"
+ },
+ {
+  "no": 155,
+  "kaynak": "Bağlanamadı — tekrar dene",
+  "gorunen": "Bağlanamadı — tekrar dene",
+  "tr": "Bağlanamadı — tekrar dene",
+  "en": "Couldn't connect — try again",
+  "yer": "HUD:2164"
+ },
+ {
+  "no": 156,
+  "kaynak": "Play Games'e bağlan",
+  "gorunen": "Play Games'e bağlan",
+  "tr": "Play Games'e bağlan",
+  "en": "Connect to Play Games",
+  "yer": "HUD:2164"
+ },
+ {
+  "no": 157,
+  "kaynak": "Satın alımlar geri yüklendi",
+  "gorunen": "Satın alımlar geri yüklendi",
+  "tr": "Satın alımlar geri yüklendi",
+  "en": "Purchases restored",
+  "yer": "HUD:2184"
+ },
+ {
+  "no": 158,
+  "kaynak": "Mağazaya ulaşılamadı",
+  "gorunen": "Mağazaya ulaşılamadı",
+  "tr": "Mağazaya ulaşılamadı",
+  "en": "Couldn't reach the Shop",
+  "yer": "HUD:2186"
+ },
+ {
+  "no": 159,
+  "kaynak": "Satın alımları geri yükle",
+  "gorunen": "Satın alımları geri yükle",
+  "tr": "Satın alımları geri yükle",
+  "en": "Restore Purchases",
+  "yer": "HUD:2187"
+ },
+ {
+  "no": 160,
+  "kaynak": "Gizlilik politikası",
+  "gorunen": "Gizlilik politikası",
+  "tr": "Gizlilik politikası",
+  "en": "Privacy Policy",
+  "yer": "HUD:2201"
+ },
+ {
+  "no": 161,
+  "kaynak": "Destek",
+  "gorunen": "Destek",
+  "tr": "Destek",
+  "en": "Support",
+  "yer": "HUD:2204"
+ },
+ {
+  "no": 162,
+  "kaynak": "Reklam tercihleri",
+  "gorunen": "Reklam tercihleri",
+  "tr": "Reklam tercihleri",
+  "en": "Ad Preferences",
+  "yer": "HUD:2208"
+ },
+ {
+  "no": 163,
+  "kaynak": "Kafene bir ad ver",
+  "gorunen": "Kafene bir ad ver",
+  "tr": "Kafene bir ad ver",
+  "en": "Name Your Place",
+  "yer": "KafeAdiKutusu:33"
+ },
+ {
+  "no": 164,
+  "kaynak": "Kapının üstündeki tabelada bu yazacak. Sonra Ayarlar'dan değiştirebilirsin.",
+  "gorunen": "Kapının üstündeki tabelada bu yazacak. Sonra Ayarlar'dan değiştirebilirsin.",
+  "tr": "Kapının üstündeki tabelada bu yazacak. Sonra Ayarlar'dan değiştirebilirsin.",
+  "en": "This will appear on the sign above the door. You can change it later in Settings.",
+  "yer": "KafeAdiKutusu:35"
+ },
+ {
+  "no": 165,
+  "kaynak": "Kapının üstündeki tabelada yazar.",
+  "gorunen": "Kapının üstündeki tabelada yazar.",
+  "tr": "Kapının üstündeki tabelada yazar.",
+  "en": "It will appear on the sign above the door.",
+  "yer": "KafeAdiKutusu:35"
+ },
+ {
+  "no": 166,
+  "kaynak": "Tamam",
+  "gorunen": "Tamam",
+  "tr": "Tamam",
+  "en": "Done",
+  "yer": "KafeAdiKutusu:56"
+ },
+ {
+  "no": 167,
+  "kaynak": "Adım ${sira + 1}/${SIRA.length}",
+  "gorunen": "Adım {1}/{2}",
+  "tr": "Adım {1}/{2}",
+  "en": "Step {1}/{2}",
+  "yer": "Ogretici:45"
+ },
+ {
+  "no": 168,
+  "kaynak": "Atla",
+  "gorunen": "Atla",
+  "tr": "Atla",
+  "en": "Skip",
+  "yer": "Ogretici:54"
+ },
+ {
+  "no": 169,
+  "kaynak": "Geri",
+  "gorunen": "Geri",
+  "tr": "Geri",
+  "en": "Back",
+  "yer": "Sheet:39"
+ },
+ {
+  "no": 170,
+  "kaynak": "Semaver ısınıyor…",
+  "gorunen": "Semaver ısınıyor…",
+  "tr": "Semaver ısınıyor…",
+  "en": "Tea urn is heating up…",
+  "yer": "SplashScreen:85"
+ },
+ {
+  "no": 171,
+  "kaynak": "2. Masa",
+  "gorunen": "2. Masa",
+  "tr": "2. Masa",
+  "en": "Table 2",
+  "yer": "ekonomi/icerik:666, ekonomi/icerik:688, ekonomi/icerik:710"
+ },
+ {
+  "no": 172,
+  "kaynak": "3. Masa",
+  "gorunen": "3. Masa",
+  "tr": "3. Masa",
+  "en": "Table 3",
+  "yer": "ekonomi/icerik:668, ekonomi/icerik:690, ekonomi/icerik:712"
+ },
+ {
+  "no": 173,
+  "kaynak": "Garson Tut",
+  "gorunen": "Garson Tut",
+  "tr": "Garson Tut",
+  "en": "Hire Waiter",
+  "yer": "ekonomi/icerik:670"
+ },
+ {
+  "no": 174,
+  "kaynak": "4. Masa",
+  "gorunen": "4. Masa",
+  "tr": "4. Masa",
+  "en": "Table 4",
+  "yer": "ekonomi/icerik:674, ekonomi/icerik:696, ekonomi/icerik:714"
+ },
+ {
+  "no": 175,
+  "kaynak": "2. Garson",
+  "gorunen": "2. Garson",
+  "tr": "2. Garson",
+  "en": "Waiter 2",
+  "yer": "ekonomi/icerik:680"
+ },
+ {
+  "no": 176,
+  "kaynak": "2. Salon",
+  "gorunen": "2. Salon",
+  "tr": "2. Salon",
+  "en": "Hall 2",
+  "yer": "ekonomi/icerik:686"
+ },
+ {
+  "no": 177,
+  "kaynak": "Bulaşıkçı Tut",
+  "gorunen": "Bulaşıkçı Tut",
+  "tr": "Bulaşıkçı Tut",
+  "en": "Hire Dishwasher",
+  "yer": "ekonomi/icerik:694"
+ },
+ {
+  "no": 178,
+  "kaynak": "3. Salon",
+  "gorunen": "3. Salon",
+  "tr": "3. Salon",
+  "en": "Hall 3",
+  "yer": "ekonomi/icerik:708"
+ },
+ {
+  "no": 179,
+  "kaynak": "3. Garson",
+  "gorunen": "3. Garson",
+  "tr": "3. Garson",
+  "en": "Waiter 3",
+  "yer": "ekonomi/icerik:748"
+ },
+ {
+  "no": 180,
+  "kaynak": "Lavabo",
+  "gorunen": "Lavabo",
+  "tr": "Lavabo",
+  "en": "Restroom",
+  "yer": "ekonomi/icerik:755"
+ },
+ {
+  "no": 181,
+  "kaynak": "5. Masa",
+  "gorunen": "5. Masa",
+  "tr": "5. Masa",
+  "en": "Table 5",
+  "yer": "ekonomi/icerik:758"
+ },
+ {
+  "no": 182,
+  "kaynak": "6. Masa",
+  "gorunen": "6. Masa",
+  "tr": "6. Masa",
+  "en": "Table 6",
+  "yer": "ekonomi/icerik:760"
+ },
+ {
+  "no": 183,
+  "kaynak": "7. Masa",
+  "gorunen": "7. Masa",
+  "tr": "7. Masa",
+  "en": "Table 7",
+  "yer": "ekonomi/icerik:762"
+ },
+ {
+  "no": 184,
+  "kaynak": "8. Masa",
+  "gorunen": "8. Masa",
+  "tr": "8. Masa",
+  "en": "Table 8",
+  "yer": "ekonomi/icerik:764"
+ },
+ {
+  "no": 185,
+  "kaynak": "9. Masa",
+  "gorunen": "9. Masa",
+  "tr": "9. Masa",
+  "en": "Table 9",
+  "yer": "ekonomi/icerik:766"
+ },
+ {
+  "no": 186,
+  "kaynak": "10. Masa",
+  "gorunen": "10. Masa",
+  "tr": "10. Masa",
+  "en": "Table 10",
+  "yer": "ekonomi/icerik:768"
+ },
+ {
+  "no": 187,
+  "kaynak": "11. Masa",
+  "gorunen": "11. Masa",
+  "tr": "11. Masa",
+  "en": "Table 11",
+  "yer": "ekonomi/icerik:770"
+ },
+ {
+  "no": 188,
+  "kaynak": "12. Masa",
+  "gorunen": "12. Masa",
+  "tr": "12. Masa",
+  "en": "Table 12",
+  "yer": "ekonomi/icerik:772"
+ },
+ {
+  "no": 189,
+  "kaynak": "İLK ÇAY",
+  "gorunen": "İLK ÇAY",
+  "tr": "İLK ÇAY",
+  "en": "FIRST TEA",
+  "yer": "ekonomi/icerik:805"
+ },
+ {
+  "no": 190,
+  "kaynak": "Ocaktan çay al",
+  "gorunen": "Ocaktan çay al",
+  "tr": "Ocaktan çay al",
+  "en": "Get tea from the Tea Station",
+  "yer": "ekonomi/icerik:805"
+ },
+ {
+  "no": 191,
+  "kaynak": "İLK SERVİS",
+  "gorunen": "İLK SERVİS",
+  "tr": "İLK SERVİS",
+  "en": "FIRST SERVICE",
+  "yer": "ekonomi/icerik:806"
+ },
+ {
+  "no": 192,
+  "kaynak": "Çayı müşteriye götür",
+  "gorunen": "Çayı müşteriye götür",
+  "tr": "Çayı müşteriye götür",
+  "en": "Take the tea to the customer",
+  "yer": "ekonomi/icerik:806"
+ },
+ {
+  "no": 193,
+  "kaynak": "İLK KAZANÇ",
+  "gorunen": "İLK KAZANÇ",
+  "tr": "İLK KAZANÇ",
+  "en": "FIRST EARNINGS",
+  "yer": "ekonomi/icerik:807"
+ },
+ {
+  "no": 194,
+  "kaynak": "Yere düşen parayı topla",
+  "gorunen": "Yere düşen parayı topla",
+  "tr": "Yere düşen parayı topla",
+  "en": "Collect the coins on the floor",
+  "yer": "ekonomi/icerik:807"
+ },
+ {
+  "no": 195,
+  "kaynak": "İKİNCİ MASA",
+  "gorunen": "İKİNCİ MASA",
+  "tr": "İKİNCİ MASA",
+  "en": "SECOND TABLE",
+  "yer": "ekonomi/icerik:808"
+ },
+ {
+  "no": 196,
+  "kaynak": "2. Masayı aç",
+  "gorunen": "2. Masayı aç",
+  "tr": "2. Masayı aç",
+  "en": "Unlock Table 2",
+  "yer": "ekonomi/icerik:808"
+ },
+ {
+  "no": 197,
+  "kaynak": "TEPSİ",
+  "gorunen": "TEPSİ",
+  "tr": "TEPSİ",
+  "en": "TRAY",
+  "yer": "ekonomi/icerik:809, ekonomi/icerik:816"
+ },
+ {
+  "no": 198,
+  "kaynak": "Tepsini 3 bardağa çıkar",
+  "gorunen": "Tepsini 3 bardağa çıkar",
+  "tr": "Tepsini 3 bardağa çıkar",
+  "en": "Upgrade your tray to 3 cups",
+  "yer": "ekonomi/icerik:809"
+ },
+ {
+  "no": 199,
+  "kaynak": "İŞLER AÇILIYOR",
+  "gorunen": "İŞLER AÇILIYOR",
+  "tr": "İŞLER AÇILIYOR",
+  "en": "BUSINESS IS PICKING UP",
+  "yer": "ekonomi/icerik:810"
+ },
+ {
+  "no": 200,
+  "kaynak": "5 çay servis et",
+  "gorunen": "5 çay servis et",
+  "tr": "5 çay servis et",
+  "en": "Serve 5 teas",
+  "yer": "ekonomi/icerik:810"
+ },
+ {
+  "no": 201,
+  "kaynak": "Çay ocağını yükselt",
+  "gorunen": "Çay ocağını yükselt",
+  "tr": "Çay ocağını yükselt",
+  "en": "Upgrade the Tea Station",
+  "yer": "ekonomi/icerik:811"
+ },
+ {
+  "no": 202,
+  "kaynak": "BULAŞIK",
+  "gorunen": "BULAŞIK",
+  "tr": "BULAŞIK",
+  "en": "DISHES",
+  "yer": "ekonomi/icerik:814"
+ },
+ {
+  "no": 203,
+  "kaynak": "3 kirli bardak yıka",
+  "gorunen": "3 kirli bardak yıka",
+  "tr": "3 kirli bardak yıka",
+  "en": "Wash 3 dirty cups",
+  "yer": "ekonomi/icerik:814"
+ },
+ {
+  "no": 204,
+  "kaynak": "ÜÇÜNCÜ MASA",
+  "gorunen": "ÜÇÜNCÜ MASA",
+  "tr": "ÜÇÜNCÜ MASA",
+  "en": "THIRD TABLE",
+  "yer": "ekonomi/icerik:815"
+ },
+ {
+  "no": 205,
+  "kaynak": "3. Masayı aç",
+  "gorunen": "3. Masayı aç",
+  "tr": "3. Masayı aç",
+  "en": "Unlock Table 3",
+  "yer": "ekonomi/icerik:815"
+ },
+ {
+  "no": 206,
+  "kaynak": "Tepsini 4'e çıkar",
+  "gorunen": "Tepsini 4'e çıkar",
+  "tr": "Tepsini 4'e çıkar",
+  "en": "Upgrade your tray to 4 cups",
+  "yer": "ekonomi/icerik:816"
+ },
+ {
+  "no": 207,
+  "kaynak": "İLK GARSON",
+  "gorunen": "İLK GARSON",
+  "tr": "İLK GARSON",
+  "en": "FIRST WAITER",
+  "yer": "ekonomi/icerik:817"
+ },
+ {
+  "no": 208,
+  "kaynak": "Garson tut",
+  "gorunen": "Garson tut",
+  "tr": "Garson tut",
+  "en": "Hire a Waiter",
+  "yer": "ekonomi/icerik:817"
+ },
+ {
+  "no": 209,
+  "kaynak": "Ocağı Seviye 3'e çıkar",
+  "gorunen": "Ocağı Seviye 3'e çıkar",
+  "tr": "Ocağı Seviye 3'e çıkar",
+  "en": "Upgrade the Tea Station to Level 3",
+  "yer": "ekonomi/icerik:818"
+ },
+ {
+  "no": 210,
+  "kaynak": "SALON DOLDU",
+  "gorunen": "SALON DOLDU",
+  "tr": "SALON DOLDU",
+  "en": "HALL FULL",
+  "yer": "ekonomi/icerik:819"
+ },
+ {
+  "no": 211,
+  "kaynak": "4. Masayı aç",
+  "gorunen": "4. Masayı aç",
+  "tr": "4. Masayı aç",
+  "en": "Unlock Table 4",
+  "yer": "ekonomi/icerik:819"
+ },
+ {
+  "no": 212,
+  "kaynak": "Para mıknatısını güçlendir",
+  "gorunen": "Para mıknatısını güçlendir",
+  "tr": "Para mıknatısını güçlendir",
+  "en": "Upgrade the Money Magnet",
+  "yer": "ekonomi/icerik:820"
+ },
+ {
+  "no": 213,
+  "kaynak": "İKİNCİ GARSON",
+  "gorunen": "İKİNCİ GARSON",
+  "tr": "İKİNCİ GARSON",
+  "en": "SECOND WAITER",
+  "yer": "ekonomi/icerik:822"
+ },
+ {
+  "no": 214,
+  "kaynak": "2. Garsonu tut",
+  "gorunen": "2. Garsonu tut",
+  "tr": "2. Garsonu tut",
+  "en": "Hire Waiter 2",
+  "yer": "ekonomi/icerik:822"
+ },
+ {
+  "no": 215,
+  "kaynak": "YENİ SALON",
+  "gorunen": "YENİ SALON",
+  "tr": "YENİ SALON",
+  "en": "NEW HALL",
+  "yer": "ekonomi/icerik:824"
+ },
+ {
+  "no": 216,
+  "kaynak": "2. Salonu aç",
+  "gorunen": "2. Salonu aç",
+  "tr": "2. Salonu aç",
+  "en": "Unlock Hall 2",
+  "yer": "ekonomi/icerik:824"
+ },
+ {
+  "no": 217,
+  "kaynak": "SALON 2",
+  "gorunen": "SALON 2",
+  "tr": "SALON 2",
+  "en": "HALL 2",
+  "yer": "ekonomi/icerik:825, ekonomi/icerik:829, ekonomi/icerik:831"
+ },
+ {
+  "no": 218,
+  "kaynak": "Salon 2: 2. Masayı aç",
+  "gorunen": "Salon 2: 2. Masayı aç",
+  "tr": "Salon 2: 2. Masayı aç",
+  "en": "Hall 2: Unlock Table 2",
+  "yer": "ekonomi/icerik:825"
+ },
+ {
+  "no": 219,
+  "kaynak": "Ocağı Seviye 4'e çıkar",
+  "gorunen": "Ocağı Seviye 4'e çıkar",
+  "tr": "Ocağı Seviye 4'e çıkar",
+  "en": "Upgrade the Tea Station to Level 4",
+  "yer": "ekonomi/icerik:826"
+ },
+ {
+  "no": 220,
+  "kaynak": "Garsonu hızlandır",
+  "gorunen": "Garsonu hızlandır",
+  "tr": "Garsonu hızlandır",
+  "en": "Speed Up the Waiter",
+  "yer": "ekonomi/icerik:827"
+ },
+ {
+  "no": 221,
+  "kaynak": "MASA SEVİYESİ",
+  "gorunen": "MASA SEVİYESİ",
+  "tr": "MASA SEVİYESİ",
+  "en": "TABLE LEVEL",
+  "yer": "ekonomi/icerik:828, ekonomi/icerik:832"
+ },
+ {
+  "no": 222,
+  "kaynak": "Bir masayı yükselt",
+  "gorunen": "Bir masayı yükselt",
+  "tr": "Bir masayı yükselt",
+  "en": "Upgrade a Table",
+  "yer": "ekonomi/icerik:828"
+ },
+ {
+  "no": 223,
+  "kaynak": "Salon 2: 3. Masayı aç",
+  "gorunen": "Salon 2: 3. Masayı aç",
+  "tr": "Salon 2: 3. Masayı aç",
+  "en": "Hall 2: Unlock Table 3",
+  "yer": "ekonomi/icerik:829"
+ },
+ {
+  "no": 224,
+  "kaynak": "BULAŞIKÇI",
+  "gorunen": "BULAŞIKÇI",
+  "tr": "BULAŞIKÇI",
+  "en": "DISHWASHER",
+  "yer": "ekonomi/icerik:830"
+ },
+ {
+  "no": 225,
+  "kaynak": "Bulaşıkçı tut",
+  "gorunen": "Bulaşıkçı tut",
+  "tr": "Bulaşıkçı tut",
+  "en": "Hire a Dishwasher",
+  "yer": "ekonomi/icerik:830"
+ },
+ {
+  "no": 226,
+  "kaynak": "Salon 2: 4. Masayı aç",
+  "gorunen": "Salon 2: 4. Masayı aç",
+  "tr": "Salon 2: 4. Masayı aç",
+  "en": "Hall 2: Unlock Table 4",
+  "yer": "ekonomi/icerik:831"
+ },
+ {
+  "no": 227,
+  "kaynak": "2 masayı Seviye 3'e çıkar",
+  "gorunen": "2 masayı Seviye 3'e çıkar",
+  "tr": "2 masayı Seviye 3'e çıkar",
+  "en": "Upgrade 2 tables to Level 3",
+  "yer": "ekonomi/icerik:832"
+ },
+ {
+  "no": 228,
+  "kaynak": "ÜÇÜNCÜ SALON",
+  "gorunen": "ÜÇÜNCÜ SALON",
+  "tr": "ÜÇÜNCÜ SALON",
+  "en": "THIRD HALL",
+  "yer": "ekonomi/icerik:834"
+ },
+ {
+  "no": 229,
+  "kaynak": "3. Salonu aç",
+  "gorunen": "3. Salonu aç",
+  "tr": "3. Salonu aç",
+  "en": "Unlock Hall 3",
+  "yer": "ekonomi/icerik:834"
+ },
+ {
+  "no": 230,
+  "kaynak": "SALON 3",
+  "gorunen": "SALON 3",
+  "tr": "SALON 3",
+  "en": "HALL 3",
+  "yer": "ekonomi/icerik:835, ekonomi/icerik:837, ekonomi/icerik:843"
+ },
+ {
+  "no": 231,
+  "kaynak": "Salon 3: 2. Masayı aç",
+  "gorunen": "Salon 3: 2. Masayı aç",
+  "tr": "Salon 3: 2. Masayı aç",
+  "en": "Hall 3: Unlock Table 2",
+  "yer": "ekonomi/icerik:835"
+ },
+ {
+  "no": 232,
+  "kaynak": "TEZGÂH",
+  "gorunen": "TEZGÂH",
+  "tr": "TEZGÂH",
+  "en": "COUNTER",
+  "yer": "ekonomi/icerik:836, ekonomi/icerik:853"
+ },
+ {
+  "no": 233,
+  "kaynak": "Tezgâhı kur",
+  "gorunen": "Tezgâhı kur",
+  "tr": "Tezgâhı kur",
+  "en": "Set Up the Counter",
+  "yer": "ekonomi/icerik:836"
+ },
+ {
+  "no": 234,
+  "kaynak": "Salon 3: 3. Masayı aç",
+  "gorunen": "Salon 3: 3. Masayı aç",
+  "tr": "Salon 3: 3. Masayı aç",
+  "en": "Hall 3: Unlock Table 3",
+  "yer": "ekonomi/icerik:837"
+ },
+ {
+  "no": 235,
+  "kaynak": "TOST SACI",
+  "gorunen": "TOST SACI",
+  "tr": "TOST SACI",
+  "en": "TOAST GRIDDLE",
+  "yer": "ekonomi/icerik:839"
+ },
+ {
+  "no": 236,
+  "kaynak": "Tost sacını kur",
+  "gorunen": "Tost sacını kur",
+  "tr": "Tost sacını kur",
+  "en": "Set Up the Toast Griddle",
+  "yer": "ekonomi/icerik:839"
+ },
+ {
+  "no": 237,
+  "kaynak": "Salon 3: 4. Masayı aç",
+  "gorunen": "Salon 3: 4. Masayı aç",
+  "tr": "Salon 3: 4. Masayı aç",
+  "en": "Hall 3: Unlock Table 4",
+  "yer": "ekonomi/icerik:843"
+ },
+ {
+  "no": 238,
+  "kaynak": "GARSON TEPSİSİ",
+  "gorunen": "GARSON TEPSİSİ",
+  "tr": "GARSON TEPSİSİ",
+  "en": "WAITER TRAY",
+  "yer": "ekonomi/icerik:846, ekonomi/icerik:858"
+ },
+ {
+  "no": 239,
+  "kaynak": "Garsonun tepsisini 3'e çıkar",
+  "gorunen": "Garsonun tepsisini 3'e çıkar",
+  "tr": "Garsonun tepsisini 3'e çıkar",
+  "en": "Upgrade the waiter's tray to 3",
+  "yer": "ekonomi/icerik:846"
+ },
+ {
+  "no": 240,
+  "kaynak": "SALON 1 BAKIMI",
+  "gorunen": "SALON 1 BAKIMI",
+  "tr": "SALON 1 BAKIMI",
+  "en": "HALL 1 MAINTENANCE",
+  "yer": "ekonomi/icerik:847"
+ },
+ {
+  "no": 241,
+  "kaynak": "4 masayı Seviye 5 yap",
+  "gorunen": "4 masayı Seviye 5 yap",
+  "tr": "4 masayı Seviye 5 yap",
+  "en": "Upgrade 4 tables to Level 5",
+  "yer": "ekonomi/icerik:847"
+ },
+ {
+  "no": 242,
+  "kaynak": "Tezgâhı son seviyeye çıkar",
+  "gorunen": "Tezgâhı son seviyeye çıkar",
+  "tr": "Tezgâhı son seviyeye çıkar",
+  "en": "Max out the Counter",
+  "yer": "ekonomi/icerik:853"
+ },
+ {
+  "no": 243,
+  "kaynak": "ÜÇÜNCÜ GARSON",
+  "gorunen": "ÜÇÜNCÜ GARSON",
+  "tr": "ÜÇÜNCÜ GARSON",
+  "en": "THIRD WAITER",
+  "yer": "ekonomi/icerik:855"
+ },
+ {
+  "no": 244,
+  "kaynak": "3. Garsonu tut",
+  "gorunen": "3. Garsonu tut",
+  "tr": "3. Garsonu tut",
+  "en": "Hire Waiter 3",
+  "yer": "ekonomi/icerik:855"
+ },
+ {
+  "no": 245,
+  "kaynak": "Garsonun tepsisini 4'e çıkar",
+  "gorunen": "Garsonun tepsisini 4'e çıkar",
+  "tr": "Garsonun tepsisini 4'e çıkar",
+  "en": "Upgrade the waiter's tray to 4",
+  "yer": "ekonomi/icerik:858"
+ },
+ {
+  "no": 246,
+  "kaynak": "Lavaboyu aç",
+  "gorunen": "Lavaboyu aç",
+  "tr": "Lavaboyu aç",
+  "en": "Unlock the Restroom",
+  "yer": "ekonomi/icerik:865"
+ },
+ {
+  "no": 247,
+  "kaynak": "ŞERİT",
+  "gorunen": "ŞERİT",
+  "tr": "ŞERİT",
+  "en": "ROW",
+  "yer": "ekonomi/icerik:866, ekonomi/icerik:868, ekonomi/icerik:870"
+ },
+ {
+  "no": 248,
+  "kaynak": "Şerit: 5. Masayı aç",
+  "gorunen": "Şerit: 5. Masayı aç",
+  "tr": "Şerit: 5. Masayı aç",
+  "en": "Row: Unlock Table 5",
+  "yer": "ekonomi/icerik:866"
+ },
+ {
+  "no": 249,
+  "kaynak": "Lavaboyu büyüt (L2)",
+  "gorunen": "Lavaboyu büyüt (L2)",
+  "tr": "Lavaboyu büyüt (L2)",
+  "en": "Expand the Restroom (L2)",
+  "yer": "ekonomi/icerik:867"
+ },
+ {
+  "no": 250,
+  "kaynak": "Şerit: 6. Masayı aç",
+  "gorunen": "Şerit: 6. Masayı aç",
+  "tr": "Şerit: 6. Masayı aç",
+  "en": "Row: Unlock Table 6",
+  "yer": "ekonomi/icerik:868"
+ },
+ {
+  "no": 251,
+  "kaynak": "Lavaboyu büyüt (L3)",
+  "gorunen": "Lavaboyu büyüt (L3)",
+  "tr": "Lavaboyu büyüt (L3)",
+  "en": "Expand the Restroom (L3)",
+  "yer": "ekonomi/icerik:869"
+ },
+ {
+  "no": 252,
+  "kaynak": "Şerit: 7. Masayı aç",
+  "gorunen": "Şerit: 7. Masayı aç",
+  "tr": "Şerit: 7. Masayı aç",
+  "en": "Row: Unlock Table 7",
+  "yer": "ekonomi/icerik:870"
+ },
+ {
+  "no": 253,
+  "kaynak": "Lavaboyu büyüt (L4)",
+  "gorunen": "Lavaboyu büyüt (L4)",
+  "tr": "Lavaboyu büyüt (L4)",
+  "en": "Expand the Restroom (L4)",
+  "yer": "ekonomi/icerik:871"
+ },
+ {
+  "no": 254,
+  "kaynak": "Şerit: 8. Masayı aç",
+  "gorunen": "Şerit: 8. Masayı aç",
+  "tr": "Şerit: 8. Masayı aç",
+  "en": "Row: Unlock Table 8",
+  "yer": "ekonomi/icerik:872"
+ },
+ {
+  "no": 255,
+  "kaynak": "Lavaboyu büyüt (L5)",
+  "gorunen": "Lavaboyu büyüt (L5)",
+  "tr": "Lavaboyu büyüt (L5)",
+  "en": "Expand the Restroom (L5)",
+  "yer": "ekonomi/icerik:873"
+ },
+ {
+  "no": 256,
+  "kaynak": "Şerit: 9. Masayı aç",
+  "gorunen": "Şerit: 9. Masayı aç",
+  "tr": "Şerit: 9. Masayı aç",
+  "en": "Row: Unlock Table 9",
+  "yer": "ekonomi/icerik:874"
+ },
+ {
+  "no": 257,
+  "kaynak": "Lavaboyu büyüt (L6)",
+  "gorunen": "Lavaboyu büyüt (L6)",
+  "tr": "Lavaboyu büyüt (L6)",
+  "en": "Expand the Restroom (L6)",
+  "yer": "ekonomi/icerik:875"
+ },
+ {
+  "no": 258,
+  "kaynak": "Şerit: 10. Masayı aç",
+  "gorunen": "Şerit: 10. Masayı aç",
+  "tr": "Şerit: 10. Masayı aç",
+  "en": "Row: Unlock Table 10",
+  "yer": "ekonomi/icerik:876"
+ },
+ {
+  "no": 259,
+  "kaynak": "Şerit: 11. Masayı aç",
+  "gorunen": "Şerit: 11. Masayı aç",
+  "tr": "Şerit: 11. Masayı aç",
+  "en": "Row: Unlock Table 11",
+  "yer": "ekonomi/icerik:877"
+ },
+ {
+  "no": 260,
+  "kaynak": "ŞERİT SONU",
+  "gorunen": "ŞERİT SONU",
+  "tr": "ŞERİT SONU",
+  "en": "END OF ROW",
+  "yer": "ekonomi/icerik:878"
+ },
+ {
+  "no": 261,
+  "kaynak": "Şerit: 12. Masayı aç",
+  "gorunen": "Şerit: 12. Masayı aç",
+  "tr": "Şerit: 12. Masayı aç",
+  "en": "Row: Unlock Table 12",
+  "yer": "ekonomi/icerik:878"
+ },
+ {
+  "no": 262,
+  "kaynak": "Servis",
+  "gorunen": "Servis",
+  "tr": "Servis",
+  "en": "Service",
+  "yer": "ekonomi/icerik:977"
+ },
+ {
+  "no": 263,
+  "kaynak": "Elden ve garsonla yapılan toplam servis",
+  "gorunen": "Elden ve garsonla yapılan toplam servis",
+  "tr": "Elden ve garsonla yapılan toplam servis",
+  "en": "Total service by hand and by waiters",
+  "yer": "ekonomi/icerik:977"
+ },
+ {
+  "no": 264,
+  "kaynak": "Mekân",
+  "gorunen": "Mekân",
+  "tr": "Mekân",
+  "en": "Place",
+  "yer": "ekonomi/icerik:979"
+ },
+ {
+  "no": 265,
+  "kaynak": "Açılan masa · salon · personel",
+  "gorunen": "Açılan masa · salon · personel",
+  "tr": "Açılan masa · salon · personel",
+  "en": "Tables · halls · staff unlocked",
+  "yer": "ekonomi/icerik:979"
+ },
+ {
+  "no": 266,
+  "kaynak": "Kazanç",
+  "gorunen": "Kazanç",
+  "tr": "Kazanç",
+  "en": "Earnings",
+  "yer": "ekonomi/icerik:981"
+ },
+ {
+  "no": 267,
+  "kaynak": "Toplam kazanılan ₺",
+  "gorunen": "Toplam kazanılan ₺",
+  "tr": "Toplam kazanılan ₺",
+  "en": "Total coins earned",
+  "yer": "ekonomi/icerik:981"
+ },
+ {
+  "no": 268,
+  "kaynak": "Temizlik",
+  "gorunen": "Temizlik",
+  "tr": "Temizlik",
+  "en": "Cleaning",
+  "yer": "ekonomi/icerik:983"
+ },
+ {
+  "no": 269,
+  "kaynak": "Kendi elinle yıkadığın kirli bardak",
+  "gorunen": "Kendi elinle yıkadığın kirli bardak",
+  "tr": "Kendi elinle yıkadığın kirli bardak",
+  "en": "Dirty cups washed by hand",
+  "yer": "ekonomi/icerik:983"
+ },
+ {
+  "no": 270,
+  "kaynak": "Usta",
+  "gorunen": "Usta",
+  "tr": "Usta",
+  "en": "Master",
+  "yer": "ekonomi/icerik:985"
+ },
+ {
+  "no": 271,
+  "kaynak": "Son seviyeye çıkardığın masa",
+  "gorunen": "Son seviyeye çıkardığın masa",
+  "tr": "Son seviyeye çıkardığın masa",
+  "en": "Tables maxed out",
+  "yer": "ekonomi/icerik:985"
+ },
+ {
+  "no": 272,
+  "kaynak": "Bir Avuç Elmas",
+  "gorunen": "Bir Avuç Elmas",
+  "tr": "Bir Avuç Elmas",
+  "en": "Handful of Gems",
+  "yer": "ekonomi/icerik:1049"
+ },
+ {
+  "no": 273,
+  "kaynak": "Elmas Kesesi",
+  "gorunen": "Elmas Kesesi",
+  "tr": "Elmas Kesesi",
+  "en": "Pouch of Gems",
+  "yer": "ekonomi/icerik:1049"
+ },
+ {
+  "no": 274,
+  "kaynak": "Elmas Sandığı",
+  "gorunen": "Elmas Sandığı",
+  "tr": "Elmas Sandığı",
+  "en": "Chest of Gems",
+  "yer": "ekonomi/icerik:1049"
+ },
+ {
+  "no": 275,
+  "kaynak": "{N} çay servis et",
+  "gorunen": "{N} çay servis et",
+  "tr": "{N} çay servis et",
+  "en": "Serve {N} teas",
+  "yer": "ekonomi/icerik:1090"
+ },
+ {
+  "no": 276,
+  "kaynak": "{N} çayı kendi elinle götür",
+  "gorunen": "{N} çayı kendi elinle götür",
+  "tr": "{N} çayı kendi elinle götür",
+  "en": "Deliver {N} teas by hand",
+  "yer": "ekonomi/icerik:1091"
+ },
+ {
+  "no": 277,
+  "kaynak": "{N} para topla",
+  "gorunen": "{N} para topla",
+  "tr": "{N} para topla",
+  "en": "Collect {N} coins",
+  "yer": "ekonomi/icerik:1092"
+ },
+ {
+  "no": 278,
+  "kaynak": "{N} kirli bardak yıka",
+  "gorunen": "{N} kirli bardak yıka",
+  "tr": "{N} kirli bardak yıka",
+  "en": "Wash {N} dirty cups",
+  "yer": "ekonomi/icerik:1093"
+ },
+ {
+  "no": 279,
+  "kaynak": "{N} ₺ kazan",
+  "gorunen": "{N} ₺ kazan",
+  "tr": "{N} ₺ kazan",
+  "en": "Earn {N} coins",
+  "yer": "ekonomi/icerik:1094"
+ },
+ {
+  "no": 280,
+  "kaynak": "Ocaktan {N} çay al",
+  "gorunen": "Ocaktan {N} çay al",
+  "tr": "Ocaktan {N} çay al",
+  "en": "Get {N} teas from the Tea Station",
+  "yer": "ekonomi/icerik:1095"
+ },
+ {
+  "no": 281,
+  "kaynak": "Garson {N} çay taşısın",
+  "gorunen": "Garson {N} çay taşısın",
+  "tr": "Garson {N} çay taşısın",
+  "en": "Have a waiter carry {N} teas",
+  "yer": "ekonomi/icerik:1096"
+ },
+ {
+  "no": 282,
+  "kaynak": "{N} tost servis et",
+  "gorunen": "{N} tost servis et",
+  "tr": "{N} tost servis et",
+  "en": "Serve {N} toasts",
+  "yer": "ekonomi/icerik:1097"
+ },
+ {
+  "no": 283,
+  "kaynak": "Klasik Parke",
+  "gorunen": "Klasik Parke",
+  "tr": "Klasik Parke",
+  "en": "Classic Parquet",
+  "yer": "ekonomi/icerik:1188"
+ },
+ {
+  "no": 284,
+  "kaynak": "Restoran Fayansı",
+  "gorunen": "Restoran Fayansı",
+  "tr": "Restoran Fayansı",
+  "en": "Restaurant Tile",
+  "yer": "ekonomi/icerik:1190"
+ },
+ {
+  "no": 285,
+  "kaynak": "Krem Fayans",
+  "gorunen": "Krem Fayans",
+  "tr": "Krem Fayans",
+  "en": "Cream Tile",
+  "yer": "ekonomi/icerik:1191"
+ },
+ {
+  "no": 286,
+  "kaynak": "Dama Fayans",
+  "gorunen": "Dama Fayans",
+  "tr": "Dama Fayans",
+  "en": "Checkered Tile",
+  "yer": "ekonomi/icerik:1192"
+ },
+ {
+  "no": 287,
+  "kaynak": "Ceviz Parke",
+  "gorunen": "Ceviz Parke",
+  "tr": "Ceviz Parke",
+  "en": "Walnut Parquet",
+  "yer": "ekonomi/icerik:1193"
+ },
+ {
+  "no": 288,
+  "kaynak": "Krem Badana",
+  "gorunen": "Krem Badana",
+  "tr": "Krem Badana",
+  "en": "Cream Whitewash",
+  "yer": "ekonomi/icerik:1196"
+ },
+ {
+  "no": 289,
+  "kaynak": "Çay Yeşili",
+  "gorunen": "Çay Yeşili",
+  "tr": "Çay Yeşili",
+  "en": "Tea Green",
+  "yer": "ekonomi/icerik:1197"
+ },
+ {
+  "no": 290,
+  "kaynak": "Çini Mavisi",
+  "gorunen": "Çini Mavisi",
+  "tr": "Çini Mavisi",
+  "en": "Tile Blue",
+  "yer": "ekonomi/icerik:1198"
+ },
+ {
+  "no": 291,
+  "kaynak": "Klasik Dama",
+  "gorunen": "Klasik Dama",
+  "tr": "Klasik Dama",
+  "en": "Classic Check",
+  "yer": "ekonomi/icerik:1211"
+ },
+ {
+  "no": 292,
+  "kaynak": "Kahve Dama",
+  "gorunen": "Kahve Dama",
+  "tr": "Kahve Dama",
+  "en": "Coffee Check",
+  "yer": "ekonomi/icerik:1212"
+ },
+ {
+  "no": 293,
+  "kaynak": "Klasik Mavi",
+  "gorunen": "Klasik Mavi",
+  "tr": "Klasik Mavi",
+  "en": "Classic Blue",
+  "yer": "ekonomi/icerik:1215"
+ },
+ {
+  "no": 294,
+  "kaynak": "Bordo Kadife",
+  "gorunen": "Bordo Kadife",
+  "tr": "Bordo Kadife",
+  "en": "Burgundy Velvet",
+  "yer": "ekonomi/icerik:1216"
+ },
+ {
+  "no": 295,
+  "kaynak": "Zümrüt Yeşili",
+  "gorunen": "Zümrüt Yeşili",
+  "tr": "Zümrüt Yeşili",
+  "en": "Emerald Green",
+  "yer": "ekonomi/icerik:1217"
+ },
+ {
+  "no": 296,
+  "kaynak": "Altın Varak",
+  "gorunen": "Altın Varak",
+  "tr": "Altın Varak",
+  "en": "Gold Leaf",
+  "yer": "ekonomi/icerik:1218"
+ },
+ {
+  "no": 297,
+  "kaynak": "Klasik Çaycı",
+  "gorunen": "Klasik Çaycı",
+  "tr": "Klasik Çaycı",
+  "en": "Classic Tea Maker",
+  "yer": "ekonomi/icerik:1227"
+ },
+ {
+  "no": 298,
+  "kaynak": "Kurucu",
+  "gorunen": "Kurucu",
+  "tr": "Kurucu",
+  "en": "Founder",
+  "yer": "ekonomi/icerik:1228"
+ },
+ {
+  "no": 299,
+  "kaynak": "Yeşil Yelek",
+  "gorunen": "Yeşil Yelek",
+  "tr": "Yeşil Yelek",
+  "en": "Green Vest",
+  "yer": "ekonomi/icerik:1229"
+ },
+ {
+  "no": 300,
+  "kaynak": "Şef Garson",
+  "gorunen": "Şef Garson",
+  "tr": "Şef Garson",
+  "en": "Head Waiter",
+  "yer": "ekonomi/icerik:1230"
+ },
+ {
+  "no": 301,
+  "kaynak": "Yazlık",
+  "gorunen": "Yazlık",
+  "tr": "Yazlık",
+  "en": "Summer",
+  "yer": "ekonomi/icerik:1231"
+ },
+ {
+  "no": 302,
+  "kaynak": "Kışlık",
+  "gorunen": "Kışlık",
+  "tr": "Kışlık",
+  "en": "Winter",
+  "yer": "ekonomi/icerik:1232"
+ },
+ {
+  "no": 303,
+  "kaynak": "Altın Yelek",
+  "gorunen": "Altın Yelek",
+  "tr": "Altın Yelek",
+  "en": "Gold Vest",
+  "yer": "ekonomi/icerik:1233"
+ },
+ {
+  "no": 304,
+  "kaynak": "Klasik Tepsi",
+  "gorunen": "Klasik Tepsi",
+  "tr": "Klasik Tepsi",
+  "en": "Classic Tray",
+  "yer": "ekonomi/icerik:1236"
+ },
+ {
+  "no": 305,
+  "kaynak": "Bakır Tepsi",
+  "gorunen": "Bakır Tepsi",
+  "tr": "Bakır Tepsi",
+  "en": "Copper Tray",
+  "yer": "ekonomi/icerik:1237"
+ },
+ {
+  "no": 306,
+  "kaynak": "Kırmızı Emaye",
+  "gorunen": "Kırmızı Emaye",
+  "tr": "Kırmızı Emaye",
+  "en": "Red Enamel",
+  "yer": "ekonomi/icerik:1238"
+ },
+ {
+  "no": 307,
+  "kaynak": "Gümüş Askılı",
+  "gorunen": "Gümüş Askılı",
+  "tr": "Gümüş Askılı",
+  "en": "Silver Strap",
+  "yer": "ekonomi/icerik:1239"
+ },
+ {
+  "no": 308,
+  "kaynak": "Altın Yaldız",
+  "gorunen": "Altın Yaldız",
+  "tr": "Altın Yaldız",
+  "en": "Gold Trim",
+  "yer": "ekonomi/icerik:1240"
+ },
+ {
+  "no": 309,
+  "kaynak": "Lambalı Radyo",
+  "gorunen": "Lambalı Radyo",
+  "tr": "Lambalı Radyo",
+  "en": "Table Radio",
+  "yer": "ekonomi/icerik:1249"
+ },
+ {
+  "no": 310,
+  "kaynak": "Okuma Koltuğu",
+  "gorunen": "Okuma Koltuğu",
+  "tr": "Okuma Koltuğu",
+  "en": "Reading Chair",
+  "yer": "ekonomi/icerik:1250"
+ },
+ {
+  "no": 311,
+  "kaynak": "Ayaklı Lamba",
+  "gorunen": "Ayaklı Lamba",
+  "tr": "Ayaklı Lamba",
+  "en": "Floor Lamp",
+  "yer": "ekonomi/icerik:1251"
+ },
+ {
+  "no": 312,
+  "kaynak": "Eski İstanbul Tablosu",
+  "gorunen": "Eski İstanbul Tablosu",
+  "tr": "Eski İstanbul Tablosu",
+  "en": "Old Istanbul Painting",
+  "yer": "ekonomi/icerik:1252"
+ },
+ {
+  "no": 313,
+  "kaynak": "Bakır Semaver",
+  "gorunen": "Bakır Semaver",
+  "tr": "Bakır Semaver",
+  "en": "Copper Tea Urn",
+  "yer": "ekonomi/icerik:1253"
+ },
+ {
+  "no": 314,
+  "kaynak": "Gramofon",
+  "gorunen": "Gramofon",
+  "tr": "Gramofon",
+  "en": "Gramophone",
+  "yer": "ekonomi/icerik:1254"
+ },
+ {
+  "no": 315,
+  "kaynak": "Kanarya Kafesi",
+  "gorunen": "Kanarya Kafesi",
+  "tr": "Kanarya Kafesi",
+  "en": "Canary Cage",
+  "yer": "ekonomi/icerik:1255"
+ },
+ {
+  "no": 316,
+  "kaynak": "Sarkaçlı Saat",
+  "gorunen": "Sarkaçlı Saat",
+  "tr": "Sarkaçlı Saat",
+  "en": "Pendulum Clock",
+  "yer": "ekonomi/icerik:1256"
+ },
+ {
+  "no": 317,
+  "kaynak": "Yılbaşı Koltuğu · Kırmızı",
+  "gorunen": "Yılbaşı Koltuğu · Kırmızı",
+  "tr": "Yılbaşı Koltuğu · Kırmızı",
+  "en": "Christmas Chair · Red",
+  "yer": "ekonomi/icerik:1257"
+ },
+ {
+  "no": 318,
+  "kaynak": "Yılbaşı Koltuğu · Yeşil",
+  "gorunen": "Yılbaşı Koltuğu · Yeşil",
+  "tr": "Yılbaşı Koltuğu · Yeşil",
+  "en": "Christmas Chair · Green",
+  "yer": "ekonomi/icerik:1258"
+ },
+ {
+  "no": 319,
+  "kaynak": "Yılbaşı Koltuğu · Mavi",
+  "gorunen": "Yılbaşı Koltuğu · Mavi",
+  "tr": "Yılbaşı Koltuğu · Mavi",
+  "en": "Christmas Chair · Blue",
+  "yer": "ekonomi/icerik:1259"
+ },
+ {
+  "no": 320,
+  "kaynak": "Yılbaşı Koltuğu · Kahve",
+  "gorunen": "Yılbaşı Koltuğu · Kahve",
+  "tr": "Yılbaşı Koltuğu · Kahve",
+  "en": "Christmas Chair · Brown",
+  "yer": "ekonomi/icerik:1260"
+ },
+ {
+  "no": 321,
+  "kaynak": "Ekranı sürükle, yürü",
+  "gorunen": "Ekranı sürükle, yürü",
+  "tr": "Ekranı sürükle, yürü",
+  "en": "Drag to move",
+  "yer": "onboarding:33"
+ },
+ {
+  "no": 322,
+  "kaynak": "Ocağa yürü, yanında dur",
+  "gorunen": "Ocağa yürü, yanında dur",
+  "tr": "Ocağa yürü, yanında dur",
+  "en": "Walk to the Tea Station",
+  "yer": "onboarding:34"
+ },
+ {
+  "no": 323,
+  "kaynak": "Çay bekleyenin yanına git",
+  "gorunen": "Çay bekleyenin yanına git",
+  "tr": "Çay bekleyenin yanına git",
+  "en": "Go to the waiting customer",
+  "yer": "onboarding:35"
+ },
+ {
+  "no": 324,
+  "kaynak": "Tepsin boş, ocağa uğra",
+  "gorunen": "Tepsin boş, ocağa uğra",
+  "tr": "Tepsin boş, ocağa uğra",
+  "en": "Tray empty? Go to the Tea Station",
+  "yer": "onboarding:36"
+ },
+ {
+  "no": 325,
+  "kaynak": "Paranın üstünden geç",
+  "gorunen": "Paranın üstünden geç",
+  "tr": "Paranın üstünden geç",
+  "en": "Walk over the coins",
+  "yer": "onboarding:37"
+ },
+ {
+  "no": 326,
+  "kaynak": "Müşteri içip ödeyecek",
+  "gorunen": "Müşteri içip ödeyecek",
+  "tr": "Müşteri içip ödeyecek",
+  "en": "Customer will drink and pay",
+  "yer": "onboarding:38"
+ },
+ {
+  "no": 327,
+  "kaynak": "Alanda dur, masa açılsın",
+  "gorunen": "Alanda dur, masa açılsın",
+  "tr": "Alanda dur, masa açılsın",
+  "en": "Stay in the area to unlock the table",
+  "yer": "onboarding:39"
+ },
+ {
+  "no": 328,
+  "kaynak": "İlk Çay",
+  "gorunen": "İlk Çay",
+  "tr": "İlk Çay",
+  "en": "First Tea",
+  "yer": "basarim (Android):40"
+ },
+ {
+  "no": 329,
+  "kaynak": "İlk çayını servis et.",
+  "gorunen": "İlk çayını servis et.",
+  "tr": "İlk çayını servis et.",
+  "en": "Serve your first tea.",
+  "yer": "basarim (Android):40"
+ },
+ {
+  "no": 330,
+  "kaynak": "Yeni Masa",
+  "gorunen": "Yeni Masa",
+  "tr": "Yeni Masa",
+  "en": "New Table",
+  "yer": "basarim (Android):41"
+ },
+ {
+  "no": 331,
+  "kaynak": "İlk yeni noktanı aç.",
+  "gorunen": "İlk yeni noktanı aç.",
+  "tr": "İlk yeni noktanı aç.",
+  "en": "Unlock your first new spot.",
+  "yer": "basarim (Android):41"
+ },
+ {
+  "no": 332,
+  "kaynak": "Temiz Bardak",
+  "gorunen": "Temiz Bardak",
+  "tr": "Temiz Bardak",
+  "en": "Clean Cup",
+  "yer": "basarim (Android):42"
+ },
+ {
+  "no": 333,
+  "kaynak": "İlk kirli bardağı yıka.",
+  "gorunen": "İlk kirli bardağı yıka.",
+  "tr": "İlk kirli bardağı yıka.",
+  "en": "Wash your first dirty cup.",
+  "yer": "basarim (Android):42"
+ },
+ {
+  "no": 334,
+  "kaynak": "Yardımcı Geldi",
+  "gorunen": "Yardımcı Geldi",
+  "tr": "Yardımcı Geldi",
+  "en": "Help Has Arrived",
+  "yer": "basarim (Android):43"
+ },
+ {
+  "no": 335,
+  "kaynak": "Garsonun ilk çayı taşısın.",
+  "gorunen": "Garsonun ilk çayı taşısın.",
+  "tr": "Garsonun ilk çayı taşısın.",
+  "en": "Have your waiter carry their first tea.",
+  "yer": "basarim (Android):43"
+ },
+ {
+  "no": 336,
+  "kaynak": "Tanınan Mekân",
+  "gorunen": "Tanınan Mekân",
+  "tr": "Tanınan Mekân",
+  "en": "Known Place",
+  "yer": "basarim (Android):44"
+ },
+ {
+  "no": 337,
+  "kaynak": "Seviye 5'e ulaş.",
+  "gorunen": "Seviye 5'e ulaş.",
+  "tr": "Seviye 5'e ulaş.",
+  "en": "Reach Level 5.",
+  "yer": "basarim (Android):44"
+ },
+ {
+  "no": 338,
+  "kaynak": "Mahallenin Gözdesi",
+  "gorunen": "Mahallenin Gözdesi",
+  "tr": "Mahallenin Gözdesi",
+  "en": "Neighborhood Favorite",
+  "yer": "basarim (Android):45"
+ },
+ {
+  "no": 339,
+  "kaynak": "Seviye 10'a ulaş.",
+  "gorunen": "Seviye 10'a ulaş.",
+  "tr": "Seviye 10'a ulaş.",
+  "en": "Reach Level 10.",
+  "yer": "basarim (Android):45"
+ },
+ {
+  "no": 340,
+  "kaynak": "Çaycı Çırağı",
+  "gorunen": "Çaycı Çırağı",
+  "tr": "Çaycı Çırağı",
+  "en": "Tea Maker Apprentice",
+  "yer": "basarim (Android):46"
+ },
+ {
+  "no": 341,
+  "kaynak": "100 servis yap.",
+  "gorunen": "100 servis yap.",
+  "tr": "100 servis yap.",
+  "en": "Make 100 deliveries.",
+  "yer": "basarim (Android):46"
+ },
+ {
+  "no": 342,
+  "kaynak": "Semaver Başında",
+  "gorunen": "Semaver Başında",
+  "tr": "Semaver Başında",
+  "en": "By the Tea Urn",
+  "yer": "basarim (Android):47"
+ },
+ {
+  "no": 343,
+  "kaynak": "1.000 servis yap.",
+  "gorunen": "1.000 servis yap.",
+  "tr": "1.000 servis yap.",
+  "en": "Make 1,000 deliveries.",
+  "yer": "basarim (Android):47"
+ },
+ {
+  "no": 344,
+  "kaynak": "Mahallenin Çaycısı",
+  "gorunen": "Mahallenin Çaycısı",
+  "tr": "Mahallenin Çaycısı",
+  "en": "Neighborhood Tea Maker",
+  "yer": "basarim (Android):48"
+ },
+ {
+  "no": 345,
+  "kaynak": "6.000 servis yap.",
+  "gorunen": "6.000 servis yap.",
+  "tr": "6.000 servis yap.",
+  "en": "Make 6,000 deliveries.",
+  "yer": "basarim (Android):48"
+ },
+ {
+  "no": 346,
+  "kaynak": "Büyüyen Mekân",
+  "gorunen": "Büyüyen Mekân",
+  "tr": "Büyüyen Mekân",
+  "en": "Growing Place",
+  "yer": "basarim (Android):49"
+ },
+ {
+  "no": 347,
+  "kaynak": "10 nokta aç.",
+  "gorunen": "10 nokta aç.",
+  "tr": "10 nokta aç.",
+  "en": "Unlock 10 spots.",
+  "yer": "basarim (Android):49"
+ },
+ {
+  "no": 348,
+  "kaynak": "Dolu Mekân",
+  "gorunen": "Dolu Mekân",
+  "tr": "Dolu Mekân",
+  "en": "Full House",
+  "yer": "basarim (Android):50"
+ },
+ {
+  "no": 349,
+  "kaynak": "24 nokta aç.",
+  "gorunen": "24 nokta aç.",
+  "tr": "24 nokta aç.",
+  "en": "Unlock 24 spots.",
+  "yer": "basarim (Android):50"
+ },
+ {
+  "no": 350,
+  "kaynak": "Kasa Doluyor",
+  "gorunen": "Kasa Doluyor",
+  "tr": "Kasa Doluyor",
+  "en": "Cash Is Rolling In",
+  "yer": "basarim (Android):51"
+ },
+ {
+  "no": 351,
+  "kaynak": "Toplam 10.000 ₺ kazan.",
+  "gorunen": "Toplam 10.000 ₺ kazan.",
+  "tr": "Toplam 10.000 ₺ kazan.",
+  "en": "Earn 10,000 coins in total.",
+  "yer": "basarim (Android):51"
+ },
+ {
+  "no": 352,
+  "kaynak": "Esnaf",
+  "gorunen": "Esnaf",
+  "tr": "Esnaf",
+  "en": "Shopkeeper",
+  "yer": "basarim (Android):52"
+ },
+ {
+  "no": 353,
+  "kaynak": "Toplam 200.000 ₺ kazan.",
+  "gorunen": "Toplam 200.000 ₺ kazan.",
+  "tr": "Toplam 200.000 ₺ kazan.",
+  "en": "Earn 200,000 coins in total.",
+  "yer": "basarim (Android):52"
+ },
+ {
+  "no": 354,
+  "kaynak": "Köşenin Sahibi",
+  "gorunen": "Köşenin Sahibi",
+  "tr": "Köşenin Sahibi",
+  "en": "Master of the Place",
+  "yer": "basarim (Android):53"
+ },
+ {
+  "no": 355,
+  "kaynak": "Toplam 600.000 ₺ kazan.",
+  "gorunen": "Toplam 600.000 ₺ kazan.",
+  "tr": "Toplam 600.000 ₺ kazan.",
+  "en": "Earn 600,000 coins in total.",
+  "yer": "basarim (Android):53"
+ },
+ {
+  "no": 356,
+  "kaynak": "Usta Dokunuşu",
+  "gorunen": "Usta Dokunuşu",
+  "tr": "Usta Dokunuşu",
+  "en": "Master's Touch",
+  "yer": "basarim (Android):54"
+ },
+ {
+  "no": 357,
+  "kaynak": "İlk Usta yükseltmesini al.",
+  "gorunen": "İlk Usta yükseltmesini al.",
+  "tr": "İlk Usta yükseltmesini al.",
+  "en": "Get your first Master upgrade.",
+  "yer": "basarim (Android):54"
+ },
+ {
+  "no": 358,
+  "kaynak": "Özenli Masalar",
+  "gorunen": "Özenli Masalar",
+  "tr": "Özenli Masalar",
+  "en": "Polished Tables",
+  "yer": "basarim (Android):55"
+ },
+ {
+  "no": 359,
+  "kaynak": "8 masayı son seviyeye çıkar.",
+  "gorunen": "8 masayı son seviyeye çıkar.",
+  "tr": "8 masayı son seviyeye çıkar.",
+  "en": "Max out 8 tables.",
+  "yer": "basarim (Android):55"
+ },
+ {
+  "no": 360,
+  "kaynak": "Eksiksiz Salon",
+  "gorunen": "Eksiksiz Salon",
+  "tr": "Eksiksiz Salon",
+  "en": "Complete Hall",
+  "yer": "basarim (Android):56"
+ },
+ {
+  "no": 361,
+  "kaynak": "20 masayı son seviyeye çıkar.",
+  "gorunen": "20 masayı son seviyeye çıkar.",
+  "tr": "20 masayı son seviyeye çıkar.",
+  "en": "Max out 20 tables.",
+  "yer": "basarim (Android):56"
+ },
+ {
+  "no": 362,
+  "kaynak": "Hepsi Tamam",
+  "gorunen": "Hepsi Tamam",
+  "tr": "Hepsi Tamam",
+  "en": "All Done",
+  "yer": "basarim (Android):57"
+ },
+ {
+  "no": 363,
+  "kaynak": "Bütün görevleri bitir.",
+  "gorunen": "Bütün görevleri bitir.",
+  "tr": "Bütün görevleri bitir.",
+  "en": "Complete all tasks.",
+  "yer": "basarim (Android):57"
+ },
+ {
+  "no": 364,
+  "kaynak": "Koleksiyoncu",
+  "gorunen": "Koleksiyoncu",
+  "tr": "Koleksiyoncu",
+  "en": "Collector",
+  "yer": "basarim (Android):58"
+ },
+ {
+  "no": 365,
+  "kaynak": "Bütün hedefleri topla.",
+  "gorunen": "Bütün hedefleri topla.",
+  "tr": "Bütün hedefleri topla.",
+  "en": "Claim all goals.",
+  "yer": "basarim (Android):58"
+ },
+ {
+  "no": 366,
+  "kaynak": "Seviye ${levelProgress(yerel.xp).level}",
+  "gorunen": "Seviye {1}",
+  "tr": "Seviye {1}",
+  "en": "Level {1}",
+  "yer": "bulut:248"
+ },
+ {
+  "no": 367,
+  "kaynak": "Çay Ocağı",
+  "gorunen": "Çay Ocağı",
+  "tr": "Çay Ocağı",
+  "en": "Tea Station",
+  "yer": "kafeAdi:9, tick:1374"
+ },
+ {
+  "no": 368,
+  "kaynak": "Yükselt",
+  "gorunen": "Yükselt",
+  "tr": "Yükselt",
+  "en": "Upgrade",
+  "yer": "markerFrame:91, markerFrame:101"
+ },
+ {
+  "no": 369,
+  "kaynak": "Lavaboyu Büyüt",
+  "gorunen": "Lavaboyu Büyüt",
+  "tr": "Lavaboyu Büyüt",
+  "en": "Expand Restroom",
+  "yer": "markerFrame:92"
+ },
+ {
+  "no": 370,
+  "kaynak": "Sv ${seviye + 1}",
+  "gorunen": "Sv {1}",
+  "tr": "Sv {1}",
+  "en": "Lv {1}",
+  "yer": "markerFrame:94"
+ },
+ {
+  "no": 371,
+  "kaynak": "Apple hesabında",
+  "gorunen": "Apple hesabında",
+  "tr": "Apple hesabında",
+  "en": "in your Apple account",
+  "yer": "platform:22"
+ },
+ {
+  "no": 372,
+  "kaynak": "Google hesabında",
+  "gorunen": "Google hesabında",
+  "tr": "Google hesabında",
+  "en": "in your Google account",
+  "yer": "platform:22"
+ },
+ {
+  "no": 373,
+  "kaynak": "mağaza hesabında",
+  "gorunen": "mağaza hesabında",
+  "tr": "mağaza hesabında",
+  "en": "in your store account",
+  "yer": "platform:22"
+ },
+ {
+  "no": 374,
+  "kaynak": "Salon ${a + 1}:",
+  "gorunen": "Salon {1}:",
+  "tr": "Salon {1}:",
+  "en": "Hall {1}:",
+  "yer": "rules:525"
+ },
+ {
+  "no": 375,
+  "kaynak": "Yeni: ${pre(a)}Masaları yükseltebilirsin 🪑",
+  "gorunen": "Yeni: {1}Masaları yükseltebilirsin 🪑",
+  "tr": "Yeni: {1}Masaları yükseltebilirsin 🪑",
+  "en": "New: You can upgrade {1}tables 🪑",
+  "yer": "rules:535"
+ },
+ {
+  "no": 376,
+  "kaynak": "Yeni: Tezgâhı yükseltebilirsin 🍞",
+  "gorunen": "Yeni: Tezgâhı yükseltebilirsin 🍞",
+  "tr": "Yeni: Tezgâhı yükseltebilirsin 🍞",
+  "en": "New: You can upgrade the Counter 🍞",
+  "yer": "rules:543"
+ },
+ {
+  "no": 377,
+  "kaynak": "Yeni: Çay ocağını yükseltebilirsin ☕",
+  "gorunen": "Yeni: Çay ocağını yükseltebilirsin ☕",
+  "tr": "Yeni: Çay ocağını yükseltebilirsin ☕",
+  "en": "New: You can upgrade the Tea Station ☕",
+  "yer": "rules:543"
+ },
+ {
+  "no": 378,
+  "kaynak": "Yeni: ${op.label} 🔓",
+  "gorunen": "Yeni: {1} 🔓",
+  "tr": "Yeni: {1} 🔓",
+  "en": "New: {1} 🔓",
+  "yer": "rules:546"
+ },
+ {
+  "no": 379,
+  "kaynak": "Bulut kaydı yüklendi",
+  "gorunen": "Bulut kaydı yüklendi",
+  "tr": "Bulut kaydı yüklendi",
+  "en": "Cloud save loaded",
+  "yer": "store:1495"
+ },
+ {
+  "no": 380,
+  "kaynak": "Bekleyen paralar otomatik toplandı",
+  "gorunen": "Bekleyen paralar otomatik toplandı",
+  "tr": "Bekleyen paralar otomatik toplandı",
+  "en": "Pending coins collected automatically",
+  "yer": "tick:792"
+ },
+ {
+  "no": 381,
+  "kaynak": "Tezgâh",
+  "gorunen": "Tezgâh",
+  "tr": "Tezgâh",
+  "en": "Counter",
+  "yer": "tick:1374"
+ },
+ {
+  "no": 382,
+  "kaynak": "${unitName} L${lv + 1}${lv < stationSoftMaxLevel() ? ` → L${lv + 2}` : ' (Usta 💎)'}",
+  "gorunen": "{1} L{2}{3}",
+  "tr": "{1} L{2}{3}",
+  "en": "{1} L{2}{3}",
+  "yer": "tick:1378"
+ },
+ {
+  "no": 383,
+  "kaynak": "Masa ${i + 1}: L${tableLevels[i] + 1}${tableLevels[i] < tableSoftMaxLevel() ? ` → L${tableLevels[i] + 2} (+${C.tables.tipBase} bahşiş)` : ' (Usta 💎)'}",
+  "gorunen": "Masa {1}: L{2}{3}",
+  "tr": "Masa {1}: L{2}{3}",
+  "en": "Table {1}: L{2}{3}",
+  "yer": "tick:1421"
+ },
+ {
+  "no": 384,
+  "kaynak": "Lavabo L${c.lavaboLevel}${c.lavaboLevel < lavaboMaxLevel() ? ` → L${c.lavaboLevel + 1}` : ''}",
+  "gorunen": "Lavabo L{1}{2}",
+  "tr": "Lavabo L{1}{2}",
+  "en": "Restroom L{1}{2}",
+  "yer": "tick:1463"
+ },
+ {
+  "no": 385,
+  "kaynak": "${ad} salondan kaldırıldı",
+  "gorunen": "{1} salondan kaldırıldı",
+  "tr": "{1} salondan kaldırıldı",
+  "en": "{1} removed from the Hall",
+  "yer": "vitrin:118"
+ },
+ {
+  "no": 386,
+  "kaynak": "${ad} artık elinde",
+  "gorunen": "{1} artık elinde",
+  "tr": "{1} artık elinde",
+  "en": "{1} is now in your hand",
+  "yer": "vitrin:120"
+ },
+ {
+  "no": 387,
+  "kaynak": "${ad} · ${o.salon + 1}. Salon",
+  "gorunen": "{1} · {2}. Salon",
+  "tr": "{1} · {2}. Salon",
+  "en": "{1} · Hall {2}",
+  "yer": "vitrin:121"
+ },
+ {
+  "no": 388,
+  "kaynak": "${ad} uygulandı",
+  "gorunen": "{1} uygulandı",
+  "tr": "{1} uygulandı",
+  "en": "{1} applied",
+  "yer": "vitrin:122"
+ },
+ {
+  "no": 389,
+  "kaynak": null,
+  "gorunen": "{1} salona kondu",
+  "tr": "{1} salona kondu",
+  "en": "{1} placed in the Hall",
+  "yer": "yeni"
+ },
+ {
+  "no": 390,
+  "kaynak": null,
+  "gorunen": "{1} giyildi",
+  "tr": "{1} giyildi",
+  "en": "{1} equipped",
+  "yer": "yeni"
+ },
+ {
+  "no": 391,
+  "kaynak": null,
+  "gorunen": "Dil",
+  "tr": "Dil",
+  "en": "Language",
+  "yer": "yeni"
+ },
+ {
+  "no": 392,
+  "kaynak": null,
+  "gorunen": "Otomatik",
+  "tr": "Otomatik",
+  "en": "Automatic",
+  "yer": "yeni"
+ },
+ {
+  "no": 393,
+  "kaynak": null,
+  "gorunen": "Türkçe",
+  "tr": "Türkçe",
+  "en": "Türkçe",
+  "yer": "yeni"
+ },
+ {
+  "no": 394,
+  "kaynak": null,
+  "gorunen": "English",
+  "tr": "English",
+  "en": "English",
+  "yer": "yeni"
+ },
+ {
+  "no": 395,
+  "kaynak": null,
+  "gorunen": "Dil değişince oyun yeniden yüklenir",
+  "tr": "Dil değişince oyun yeniden yüklenir",
+  "en": "The game reloads when you change the language",
+  "yer": "yeni"
+ }
+]

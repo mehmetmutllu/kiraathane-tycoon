@@ -1,0 +1,3712 @@
+[
+ {
+  "dosya": "src/components/ui/CharacterPanel.tsx",
+  "satir": 105,
+  "tur": "jsx",
+  "metin": "eksik",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/CharacterPanel.tsx",
+  "satir": 111,
+  "tur": "dize",
+  "metin": "Tepsi",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/CharacterPanel.tsx",
+  "satir": 112,
+  "tur": "dize",
+  "metin": "Para Mıknatısı",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/CharacterPanel.tsx",
+  "satir": 113,
+  "tur": "dize",
+  "metin": "Hareket Hızı",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/CharacterPanel.tsx",
+  "satir": 113,
+  "tur": "dize",
+  "metin": "hız",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/CharacterPanel.tsx",
+  "satir": 137,
+  "tur": "dize",
+  "metin": "ürün",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/CharacterPanel.tsx",
+  "satir": 143,
+  "tur": "dize",
+  "metin": "Tepsi",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/CharacterPanel.tsx",
+  "satir": 169,
+  "tur": "dize",
+  "metin": "Son seviye",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/CharacterPanel.tsx",
+  "satir": 176,
+  "tur": "dize",
+  "metin": "Hız",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/CharacterPanel.tsx",
+  "satir": 180,
+  "tur": "dize",
+  "metin": "hız",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/CharacterPanel.tsx",
+  "satir": 183,
+  "tur": "dize",
+  "metin": "hız",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/CharacterPanel.tsx",
+  "satir": 200,
+  "tur": "dize",
+  "metin": "Son seviye",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/CharacterPanel.tsx",
+  "satir": 204,
+  "tur": "dize",
+  "metin": "Garsonların ortak tepsisi ve hızı — hepsi tek havuzdan, her masaya.",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/CharacterPanel.tsx",
+  "satir": 229,
+  "tur": "dize",
+  "metin": "Leğen",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/CharacterPanel.tsx",
+  "satir": 233,
+  "tur": "jsx",
+  "metin": "bardak",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/CharacterPanel.tsx",
+  "satir": 236,
+  "tur": "jsx",
+  "metin": "bardak",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/CharacterPanel.tsx",
+  "satir": 253,
+  "tur": "dize",
+  "metin": "Son seviye",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/CharacterPanel.tsx",
+  "satir": 260,
+  "tur": "dize",
+  "metin": "Hız",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/CharacterPanel.tsx",
+  "satir": 264,
+  "tur": "dize",
+  "metin": "hız",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/CharacterPanel.tsx",
+  "satir": 267,
+  "tur": "dize",
+  "metin": "hız",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/CharacterPanel.tsx",
+  "satir": 284,
+  "tur": "dize",
+  "metin": "Son seviye",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/CharacterPanel.tsx",
+  "satir": 289,
+  "tur": "dize",
+  "metin": "Tüm salonların bulaşıkçılarına ortak: leğen tek turda daha çok taşır, hız turu kısaltır.",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/CharacterPanel.tsx",
+  "satir": 323,
+  "tur": "dize",
+  "metin": "Çaycı",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/CharacterPanel.tsx",
+  "satir": 324,
+  "tur": "dize",
+  "metin": "Garson",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/CharacterPanel.tsx",
+  "satir": 325,
+  "tur": "dize",
+  "metin": "Bulaşıkçı",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/CharacterPanel.tsx",
+  "satir": 330,
+  "tur": "dize",
+  "metin": "Çaycı",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/CharacterPanel.tsx",
+  "satir": 330,
+  "tur": "dize",
+  "metin": "Garson",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/CharacterPanel.tsx",
+  "satir": 330,
+  "tur": "dize",
+  "metin": "Bulaşıkçı",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/CharacterPanel.tsx",
+  "satir": 336,
+  "tur": "dize",
+  "metin": "Çaycı seviyesi",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/CharacterPanel.tsx",
+  "satir": 341,
+  "tur": "ozellik:color",
+  "metin": "var(--txa)",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/CharacterPanel.tsx",
+  "satir": 356,
+  "tur": "dize",
+  "metin": "char-tab${tab === id ? ' active' : ''}",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/CharacterPanel.tsx",
+  "satir": 437,
+  "tur": "dize",
+  "metin": "Son seviye",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 101,
+  "tur": "dize",
+  "metin": "%${(oran * 100).toLocaleString('tr-TR', { maximumFractionDigits: 1 })}",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 319,
+  "tur": "dize",
+  "metin": "Seviye",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 331,
+  "tur": "dize",
+  "metin": "${Math.min(100, (lvl.cur / lvl.need) * 100)}%",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 347,
+  "tur": "dize",
+  "metin": "Ayarlar",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 356,
+  "tur": "dize",
+  "metin": "side-stack${traySpot ? ' spot-acik' : ''}",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 358,
+  "tur": "dize",
+  "metin": "round-btn${camZoomOut ? ' on' : ''}",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 360,
+  "tur": "dize",
+  "metin": "Yakınlaş",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 360,
+  "tur": "dize",
+  "metin": "Genel bakış",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 367,
+  "tur": "dize",
+  "metin": "round-btn tray-btn video-btn${videoKalan > 0 ? '' : ' bos'}",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 369,
+  "tur": "dize",
+  "metin": "Reklam izle, para kazan",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 384,
+  "tur": "dize",
+  "metin": "Tostları bırak",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 400,
+  "tur": "dize",
+  "metin": "Çayları bırak",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 415,
+  "tur": "dize",
+  "metin": "Müşteri kalmadıysa tepsini boşaltabilirsin — kaplar temiz rafa döner.",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 450,
+  "tur": "dize",
+  "metin": "band${quest.done ? ' done' : ''}",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 466,
+  "tur": "dize",
+  "metin": "Tamamlandı",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 481,
+  "tur": "dize",
+  "metin": "Çaycı panelinden al",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 481,
+  "tur": "dize",
+  "metin": "Hedefe git",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 496,
+  "tur": "dize",
+  "metin": "Görev hattı tamamlandı — mekân senin.",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 507,
+  "tur": "dize",
+  "metin": "botnav${spotlight ? ' spot-acik' : ''}",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 512,
+  "tur": "dize",
+  "metin": "Görevler",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 523,
+  "tur": "dize",
+  "metin": "Hedefler",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 532,
+  "tur": "dize",
+  "metin": "Mağaza",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 539,
+  "tur": "dize",
+  "metin": "Çaycı",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 562,
+  "tur": "dize",
+  "metin": "Buradan yükselt",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 563,
+  "tur": "dize",
+  "metin": "Bu yükseltme",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 563,
+  "tur": "dize",
+  "metin": "Çaycı",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 563,
+  "tur": "dize",
+  "metin": "sekmesinde — dokun ve satın al.",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 581,
+  "tur": "dize",
+  "metin": "Ayarlar",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 590,
+  "tur": "dize",
+  "metin": "Kafenin adı",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 602,
+  "tur": "dize",
+  "metin": "Ses",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 604,
+  "tur": "dize",
+  "metin": "Ses seviyesi",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 610,
+  "tur": "dize",
+  "metin": "Müzik",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 612,
+  "tur": "dize",
+  "metin": "Müzik seviyesi",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 626,
+  "tur": "dize",
+  "metin": "Gölgeler",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 641,
+  "tur": "dize",
+  "metin": "KÜNYE",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 643,
+  "tur": "dize",
+  "metin": "Kayıt şeması",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 643,
+  "tur": "jsx",
+  "metin": "v",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 644,
+  "tur": "dize",
+  "metin": "Toplam kazanç",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 645,
+  "tur": "dize",
+  "metin": "Servis edilen çay",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 646,
+  "tur": "dize",
+  "metin": "Yıkanan bulaşık",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 647,
+  "tur": "dize",
+  "metin": "Açılan nokta",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 654,
+  "tur": "dize",
+  "metin": "Kayıt bu cihazda tutulur; Play Games'e bağlıysan buluta da yedeklenir. Oyunu sıfırlarsan geri alınamaz.",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 655,
+  "tur": "dize",
+  "metin": "Kayıt bu cihazda tutulur. Oyunu sıfırlarsan geri alınamaz.",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 658,
+  "tur": "dize",
+  "metin": "Oyunu sıfırla",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 663,
+  "tur": "dize",
+  "metin": "Oyunu sıfırla?",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 664,
+  "tur": "dize",
+  "metin": "Tüm ilerleme silinecek",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 664,
+  "tur": "dize",
+  "metin": "${t('(bulut yedeği dahil)')}",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 664,
+  "tur": "dize",
+  "metin": ". Geri alınamaz.",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 666,
+  "tur": "dize",
+  "metin": "Evet, sıfırla",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 669,
+  "tur": "dize",
+  "metin": "Vazgeç",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 682,
+  "tur": "dize",
+  "metin": "Seviye {1}!",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 686,
+  "tur": "dize",
+  "metin": "Servis hızı",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 714,
+  "tur": "dize",
+  "metin": "Sen yokken mekân çalıştı",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 719,
+  "tur": "dize",
+  "metin": "İzle, +{1}",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 748,
+  "tur": "dize",
+  "metin": "BUGÜN",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 749,
+  "tur": "dize",
+  "metin": "Bugünkü görevleri tamamladın — yenileri yarın",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 756,
+  "tur": "dize",
+  "metin": "band${hazir ? ' done' : ''}",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 759,
+  "tur": "dize",
+  "metin": "GÜNLÜK GÖREV",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 762,
+  "tur": "dize",
+  "metin": "Ödülünü al",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 765,
+  "tur": "dize",
+  "metin": "${Math.min(100, (g.cur / g.target) * 100)}%",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 814,
+  "tur": "dize",
+  "metin": "navtab${active ? ' active' : ''}${spot ? ' spot' : ''}${kutla ? ' kutla' : ''}",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 844,
+  "tur": "dize",
+  "metin": "translate(-50%,-50%) translate(${p.x.toFixed(0)}px, ${p.y.toFixed(0)}px)",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 854,
+  "tur": "dize",
+  "metin": "Hedefe bak",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 905,
+  "tur": "dize",
+  "metin": "Bulaşık birikiyor",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 907,
+  "tur": "dize",
+  "metin": "Müşteriler çayını içince masada",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 907,
+  "tur": "jsx",
+  "metin": "kirli bardak",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 907,
+  "tur": "dize",
+  "metin": "bırakır. Onları topla ve bulaşık tezgâhına götür — yıkanan bardaklar temiz rafa döner.",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 911,
+  "tur": "dize",
+  "metin": "Anladım",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 937,
+  "tur": "dize",
+  "metin": "${Math.floor(dk / 60)} sa ${dk % 60} dk",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 937,
+  "tur": "dize",
+  "metin": "${dk} dk",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 941,
+  "tur": "dize",
+  "metin": "Kapat",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 948,
+  "tur": "dize",
+  "metin": "Bir reklam izle, son dakikada kazandığın kadar para al",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 951,
+  "tur": "dize",
+  "metin": "master-buy ad${hazir && kalan > 0 && odul > 0 && !izleniyor ? '' : ' off'}",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 957,
+  "tur": "dize",
+  "metin": "İzle",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 962,
+  "tur": "dize",
+  "metin": "Yeni haklar {1} sonra",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 964,
+  "tur": "dize",
+  "metin": "Önce biraz servis yap — ödül son dakikanın kazancı",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 965,
+  "tur": "dize",
+  "metin": "Kalan hak: {1}/{2}",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 994,
+  "tur": "dize",
+  "metin": "Kapat",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1000,
+  "tur": "dize",
+  "metin": "Masa",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1000,
+  "tur": "dize",
+  "metin": "· Usta",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1001,
+  "tur": "dize",
+  "metin": "Bu masanın bahşişi kalıcı olarak ×",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1001,
+  "tur": "jsx",
+  "metin": "olur",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1004,
+  "tur": "dize",
+  "metin": "master-buy${yeter ? '' : ' off'}",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1013,
+  "tur": "dize",
+  "metin": "master-buy ad${izlenebilir ? '' : ' off'}",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1019,
+  "tur": "dize",
+  "metin": "İzle",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1024,
+  "tur": "dize",
+  "metin": "Reklamla Usta yarın yeniden",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1030,
+  "tur": "jsx",
+  "metin": "eksik",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1048,
+  "tur": "dize",
+  "metin": "goal${hazir ? ' ready' : ' full'}",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1053,
+  "tur": "dize",
+  "metin": "Reklamsız paket hediyesi",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1056,
+  "tur": "dize",
+  "metin": "Her gün yenilenir",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1056,
+  "tur": "dize",
+  "metin": "Bugün alındı",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1059,
+  "tur": "dize",
+  "metin": "Al ·",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1094,
+  "tur": "dize",
+  "metin": "Görevler",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1096,
+  "tur": "dize",
+  "metin": "BUGÜN",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1096,
+  "tur": "dize",
+  "metin": "· ${gunHazir} ÖDÜL HAZIR",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1101,
+  "tur": "dize",
+  "metin": "goal${g.state === 'claimable' ? ' ready' : ''}${g.state === 'claimed' ? ' full' : ''}",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1114,
+  "tur": "dize",
+  "metin": "${Math.min(100, (g.cur / g.target) * 100)}%",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1117,
+  "tur": "dize",
+  "metin": "Bugün alındı",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1117,
+  "tur": "dize",
+  "metin": "Her gün yenilenir",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1124,
+  "tur": "dize",
+  "metin": "Ödülü al",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1140,
+  "tur": "dize",
+  "metin": "Bugün kalan ödül:",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1140,
+  "tur": "dize",
+  "metin": "· yarın üç yeni görev",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1143,
+  "tur": "dize",
+  "metin": "Bugünün görevleri bitti — yarın üç yeni görev",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1165,
+  "tur": "dize",
+  "metin": "MEKÂN",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1185,
+  "tur": "dize",
+  "metin": "${Math.min(100, ((quest.cur ?? 0) / quest.total) * 100)}%",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1205,
+  "tur": "dize",
+  "metin": "Görev hattı tamamlandı — mekân senin.",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1224,
+  "tur": "dize",
+  "metin": "TAMAMLANAN ·",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1289,
+  "tur": "dize",
+  "metin": "Hedefler",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1296,
+  "tur": "dize",
+  "metin": "Seviye",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1298,
+  "tur": "dize",
+  "metin": "${Math.min(100, (lvl.cur / lvl.need) * 100)}%",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1304,
+  "tur": "dize",
+  "metin": "Her hedef seviyeni yükseltir · seviye bonusu",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1305,
+  "tur": "dize",
+  "metin": "servis hızı",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1306,
+  "tur": "dize",
+  "metin": "· koleksiyon bonusu ${yuzde(bonus)} gelir",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1320,
+  "tur": "dize",
+  "metin": "Usta masalar",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1323,
+  "tur": "dize",
+  "metin": "{1} masa hazır — yanındaki mavi noktaya git",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1324,
+  "tur": "dize",
+  "metin": "Masayı para tavanına çıkarınca Usta noktası açılır",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1334,
+  "tur": "dize",
+  "metin": "KATEGORİLER",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1334,
+  "tur": "dize",
+  "metin": "· ${toplanabilir} ÖDÜL HAZIR",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1342,
+  "tur": "dize",
+  "metin": "goal${g.state === 'claimable' ? ' ready' : ''}${bitti ? ' full' : ''}",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1367,
+  "tur": "dize",
+  "metin": "Ödülü al",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1386,
+  "tur": "dize",
+  "metin": "{1} · {2}. kademe",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1436,
+  "tur": "dize",
+  "metin": "Bir kez alınabilir",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1437,
+  "tur": "dize",
+  "metin": "Başlangıç Paketi",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1445,
+  "tur": "jsx",
+  "metin": "elmas",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1447,
+  "tur": "dize",
+  "metin": "Kıyafet, tepsi ve dekor için",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1451,
+  "tur": "dize",
+  "metin": "linear-gradient(135deg, ${pulA} 0 55%, ${pulB} 55% 100%)",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1453,
+  "tur": "dize",
+  "metin": "Kurucu kıyafeti",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1453,
+  "tur": "dize",
+  "metin": "Yalnız bu pakette",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1455,
+  "tur": "dize",
+  "metin": "Bordo yelek ve fes",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1460,
+  "tur": "dize",
+  "metin": "Al · {1}",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1463,
+  "tur": "dize",
+  "metin": "Şimdi değil",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1471,
+  "tur": "dize",
+  "metin": "Mağazaya bağlanılamadı",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1484,
+  "tur": "dize",
+  "metin": "Başlangıç Paketi senin",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1484,
+  "tur": "dize",
+  "metin": "Reklamlar kaldırıldı",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1484,
+  "tur": "dize",
+  "metin": "Elmas",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1487,
+  "tur": "dize",
+  "metin": "Kurucu kıyafetini giydin.",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1489,
+  "tur": "dize",
+  "metin": "Her gün {1} elmas Görevler'de seni bekliyor.",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1505,
+  "tur": "dize",
+  "metin": "Harika!",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1519,
+  "tur": "dize",
+  "metin": "(prefers-reduced-motion: reduce)",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1548,
+  "tur": "dize",
+  "metin": "Kalıcı gelir",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1666,
+  "tur": "dize",
+  "metin": "odul-sat${satir.ikiKat ? ' iki-kat' : ''}${tekSatir && satir.ikiKat ? ' tek' : ''}",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1672,
+  "tur": "dize",
+  "metin": "Al",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1672,
+  "tur": "dize",
+  "metin": "Harika!",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1676,
+  "tur": "dize",
+  "metin": "sheet-cta ad${hazir && !izleniyor ? '' : ' off'}",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1681,
+  "tur": "dize",
+  "metin": "İzle, {1}× al",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1722,
+  "tur": "dize",
+  "metin": "goal${sahip ? ' full' : ''}",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1742,
+  "tur": "dize",
+  "metin": "Alındı",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1755,
+  "tur": "dize",
+  "metin": ". İnternetini kontrol edip tekrar dene.",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1761,
+  "tur": "dize",
+  "metin": "Reklamları Kaldır",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1762,
+  "tur": "dize",
+  "metin": "Oyunun arasına giren reklamlar kalkar. Ödüllü videoları yine istediğinde izlersin. Her gün {1} elmas hediye.",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1767,
+  "tur": "dize",
+  "metin": "Başlangıç Paketi",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1767,
+  "tur": "dize",
+  "metin": "{1} elmas ve yalnız bu pakette olan Kurucu kıyafeti. Bir kez alınabilir.",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1771,
+  "tur": "dize",
+  "metin": "Elmas",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1771,
+  "tur": "dize",
+  "metin": "Kıyafet, tepsi ve dekor almak için.",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1775,
+  "tur": "dize",
+  "metin": "Aldıkların",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1775,
+  "tur": "dize",
+  "metin": "saklanır. Telefon değiştirirsen Ayarlar'dan geri yükleyebilirsin.",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1784,
+  "tur": "dize",
+  "metin": "Şu an giyiyorsun",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1785,
+  "tur": "dize",
+  "metin": "Şu an elinde",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1786,
+  "tur": "dize",
+  "metin": "Salonda duruyor",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1787,
+  "tur": "dize",
+  "metin": "Şu an salonda",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1788,
+  "tur": "dize",
+  "metin": "Şu an salonda",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1789,
+  "tur": "dize",
+  "metin": "Şu an salonda",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1797,
+  "tur": "dize",
+  "metin": "notice${notice.kind === 'satin' ? ' satin' : ''}",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1881,
+  "tur": "dize",
+  "metin": "Kıyafet",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1882,
+  "tur": "dize",
+  "metin": "Tepsi",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1883,
+  "tur": "dize",
+  "metin": "Dekor",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1884,
+  "tur": "dize",
+  "metin": "Paketler",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1885,
+  "tur": "dize",
+  "metin": "Masa",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1886,
+  "tur": "dize",
+  "metin": "Zemin",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1887,
+  "tur": "dize",
+  "metin": "Duvar",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1948,
+  "tur": "dize",
+  "metin": "shop-chip${isSel ? ' sel' : ''}",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1964,
+  "tur": "dize",
+  "metin": "linear-gradient(135deg, ${a} 0 55%, ${b} 55% 100%)",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1987,
+  "tur": "dize",
+  "metin": "linear-gradient(135deg, ${cols[0]} 0 50%, ${cols[1]} 50% 100%)",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1996,
+  "tur": "dize",
+  "metin": "Paketler",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 1996,
+  "tur": "dize",
+  "metin": "Mağaza",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 2002,
+  "tur": "dize",
+  "metin": "shop-tab${ELMAS_SEKME.includes(k) ? ' elmas' : ''}${tab === k ? ' active' : ''}",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 2024,
+  "tur": "dize",
+  "metin": "Masa temaları kilitli",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 2026,
+  "tur": "dize",
+  "metin": "Tüm salonları aç ve bütün masaları son seviyeye getir; sonra masalarını renklendirebilirsin.",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 2029,
+  "tur": "dize",
+  "metin": "req done",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 2030,
+  "tur": "dize",
+  "metin": "Salon",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 2033,
+  "tur": "dize",
+  "metin": "req done",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 2034,
+  "tur": "dize",
+  "metin": "Son seviye masa",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 2059,
+  "tur": "dize",
+  "metin": "shop-zone-btn${zn === z ? ' sel' : ''}",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 2063,
+  "tur": "dize",
+  "metin": "Salon",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 2078,
+  "tur": "dize",
+  "metin": "{1}. Salon'u açınca alabilirsin",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 2080,
+  "tur": "dize",
+  "metin": "Sahipsin",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 2082,
+  "tur": "dize",
+  "metin": "Başlangıç Paketi'nde",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 2084,
+  "tur": "dize",
+  "metin": "${fmt(secili.cost)} elmas",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 2093,
+  "tur": "jsx",
+  "metin": "eksik",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 2103,
+  "tur": "dize",
+  "metin": "shop-buy${secili.applied && !kaldirilir ? ' sel' : ''}${kaldirilir ? ' notr' : ''}${kilitSalon ? ' kilitli' : ''}",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 2114,
+  "tur": "dize",
+  "metin": "Salondan Kaldır",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 2117,
+  "tur": "dize",
+  "metin": "Uygulandı",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 2121,
+  "tur": "dize",
+  "metin": ". Salon'da açılır",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 2124,
+  "tur": "dize",
+  "metin": "Salona Koy",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 2124,
+  "tur": "dize",
+  "metin": "Uygula",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 2126,
+  "tur": "dize",
+  "metin": "Paketi Gör",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 2129,
+  "tur": "dize",
+  "metin": "Satın Al ·",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 2153,
+  "tur": "dize",
+  "metin": "PLAY GAMES",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 2156,
+  "tur": "dize",
+  "metin": "Bağlısın — ilerlemen buluta yedekleniyor.",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 2158,
+  "tur": "dize",
+  "metin": "Başarımlar",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 2163,
+  "tur": "dize",
+  "metin": "Bağlanamadı — tekrar dene",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 2163,
+  "tur": "dize",
+  "metin": "Play Games'e bağlan",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 2183,
+  "tur": "dize",
+  "metin": "Satın alımlar geri yüklendi",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 2185,
+  "tur": "dize",
+  "metin": "Mağazaya ulaşılamadı",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 2186,
+  "tur": "dize",
+  "metin": "Satın alımları geri yükle",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 2200,
+  "tur": "dize",
+  "metin": "Gizlilik politikası",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 2203,
+  "tur": "dize",
+  "metin": "Destek",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 2207,
+  "tur": "dize",
+  "metin": "Reklam tercihleri",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 2243,
+  "tur": "dize",
+  "metin": "setting-slider${disabled ? ' kapali' : ''}",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/HUD.tsx",
+  "satir": 2279,
+  "tur": "dize",
+  "metin": "switch${value ? ' on' : ''}",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/icons.tsx",
+  "satir": 557,
+  "tur": "ozellik:color",
+  "metin": "var(--tx)",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/Joystick.tsx",
+  "satir": 57,
+  "tur": "dize",
+  "metin": "translate(${stick.kx}px, ${stick.ky}px)",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/KafeAdiKutusu.tsx",
+  "satir": 34,
+  "tur": "dize",
+  "metin": "Kafene bir ad ver",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/KafeAdiKutusu.tsx",
+  "satir": 34,
+  "tur": "dize",
+  "metin": "Kafenin adı",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/KafeAdiKutusu.tsx",
+  "satir": 36,
+  "tur": "dize",
+  "metin": "Kapının üstündeki tabelada bu yazacak. Sonra Ayarlar'dan değiştirebilirsin.",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/KafeAdiKutusu.tsx",
+  "satir": 36,
+  "tur": "dize",
+  "metin": "Kapının üstündeki tabelada yazar.",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/KafeAdiKutusu.tsx",
+  "satir": 49,
+  "tur": "dize",
+  "metin": "Kafenin adı",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/KafeAdiKutusu.tsx",
+  "satir": 57,
+  "tur": "dize",
+  "metin": "Tamam",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/KafeAdiKutusu.tsx",
+  "satir": 61,
+  "tur": "dize",
+  "metin": "Vazgeç",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/Ogretici.tsx",
+  "satir": 46,
+  "tur": "dize",
+  "metin": "Adım {1}/{2}",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/Ogretici.tsx",
+  "satir": 55,
+  "tur": "dize",
+  "metin": "Atla",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/Sheet.tsx",
+  "satir": 40,
+  "tur": "dize",
+  "metin": "Geri",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/components/ui/SplashScreen.tsx",
+  "satir": 80,
+  "tur": "dize",
+  "metin": "splash${done ? ' splash--out' : ''}",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/SplashScreen.tsx",
+  "satir": 84,
+  "tur": "dize",
+  "metin": "${done ? 100 : pct}%",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/components/ui/SplashScreen.tsx",
+  "satir": 86,
+  "tur": "dize",
+  "metin": "Semaver ısınıyor…",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/config/actor.ts",
+  "satir": 148,
+  "tur": "dize",
+  "metin": "Ranger",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/actor.ts",
+  "satir": 149,
+  "tur": "dize",
+  "metin": "Knight",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/actor.ts",
+  "satir": 150,
+  "tur": "dize",
+  "metin": "Rogue",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/actor.ts",
+  "satir": 151,
+  "tur": "dize",
+  "metin": "Barbarian",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/actor.ts",
+  "satir": 292,
+  "tur": "dize",
+  "metin": "Knight",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/actor.ts",
+  "satir": 292,
+  "tur": "dize",
+  "metin": "Rogue",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/actor.ts",
+  "satir": 292,
+  "tur": "dize",
+  "metin": "Mage",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/actor.ts",
+  "satir": 292,
+  "tur": "dize",
+  "metin": "Barbarian",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/actor.ts",
+  "satir": 292,
+  "tur": "dize",
+  "metin": "Ranger",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 666,
+  "tur": "dize",
+  "metin": "2. Masa",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 668,
+  "tur": "dize",
+  "metin": "3. Masa",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 670,
+  "tur": "dize",
+  "metin": "Garson Tut",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 674,
+  "tur": "dize",
+  "metin": "4. Masa",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 680,
+  "tur": "dize",
+  "metin": "2. Garson",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 686,
+  "tur": "dize",
+  "metin": "2. Salon",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 688,
+  "tur": "dize",
+  "metin": "2. Masa",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 690,
+  "tur": "dize",
+  "metin": "3. Masa",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 694,
+  "tur": "dize",
+  "metin": "Bulaşıkçı Tut",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 696,
+  "tur": "dize",
+  "metin": "4. Masa",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 708,
+  "tur": "dize",
+  "metin": "3. Salon",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 710,
+  "tur": "dize",
+  "metin": "2. Masa",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 712,
+  "tur": "dize",
+  "metin": "3. Masa",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 714,
+  "tur": "dize",
+  "metin": "4. Masa",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 748,
+  "tur": "dize",
+  "metin": "3. Garson",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 755,
+  "tur": "dize",
+  "metin": "Lavabo",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 758,
+  "tur": "dize",
+  "metin": "5. Masa",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 760,
+  "tur": "dize",
+  "metin": "6. Masa",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 762,
+  "tur": "dize",
+  "metin": "7. Masa",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 764,
+  "tur": "dize",
+  "metin": "8. Masa",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 766,
+  "tur": "dize",
+  "metin": "9. Masa",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 768,
+  "tur": "dize",
+  "metin": "10. Masa",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 770,
+  "tur": "dize",
+  "metin": "11. Masa",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 772,
+  "tur": "dize",
+  "metin": "12. Masa",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 805,
+  "tur": "dize",
+  "metin": "İLK ÇAY",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 805,
+  "tur": "dize",
+  "metin": "Ocaktan çay al",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 806,
+  "tur": "dize",
+  "metin": "İLK SERVİS",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 806,
+  "tur": "dize",
+  "metin": "Çayı müşteriye götür",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 807,
+  "tur": "dize",
+  "metin": "İLK KAZANÇ",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 807,
+  "tur": "dize",
+  "metin": "Yere düşen parayı topla",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 808,
+  "tur": "dize",
+  "metin": "İKİNCİ MASA",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 808,
+  "tur": "dize",
+  "metin": "2. Masayı aç",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 809,
+  "tur": "dize",
+  "metin": "TEPSİ",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 809,
+  "tur": "dize",
+  "metin": "Tepsini 3 bardağa çıkar",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 810,
+  "tur": "dize",
+  "metin": "İŞLER AÇILIYOR",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 810,
+  "tur": "dize",
+  "metin": "5 çay servis et",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 811,
+  "tur": "dize",
+  "metin": "Çay ocağını yükselt",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 814,
+  "tur": "dize",
+  "metin": "BULAŞIK",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 814,
+  "tur": "dize",
+  "metin": "3 kirli bardak yıka",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 815,
+  "tur": "dize",
+  "metin": "ÜÇÜNCÜ MASA",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 815,
+  "tur": "dize",
+  "metin": "3. Masayı aç",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 816,
+  "tur": "dize",
+  "metin": "TEPSİ",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 816,
+  "tur": "dize",
+  "metin": "Tepsini 4'e çıkar",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 817,
+  "tur": "dize",
+  "metin": "İLK GARSON",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 817,
+  "tur": "dize",
+  "metin": "Garson tut",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 818,
+  "tur": "dize",
+  "metin": "Ocağı Seviye 3'e çıkar",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 819,
+  "tur": "dize",
+  "metin": "SALON DOLDU",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 819,
+  "tur": "dize",
+  "metin": "4. Masayı aç",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 820,
+  "tur": "dize",
+  "metin": "Para mıknatısını güçlendir",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 822,
+  "tur": "dize",
+  "metin": "İKİNCİ GARSON",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 822,
+  "tur": "dize",
+  "metin": "2. Garsonu tut",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 824,
+  "tur": "dize",
+  "metin": "YENİ SALON",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 824,
+  "tur": "dize",
+  "metin": "2. Salonu aç",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 825,
+  "tur": "dize",
+  "metin": "SALON 2",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 825,
+  "tur": "dize",
+  "metin": "Salon 2: 2. Masayı aç",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 826,
+  "tur": "dize",
+  "metin": "Ocağı Seviye 4'e çıkar",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 827,
+  "tur": "dize",
+  "metin": "Garsonu hızlandır",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 828,
+  "tur": "dize",
+  "metin": "MASA SEVİYESİ",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 828,
+  "tur": "dize",
+  "metin": "Bir masayı yükselt",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 829,
+  "tur": "dize",
+  "metin": "SALON 2",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 829,
+  "tur": "dize",
+  "metin": "Salon 2: 3. Masayı aç",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 830,
+  "tur": "dize",
+  "metin": "BULAŞIKÇI",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 830,
+  "tur": "dize",
+  "metin": "Bulaşıkçı tut",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 831,
+  "tur": "dize",
+  "metin": "SALON 2",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 831,
+  "tur": "dize",
+  "metin": "Salon 2: 4. Masayı aç",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 832,
+  "tur": "dize",
+  "metin": "MASA SEVİYESİ",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 832,
+  "tur": "dize",
+  "metin": "2 masayı Seviye 3'e çıkar",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 834,
+  "tur": "dize",
+  "metin": "ÜÇÜNCÜ SALON",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 834,
+  "tur": "dize",
+  "metin": "3. Salonu aç",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 835,
+  "tur": "dize",
+  "metin": "SALON 3",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 835,
+  "tur": "dize",
+  "metin": "Salon 3: 2. Masayı aç",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 836,
+  "tur": "dize",
+  "metin": "TEZGÂH",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 836,
+  "tur": "dize",
+  "metin": "Tezgâhı kur",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 837,
+  "tur": "dize",
+  "metin": "SALON 3",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 837,
+  "tur": "dize",
+  "metin": "Salon 3: 3. Masayı aç",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 839,
+  "tur": "dize",
+  "metin": "TOST SACI",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 839,
+  "tur": "dize",
+  "metin": "Tost sacını kur",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 842,
+  "tur": "dize",
+  "metin": "3 tost servis et",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 843,
+  "tur": "dize",
+  "metin": "SALON 3",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 843,
+  "tur": "dize",
+  "metin": "Salon 3: 4. Masayı aç",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 846,
+  "tur": "dize",
+  "metin": "GARSON TEPSİSİ",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 846,
+  "tur": "dize",
+  "metin": "Garsonun tepsisini 3'e çıkar",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 847,
+  "tur": "dize",
+  "metin": "SALON 1 BAKIMI",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 847,
+  "tur": "dize",
+  "metin": "4 masayı Seviye 5 yap",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 853,
+  "tur": "dize",
+  "metin": "TEZGÂH",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 853,
+  "tur": "dize",
+  "metin": "Tezgâhı son seviyeye çıkar",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 855,
+  "tur": "dize",
+  "metin": "ÜÇÜNCÜ GARSON",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 855,
+  "tur": "dize",
+  "metin": "3. Garsonu tut",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 858,
+  "tur": "dize",
+  "metin": "GARSON TEPSİSİ",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 858,
+  "tur": "dize",
+  "metin": "Garsonun tepsisini 4'e çıkar",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 865,
+  "tur": "dize",
+  "metin": "Lavaboyu aç",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 866,
+  "tur": "dize",
+  "metin": "ŞERİT",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 866,
+  "tur": "dize",
+  "metin": "Şerit: 5. Masayı aç",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 867,
+  "tur": "dize",
+  "metin": "Lavaboyu büyüt (L2)",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 868,
+  "tur": "dize",
+  "metin": "ŞERİT",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 868,
+  "tur": "dize",
+  "metin": "Şerit: 6. Masayı aç",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 869,
+  "tur": "dize",
+  "metin": "Lavaboyu büyüt (L3)",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 870,
+  "tur": "dize",
+  "metin": "ŞERİT",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 870,
+  "tur": "dize",
+  "metin": "Şerit: 7. Masayı aç",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 871,
+  "tur": "dize",
+  "metin": "Lavaboyu büyüt (L4)",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 872,
+  "tur": "dize",
+  "metin": "ŞERİT",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 872,
+  "tur": "dize",
+  "metin": "Şerit: 8. Masayı aç",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 873,
+  "tur": "dize",
+  "metin": "Lavaboyu büyüt (L5)",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 874,
+  "tur": "dize",
+  "metin": "ŞERİT",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 874,
+  "tur": "dize",
+  "metin": "Şerit: 9. Masayı aç",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 875,
+  "tur": "dize",
+  "metin": "Lavaboyu büyüt (L6)",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 876,
+  "tur": "dize",
+  "metin": "ŞERİT",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 876,
+  "tur": "dize",
+  "metin": "Şerit: 10. Masayı aç",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 877,
+  "tur": "dize",
+  "metin": "ŞERİT",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 877,
+  "tur": "dize",
+  "metin": "Şerit: 11. Masayı aç",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 878,
+  "tur": "dize",
+  "metin": "ŞERİT SONU",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 878,
+  "tur": "dize",
+  "metin": "Şerit: 12. Masayı aç",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 977,
+  "tur": "dize",
+  "metin": "Servis",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 977,
+  "tur": "dize",
+  "metin": "Elden ve garsonla yapılan toplam servis",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 979,
+  "tur": "dize",
+  "metin": "Mekân",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 979,
+  "tur": "dize",
+  "metin": "Açılan masa · salon · personel",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 981,
+  "tur": "dize",
+  "metin": "Kazanç",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 981,
+  "tur": "dize",
+  "metin": "Toplam kazanılan ₺",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 983,
+  "tur": "dize",
+  "metin": "Temizlik",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 983,
+  "tur": "dize",
+  "metin": "Kendi elinle yıkadığın kirli bardak",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 985,
+  "tur": "dize",
+  "metin": "Usta",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 985,
+  "tur": "dize",
+  "metin": "Son seviyeye çıkardığın masa",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 1049,
+  "tur": "dize",
+  "metin": "Bir Avuç Elmas",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 1049,
+  "tur": "dize",
+  "metin": "Elmas Kesesi",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 1049,
+  "tur": "dize",
+  "metin": "Elmas Sandığı",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 1090,
+  "tur": "dize",
+  "metin": "{N} çay servis et",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 1091,
+  "tur": "dize",
+  "metin": "{N} çayı kendi elinle götür",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 1092,
+  "tur": "dize",
+  "metin": "{N} para topla",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 1093,
+  "tur": "dize",
+  "metin": "{N} kirli bardak yıka",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 1094,
+  "tur": "dize",
+  "metin": "{N} ₺ kazan",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 1095,
+  "tur": "dize",
+  "metin": "Ocaktan {N} çay al",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 1096,
+  "tur": "dize",
+  "metin": "Garson {N} çay taşısın",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 1097,
+  "tur": "dize",
+  "metin": "{N} tost servis et",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 1188,
+  "tur": "dize",
+  "metin": "Klasik Parke",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 1190,
+  "tur": "dize",
+  "metin": "Restoran Fayansı",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 1191,
+  "tur": "dize",
+  "metin": "Krem Fayans",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 1192,
+  "tur": "dize",
+  "metin": "Dama Fayans",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 1193,
+  "tur": "dize",
+  "metin": "Ceviz Parke",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 1196,
+  "tur": "dize",
+  "metin": "Krem Badana",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 1197,
+  "tur": "dize",
+  "metin": "Çay Yeşili",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 1198,
+  "tur": "dize",
+  "metin": "Çini Mavisi",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 1211,
+  "tur": "dize",
+  "metin": "Klasik Dama",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 1212,
+  "tur": "dize",
+  "metin": "Kahve Dama",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 1215,
+  "tur": "dize",
+  "metin": "Klasik Mavi",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 1216,
+  "tur": "dize",
+  "metin": "Bordo Kadife",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 1217,
+  "tur": "dize",
+  "metin": "Zümrüt Yeşili",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 1218,
+  "tur": "dize",
+  "metin": "Altın Varak",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 1227,
+  "tur": "dize",
+  "metin": "Klasik Çaycı",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 1228,
+  "tur": "dize",
+  "metin": "Kurucu",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 1229,
+  "tur": "dize",
+  "metin": "Yeşil Yelek",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 1230,
+  "tur": "dize",
+  "metin": "Şef Garson",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 1231,
+  "tur": "dize",
+  "metin": "Yazlık",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 1232,
+  "tur": "dize",
+  "metin": "Kışlık",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 1233,
+  "tur": "dize",
+  "metin": "Altın Yelek",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 1236,
+  "tur": "dize",
+  "metin": "Klasik Tepsi",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 1237,
+  "tur": "dize",
+  "metin": "Bakır Tepsi",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 1238,
+  "tur": "dize",
+  "metin": "Kırmızı Emaye",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 1239,
+  "tur": "dize",
+  "metin": "Gümüş Askılı",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 1240,
+  "tur": "dize",
+  "metin": "Altın Yaldız",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 1249,
+  "tur": "dize",
+  "metin": "Lambalı Radyo",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 1250,
+  "tur": "dize",
+  "metin": "Okuma Koltuğu",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 1251,
+  "tur": "dize",
+  "metin": "Ayaklı Lamba",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 1252,
+  "tur": "dize",
+  "metin": "Eski İstanbul Tablosu",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 1253,
+  "tur": "dize",
+  "metin": "Bakır Semaver",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 1254,
+  "tur": "dize",
+  "metin": "Gramofon",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 1255,
+  "tur": "dize",
+  "metin": "Kanarya Kafesi",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 1256,
+  "tur": "dize",
+  "metin": "Sarkaçlı Saat",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 1257,
+  "tur": "dize",
+  "metin": "Yılbaşı Koltuğu · Kırmızı",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 1258,
+  "tur": "dize",
+  "metin": "Yılbaşı Koltuğu · Yeşil",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 1259,
+  "tur": "dize",
+  "metin": "Yılbaşı Koltuğu · Mavi",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/economy.config.ts",
+  "satir": 1260,
+  "tur": "dize",
+  "metin": "Yılbaşı Koltuğu · Kahve",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/onboarding.ts",
+  "satir": 33,
+  "tur": "dize",
+  "metin": "Ekranı sürükle, yürü",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/onboarding.ts",
+  "satir": 34,
+  "tur": "dize",
+  "metin": "Ocağa yürü, yanında dur",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/onboarding.ts",
+  "satir": 35,
+  "tur": "dize",
+  "metin": "Çay bekleyenin yanına git",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/onboarding.ts",
+  "satir": 36,
+  "tur": "dize",
+  "metin": "Tepsin boş, ocağa uğra",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/onboarding.ts",
+  "satir": 37,
+  "tur": "dize",
+  "metin": "Paranın üstünden geç",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/onboarding.ts",
+  "satir": 38,
+  "tur": "dize",
+  "metin": "Müşteri içip ödeyecek",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/onboarding.ts",
+  "satir": 39,
+  "tur": "dize",
+  "metin": "Alanda dur, masa açılsın",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/playGames.config.ts",
+  "satir": 40,
+  "tur": "dize",
+  "metin": "İlk Çay",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/playGames.config.ts",
+  "satir": 40,
+  "tur": "dize",
+  "metin": "İlk çayını servis et.",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/playGames.config.ts",
+  "satir": 41,
+  "tur": "dize",
+  "metin": "Yeni Masa",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/playGames.config.ts",
+  "satir": 41,
+  "tur": "dize",
+  "metin": "İlk yeni noktanı aç.",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/playGames.config.ts",
+  "satir": 42,
+  "tur": "dize",
+  "metin": "Temiz Bardak",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/playGames.config.ts",
+  "satir": 42,
+  "tur": "dize",
+  "metin": "İlk kirli bardağı yıka.",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/playGames.config.ts",
+  "satir": 43,
+  "tur": "dize",
+  "metin": "Yardımcı Geldi",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/playGames.config.ts",
+  "satir": 43,
+  "tur": "dize",
+  "metin": "Garsonun ilk çayı taşısın.",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/playGames.config.ts",
+  "satir": 44,
+  "tur": "dize",
+  "metin": "Tanınan Mekân",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/playGames.config.ts",
+  "satir": 44,
+  "tur": "dize",
+  "metin": "Seviye 5'e ulaş.",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/playGames.config.ts",
+  "satir": 45,
+  "tur": "dize",
+  "metin": "Mahallenin Gözdesi",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/playGames.config.ts",
+  "satir": 45,
+  "tur": "dize",
+  "metin": "Seviye 10'a ulaş.",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/playGames.config.ts",
+  "satir": 46,
+  "tur": "dize",
+  "metin": "Çaycı Çırağı",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/playGames.config.ts",
+  "satir": 46,
+  "tur": "dize",
+  "metin": "100 servis yap.",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/playGames.config.ts",
+  "satir": 47,
+  "tur": "dize",
+  "metin": "Semaver Başında",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/playGames.config.ts",
+  "satir": 47,
+  "tur": "dize",
+  "metin": "1.000 servis yap.",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/playGames.config.ts",
+  "satir": 48,
+  "tur": "dize",
+  "metin": "Mahallenin Çaycısı",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/playGames.config.ts",
+  "satir": 48,
+  "tur": "dize",
+  "metin": "6.000 servis yap.",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/playGames.config.ts",
+  "satir": 49,
+  "tur": "dize",
+  "metin": "Büyüyen Mekân",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/playGames.config.ts",
+  "satir": 49,
+  "tur": "dize",
+  "metin": "10 nokta aç.",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/playGames.config.ts",
+  "satir": 50,
+  "tur": "dize",
+  "metin": "Dolu Mekân",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/playGames.config.ts",
+  "satir": 50,
+  "tur": "dize",
+  "metin": "24 nokta aç.",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/playGames.config.ts",
+  "satir": 51,
+  "tur": "dize",
+  "metin": "Kasa Doluyor",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/playGames.config.ts",
+  "satir": 51,
+  "tur": "dize",
+  "metin": "Toplam 10.000 ₺ kazan.",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/playGames.config.ts",
+  "satir": 52,
+  "tur": "dize",
+  "metin": "Esnaf",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/playGames.config.ts",
+  "satir": 52,
+  "tur": "dize",
+  "metin": "Toplam 200.000 ₺ kazan.",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/playGames.config.ts",
+  "satir": 53,
+  "tur": "dize",
+  "metin": "Köşenin Sahibi",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/playGames.config.ts",
+  "satir": 53,
+  "tur": "dize",
+  "metin": "Toplam 600.000 ₺ kazan.",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/playGames.config.ts",
+  "satir": 54,
+  "tur": "dize",
+  "metin": "Usta Dokunuşu",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/playGames.config.ts",
+  "satir": 54,
+  "tur": "dize",
+  "metin": "İlk Usta yükseltmesini al.",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/playGames.config.ts",
+  "satir": 55,
+  "tur": "dize",
+  "metin": "Özenli Masalar",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/playGames.config.ts",
+  "satir": 55,
+  "tur": "dize",
+  "metin": "8 masayı son seviyeye çıkar.",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/playGames.config.ts",
+  "satir": 56,
+  "tur": "dize",
+  "metin": "Eksiksiz Salon",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/playGames.config.ts",
+  "satir": 56,
+  "tur": "dize",
+  "metin": "20 masayı son seviyeye çıkar.",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/playGames.config.ts",
+  "satir": 57,
+  "tur": "dize",
+  "metin": "Hepsi Tamam",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/playGames.config.ts",
+  "satir": 57,
+  "tur": "dize",
+  "metin": "Bütün görevleri bitir.",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/playGames.config.ts",
+  "satir": 58,
+  "tur": "dize",
+  "metin": "Koleksiyoncu",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/config/playGames.config.ts",
+  "satir": 58,
+  "tur": "dize",
+  "metin": "Bütün hedefleri topla.",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/game/bulut.ts",
+  "satir": 58,
+  "tur": "dize",
+  "metin": "Play kimliği girilmemiş: ${anahtar}",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/game/bulut.ts",
+  "satir": 84,
+  "tur": "dize",
+  "metin": "okunamadı",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/game/bulut.ts",
+  "satir": 249,
+  "tur": "dize",
+  "metin": "Seviye {1}",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/game/decimal.ts",
+  "satir": 21,
+  "tur": "dize",
+  "metin": "Mn",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/game/decimal.ts",
+  "satir": 21,
+  "tur": "dize",
+  "metin": "Mr",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/game/decimal.ts",
+  "satir": 21,
+  "tur": "dize",
+  "metin": "Tn",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/game/decimal.ts",
+  "satir": 21,
+  "tur": "dize",
+  "metin": "Kt",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/game/decimal.ts",
+  "satir": 21,
+  "tur": "dize",
+  "metin": "Kn",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/game/decimal.ts",
+  "satir": 22,
+  "tur": "dize",
+  "metin": "Qa",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/game/decimal.ts",
+  "satir": 22,
+  "tur": "dize",
+  "metin": "Qi",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/game/iap.ts",
+  "satir": 50,
+  "tur": "dize",
+  "metin": "Test",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/game/kafeAdi.ts",
+  "satir": 8,
+  "tur": "dize",
+  "metin": "Tea House Tycoon",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/game/kafeAdi.ts",
+  "satir": 9,
+  "tur": "dize",
+  "metin": "Çay Ocağı",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/game/layout.ts",
+  "satir": 759,
+  "tur": "dize",
+  "metin": "z3table${k + 2}",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/game/layout.ts",
+  "satir": 1148,
+  "tur": "dize",
+  "metin": "${areasOpen}|${tables}|${onlyArea ?? '*'}",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/game/markerFrame.ts",
+  "satir": 93,
+  "tur": "dize",
+  "metin": "Yükselt",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/game/markerFrame.ts",
+  "satir": 94,
+  "tur": "dize",
+  "metin": "Lavaboyu Büyüt",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/game/markerFrame.ts",
+  "satir": 96,
+  "tur": "dize",
+  "metin": "Sv {1}",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/game/markerFrame.ts",
+  "satir": 103,
+  "tur": "dize",
+  "metin": "Yükselt",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/game/music.ts",
+  "satir": 43,
+  "tur": "dize",
+  "metin": "Sketchbook 2024-01-24_02 — Abstraction (Tallbeard Studios), CC0 1.0",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/game/nav.ts",
+  "satir": 243,
+  "tur": "dize",
+  "metin": "${sr * grid.cols + sc}|${tx}|${tz}|${reach}",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/game/platform.ts",
+  "satir": 23,
+  "tur": "dize",
+  "metin": "Apple hesabında",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/game/platform.ts",
+  "satir": 23,
+  "tur": "dize",
+  "metin": "Google hesabında",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/game/platform.ts",
+  "satir": 23,
+  "tur": "dize",
+  "metin": "mağaza hesabında",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/game/rules.ts",
+  "satir": 526,
+  "tur": "dize",
+  "metin": "Salon ${a + 1}:",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/game/rules.ts",
+  "satir": 536,
+  "tur": "dize",
+  "metin": "Yeni: {1}Masaları yükseltebilirsin 🪑",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/game/rules.ts",
+  "satir": 544,
+  "tur": "dize",
+  "metin": "Yeni: Tezgâhı yükseltebilirsin 🍞",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/game/rules.ts",
+  "satir": 544,
+  "tur": "dize",
+  "metin": "Yeni: Çay ocağını yükseltebilirsin ☕",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/game/rules.ts",
+  "satir": 547,
+  "tur": "dize",
+  "metin": "Yeni: {1} 🔓",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/game/store.ts",
+  "satir": 1498,
+  "tur": "dize",
+  "metin": "Bulut kaydı yüklendi",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/game/tick.ts",
+  "satir": 794,
+  "tur": "dize",
+  "metin": "Bekleyen paralar otomatik toplandı",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/game/tick.ts",
+  "satir": 1199,
+  "tur": "dize",
+  "metin": "tableUp:${t.area ?? 0}",
+  "ceviri": false
+ },
+ {
+  "dosya": "src/game/tick.ts",
+  "satir": 1376,
+  "tur": "dize",
+  "metin": "Tezgâh",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/game/tick.ts",
+  "satir": 1376,
+  "tur": "dize",
+  "metin": "Çay Ocağı",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/game/tick.ts",
+  "satir": 1380,
+  "tur": "dize",
+  "metin": "{1} L{2}{3}",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/game/tick.ts",
+  "satir": 1380,
+  "tur": "dize",
+  "metin": "→ L${lv + 2}",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/game/tick.ts",
+  "satir": 1380,
+  "tur": "dize",
+  "metin": "(Usta 💎)",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/game/tick.ts",
+  "satir": 1423,
+  "tur": "dize",
+  "metin": "Masa {1}: L{2}{3}",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/game/tick.ts",
+  "satir": 1423,
+  "tur": "dize",
+  "metin": "→ L${tableLevels[i] + 2} (+${C.tables.tipBase} bahşiş)",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/game/tick.ts",
+  "satir": 1423,
+  "tur": "dize",
+  "metin": "(Usta 💎)",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/game/tick.ts",
+  "satir": 1465,
+  "tur": "dize",
+  "metin": "Lavabo L{1}{2}",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/game/tick.ts",
+  "satir": 1465,
+  "tur": "dize",
+  "metin": "→ L${c.lavaboLevel + 1}",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/game/vitrin.ts",
+  "satir": 119,
+  "tur": "dize",
+  "metin": "{1} salondan kaldırıldı",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/game/vitrin.ts",
+  "satir": 119,
+  "tur": "dize",
+  "metin": "{1} salona kondu",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/game/vitrin.ts",
+  "satir": 120,
+  "tur": "dize",
+  "metin": "{1} giyildi",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/game/vitrin.ts",
+  "satir": 121,
+  "tur": "dize",
+  "metin": "{1} artık elinde",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/game/vitrin.ts",
+  "satir": 122,
+  "tur": "dize",
+  "metin": "{1} · {2}. Salon",
+  "ceviri": true
+ },
+ {
+  "dosya": "src/game/vitrin.ts",
+  "satir": 123,
+  "tur": "dize",
+  "metin": "{1} uygulandı",
+  "ceviri": true
+ }
+]

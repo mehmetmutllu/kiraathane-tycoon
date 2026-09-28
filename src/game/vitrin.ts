@@ -8,6 +8,7 @@
 import { economyConfig as C } from '../config/economy.config';
 import { vitrinYuva, yuvaAlani } from '../config/decor';
 import type { SatinAlim } from './save';
+import { t } from '../i18n';
 
 export type VitrinTuru = 'outfit' | 'tray' | 'decor';
 
@@ -115,9 +116,9 @@ export function dekorDegistir(dekor: DekorYerlesim, id: string): DekorYerlesim {
  */
 export type BildirimTuru = VitrinTuru | 'table' | 'kitchen' | 'floor' | 'wall';
 export function satinBildirimi(tur: BildirimTuru, ad: string, o: { kaldirildi?: boolean; salon?: number } = {}): string {
-  if (tur === 'decor') return o.kaldirildi ? `${ad} salondan kaldırıldı` : `${ad} salona kondu`;
-  if (tur === 'outfit') return `${ad} giyildi`;
-  if (tur === 'tray') return `${ad} artık elinde`;
-  if ((tur === 'floor' || tur === 'wall') && o.salon != null) return `${ad} · ${o.salon + 1}. Salon`;
-  return `${ad} uygulandı`;
+  if (tur === 'decor') return o.kaldirildi ? t('{1} salondan kaldırıldı', ad) : t('{1} salona kondu', ad);
+  if (tur === 'outfit') return t('{1} giyildi', ad);
+  if (tur === 'tray') return t('{1} artık elinde', ad);
+  if ((tur === 'floor' || tur === 'wall') && o.salon != null) return t('{1} · {2}. Salon', ad, o.salon + 1);
+  return t('{1} uygulandı', ad);
 }

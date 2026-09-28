@@ -81,8 +81,8 @@ describe('kafe adı kuralları', () => {
   });
   it('tabela Türkçe büyük harfle yazar; ad yoksa varsayılan', () => {
     expect(tabelaYazisi('çınar kahvesi')).toBe('ÇINAR KAHVESİ');
-    expect(tabelaYazisi(null)).toBe('KÖŞE KIRAATHANESİ');
-    expect(tabelaYazisi('')).toBe('KÖŞE KIRAATHANESİ');
+    expect(tabelaYazisi(null)).toBe('ÇAY OCAĞI');
+    expect(tabelaYazisi('')).toBe('ÇAY OCAĞI');
   });
   it('kayıttan okuma: dize değilse hiç sorulmadı (null), boş dize varsayılan', () => {
     expect(kafeAdiOku(undefined)).toBeNull();

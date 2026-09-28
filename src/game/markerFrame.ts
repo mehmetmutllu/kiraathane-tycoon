@@ -21,6 +21,7 @@
  * Sayılar: `docs/tetik-raporu-s24.md` · ham `docs/olcum-tetik-s24.txt`.
  */
 import type { Vec3 } from './types';
+import { t } from '../i18n';
 
 /**
  * ÇERÇEVENİN GENİŞLİĞİ YAZIDAN ÇÖZÜLÜR, TAHMİN EDİLMEZ.
@@ -88,15 +89,15 @@ export function inFrame(px: number, pz: number, spot: Vec3, c: Cerceve, pay = 0)
 // düzenine indi — harf SAYISI aynı kaldığı için çerçeve ve tetik birebir aynı.)
 
 /** G-11: her yükseltme noktası AYNI sözü söyler; hangi obje olduğunu metin değil KONUM anlatır. */
-export const ETIKET_SERVIS = 'Yükselt';
-export const ETIKET_LAVABO = 'Lavaboyu Büyüt';
+export const ETIKET_SERVIS = t('Yükselt');
+export const ETIKET_LAVABO = t('Lavaboyu Büyüt');
 /** G-18: masa noktasının yazısı seviyeyi taşır (çoklu sinyalin sayı kanalı). */
-export const masaEtiketi = (seviye: number): string => `Sv ${seviye + 1}`;
+export const masaEtiketi = (seviye: number): string => t('Sv {1}', seviye + 1);
 
 export const servisCercevesi = (): Cerceve => markerFrame(ETIKET_SERVIS, ISARET_R, true);
 export const masaCercevesi = (seviye: number): Cerceve => markerFrame(masaEtiketi(seviye), MASA_ISARET_R, true);
 export const padCercevesi = (label: string): Cerceve => markerFrame(label, ISARET_R, false);
 export const lavaboCercevesi = (): Cerceve => markerFrame(ETIKET_LAVABO, ISARET_R, false);
 /** K4: Usta noktası masa noktasının biçimiyle aynı (G-14 ②) — tetik de aynı dikdörtgen. */
-export const ETIKET_USTA = 'Yükselt';
+export const ETIKET_USTA = t('Yükselt');
 export const ustaCercevesi = (): Cerceve => markerFrame(ETIKET_USTA, MASA_ISARET_R, true);

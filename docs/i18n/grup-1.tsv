@@ -1,0 +1,70 @@
+1	Tepsi	CharacterPanel:110, CharacterPanel:142, HUD:1882
+2	Para Mıknatısı	CharacterPanel:111
+3	Hareket Hızı	CharacterPanel:112
+4	hız	CharacterPanel:112, CharacterPanel:179, CharacterPanel:182
+5	ürün	CharacterPanel:136
+6	Son seviye	CharacterPanel:168, CharacterPanel:199, CharacterPanel:252
+7	Hız	CharacterPanel:175, CharacterPanel:259
+8	Garsonların ortak tepsisi ve hızı — hepsi tek havuzdan, her masaya.	CharacterPanel:203
+9	Leğen	CharacterPanel:228
+10	Tüm salonların bulaşıkçılarına ortak: leğen tek turda daha çok taşır, hız turu kısaltır.	CharacterPanel:288
+11	Çaycı	CharacterPanel:322, CharacterPanel:329, HUD:538
+12	Garson	CharacterPanel:323, CharacterPanel:329
+13	Bulaşıkçı	CharacterPanel:324, CharacterPanel:329
+14	Çaycı seviyesi	CharacterPanel:335
+15	Seviye	HUD:318, HUD:1296
+16	Ayarlar	HUD:346, HUD:580
+17	Yakınlaş	HUD:359
+18	Genel bakış	HUD:359
+19	Reklam izle, para kazan	HUD:368
+20	Tostları bırak	HUD:383
+21	Çayları bırak	HUD:399
+22	Müşteri kalmadıysa tepsini boşaltabilirsin — kaplar temiz rafa döner.	HUD:414
+23	Tamamlandı	HUD:465
+24	Çaycı panelinden al	HUD:480
+25	Hedefe git	HUD:480
+26	Görev hattı tamamlandı — mekân senin.	HUD:495, HUD:1205
+27	Görevler	HUD:511, HUD:1094
+28	Hedefler	HUD:522, HUD:1289
+29	Mağaza	HUD:531, HUD:1996
+30	Buradan yükselt	HUD:561
+31	Bu yükseltme	HUD:562
+32	sekmesinde — dokun ve satın al.	HUD:562
+33	Kafenin adı	HUD:589, KafeAdiKutusu:33, KafeAdiKutusu:48
+34	Ses	HUD:601
+35	Ses seviyesi	HUD:603
+36	Müzik	HUD:609
+37	Müzik seviyesi	HUD:611
+38	Gölgeler	HUD:625
+39	KÜNYE	HUD:640
+40	Kayıt şeması	HUD:642
+41	Toplam kazanç	HUD:643
+42	Servis edilen çay	HUD:644
+43	Yıkanan bulaşık	HUD:645
+44	Açılan nokta	HUD:646
+45	Kayıt bu cihazda tutulur; Play Games'e bağlıysan buluta da yedeklenir. Oyunu sıfırlarsan geri alınamaz.	HUD:653
+46	Kayıt bu cihazda tutulur. Oyunu sıfırlarsan geri alınamaz.	HUD:654
+47	Oyunu sıfırla	HUD:657
+48	Oyunu sıfırla?	HUD:662
+49	Tüm ilerleme silinecek	HUD:663
+50	(bulut yedeği dahil)	HUD:663
+51	. Geri alınamaz.	HUD:663
+52	Evet, sıfırla	HUD:665
+53	Vazgeç	HUD:668, KafeAdiKutusu:60
+54	Seviye {1}!	HUD:681
+55	Servis hızı	HUD:685
+56	Sen yokken mekân çalıştı	HUD:713
+57	İzle, +{1}	HUD:718
+58	BUGÜN	HUD:747, HUD:1096
+59	Bugünkü görevleri tamamladın — yenileri yarın	HUD:748
+60	GÜNLÜK GÖREV	HUD:758
+61	Ödülünü al	HUD:761
+62	Hedefe bak	HUD:853
+63	Bulaşık birikiyor	HUD:904
+64	Müşteriler çayını içince masada	HUD:906
+65	bırakır. Onları topla ve bulaşık tezgâhına götür — yıkanan bardaklar temiz rafa döner.	HUD:906
+66	Anladım	HUD:911
+67	Kapat	HUD:941, HUD:994
+68	Bir reklam izle, son dakikada kazandığın kadar para al	HUD:948
+69	İzle	HUD:957, HUD:1019
+70	Yeni haklar {1} sonra	HUD:962

@@ -182,7 +182,7 @@ describe('satın alma katmanı', () => {
 describe('arayüz kabloları', () => {
   const hud = oku('src/components/ui/HUD.tsx');
   it('paketler sekmesi · geri yükle · reklamsız hediyesi var', () => {
-    expect(hud).toContain("{ k: 'paket', label: 'Paketler' }");
+    expect(hud).toContain("{ k: 'paket', label: t('Paketler') }");
     expect(hud).toContain('data-testid="geri-yukle"');
     expect(hud).toContain('data-testid="reklamsiz-hediye-al"');
   });

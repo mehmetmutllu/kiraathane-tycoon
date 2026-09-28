@@ -117,6 +117,7 @@ Bütçe düzeltmelerinin tarihçesi (73 → 121) ve bitmiş fazların tam anlat�
 - 🔧 **F8 — 💎 kozmetik vitrini + başlangıç paketinin kozmetiği** *(tur adı F4c)* · F4c-1 ✅ Kıyafet/Tepsi 💎 · Kurucu (K4) paketle · teklif ilk Usta sonrası · D-154 · fiyat TASLAK · F4c-2 ✅ dekor: 9 yuva bugünkü düzende (trafik %0) · sırt duvar profilinden (konsol/TV de düzeldi) · 3. Salon'a kadar kilitli · yılbaşı sol önde · D-155 · `docs/dekor-raporu-f4c2.md` · F4c-3 ✅ tabela: alınlığı dolduran levha + oyuncunun kafe adı (girişte bir kez, Ayarlar'dan), 💎 cephe yok, yükleniyor "Tea House Tycoon" · D-156 · `docs/tabela-raporu-f4c3.md` · mutasyon 11/11 · final K0 = K2 · F4c-4 ✅ dekor salondaki yerinde (çapraz uzak %25, oto kadraj) · teklif T3 · 14 metin + alım bildirimi/sesi/ödül kartı · D-157 · `docs/magaza-raporu-f4c4.md` · mutasyon 12/12 · duman 67/67
 - ⏳ **F5 — mağaza vitrini + uyum** …
   · 2026-09-28 yayın sprinti (D-158): iOS önce, `com.mutlubadem.teahouse`, Codemagic · ASC kaydı + AdMob iOS + RevenueCat projesi kuruldu · mağaza taslağı artifact KfNEdtK71YzUupBjrvyxEj · 4 ajan dalı birleşti · ilk paket three'siz (1.633 → 396 kB) · tarama yüksekleri Y-16/17/23/25/34 ✅
+  · 2026-09-28 (3.) D-159: ad her yerde Tea House Tycoon · ASC 5 IAP + metin + mor bantlı 24 görsel yüklendi · Codemagic uygulaması · gizlilik sitesi · ikon · iPad · i18n altyapı + UI sarıldı (config verisi sırada)
 - ✅ **F6 — açılış ekranı + ekran yönü + yatay/tablet HUD** (F1b iki tur + tur 3) …
 
 ## Faz T — TUR SERİSİ: GERİ BİLDİRİM + PERFORMANS (13/13) ✅

@@ -196,7 +196,7 @@ describe('kucultme kolu acik kalir (D-130 · V1)', () => {
 describe('cihaz dili adi secer', () => {
   it('varsayilan Ingilizce, Turkce ayri dosyada', () => {
     expect(stringsVarsayilan).toContain('<string name="app_name">Tea House Tycoon</string>');
-    expect(stringsTurkce).toContain('<string name="app_name">Köşe Kıraathanesi</string>');
+    expect(stringsTurkce).toContain('<string name="app_name">Tea House Tycoon</string>');
   });
 
   /**

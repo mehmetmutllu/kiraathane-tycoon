@@ -47,7 +47,7 @@ export const playGamesConfig = {
     { anahtar: 'servis_1000', ad: 'Semaver Başında', aciklama: '1.000 servis yap.', xp: 50, olcu: 'servis', esik: 1_000, kimlik: null },
     { anahtar: 'servis_6000', ad: 'Mahallenin Çaycısı', aciklama: '6.000 servis yap.', xp: 100, olcu: 'servis', esik: 6_000, kimlik: null },
     { anahtar: 'mekan_10', ad: 'Büyüyen Mekân', aciklama: '10 nokta aç.', xp: 50, olcu: 'pad', esik: 10, kimlik: null },
-    { anahtar: 'mekan_24', ad: 'Dolu Kıraathane', aciklama: '24 nokta aç.', xp: 100, olcu: 'pad', esik: 24, kimlik: null },
+    { anahtar: 'mekan_24', ad: 'Dolu Mekân', aciklama: '24 nokta aç.', xp: 100, olcu: 'pad', esik: 24, kimlik: null },
     { anahtar: 'kazanc_10k', ad: 'Kasa Doluyor', aciklama: 'Toplam 10.000 ₺ kazan.', xp: 25, olcu: 'kazanc', esik: 10_000, kimlik: null },
     { anahtar: 'kazanc_200k', ad: 'Esnaf', aciklama: 'Toplam 200.000 ₺ kazan.', xp: 50, olcu: 'kazanc', esik: 200_000, kimlik: null },
     { anahtar: 'kazanc_600k', ad: 'Köşenin Sahibi', aciklama: 'Toplam 600.000 ₺ kazan.', xp: 100, olcu: 'kazanc', esik: 600_000, kimlik: null },

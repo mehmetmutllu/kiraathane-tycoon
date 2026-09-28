@@ -168,7 +168,7 @@ describe('K1 — hat sonu günlük görev bandı', () => {
 describe('K3 — Sv 2-4 ekranı', () => {
   it('katlanacak ödül yoksa tek "Harika!", "İzle, 2×" gizli', () => {
     expect(HUD).toMatch(/const katlanir = amount > 0 \|\| diamonds > 0;/);
-    expect(HUD).toMatch(/\{katlanir \? 'Al' : 'Harika!'\}/);
+    expect(HUD).toMatch(/\{katlanir \? t\('Al'\) : t\('Harika!'\)\}/);
     expect(HUD).toMatch(/\{katlanir && onIzle && \(\s*<button\s+className=\{`sheet-cta ad/);
   });
 });
@@ -179,8 +179,8 @@ describe('K6 · C3 — adlar ve yazım', () => {
     for (const k of [metin(HUD), metin(CHAR)]) {
       expect(k).not.toMatch(/label="Karakter"|'Oyuncu'|İtibar \{|title="İtibar"|>\s*MAX\s*</);
     }
-    expect(HUD).toMatch(/label="Çaycı"/);
-    expect(HUD).toMatch(/<b>Seviye \{lvl\.level\}<\/b>/);
+    expect(HUD).toMatch(/label=\{t\('Çaycı'\)\}/);
+    expect(HUD).toMatch(/<b>\{t\('Seviye'\)\} \{lvl\.level\}<\/b>/);
   });
   it('yerdeki etiketler cümle düzeninde — harf sayısı (çerçeve/tetik) değişmedi', () => {
     expect(ETIKET_SERVIS).toBe('Yükselt');

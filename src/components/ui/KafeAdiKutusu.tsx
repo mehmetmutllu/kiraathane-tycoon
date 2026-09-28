@@ -1,4 +1,5 @@
 import { KAFE_ADI_MAX, KAFE_ADI_VARSAYILAN } from '../../game/kafeAdi';
+import { t } from '../../i18n';
 
 /**
  * KAFE ADI KUTUSU (F4c-3 · D-156). İki kip:
@@ -30,9 +31,9 @@ export function KafeAdiKutusu({
           onKaydet();
         }}
       >
-        <div className="reward-title">{kip === 'ilk' ? 'Kafene bir ad ver' : 'Kafenin adı'}</div>
+        <div className="reward-title">{kip === 'ilk' ? t('Kafene bir ad ver') : t('Kafenin adı')}</div>
         <p className="onay-metin">
-          {kip === 'ilk' ? "Kapının üstündeki tabelada bu yazacak. Sonra Ayarlar'dan değiştirebilirsin." : 'Kapının üstündeki tabelada yazar.'}
+          {kip === 'ilk' ? t('Kapının üstündeki tabelada bu yazacak. Sonra Ayarlar\'dan değiştirebilirsin.') : t('Kapının üstündeki tabelada yazar.')}
         </p>
         <input
           id="kafe-adi-girdi"
@@ -45,7 +46,7 @@ export function KafeAdiKutusu({
           autoComplete="off"
           spellCheck={false}
           enterKeyHint="done"
-          aria-label="Kafenin adı"
+          aria-label={t('Kafenin adı')}
           onChange={(e) => onTaslak(e.target.value)}
           onFocus={(e) => e.target.select()}
         />
@@ -53,11 +54,11 @@ export function KafeAdiKutusu({
           {Array.from(taslak).length}/{KAFE_ADI_MAX}
         </div>
         <button type="submit" className="sheet-cta" data-testid="kafe-adi-tamam">
-          Tamam
+          {t('Tamam')}
         </button>
         {kip === 'duzenle' && (
           <button type="button" className="sheet-cta ad" data-testid="kafe-adi-vazgec" onClick={onVazgec}>
-            Vazgeç
+            {t('Vazgeç')}
           </button>
         )}
       </form>

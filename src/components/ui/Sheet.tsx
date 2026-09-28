@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { useGame, gorunenCuzdan } from '../../game/store';
 import { fmt } from '../../game/decimal';
 import { BackIcon, CoinIcon, GemIcon } from './icons';
+import { t } from '../../i18n';
 
 /**
  * K3 — TEK EKRAN KABUĞU (D-106, S12). Tüm paneller bunu paylaşır.
@@ -36,7 +37,7 @@ export function Sheet({
     <div className="modal-backdrop screen-backdrop" data-testid={testid}>
       <div className="modal-card screen">
         <div className="screen-top">
-          <button className="sheet-back" onClick={onClose} aria-label="Geri">
+          <button className="sheet-back" onClick={onClose} aria-label={t('Geri')}>
             <BackIcon size={20} />
           </button>
           <span className="screen-title">{title}</span>

@@ -1,0 +1,14 @@
+Merhaba! "Tea House Tycoon" adlı bir mobil oyun yapıyorum ve arayüz metinlerini (mikrometin) Türkçe + İngilizce olarak baştan gözden geçirmem gerekiyor. Senden profesyonel bir oyun UX yazarı gibi yardım istiyorum.
+
+OYUN: 3D, tek elle dikey oynanan, rahat tempolu idle/tycoon oyunu (My Perfect Hotel, Burger Please türü). Oyuncu bir çaycı; ocaktan ince belli bardaklarda çay alıp tepsiyle masalara servis ediyor, müşteriler parayı masaya bırakıyor, oyuncu toplayıp mekânı büyütüyor: yeni masalar, garsonlar, bulaşıkçı, mutfak (tost), üç salon, lavabo, dekor, kıyafet. Para birimi oyun içi "₺" (bozuk para simgesiyle gösteriliyor), premium para "elmas" (💎). "Usta" = masayı kalıcı bahşiş çarpanına çıkaran üst seviye. Hedef kitle: her yaştan gündelik oyuncu. Ton: sıcak, samimi, kısa, oyunsu; resmî değil. Türkçe "sen" diliyle. Mekânın adı oyuncunun verdiği ad; "kıraathane" kelimesi hiçbir yerde KULLANILMAYACAK.
+
+KURALLAR:
+1) Her satırı "no<TAB>TÜRKÇE<TAB>ENGLISH" biçiminde, tek bir kod bloğu içinde ver. Satır numaralarını koru, satır atlama.
+2) Türkçeyi yalnız gerçekten daha iyi olacaksa değiştir (daha kısa, daha net, daha doğal); iyi olanı aynen bırak.
+3) {1} {2} gibi yer tutucular sayı/ad yerine geçer; ikisinde de AYNEN kalsın (sırası değişebilir).
+4) Uzunluk: butonlar ve etiketler dar alanda; çeviri Türkçeden belirgin uzun olmasın.
+5) Terimler her yerde aynı olsun. Önce kısa bir TERİM SÖZLÜĞÜ öner (Masa, Salon, Çay Ocağı, Tezgâh, Tepsi, Garson, Bulaşıkçı, Lavabo, Usta, Elmas, ₺ para, Görev, Hedef, Seviye, İtibar, Mağaza, Paketler, Dekor, Çaycı), sonra tabloyu ver.
+6) "yer" sütunu metnin geçtiği yeri gösterir (bilgi için; çıktıya yazma). HUD = oyun ekranı, ekonomi/icerik = görev/ürün/masa adları, CharacterPanel = karakter paneli.
+
+Toplam 6 grup göndereceğim. İşte GRUP 1:
+

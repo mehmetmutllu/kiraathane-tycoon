@@ -2,47 +2,40 @@
 
 > **Bu dosya ÜZERİNE YAZILIR.** ≤ 80 satır, yalnız "şu an". Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-09-28, 2. oturum — YAYIN SPRİNTİ: iOS önce · D-158)
+## ŞU AN (2026-09-28, 3. oturum — YAYIN SPRİNTİ + İKİ DİL · D-158/D-159)
 
-Gece yarım kalan 4 ajan dalı **main'e birleşti** (iOS · E5 · açık kalemler · tarama), worktree'ler temizlendi.
-- **Bundle bölme bitti:** ilk paket three'siz — index 363 kB + palette 34 kB (eskiden tek parça 1.633 kB).
-  Bekçi `tests/ilk-paket-three.test.ts` (main.tsx statik import ağacı) + 2 mutasyon.
-- **Tarama yüksekleri:** Y-16/Y-17 (ödül ekranından sonra geçişli), Y-23 (göç pad kilidi), Y-25 (bulutta 💎 kaybı),
-  Y-34 yazım, Paketler "Google hesabında" → iOS'ta "Apple hesabında". Durum tablosu raporun başında.
-- Test 1737 · duman 71/71 · lint temiz · build ✅.
-- **Worktree tuzağı (yeni):** `git worktree remove --force` node_modules JUNCTION'ının içine girip ana
-  `node_modules`'u sildi → `npm ci` ile onarıldı. Önce `cmd /c rmdir <wt>\node_modules` (yalnız bağı söker), sonra sil.
-- Duman erken akışında 1 kez kararsız düşüş görüldü (q_coin → table2 zinciri; tekrarında 71/71).
+**Bitenler (bu oturum):**
+- ASC: 5 IAP ürünü açıldı (READY_TO_SUBMIT) — fiyat USD 0,99/1,99/3,99 · TR elle 34,99/64,99/129,99 ₺, EN/TR ad+açıklama,
+  inceleme görseli. Uygulama adı her iki dilde "Tea House Tycoon", TR açıklamadan kıraathane çıktı, kategori, yaş 4+,
+  telif, sürüm 1.0.0, metinler. **Mor bantlı 24 görsel yüklendi** (iPhone 6,9" + iPad 13", en-US + tr).
+- Codemagic: uygulama eklendi (`6aba443b9e5dcc12b726ba2b`), CERTIFICATE_PRIVATE_KEY `appstore_kimlik` grubunda;
+  `codemagic.yaml` (ios-yayin, VITE_REKLAM=gercek bekçisi). Henüz DERLEME BAŞLATILMADI.
+- Gizlilik/destek sitesi: mehmetmutllu.github.io/tea-house-tycoon/ (EN+TR); Ayarlar'da gizlilik/destek + UMP tercih (Y-06).
+- İkon: `docs/logotasarim/ikon-1024.png` → iOS AppIcon. iPad açık, tablet HUD zoom 1,4. Müşteri kapsül sorunu ölçüldü: 0.
+- **i18n (yarım, ama yeşil):** `src/i18n` (t, dil, cihazDili, baslat), EN sözlük 390 giriş, `settings.dil`, UI + game
+  dosyaları `tools/i18n-sar.mjs` ile sarıldı; yüzde biçimi/tabela büyük harf/varsayılan ad dile bağlı. Duman `locale: tr-TR`.
+- Testler: 1742 ✓ · duman 71/71 · lint/tsc temiz.
 
-## ⏭️ SIRADAKİ ADIM
-1. Tarama raporunun kalan orta/düşük bulguları (G1…G11 grupları) + taranmamış fazlar:
-   `TARAMA_FAZ=kayit,ui,perf node tools/tarama-yayin.mjs`.
-2. Y-06: Ayarlar'a gizlilik politikası bağlantısı + UMP "reklam tercihleri" girişi — gizlilik sayfası yayınlanınca.
-3. Codemagic iş akışı (wordmaster `codemagic.yaml` kalıbı) + ASC API ile IAP ürünleri/metinler — **kullanıcı onayıyla** (dış servis).
-4. Gizlilik/destek sayfası (GitHub Pages, IAP içerdiği için ayrı metin) — **yayınlamadan önce onay**.
+## ⏭️ SIRADAKİ ADIM (i18n'i bitir)
+1. **Ayar dosyalarındaki VERİ metinleri ekrana basıldığı yerde çevrilmedi:** `economy.config.ts` (görev başlık/açıklama,
+   pad/masa adları, kozmetik/dekor/tema adları, hedef adları), `onboarding.ts`, `playGames.config.ts` (Android). Görüntülendiği
+   yerlerde `t(x.label)` / `t(q.title)` sar (`.label`, `.title`, `.desc`, `.ad`, `.aciklama` kullanımlarını grep'le).
+   Sözlükte hepsi VAR (docs/i18n/sozluk.json).
+2. Ayarlar'a **Dil** satırı ekle (Otomatik / Türkçe / English → `setSetting('dil')`; metinler sözlükte: "Dil", "Otomatik",
+   "Dil değişince oyun yeniden yüklenir").
+3. Bekçi `tests/i18n.test.ts`: (a) `t('…')` literal'lerinin hepsi en.ts'te; (b) `node tools/metin-tara.mjs` UI'da açık
+   metin 0 (config hariç); (c) EN kipte HUD'da Türkçe harf kalmıyor (duman'a EN koşusu: `locale: 'en-US'`). ≥2 mutasyon.
+4. Kalan ufaklar: bulut.ts/iap.ts iç metinleri (dev), `Semaver ısınıyor…` → yükleme ekranı işi.
+5. **Yükleme ekranı:** kullanıcı SEÇENEK 2'yi seçti (oyun moru + ışık, logo-maskot-saydam) — `SplashScreen.tsx`e uygula,
+   görsel `public/assets/ui/logo-acilis.webp` (720 px) üret + manifest; iOS yerel açılış görseli (Splash.imageset, şu an
+   Capacitor'ın mavi X'i!) aynı zeminle 2732² üret. Önizleme: artifact 6qVMUGhxRJgv9KxjiWJY9n.
+6. Oyunun kendi fontu Lilita One'da İ/ğ/ş yok (incelip yedek fonta düşüyor) → kullanıcıya sor/öner (Luckiest Guy tam).
+7. Sonra: TestFlight derlemesi (Codemagic API ile başlat), RevenueCat iOS + ASC In-App Purchase anahtarı (Chrome),
+   Paid Apps sözleşmesi (kullanıcı), App Privacy formu (Chrome), incelemeye gönderim (kullanıcı onayı).
 
-## KULLANICIYA SORULACAKLAR (yanıt bekliyor)
-- 💎 vitrin fiyatı K0/K1/K2/K3 (öneri K2) → onayla varyant kapısı commit #2.
-- IAP fiyatları: 25💎 34,99₺ · 60💎 64,99₺ · 150💎 129,99₺ · Başlangıç 64,99₺ · Reklamsız 129,99₺ (USD 0,99/1,99/3,99/1,99/3,99).
-- İlk sürüm yalnız iPhone mu (öneri evet) · İngilizce arayüz mü, "şimdilik Türkçe" notu mu.
-- **Uygulama simgesi yok** — 1024×1024: kullanıcıda var mı, biz mi üretelim?
-- E5: kamera müşteriye kaysın mı · satır üst şeritte kalsın mı · iz beyaz mı amber mi.
-- iOS: dev'de plist'te gerçek App ID + test birimleri kalsın mı · durum çubuğu görünür mü.
-- Codemagic + ASC API işlemleri ve GitHub Pages yayını için onay.
-
-## KULLANICININ YAPACAĞI (tek kalan el işi)
-- ASC → Users and Access → Integrations → **In-App Purchase** anahtarı (.p8) → RevenueCat'te iOS uygulaması
-  (bundle `com.mutlubadem.teahouse`) + .p8 + Key ID + Issuer ID → `appl_…` anahtarını ver → `iap.config.ts` `revenueCatAnahtar.ios`.
+## KULLANICIYA SORULACAKLAR
+- Oyun fontu (madde 6). Mağaza EN açıklamasındaki "Language: the game is currently in Turkish." satırı i18n bitince SİLİNMELİ.
 
 ## AÇIK KALEMLER (öncekiler)
-- AdMob: iOS için UMP (GDPR) + IDFA açıklama mesajı yayımlanmalı; `app-ads.txt` pazarlama alanında.
-- Play Games / Play Console: DONDURULDU (D-158). YouTube Playables yayından sonra.
-- `logic.test.ts` kararsız testi yeniden üretilemedi.
-
----
-**Karar paketleri ve kare arşivi:** `memory-bank/karar-paketleri.md`
-## TUR KARTI ŞABLONU
-```
-SORU / ÖLÇÜLECEK KOLLAR / SAYILAR / KARAR / UYGULAMA / BEKÇİ
-```
-**Kapanış (D-085):** `npm run sira` → `npm run pano` → `npm run test` → commit → push.
+- Duman erken akışı (q_coin) ara sıra düşüyor (bu oturumda 4 koşuda 2) — yeniden koşunca geçiyor; ayrıca bakılmalı.
+- AdMob iOS: UMP + IDFA açıklama mesajı yayımlanmalı. Play Console: DONDURULDU (D-158).

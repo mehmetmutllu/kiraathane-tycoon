@@ -194,6 +194,7 @@ export {
 export type { ActiveSpot, GameNotice, LevelUpOdul, QuestView, QuestCtx, CamFocus } from './rules';
 
 import { createTickCtx, runTick, BOS_LEGEN, type Legen } from './tick';
+import { t } from '../i18n';
 
 
 /**
@@ -1235,6 +1236,8 @@ export const useGame = create<GameState>((set, get) => ({
   setSetting: (key, value) => {
     set({ settings: { ...get().settings, [key]: value } });
     get().saveNow();
+    // Dil: kayıttan sonra sayfa yeniden yüklenir (main.tsx dili açılışta okur). Testte (vitest) dokunulmaz.
+    if (key === 'dil' && typeof location !== 'undefined' && !('__vitest_worker__' in globalThis)) location.reload();
   },
 
   // Kozmetik tema satın al/uygula (WP6 — feedback §D19). ALAN açık + tema tanımlı olmalı;
@@ -1492,7 +1495,7 @@ export const useGame = create<GameState>((set, get) => ({
     // yereldekiyle aynı (`init`), yani göç, kelepçe ve türetme bir kez yazılı.
     writeSave(d);
     get().init();
-    set({ notice: { text: 'Bulut kaydı yüklendi', ttl: 4, kind: 'reveal' } });
+    set({ notice: { text: t('Bulut kaydı yüklendi'), ttl: 4, kind: 'reveal' } });
   },
 
   hardReset: () => {

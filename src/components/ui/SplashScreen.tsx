@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { yuklemeOku } from '../../game/yukleme';
 import { OYUN_ADI } from '../../game/kafeAdi';
+import { t } from '../../i18n';
 
 // Açılış yükleme ekranı (talimat #2/#3): asset (KayKit gltf + atlas) yüklenene kadar sahneyi örter →
 // greybox→model "pop"u ve ilk-kare FPS sıçraması GÖRÜNMEZ. drei useProgress GLTFLoader ilerlemesini izler
@@ -82,7 +83,7 @@ export function SplashScreen() {
       <div className="splash__bar">
         <div className="splash__fill" style={{ width: `${done ? 100 : pct}%` }} />
       </div>
-      <div className="splash__hint">Semaver ısınıyor…</div>
+      <div className="splash__hint">{t('Semaver ısınıyor…')}</div>
     </div>
   );
 }

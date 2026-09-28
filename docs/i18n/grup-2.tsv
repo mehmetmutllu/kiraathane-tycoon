@@ -1,0 +1,70 @@
+71	Önce biraz servis yap — ödül son dakikanın kazancı	HUD:964
+72	Kalan hak: {1}/{2}	HUD:965
+73	Masa	HUD:1000, HUD:1885
+74	· Usta	HUD:1000
+75	Bu masanın bahşişi kalıcı olarak ×	HUD:1001
+76	Reklamla Usta yarın yeniden	HUD:1024
+77	Reklamsız paket hediyesi	HUD:1053
+78	Her gün yenilenir	HUD:1056, HUD:1117
+79	Bugün alındı	HUD:1056, HUD:1117
+80	Al ·	HUD:1059
+81	· {1} ÖDÜL HAZIR	HUD:1096
+82	Ödülü al	HUD:1124, HUD:1367
+83	Bugün kalan ödül:	HUD:1140
+84	· yarın üç yeni görev	HUD:1140
+85	Bugünün görevleri bitti — yarın üç yeni görev	HUD:1143
+86	MEKÂN	HUD:1165
+87	SIRADA	HUD:1210
+88	TAMAMLANAN ·	HUD:1224
+89	Her hedef seviyeni yükseltir · seviye bonusu	HUD:1304
+90	servis hızı	HUD:1305
+91	· koleksiyon bonusu {1} gelir	HUD:1306
+92	Usta masalar	HUD:1320
+93	{1} masa hazır — yanındaki mavi noktaya git	HUD:1323
+94	Masayı para tavanına çıkarınca Usta noktası açılır	HUD:1324
+95	KATEGORİLER	HUD:1334
+96	· {1} ÖDÜL HAZIR	HUD:1334
+97	{1} · {2}. kademe	HUD:1386
+98	Bir kez alınabilir	HUD:1436
+99	Başlangıç Paketi	HUD:1437, HUD:1767
+100	Kıyafet, tepsi ve dekor için	HUD:1447
+101	linear-gradient(135deg, {1} 0 55%, {2} 55% 100%)	HUD:1451
+102	Kurucu kıyafeti	HUD:1453
+103	Yalnız bu pakette	HUD:1453
+104	Bordo yelek ve fes	HUD:1455
+105	Al · {1}	HUD:1460
+106	Şimdi değil	HUD:1463
+107	Mağazaya bağlanılamadı	HUD:1471
+108	Başlangıç Paketi senin	HUD:1484
+109	Reklamlar kaldırıldı	HUD:1484
+110	Elmas	HUD:1484, HUD:1771
+111	Kurucu kıyafetini giydin.	HUD:1487
+112	Her gün {1} elmas Görevler'de seni bekliyor.	HUD:1489
+113	Harika!	HUD:1505, HUD:1672
+114	(prefers-reduced-motion: reduce)	HUD:1519
+115	Kalıcı gelir	HUD:1548
+116	Al	HUD:1672
+117	İzle, {1}× al	HUD:1681
+118	Alındı	HUD:1742
+119	. İnternetini kontrol edip tekrar dene.	HUD:1755
+120	Reklamları Kaldır	HUD:1761
+121	Oyunun arasına giren reklamlar kalkar. Ödüllü videoları yine istediğinde izlersin. Her gün {1} elmas hediye.	HUD:1762
+122	{1} elmas ve yalnız bu pakette olan Kurucu kıyafeti. Bir kez alınabilir.	HUD:1767
+123	Kıyafet, tepsi ve dekor almak için.	HUD:1771
+124	Aldıkların	HUD:1775
+125	saklanır. Telefon değiştirirsen Ayarlar'dan geri yükleyebilirsin.	HUD:1775
+126	Şu an giyiyorsun	HUD:1784
+127	Şu an elinde	HUD:1785
+128	Salonda duruyor	HUD:1786
+129	Şu an salonda	HUD:1787, HUD:1788, HUD:1789
+130	Kıyafet	HUD:1881
+131	Dekor	HUD:1883
+132	Paketler	HUD:1884, HUD:1996
+133	Zemin	HUD:1886
+134	Duvar	HUD:1887
+135	linear-gradient(135deg, {1} 0 55%, {2} 55% 100%)	HUD:1964
+136	linear-gradient(135deg, {1} 0 50%, {2} 50% 100%)	HUD:1987
+137	Masa temaları kilitli	HUD:2024
+138	Tüm salonları aç ve bütün masaları son seviyeye getir; sonra masalarını renklendirebilirsin.	HUD:2026
+139	Salon	HUD:2030, HUD:2064
+140	Son seviye masa	HUD:2034

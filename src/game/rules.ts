@@ -30,6 +30,7 @@ import type { ReklamSayaci, SatinAlim, SaveStats } from './save';
 import { iapConfig } from '../config/iap.config';
 import { LAYOUT, LAVABO, servicePlace, type RVec3 } from './layout';
 import { MAX_AREAS, THE_SERVICE, areaOfTable, areaTableStart, tostShare, isCounter } from './world';
+import { t } from '../i18n';
 
 // DWELL kanonik dolum-noktası id'leri (D-018 §2): pad'ler kendi id'sini kullanır; bunlar yükseltme
 // noktaları. Önek + index biçimindedir ('tea:0' = SERVİS index'i, 'tableUp:5' = GLOBAL masa index'i).
@@ -522,7 +523,7 @@ export function revealKeys(
   questIndex = Number.POSITIVE_INFINITY,
 ): [string, string, RVec3 | null][] {
   const out: [string, string, RVec3 | null][] = [];
-  const pre = (a: number) => (a === 0 ? '' : `Salon ${a + 1}: `);
+  const pre = (a: number) => (a === 0 ? '' : `${t('Salon {1}:', a + 1)} `);
   // D-124: bildirim de, panın hedefi de O AN CANLI masadan türer. Eskiden alan kapısı açılınca
   // haber veriliyor ve pan alanın İLK masasına atılıyordu; tek-hedef kuralında ikisi de yalan
   // söylerdi (salonun kapısı açık olabilir ama sıra henüz o salona gelmemiş olabilir; geldiğinde
@@ -532,7 +533,7 @@ export function revealKeys(
   if (hedefMasa != null) {
     const a = areaOfTable(hedefMasa);
     if (a < areasOpen)
-      out.push([`tableUp:${a}`, `Yeni: ${pre(a)}Masaları yükseltebilirsin 🪑`, LAYOUT.tables[hedefMasa].upgradeSpot]);
+      out.push([`tableUp:${a}`, t('Yeni: {1}Masaları yükseltebilirsin 🪑', pre(a)), LAYOUT.tables[hedefMasa].upgradeSpot]);
   }
   // Servis noktası TEK (B2) → tek reveal anahtarı, alan döngüsünün dışında. Metin seviyeye göre
   // konuşur: L4'e kadar "çay ocağı", sonrası "tezgâh" (tek merdiven, iki kimlik).
@@ -540,10 +541,10 @@ export function revealKeys(
   if (stationUpgradeUnlocked(g) && lv < stationSoftMaxLevel() && upgradeSpotLive('station', questIndex))
     out.push([
       `upgrade:${THE_SERVICE}`,
-      isCounter(lv) ? 'Yeni: Tezgâhı yükseltebilirsin 🍞' : 'Yeni: Çay ocağını yükseltebilirsin ☕',
+      isCounter(lv) ? t('Yeni: Tezgâhı yükseltebilirsin 🍞') : t('Yeni: Çay ocağını yükseltebilirsin ☕'),
       servicePlace(areasOpen).upgradeSpot,
     ]);
-  for (const op of availableOptionalPads(g)) out.push([`opt:${op.id}`, `Yeni: ${op.label} 🔓`, null]);
+  for (const op of availableOptionalPads(g)) out.push([`opt:${op.id}`, t('Yeni: {1} 🔓', op.label), null]);
   return out;
 }
 

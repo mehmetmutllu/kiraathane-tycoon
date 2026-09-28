@@ -17,7 +17,7 @@ const browser = await chromium.launch({
   headless: true,
   args: ['--use-gl=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'],
 });
-const page = await browser.newPage({ viewport: { width: 900, height: 600 } });
+const page = await browser.newPage({ viewport: { width: 900, height: 600 }, locale: 'tr-TR' }); // dil 'oto' → Türkçe (i18n: denetimler Türkçe metin okur)
 
 const consoleErrors = [];
 page.on('console', (m) => {

@@ -2,6 +2,7 @@ import type { CSSProperties } from 'react';
 import { ONBOARDING, type OgreticiAdim } from '../../config/onboarding';
 import type { OgreticiMetinAnahtari } from '../../game/onboarding';
 import { HandIcon } from './icons';
+import { t } from '../../i18n';
 
 /** Adımların ekrandaki sırası (ilerleme noktaları). `yuru` görev hattında değil, ilk görevin içinde. */
 const SIRA: readonly OgreticiAdim[] = ['yuru', ...ONBOARDING.gorevler.map((g) => g.adim)];
@@ -42,7 +43,7 @@ export function Ogretici({
         </div>
       )}
       <div className="ogretici-satir" key={metin}>
-        <span className="ogretici-noktalar" aria-label={`Adım ${sira + 1}/${SIRA.length}`}>
+        <span className="ogretici-noktalar" aria-label={t('Adım {1}/{2}', sira + 1, SIRA.length)}>
           {SIRA.map((a, i) => (
             <i key={a} className={i < sira ? 'bitti' : i === sira ? 'simdi' : undefined} />
           ))}
@@ -51,7 +52,7 @@ export function Ogretici({
           {ONBOARDING.metin[metin]}
         </span>
         <button className="ogretici-atla" data-testid="ogretici-atla" onClick={onAtla}>
-          Atla
+          {t('Atla')}
         </button>
       </div>
     </div>

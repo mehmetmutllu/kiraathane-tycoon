@@ -3754,6 +3754,8 @@ describe('Faz B1 — kayıt v31: TEMİZ SIFIRLAMA, migrasyon yok (D-058 karar 3)
       // F2 · D-125: gölge tercihi de ayar. Kayıtta verilmemişti → varsayılan 'oto'ya düşer,
       // yani sıfırlama oyuncunun gölge tercihini de taşır ama uydurmaz.
       golge: 'oto',
+      // i18n (2026-09-28): dil tercihi de ayar; verilmediyse 'oto' (telefonun dili).
+      dil: 'oto',
     });
   });
 

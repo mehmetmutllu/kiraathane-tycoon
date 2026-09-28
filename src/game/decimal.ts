@@ -9,11 +9,11 @@ export const D = (v: Numberish = 0): Decimal => new Decimal(v);
 /**
  * K2 (D-146) — PARA TEK BİÇİMDE. Eskiden üç biçim vardı: üst şerit "6.04K" (Türkçede "6.04" binlik
  * okunur), ödül ekranı "+7.474", zemin "9950". Kural: küsurat YOK; < 1 milyon TAM sayı + dilin binlik
- * ayracı; ≥ 1 milyon dilin kısaltması, TEK ondalık. Oyun henüz yalnız Türkçe → dil `OYUN_DILI`;
+ * ayracı; ≥ 1 milyon dilin kısaltması, TEK ondalık. Dil oyuncunun dilidir (`i18n` · `dil()`);
  * çeviri geldiğinde burası oyuncunun seçtiği dili okur, çağıranlar değişmez.
  */
-export type Dil = 'tr' | 'en';
-export const OYUN_DILI: Dil = 'tr';
+import { dil as aktifDil, type Dil } from '../i18n';
+export type { Dil };
 
 const YEREL: Record<Dil, string> = { tr: 'tr-TR', en: 'en-US' };
 /** 10^6, 10^9, 10^12 … kısaltmaları. tr: milyon · milyar · trilyon · katrilyon · kentilyon. */
@@ -23,7 +23,7 @@ const KISALTMA: Record<Dil, { ayrac: string; birim: string[] }> = {
 };
 
 /** ₺/💎/zemin tutarı — oyundaki HER para gösterimi buradan geçer. */
-export function fmt(v: Numberish, dil: Dil = OYUN_DILI): string {
+export function fmt(v: Numberish, dil: Dil = aktifDil()): string {
   const d = D(v);
   if (d.lt(0)) return '-' + fmt(d.neg(), dil);
   if (d.lt(1e6)) return Math.floor(d.toNumber()).toLocaleString(YEREL[dil]);
@@ -36,5 +36,5 @@ export function fmt(v: Numberish, dil: Dil = OYUN_DILI): string {
 }
 
 /** Para OLMAYAN ondalık değer (mıknatıs alanı "2,6", hız "1,5") — dilin ondalık ayracıyla. */
-export const sayi = (n: number, dil: Dil = OYUN_DILI): string =>
+export const sayi = (n: number, dil: Dil = aktifDil()): string =>
   n.toLocaleString(YEREL[dil], { maximumFractionDigits: 2 });

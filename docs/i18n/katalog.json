@@ -1,0 +1,2718 @@
+[
+ {
+  "no": 1,
+  "metin": "Tepsi",
+  "yer": "CharacterPanel:110, CharacterPanel:142, HUD:1882",
+  "sablon": false,
+  "gorunen": "Tepsi"
+ },
+ {
+  "no": 2,
+  "metin": "Para Mıknatısı",
+  "yer": "CharacterPanel:111",
+  "sablon": false,
+  "gorunen": "Para Mıknatısı"
+ },
+ {
+  "no": 3,
+  "metin": "Hareket Hızı",
+  "yer": "CharacterPanel:112",
+  "sablon": false,
+  "gorunen": "Hareket Hızı"
+ },
+ {
+  "no": 4,
+  "metin": "hız",
+  "yer": "CharacterPanel:112, CharacterPanel:179, CharacterPanel:182",
+  "sablon": false,
+  "gorunen": "hız"
+ },
+ {
+  "no": 5,
+  "metin": "ürün",
+  "yer": "CharacterPanel:136",
+  "sablon": false,
+  "gorunen": "ürün"
+ },
+ {
+  "no": 6,
+  "metin": "Son seviye",
+  "yer": "CharacterPanel:168, CharacterPanel:199, CharacterPanel:252",
+  "sablon": false,
+  "gorunen": "Son seviye"
+ },
+ {
+  "no": 7,
+  "metin": "Hız",
+  "yer": "CharacterPanel:175, CharacterPanel:259",
+  "sablon": false,
+  "gorunen": "Hız"
+ },
+ {
+  "no": 8,
+  "metin": "Garsonların ortak tepsisi ve hızı — hepsi tek havuzdan, her masaya.",
+  "yer": "CharacterPanel:203",
+  "sablon": false,
+  "gorunen": "Garsonların ortak tepsisi ve hızı — hepsi tek havuzdan, her masaya."
+ },
+ {
+  "no": 9,
+  "metin": "Leğen",
+  "yer": "CharacterPanel:228",
+  "sablon": false,
+  "gorunen": "Leğen"
+ },
+ {
+  "no": 10,
+  "metin": "Tüm salonların bulaşıkçılarına ortak: leğen tek turda daha çok taşır, hız turu kısaltır.",
+  "yer": "CharacterPanel:288",
+  "sablon": false,
+  "gorunen": "Tüm salonların bulaşıkçılarına ortak: leğen tek turda daha çok taşır, hız turu kısaltır."
+ },
+ {
+  "no": 11,
+  "metin": "Çaycı",
+  "yer": "CharacterPanel:322, CharacterPanel:329, HUD:538",
+  "sablon": false,
+  "gorunen": "Çaycı"
+ },
+ {
+  "no": 12,
+  "metin": "Garson",
+  "yer": "CharacterPanel:323, CharacterPanel:329",
+  "sablon": false,
+  "gorunen": "Garson"
+ },
+ {
+  "no": 13,
+  "metin": "Bulaşıkçı",
+  "yer": "CharacterPanel:324, CharacterPanel:329",
+  "sablon": false,
+  "gorunen": "Bulaşıkçı"
+ },
+ {
+  "no": 14,
+  "metin": "Çaycı seviyesi",
+  "yer": "CharacterPanel:335",
+  "sablon": false,
+  "gorunen": "Çaycı seviyesi"
+ },
+ {
+  "no": 15,
+  "metin": "Seviye",
+  "yer": "HUD:318, HUD:1296",
+  "sablon": false,
+  "gorunen": "Seviye"
+ },
+ {
+  "no": 16,
+  "metin": "Ayarlar",
+  "yer": "HUD:346, HUD:580",
+  "sablon": false,
+  "gorunen": "Ayarlar"
+ },
+ {
+  "no": 17,
+  "metin": "Yakınlaş",
+  "yer": "HUD:359",
+  "sablon": false,
+  "gorunen": "Yakınlaş"
+ },
+ {
+  "no": 18,
+  "metin": "Genel bakış",
+  "yer": "HUD:359",
+  "sablon": false,
+  "gorunen": "Genel bakış"
+ },
+ {
+  "no": 19,
+  "metin": "Reklam izle, para kazan",
+  "yer": "HUD:368",
+  "sablon": false,
+  "gorunen": "Reklam izle, para kazan"
+ },
+ {
+  "no": 20,
+  "metin": "Tostları bırak",
+  "yer": "HUD:383",
+  "sablon": false,
+  "gorunen": "Tostları bırak"
+ },
+ {
+  "no": 21,
+  "metin": "Çayları bırak",
+  "yer": "HUD:399",
+  "sablon": false,
+  "gorunen": "Çayları bırak"
+ },
+ {
+  "no": 22,
+  "metin": "Müşteri kalmadıysa tepsini boşaltabilirsin — kaplar temiz rafa döner.",
+  "yer": "HUD:414",
+  "sablon": false,
+  "gorunen": "Müşteri kalmadıysa tepsini boşaltabilirsin — kaplar temiz rafa döner."
+ },
+ {
+  "no": 23,
+  "metin": "Tamamlandı",
+  "yer": "HUD:465",
+  "sablon": false,
+  "gorunen": "Tamamlandı"
+ },
+ {
+  "no": 24,
+  "metin": "Çaycı panelinden al",
+  "yer": "HUD:480",
+  "sablon": false,
+  "gorunen": "Çaycı panelinden al"
+ },
+ {
+  "no": 25,
+  "metin": "Hedefe git",
+  "yer": "HUD:480",
+  "sablon": false,
+  "gorunen": "Hedefe git"
+ },
+ {
+  "no": 26,
+  "metin": "Görev hattı tamamlandı — mekân senin.",
+  "yer": "HUD:495, HUD:1205",
+  "sablon": false,
+  "gorunen": "Görev hattı tamamlandı — mekân senin."
+ },
+ {
+  "no": 27,
+  "metin": "Görevler",
+  "yer": "HUD:511, HUD:1094",
+  "sablon": false,
+  "gorunen": "Görevler"
+ },
+ {
+  "no": 28,
+  "metin": "Hedefler",
+  "yer": "HUD:522, HUD:1289",
+  "sablon": false,
+  "gorunen": "Hedefler"
+ },
+ {
+  "no": 29,
+  "metin": "Mağaza",
+  "yer": "HUD:531, HUD:1996",
+  "sablon": false,
+  "gorunen": "Mağaza"
+ },
+ {
+  "no": 30,
+  "metin": "Buradan yükselt",
+  "yer": "HUD:561",
+  "sablon": false,
+  "gorunen": "Buradan yükselt"
+ },
+ {
+  "no": 31,
+  "metin": "Bu yükseltme",
+  "yer": "HUD:562",
+  "sablon": false,
+  "gorunen": "Bu yükseltme"
+ },
+ {
+  "no": 32,
+  "metin": "sekmesinde — dokun ve satın al.",
+  "yer": "HUD:562",
+  "sablon": false,
+  "gorunen": "sekmesinde — dokun ve satın al."
+ },
+ {
+  "no": 33,
+  "metin": "Kafenin adı",
+  "yer": "HUD:589, KafeAdiKutusu:33, KafeAdiKutusu:48",
+  "sablon": false,
+  "gorunen": "Kafenin adı"
+ },
+ {
+  "no": 34,
+  "metin": "Ses",
+  "yer": "HUD:601",
+  "sablon": false,
+  "gorunen": "Ses"
+ },
+ {
+  "no": 35,
+  "metin": "Ses seviyesi",
+  "yer": "HUD:603",
+  "sablon": false,
+  "gorunen": "Ses seviyesi"
+ },
+ {
+  "no": 36,
+  "metin": "Müzik",
+  "yer": "HUD:609",
+  "sablon": false,
+  "gorunen": "Müzik"
+ },
+ {
+  "no": 37,
+  "metin": "Müzik seviyesi",
+  "yer": "HUD:611",
+  "sablon": false,
+  "gorunen": "Müzik seviyesi"
+ },
+ {
+  "no": 38,
+  "metin": "Gölgeler",
+  "yer": "HUD:625",
+  "sablon": false,
+  "gorunen": "Gölgeler"
+ },
+ {
+  "no": 39,
+  "metin": "KÜNYE",
+  "yer": "HUD:640",
+  "sablon": false,
+  "gorunen": "KÜNYE"
+ },
+ {
+  "no": 40,
+  "metin": "Kayıt şeması",
+  "yer": "HUD:642",
+  "sablon": false,
+  "gorunen": "Kayıt şeması"
+ },
+ {
+  "no": 41,
+  "metin": "Toplam kazanç",
+  "yer": "HUD:643",
+  "sablon": false,
+  "gorunen": "Toplam kazanç"
+ },
+ {
+  "no": 42,
+  "metin": "Servis edilen çay",
+  "yer": "HUD:644",
+  "sablon": false,
+  "gorunen": "Servis edilen çay"
+ },
+ {
+  "no": 43,
+  "metin": "Yıkanan bulaşık",
+  "yer": "HUD:645",
+  "sablon": false,
+  "gorunen": "Yıkanan bulaşık"
+ },
+ {
+  "no": 44,
+  "metin": "Açılan nokta",
+  "yer": "HUD:646",
+  "sablon": false,
+  "gorunen": "Açılan nokta"
+ },
+ {
+  "no": 45,
+  "metin": "Kayıt bu cihazda tutulur; Play Games'e bağlıysan buluta da yedeklenir. Oyunu sıfırlarsan geri alınamaz.",
+  "yer": "HUD:653",
+  "sablon": false,
+  "gorunen": "Kayıt bu cihazda tutulur; Play Games'e bağlıysan buluta da yedeklenir. Oyunu sıfırlarsan geri alınamaz."
+ },
+ {
+  "no": 46,
+  "metin": "Kayıt bu cihazda tutulur. Oyunu sıfırlarsan geri alınamaz.",
+  "yer": "HUD:654",
+  "sablon": false,
+  "gorunen": "Kayıt bu cihazda tutulur. Oyunu sıfırlarsan geri alınamaz."
+ },
+ {
+  "no": 47,
+  "metin": "Oyunu sıfırla",
+  "yer": "HUD:657",
+  "sablon": false,
+  "gorunen": "Oyunu sıfırla"
+ },
+ {
+  "no": 48,
+  "metin": "Oyunu sıfırla?",
+  "yer": "HUD:662",
+  "sablon": false,
+  "gorunen": "Oyunu sıfırla?"
+ },
+ {
+  "no": 49,
+  "metin": "Tüm ilerleme silinecek",
+  "yer": "HUD:663",
+  "sablon": false,
+  "gorunen": "Tüm ilerleme silinecek"
+ },
+ {
+  "no": 50,
+  "metin": "(bulut yedeği dahil)",
+  "yer": "HUD:663",
+  "sablon": false,
+  "gorunen": "(bulut yedeği dahil)"
+ },
+ {
+  "no": 51,
+  "metin": ". Geri alınamaz.",
+  "yer": "HUD:663",
+  "sablon": false,
+  "gorunen": ". Geri alınamaz."
+ },
+ {
+  "no": 52,
+  "metin": "Evet, sıfırla",
+  "yer": "HUD:665",
+  "sablon": false,
+  "gorunen": "Evet, sıfırla"
+ },
+ {
+  "no": 53,
+  "metin": "Vazgeç",
+  "yer": "HUD:668, KafeAdiKutusu:60",
+  "sablon": false,
+  "gorunen": "Vazgeç"
+ },
+ {
+  "no": 54,
+  "metin": "Seviye ${levelUp.level}!",
+  "yer": "HUD:681",
+  "sablon": true,
+  "gorunen": "Seviye {1}!"
+ },
+ {
+  "no": 55,
+  "metin": "Servis hızı",
+  "yer": "HUD:685",
+  "sablon": false,
+  "gorunen": "Servis hızı"
+ },
+ {
+  "no": 56,
+  "metin": "Sen yokken mekân çalıştı",
+  "yer": "HUD:713",
+  "sablon": false,
+  "gorunen": "Sen yokken mekân çalıştı"
+ },
+ {
+  "no": 57,
+  "metin": "İzle, +${fmt(offlineIzleEki)}",
+  "yer": "HUD:718",
+  "sablon": true,
+  "gorunen": "İzle, +{1}"
+ },
+ {
+  "no": 58,
+  "metin": "BUGÜN",
+  "yer": "HUD:747, HUD:1096",
+  "sablon": false,
+  "gorunen": "BUGÜN"
+ },
+ {
+  "no": 59,
+  "metin": "Bugünkü görevleri tamamladın — yenileri yarın",
+  "yer": "HUD:748",
+  "sablon": false,
+  "gorunen": "Bugünkü görevleri tamamladın — yenileri yarın"
+ },
+ {
+  "no": 60,
+  "metin": "GÜNLÜK GÖREV",
+  "yer": "HUD:758",
+  "sablon": false,
+  "gorunen": "GÜNLÜK GÖREV"
+ },
+ {
+  "no": 61,
+  "metin": "Ödülünü al",
+  "yer": "HUD:761",
+  "sablon": false,
+  "gorunen": "Ödülünü al"
+ },
+ {
+  "no": 62,
+  "metin": "Hedefe bak",
+  "yer": "HUD:853",
+  "sablon": false,
+  "gorunen": "Hedefe bak"
+ },
+ {
+  "no": 63,
+  "metin": "Bulaşık birikiyor",
+  "yer": "HUD:904",
+  "sablon": false,
+  "gorunen": "Bulaşık birikiyor"
+ },
+ {
+  "no": 64,
+  "metin": "Müşteriler çayını içince masada",
+  "yer": "HUD:906",
+  "sablon": false,
+  "gorunen": "Müşteriler çayını içince masada"
+ },
+ {
+  "no": 65,
+  "metin": "bırakır. Onları topla ve bulaşık tezgâhına götür — yıkanan bardaklar temiz rafa döner.",
+  "yer": "HUD:906",
+  "sablon": false,
+  "gorunen": "bırakır. Onları topla ve bulaşık tezgâhına götür — yıkanan bardaklar temiz rafa döner."
+ },
+ {
+  "no": 66,
+  "metin": "Anladım",
+  "yer": "HUD:911",
+  "sablon": false,
+  "gorunen": "Anladım"
+ },
+ {
+  "no": 67,
+  "metin": "Kapat",
+  "yer": "HUD:941, HUD:994",
+  "sablon": false,
+  "gorunen": "Kapat"
+ },
+ {
+  "no": 68,
+  "metin": "Bir reklam izle, son dakikada kazandığın kadar para al",
+  "yer": "HUD:948",
+  "sablon": false,
+  "gorunen": "Bir reklam izle, son dakikada kazandığın kadar para al"
+ },
+ {
+  "no": 69,
+  "metin": "İzle",
+  "yer": "HUD:957, HUD:1019",
+  "sablon": false,
+  "gorunen": "İzle"
+ },
+ {
+  "no": 70,
+  "metin": "Yeni haklar ${sure} sonra",
+  "yer": "HUD:962",
+  "sablon": true,
+  "gorunen": "Yeni haklar {1} sonra"
+ },
+ {
+  "no": 71,
+  "metin": "Önce biraz servis yap — ödül son dakikanın kazancı",
+  "yer": "HUD:964",
+  "sablon": false,
+  "gorunen": "Önce biraz servis yap — ödül son dakikanın kazancı"
+ },
+ {
+  "no": 72,
+  "metin": "Kalan hak: ${kalan}/${toplam}",
+  "yer": "HUD:965",
+  "sablon": true,
+  "gorunen": "Kalan hak: {1}/{2}"
+ },
+ {
+  "no": 73,
+  "metin": "Masa",
+  "yer": "HUD:1000, HUD:1885",
+  "sablon": false,
+  "gorunen": "Masa"
+ },
+ {
+  "no": 74,
+  "metin": "· Usta",
+  "yer": "HUD:1000",
+  "sablon": false,
+  "gorunen": "· Usta"
+ },
+ {
+  "no": 75,
+  "metin": "Bu masanın bahşişi kalıcı olarak ×",
+  "yer": "HUD:1001",
+  "sablon": false,
+  "gorunen": "Bu masanın bahşişi kalıcı olarak ×"
+ },
+ {
+  "no": 76,
+  "metin": "Reklamla Usta yarın yeniden",
+  "yer": "HUD:1024",
+  "sablon": false,
+  "gorunen": "Reklamla Usta yarın yeniden"
+ },
+ {
+  "no": 77,
+  "metin": "Reklamsız paket hediyesi",
+  "yer": "HUD:1053",
+  "sablon": false,
+  "gorunen": "Reklamsız paket hediyesi"
+ },
+ {
+  "no": 78,
+  "metin": "Her gün yenilenir",
+  "yer": "HUD:1056, HUD:1117",
+  "sablon": false,
+  "gorunen": "Her gün yenilenir"
+ },
+ {
+  "no": 79,
+  "metin": "Bugün alındı",
+  "yer": "HUD:1056, HUD:1117",
+  "sablon": false,
+  "gorunen": "Bugün alındı"
+ },
+ {
+  "no": 80,
+  "metin": "Al ·",
+  "yer": "HUD:1059",
+  "sablon": false,
+  "gorunen": "Al ·"
+ },
+ {
+  "no": 81,
+  "metin": "· ${gunHazir} ÖDÜL HAZIR",
+  "yer": "HUD:1096",
+  "sablon": true,
+  "gorunen": "· {1} ÖDÜL HAZIR"
+ },
+ {
+  "no": 82,
+  "metin": "Ödülü al",
+  "yer": "HUD:1124, HUD:1367",
+  "sablon": false,
+  "gorunen": "Ödülü al"
+ },
+ {
+  "no": 83,
+  "metin": "Bugün kalan ödül:",
+  "yer": "HUD:1140",
+  "sablon": false,
+  "gorunen": "Bugün kalan ödül:"
+ },
+ {
+  "no": 84,
+  "metin": "· yarın üç yeni görev",
+  "yer": "HUD:1140",
+  "sablon": false,
+  "gorunen": "· yarın üç yeni görev"
+ },
+ {
+  "no": 85,
+  "metin": "Bugünün görevleri bitti — yarın üç yeni görev",
+  "yer": "HUD:1143",
+  "sablon": false,
+  "gorunen": "Bugünün görevleri bitti — yarın üç yeni görev"
+ },
+ {
+  "no": 86,
+  "metin": "MEKÂN",
+  "yer": "HUD:1165",
+  "sablon": false,
+  "gorunen": "MEKÂN"
+ },
+ {
+  "no": 87,
+  "metin": "SIRADA",
+  "yer": "HUD:1210",
+  "sablon": false,
+  "gorunen": "SIRADA"
+ },
+ {
+  "no": 88,
+  "metin": "TAMAMLANAN ·",
+  "yer": "HUD:1224",
+  "sablon": false,
+  "gorunen": "TAMAMLANAN ·"
+ },
+ {
+  "no": 89,
+  "metin": "Her hedef seviyeni yükseltir · seviye bonusu",
+  "yer": "HUD:1304",
+  "sablon": false,
+  "gorunen": "Her hedef seviyeni yükseltir · seviye bonusu"
+ },
+ {
+  "no": 90,
+  "metin": "servis hızı",
+  "yer": "HUD:1305",
+  "sablon": false,
+  "gorunen": "servis hızı"
+ },
+ {
+  "no": 91,
+  "metin": "· koleksiyon bonusu ${yuzde(bonus)} gelir",
+  "yer": "HUD:1306",
+  "sablon": true,
+  "gorunen": "· koleksiyon bonusu {1} gelir"
+ },
+ {
+  "no": 92,
+  "metin": "Usta masalar",
+  "yer": "HUD:1320",
+  "sablon": false,
+  "gorunen": "Usta masalar"
+ },
+ {
+  "no": 93,
+  "metin": "${ustaBekleyen} masa hazır — yanındaki mavi noktaya git",
+  "yer": "HUD:1323",
+  "sablon": true,
+  "gorunen": "{1} masa hazır — yanındaki mavi noktaya git"
+ },
+ {
+  "no": 94,
+  "metin": "Masayı para tavanına çıkarınca Usta noktası açılır",
+  "yer": "HUD:1324",
+  "sablon": false,
+  "gorunen": "Masayı para tavanına çıkarınca Usta noktası açılır"
+ },
+ {
+  "no": 95,
+  "metin": "KATEGORİLER",
+  "yer": "HUD:1334",
+  "sablon": false,
+  "gorunen": "KATEGORİLER"
+ },
+ {
+  "no": 96,
+  "metin": "· ${toplanabilir} ÖDÜL HAZIR",
+  "yer": "HUD:1334",
+  "sablon": true,
+  "gorunen": "· {1} ÖDÜL HAZIR"
+ },
+ {
+  "no": 97,
+  "metin": "${odul.categoryName} · ${odul.tier + 1}. kademe",
+  "yer": "HUD:1386",
+  "sablon": true,
+  "gorunen": "{1} · {2}. kademe"
+ },
+ {
+  "no": 98,
+  "metin": "Bir kez alınabilir",
+  "yer": "HUD:1436",
+  "sablon": false,
+  "gorunen": "Bir kez alınabilir"
+ },
+ {
+  "no": 99,
+  "metin": "Başlangıç Paketi",
+  "yer": "HUD:1437, HUD:1767",
+  "sablon": false,
+  "gorunen": "Başlangıç Paketi"
+ },
+ {
+  "no": 100,
+  "metin": "Kıyafet, tepsi ve dekor için",
+  "yer": "HUD:1447",
+  "sablon": false,
+  "gorunen": "Kıyafet, tepsi ve dekor için"
+ },
+ {
+  "no": 101,
+  "metin": "linear-gradient(135deg, ${pulA} 0 55%, ${pulB} 55% 100%)",
+  "yer": "HUD:1451",
+  "sablon": true,
+  "gorunen": "linear-gradient(135deg, {1} 0 55%, {2} 55% 100%)"
+ },
+ {
+  "no": 102,
+  "metin": "Kurucu kıyafeti",
+  "yer": "HUD:1453",
+  "sablon": false,
+  "gorunen": "Kurucu kıyafeti"
+ },
+ {
+  "no": 103,
+  "metin": "Yalnız bu pakette",
+  "yer": "HUD:1453",
+  "sablon": false,
+  "gorunen": "Yalnız bu pakette"
+ },
+ {
+  "no": 104,
+  "metin": "Bordo yelek ve fes",
+  "yer": "HUD:1455",
+  "sablon": false,
+  "gorunen": "Bordo yelek ve fes"
+ },
+ {
+  "no": 105,
+  "metin": "Al · ${fiyat}",
+  "yer": "HUD:1460",
+  "sablon": true,
+  "gorunen": "Al · {1}"
+ },
+ {
+  "no": 106,
+  "metin": "Şimdi değil",
+  "yer": "HUD:1463",
+  "sablon": false,
+  "gorunen": "Şimdi değil"
+ },
+ {
+  "no": 107,
+  "metin": "Mağazaya bağlanılamadı",
+  "yer": "HUD:1471",
+  "sablon": false,
+  "gorunen": "Mağazaya bağlanılamadı"
+ },
+ {
+  "no": 108,
+  "metin": "Başlangıç Paketi senin",
+  "yer": "HUD:1484",
+  "sablon": false,
+  "gorunen": "Başlangıç Paketi senin"
+ },
+ {
+  "no": 109,
+  "metin": "Reklamlar kaldırıldı",
+  "yer": "HUD:1484",
+  "sablon": false,
+  "gorunen": "Reklamlar kaldırıldı"
+ },
+ {
+  "no": 110,
+  "metin": "Elmas",
+  "yer": "HUD:1484, HUD:1771",
+  "sablon": false,
+  "gorunen": "Elmas"
+ },
+ {
+  "no": 111,
+  "metin": "Kurucu kıyafetini giydin.",
+  "yer": "HUD:1487",
+  "sablon": false,
+  "gorunen": "Kurucu kıyafetini giydin."
+ },
+ {
+  "no": 112,
+  "metin": "Her gün ${P.removeAdsDiamondsPerDay} elmas Görevler'de seni bekliyor.",
+  "yer": "HUD:1489",
+  "sablon": true,
+  "gorunen": "Her gün {1} elmas Görevler'de seni bekliyor."
+ },
+ {
+  "no": 113,
+  "metin": "Harika!",
+  "yer": "HUD:1505, HUD:1672",
+  "sablon": false,
+  "gorunen": "Harika!"
+ },
+ {
+  "no": 114,
+  "metin": "(prefers-reduced-motion: reduce)",
+  "yer": "HUD:1519",
+  "sablon": false,
+  "gorunen": "(prefers-reduced-motion: reduce)"
+ },
+ {
+  "no": 115,
+  "metin": "Kalıcı gelir",
+  "yer": "HUD:1548",
+  "sablon": false,
+  "gorunen": "Kalıcı gelir"
+ },
+ {
+  "no": 116,
+  "metin": "Al",
+  "yer": "HUD:1672",
+  "sablon": false,
+  "gorunen": "Al"
+ },
+ {
+  "no": 117,
+  "metin": "İzle, ${economyConfig.rewarded.claimMult}× al",
+  "yer": "HUD:1681",
+  "sablon": true,
+  "gorunen": "İzle, {1}× al"
+ },
+ {
+  "no": 118,
+  "metin": "Alındı",
+  "yer": "HUD:1742",
+  "sablon": false,
+  "gorunen": "Alındı"
+ },
+ {
+  "no": 119,
+  "metin": ". İnternetini kontrol edip tekrar dene.",
+  "yer": "HUD:1755",
+  "sablon": false,
+  "gorunen": ". İnternetini kontrol edip tekrar dene."
+ },
+ {
+  "no": 120,
+  "metin": "Reklamları Kaldır",
+  "yer": "HUD:1761",
+  "sablon": false,
+  "gorunen": "Reklamları Kaldır"
+ },
+ {
+  "no": 121,
+  "metin": "Oyunun arasına giren reklamlar kalkar. Ödüllü videoları yine istediğinde izlersin. Her gün ${P.removeAdsDiamondsPerDay} elmas hediye.",
+  "yer": "HUD:1762",
+  "sablon": true,
+  "gorunen": "Oyunun arasına giren reklamlar kalkar. Ödüllü videoları yine istediğinde izlersin. Her gün {1} elmas hediye."
+ },
+ {
+  "no": 122,
+  "metin": "${P.starterDiamonds} elmas ve yalnız bu pakette olan Kurucu kıyafeti. Bir kez alınabilir.",
+  "yer": "HUD:1767",
+  "sablon": true,
+  "gorunen": "{1} elmas ve yalnız bu pakette olan Kurucu kıyafeti. Bir kez alınabilir."
+ },
+ {
+  "no": 123,
+  "metin": "Kıyafet, tepsi ve dekor almak için.",
+  "yer": "HUD:1771",
+  "sablon": false,
+  "gorunen": "Kıyafet, tepsi ve dekor almak için."
+ },
+ {
+  "no": 124,
+  "metin": "Aldıkların",
+  "yer": "HUD:1775",
+  "sablon": false,
+  "gorunen": "Aldıkların"
+ },
+ {
+  "no": 125,
+  "metin": "saklanır. Telefon değiştirirsen Ayarlar'dan geri yükleyebilirsin.",
+  "yer": "HUD:1775",
+  "sablon": false,
+  "gorunen": "saklanır. Telefon değiştirirsen Ayarlar'dan geri yükleyebilirsin."
+ },
+ {
+  "no": 126,
+  "metin": "Şu an giyiyorsun",
+  "yer": "HUD:1784",
+  "sablon": false,
+  "gorunen": "Şu an giyiyorsun"
+ },
+ {
+  "no": 127,
+  "metin": "Şu an elinde",
+  "yer": "HUD:1785",
+  "sablon": false,
+  "gorunen": "Şu an elinde"
+ },
+ {
+  "no": 128,
+  "metin": "Salonda duruyor",
+  "yer": "HUD:1786",
+  "sablon": false,
+  "gorunen": "Salonda duruyor"
+ },
+ {
+  "no": 129,
+  "metin": "Şu an salonda",
+  "yer": "HUD:1787, HUD:1788, HUD:1789",
+  "sablon": false,
+  "gorunen": "Şu an salonda"
+ },
+ {
+  "no": 130,
+  "metin": "Kıyafet",
+  "yer": "HUD:1881",
+  "sablon": false,
+  "gorunen": "Kıyafet"
+ },
+ {
+  "no": 131,
+  "metin": "Dekor",
+  "yer": "HUD:1883",
+  "sablon": false,
+  "gorunen": "Dekor"
+ },
+ {
+  "no": 132,
+  "metin": "Paketler",
+  "yer": "HUD:1884, HUD:1996",
+  "sablon": false,
+  "gorunen": "Paketler"
+ },
+ {
+  "no": 133,
+  "metin": "Zemin",
+  "yer": "HUD:1886",
+  "sablon": false,
+  "gorunen": "Zemin"
+ },
+ {
+  "no": 134,
+  "metin": "Duvar",
+  "yer": "HUD:1887",
+  "sablon": false,
+  "gorunen": "Duvar"
+ },
+ {
+  "no": 135,
+  "metin": "linear-gradient(135deg, ${a} 0 55%, ${b} 55% 100%)",
+  "yer": "HUD:1964",
+  "sablon": true,
+  "gorunen": "linear-gradient(135deg, {1} 0 55%, {2} 55% 100%)"
+ },
+ {
+  "no": 136,
+  "metin": "linear-gradient(135deg, ${cols[0]} 0 50%, ${cols[1]} 50% 100%)",
+  "yer": "HUD:1987",
+  "sablon": true,
+  "gorunen": "linear-gradient(135deg, {1} 0 50%, {2} 50% 100%)"
+ },
+ {
+  "no": 137,
+  "metin": "Masa temaları kilitli",
+  "yer": "HUD:2024",
+  "sablon": false,
+  "gorunen": "Masa temaları kilitli"
+ },
+ {
+  "no": 138,
+  "metin": "Tüm salonları aç ve bütün masaları son seviyeye getir; sonra masalarını renklendirebilirsin.",
+  "yer": "HUD:2026",
+  "sablon": false,
+  "gorunen": "Tüm salonları aç ve bütün masaları son seviyeye getir; sonra masalarını renklendirebilirsin."
+ },
+ {
+  "no": 139,
+  "metin": "Salon",
+  "yer": "HUD:2030, HUD:2064",
+  "sablon": false,
+  "gorunen": "Salon"
+ },
+ {
+  "no": 140,
+  "metin": "Son seviye masa",
+  "yer": "HUD:2034",
+  "sablon": false,
+  "gorunen": "Son seviye masa"
+ },
+ {
+  "no": 141,
+  "metin": "${kilitSalon}. Salon'u açınca alabilirsin",
+  "yer": "HUD:2079",
+  "sablon": true,
+  "gorunen": "{1}. Salon'u açınca alabilirsin"
+ },
+ {
+  "no": 142,
+  "metin": "Sahipsin",
+  "yer": "HUD:2081",
+  "sablon": false,
+  "gorunen": "Sahipsin"
+ },
+ {
+  "no": 143,
+  "metin": "Başlangıç Paketi'nde",
+  "yer": "HUD:2083",
+  "sablon": false,
+  "gorunen": "Başlangıç Paketi'nde"
+ },
+ {
+  "no": 144,
+  "metin": "${fmt(secili.cost)} ₺",
+  "yer": "HUD:2086",
+  "sablon": true,
+  "gorunen": "{1} ₺"
+ },
+ {
+  "no": 145,
+  "metin": "Salondan Kaldır",
+  "yer": "HUD:2115",
+  "sablon": false,
+  "gorunen": "Salondan Kaldır"
+ },
+ {
+  "no": 146,
+  "metin": "Uygulandı",
+  "yer": "HUD:2118",
+  "sablon": false,
+  "gorunen": "Uygulandı"
+ },
+ {
+  "no": 147,
+  "metin": ". Salon'da açılır",
+  "yer": "HUD:2122",
+  "sablon": false,
+  "gorunen": ". Salon'da açılır"
+ },
+ {
+  "no": 148,
+  "metin": "Salona Koy",
+  "yer": "HUD:2125",
+  "sablon": false,
+  "gorunen": "Salona Koy"
+ },
+ {
+  "no": 149,
+  "metin": "Uygula",
+  "yer": "HUD:2125",
+  "sablon": false,
+  "gorunen": "Uygula"
+ },
+ {
+  "no": 150,
+  "metin": "Paketi Gör",
+  "yer": "HUD:2127",
+  "sablon": false,
+  "gorunen": "Paketi Gör"
+ },
+ {
+  "no": 151,
+  "metin": "Satın Al ·",
+  "yer": "HUD:2130",
+  "sablon": false,
+  "gorunen": "Satın Al ·"
+ },
+ {
+  "no": 152,
+  "metin": "PLAY GAMES",
+  "yer": "HUD:2154",
+  "sablon": false,
+  "gorunen": "PLAY GAMES"
+ },
+ {
+  "no": 153,
+  "metin": "Bağlısın — ilerlemen buluta yedekleniyor.",
+  "yer": "HUD:2157",
+  "sablon": false,
+  "gorunen": "Bağlısın — ilerlemen buluta yedekleniyor."
+ },
+ {
+  "no": 154,
+  "metin": "Başarımlar",
+  "yer": "HUD:2159",
+  "sablon": false,
+  "gorunen": "Başarımlar"
+ },
+ {
+  "no": 155,
+  "metin": "Bağlanamadı — tekrar dene",
+  "yer": "HUD:2164",
+  "sablon": false,
+  "gorunen": "Bağlanamadı — tekrar dene"
+ },
+ {
+  "no": 156,
+  "metin": "Play Games'e bağlan",
+  "yer": "HUD:2164",
+  "sablon": false,
+  "gorunen": "Play Games'e bağlan"
+ },
+ {
+  "no": 157,
+  "metin": "Satın alımlar geri yüklendi",
+  "yer": "HUD:2184",
+  "sablon": false,
+  "gorunen": "Satın alımlar geri yüklendi"
+ },
+ {
+  "no": 158,
+  "metin": "Mağazaya ulaşılamadı",
+  "yer": "HUD:2186",
+  "sablon": false,
+  "gorunen": "Mağazaya ulaşılamadı"
+ },
+ {
+  "no": 159,
+  "metin": "Satın alımları geri yükle",
+  "yer": "HUD:2187",
+  "sablon": false,
+  "gorunen": "Satın alımları geri yükle"
+ },
+ {
+  "no": 160,
+  "metin": "Gizlilik politikası",
+  "yer": "HUD:2201",
+  "sablon": false,
+  "gorunen": "Gizlilik politikası"
+ },
+ {
+  "no": 161,
+  "metin": "Destek",
+  "yer": "HUD:2204",
+  "sablon": false,
+  "gorunen": "Destek"
+ },
+ {
+  "no": 162,
+  "metin": "Reklam tercihleri",
+  "yer": "HUD:2208",
+  "sablon": false,
+  "gorunen": "Reklam tercihleri"
+ },
+ {
+  "no": 163,
+  "metin": "Kafene bir ad ver",
+  "yer": "KafeAdiKutusu:33",
+  "sablon": false,
+  "gorunen": "Kafene bir ad ver"
+ },
+ {
+  "no": 164,
+  "metin": "Kapının üstündeki tabelada bu yazacak. Sonra Ayarlar'dan değiştirebilirsin.",
+  "yer": "KafeAdiKutusu:35",
+  "sablon": false,
+  "gorunen": "Kapının üstündeki tabelada bu yazacak. Sonra Ayarlar'dan değiştirebilirsin."
+ },
+ {
+  "no": 165,
+  "metin": "Kapının üstündeki tabelada yazar.",
+  "yer": "KafeAdiKutusu:35",
+  "sablon": false,
+  "gorunen": "Kapının üstündeki tabelada yazar."
+ },
+ {
+  "no": 166,
+  "metin": "Tamam",
+  "yer": "KafeAdiKutusu:56",
+  "sablon": false,
+  "gorunen": "Tamam"
+ },
+ {
+  "no": 167,
+  "metin": "Adım ${sira + 1}/${SIRA.length}",
+  "yer": "Ogretici:45",
+  "sablon": true,
+  "gorunen": "Adım {1}/{2}"
+ },
+ {
+  "no": 168,
+  "metin": "Atla",
+  "yer": "Ogretici:54",
+  "sablon": false,
+  "gorunen": "Atla"
+ },
+ {
+  "no": 169,
+  "metin": "Geri",
+  "yer": "Sheet:39",
+  "sablon": false,
+  "gorunen": "Geri"
+ },
+ {
+  "no": 170,
+  "metin": "Semaver ısınıyor…",
+  "yer": "SplashScreen:85",
+  "sablon": false,
+  "gorunen": "Semaver ısınıyor…"
+ },
+ {
+  "no": 171,
+  "metin": "2. Masa",
+  "yer": "ekonomi/icerik:666, ekonomi/icerik:688, ekonomi/icerik:710",
+  "sablon": false,
+  "gorunen": "2. Masa"
+ },
+ {
+  "no": 172,
+  "metin": "3. Masa",
+  "yer": "ekonomi/icerik:668, ekonomi/icerik:690, ekonomi/icerik:712",
+  "sablon": false,
+  "gorunen": "3. Masa"
+ },
+ {
+  "no": 173,
+  "metin": "Garson Tut",
+  "yer": "ekonomi/icerik:670",
+  "sablon": false,
+  "gorunen": "Garson Tut"
+ },
+ {
+  "no": 174,
+  "metin": "4. Masa",
+  "yer": "ekonomi/icerik:674, ekonomi/icerik:696, ekonomi/icerik:714",
+  "sablon": false,
+  "gorunen": "4. Masa"
+ },
+ {
+  "no": 175,
+  "metin": "2. Garson",
+  "yer": "ekonomi/icerik:680",
+  "sablon": false,
+  "gorunen": "2. Garson"
+ },
+ {
+  "no": 176,
+  "metin": "2. Salon",
+  "yer": "ekonomi/icerik:686",
+  "sablon": false,
+  "gorunen": "2. Salon"
+ },
+ {
+  "no": 177,
+  "metin": "Bulaşıkçı Tut",
+  "yer": "ekonomi/icerik:694",
+  "sablon": false,
+  "gorunen": "Bulaşıkçı Tut"
+ },
+ {
+  "no": 178,
+  "metin": "3. Salon",
+  "yer": "ekonomi/icerik:708",
+  "sablon": false,
+  "gorunen": "3. Salon"
+ },
+ {
+  "no": 179,
+  "metin": "3. Garson",
+  "yer": "ekonomi/icerik:748",
+  "sablon": false,
+  "gorunen": "3. Garson"
+ },
+ {
+  "no": 180,
+  "metin": "Lavabo",
+  "yer": "ekonomi/icerik:755",
+  "sablon": false,
+  "gorunen": "Lavabo"
+ },
+ {
+  "no": 181,
+  "metin": "5. Masa",
+  "yer": "ekonomi/icerik:758",
+  "sablon": false,
+  "gorunen": "5. Masa"
+ },
+ {
+  "no": 182,
+  "metin": "6. Masa",
+  "yer": "ekonomi/icerik:760",
+  "sablon": false,
+  "gorunen": "6. Masa"
+ },
+ {
+  "no": 183,
+  "metin": "7. Masa",
+  "yer": "ekonomi/icerik:762",
+  "sablon": false,
+  "gorunen": "7. Masa"
+ },
+ {
+  "no": 184,
+  "metin": "8. Masa",
+  "yer": "ekonomi/icerik:764",
+  "sablon": false,
+  "gorunen": "8. Masa"
+ },
+ {
+  "no": 185,
+  "metin": "9. Masa",
+  "yer": "ekonomi/icerik:766",
+  "sablon": false,
+  "gorunen": "9. Masa"
+ },
+ {
+  "no": 186,
+  "metin": "10. Masa",
+  "yer": "ekonomi/icerik:768",
+  "sablon": false,
+  "gorunen": "10. Masa"
+ },
+ {
+  "no": 187,
+  "metin": "11. Masa",
+  "yer": "ekonomi/icerik:770",
+  "sablon": false,
+  "gorunen": "11. Masa"
+ },
+ {
+  "no": 188,
+  "metin": "12. Masa",
+  "yer": "ekonomi/icerik:772",
+  "sablon": false,
+  "gorunen": "12. Masa"
+ },
+ {
+  "no": 189,
+  "metin": "İLK ÇAY",
+  "yer": "ekonomi/icerik:805",
+  "sablon": false,
+  "gorunen": "İLK ÇAY"
+ },
+ {
+  "no": 190,
+  "metin": "Ocaktan çay al",
+  "yer": "ekonomi/icerik:805",
+  "sablon": false,
+  "gorunen": "Ocaktan çay al"
+ },
+ {
+  "no": 191,
+  "metin": "İLK SERVİS",
+  "yer": "ekonomi/icerik:806",
+  "sablon": false,
+  "gorunen": "İLK SERVİS"
+ },
+ {
+  "no": 192,
+  "metin": "Çayı müşteriye götür",
+  "yer": "ekonomi/icerik:806",
+  "sablon": false,
+  "gorunen": "Çayı müşteriye götür"
+ },
+ {
+  "no": 193,
+  "metin": "İLK KAZANÇ",
+  "yer": "ekonomi/icerik:807",
+  "sablon": false,
+  "gorunen": "İLK KAZANÇ"
+ },
+ {
+  "no": 194,
+  "metin": "Yere düşen parayı topla",
+  "yer": "ekonomi/icerik:807",
+  "sablon": false,
+  "gorunen": "Yere düşen parayı topla"
+ },
+ {
+  "no": 195,
+  "metin": "İKİNCİ MASA",
+  "yer": "ekonomi/icerik:808",
+  "sablon": false,
+  "gorunen": "İKİNCİ MASA"
+ },
+ {
+  "no": 196,
+  "metin": "2. Masayı aç",
+  "yer": "ekonomi/icerik:808",
+  "sablon": false,
+  "gorunen": "2. Masayı aç"
+ },
+ {
+  "no": 197,
+  "metin": "TEPSİ",
+  "yer": "ekonomi/icerik:809, ekonomi/icerik:816",
+  "sablon": false,
+  "gorunen": "TEPSİ"
+ },
+ {
+  "no": 198,
+  "metin": "Tepsini 3 bardağa çıkar",
+  "yer": "ekonomi/icerik:809",
+  "sablon": false,
+  "gorunen": "Tepsini 3 bardağa çıkar"
+ },
+ {
+  "no": 199,
+  "metin": "İŞLER AÇILIYOR",
+  "yer": "ekonomi/icerik:810",
+  "sablon": false,
+  "gorunen": "İŞLER AÇILIYOR"
+ },
+ {
+  "no": 200,
+  "metin": "5 çay servis et",
+  "yer": "ekonomi/icerik:810",
+  "sablon": false,
+  "gorunen": "5 çay servis et"
+ },
+ {
+  "no": 201,
+  "metin": "Çay ocağını yükselt",
+  "yer": "ekonomi/icerik:811",
+  "sablon": false,
+  "gorunen": "Çay ocağını yükselt"
+ },
+ {
+  "no": 202,
+  "metin": "BULAŞIK",
+  "yer": "ekonomi/icerik:814",
+  "sablon": false,
+  "gorunen": "BULAŞIK"
+ },
+ {
+  "no": 203,
+  "metin": "3 kirli bardak yıka",
+  "yer": "ekonomi/icerik:814",
+  "sablon": false,
+  "gorunen": "3 kirli bardak yıka"
+ },
+ {
+  "no": 204,
+  "metin": "ÜÇÜNCÜ MASA",
+  "yer": "ekonomi/icerik:815",
+  "sablon": false,
+  "gorunen": "ÜÇÜNCÜ MASA"
+ },
+ {
+  "no": 205,
+  "metin": "3. Masayı aç",
+  "yer": "ekonomi/icerik:815",
+  "sablon": false,
+  "gorunen": "3. Masayı aç"
+ },
+ {
+  "no": 206,
+  "metin": "Tepsini 4'e çıkar",
+  "yer": "ekonomi/icerik:816",
+  "sablon": false,
+  "gorunen": "Tepsini 4'e çıkar"
+ },
+ {
+  "no": 207,
+  "metin": "İLK GARSON",
+  "yer": "ekonomi/icerik:817",
+  "sablon": false,
+  "gorunen": "İLK GARSON"
+ },
+ {
+  "no": 208,
+  "metin": "Garson tut",
+  "yer": "ekonomi/icerik:817",
+  "sablon": false,
+  "gorunen": "Garson tut"
+ },
+ {
+  "no": 209,
+  "metin": "Ocağı Seviye 3'e çıkar",
+  "yer": "ekonomi/icerik:818",
+  "sablon": false,
+  "gorunen": "Ocağı Seviye 3'e çıkar"
+ },
+ {
+  "no": 210,
+  "metin": "SALON DOLDU",
+  "yer": "ekonomi/icerik:819",
+  "sablon": false,
+  "gorunen": "SALON DOLDU"
+ },
+ {
+  "no": 211,
+  "metin": "4. Masayı aç",
+  "yer": "ekonomi/icerik:819",
+  "sablon": false,
+  "gorunen": "4. Masayı aç"
+ },
+ {
+  "no": 212,
+  "metin": "Para mıknatısını güçlendir",
+  "yer": "ekonomi/icerik:820",
+  "sablon": false,
+  "gorunen": "Para mıknatısını güçlendir"
+ },
+ {
+  "no": 213,
+  "metin": "İKİNCİ GARSON",
+  "yer": "ekonomi/icerik:822",
+  "sablon": false,
+  "gorunen": "İKİNCİ GARSON"
+ },
+ {
+  "no": 214,
+  "metin": "2. Garsonu tut",
+  "yer": "ekonomi/icerik:822",
+  "sablon": false,
+  "gorunen": "2. Garsonu tut"
+ },
+ {
+  "no": 215,
+  "metin": "YENİ SALON",
+  "yer": "ekonomi/icerik:824",
+  "sablon": false,
+  "gorunen": "YENİ SALON"
+ },
+ {
+  "no": 216,
+  "metin": "2. Salonu aç",
+  "yer": "ekonomi/icerik:824",
+  "sablon": false,
+  "gorunen": "2. Salonu aç"
+ },
+ {
+  "no": 217,
+  "metin": "SALON 2",
+  "yer": "ekonomi/icerik:825, ekonomi/icerik:829, ekonomi/icerik:831",
+  "sablon": false,
+  "gorunen": "SALON 2"
+ },
+ {
+  "no": 218,
+  "metin": "Salon 2: 2. Masayı aç",
+  "yer": "ekonomi/icerik:825",
+  "sablon": false,
+  "gorunen": "Salon 2: 2. Masayı aç"
+ },
+ {
+  "no": 219,
+  "metin": "Ocağı Seviye 4'e çıkar",
+  "yer": "ekonomi/icerik:826",
+  "sablon": false,
+  "gorunen": "Ocağı Seviye 4'e çıkar"
+ },
+ {
+  "no": 220,
+  "metin": "Garsonu hızlandır",
+  "yer": "ekonomi/icerik:827",
+  "sablon": false,
+  "gorunen": "Garsonu hızlandır"
+ },
+ {
+  "no": 221,
+  "metin": "MASA SEVİYESİ",
+  "yer": "ekonomi/icerik:828, ekonomi/icerik:832",
+  "sablon": false,
+  "gorunen": "MASA SEVİYESİ"
+ },
+ {
+  "no": 222,
+  "metin": "Bir masayı yükselt",
+  "yer": "ekonomi/icerik:828",
+  "sablon": false,
+  "gorunen": "Bir masayı yükselt"
+ },
+ {
+  "no": 223,
+  "metin": "Salon 2: 3. Masayı aç",
+  "yer": "ekonomi/icerik:829",
+  "sablon": false,
+  "gorunen": "Salon 2: 3. Masayı aç"
+ },
+ {
+  "no": 224,
+  "metin": "BULAŞIKÇI",
+  "yer": "ekonomi/icerik:830",
+  "sablon": false,
+  "gorunen": "BULAŞIKÇI"
+ },
+ {
+  "no": 225,
+  "metin": "Bulaşıkçı tut",
+  "yer": "ekonomi/icerik:830",
+  "sablon": false,
+  "gorunen": "Bulaşıkçı tut"
+ },
+ {
+  "no": 226,
+  "metin": "Salon 2: 4. Masayı aç",
+  "yer": "ekonomi/icerik:831",
+  "sablon": false,
+  "gorunen": "Salon 2: 4. Masayı aç"
+ },
+ {
+  "no": 227,
+  "metin": "2 masayı Seviye 3'e çıkar",
+  "yer": "ekonomi/icerik:832",
+  "sablon": false,
+  "gorunen": "2 masayı Seviye 3'e çıkar"
+ },
+ {
+  "no": 228,
+  "metin": "ÜÇÜNCÜ SALON",
+  "yer": "ekonomi/icerik:834",
+  "sablon": false,
+  "gorunen": "ÜÇÜNCÜ SALON"
+ },
+ {
+  "no": 229,
+  "metin": "3. Salonu aç",
+  "yer": "ekonomi/icerik:834",
+  "sablon": false,
+  "gorunen": "3. Salonu aç"
+ },
+ {
+  "no": 230,
+  "metin": "SALON 3",
+  "yer": "ekonomi/icerik:835, ekonomi/icerik:837, ekonomi/icerik:843",
+  "sablon": false,
+  "gorunen": "SALON 3"
+ },
+ {
+  "no": 231,
+  "metin": "Salon 3: 2. Masayı aç",
+  "yer": "ekonomi/icerik:835",
+  "sablon": false,
+  "gorunen": "Salon 3: 2. Masayı aç"
+ },
+ {
+  "no": 232,
+  "metin": "TEZGÂH",
+  "yer": "ekonomi/icerik:836, ekonomi/icerik:853",
+  "sablon": false,
+  "gorunen": "TEZGÂH"
+ },
+ {
+  "no": 233,
+  "metin": "Tezgâhı kur",
+  "yer": "ekonomi/icerik:836",
+  "sablon": false,
+  "gorunen": "Tezgâhı kur"
+ },
+ {
+  "no": 234,
+  "metin": "Salon 3: 3. Masayı aç",
+  "yer": "ekonomi/icerik:837",
+  "sablon": false,
+  "gorunen": "Salon 3: 3. Masayı aç"
+ },
+ {
+  "no": 235,
+  "metin": "TOST SACI",
+  "yer": "ekonomi/icerik:839",
+  "sablon": false,
+  "gorunen": "TOST SACI"
+ },
+ {
+  "no": 236,
+  "metin": "Tost sacını kur",
+  "yer": "ekonomi/icerik:839",
+  "sablon": false,
+  "gorunen": "Tost sacını kur"
+ },
+ {
+  "no": 237,
+  "metin": "Salon 3: 4. Masayı aç",
+  "yer": "ekonomi/icerik:843",
+  "sablon": false,
+  "gorunen": "Salon 3: 4. Masayı aç"
+ },
+ {
+  "no": 238,
+  "metin": "GARSON TEPSİSİ",
+  "yer": "ekonomi/icerik:846, ekonomi/icerik:858",
+  "sablon": false,
+  "gorunen": "GARSON TEPSİSİ"
+ },
+ {
+  "no": 239,
+  "metin": "Garsonun tepsisini 3'e çıkar",
+  "yer": "ekonomi/icerik:846",
+  "sablon": false,
+  "gorunen": "Garsonun tepsisini 3'e çıkar"
+ },
+ {
+  "no": 240,
+  "metin": "SALON 1 BAKIMI",
+  "yer": "ekonomi/icerik:847",
+  "sablon": false,
+  "gorunen": "SALON 1 BAKIMI"
+ },
+ {
+  "no": 241,
+  "metin": "4 masayı Seviye 5 yap",
+  "yer": "ekonomi/icerik:847",
+  "sablon": false,
+  "gorunen": "4 masayı Seviye 5 yap"
+ },
+ {
+  "no": 242,
+  "metin": "Tezgâhı son seviyeye çıkar",
+  "yer": "ekonomi/icerik:853",
+  "sablon": false,
+  "gorunen": "Tezgâhı son seviyeye çıkar"
+ },
+ {
+  "no": 243,
+  "metin": "ÜÇÜNCÜ GARSON",
+  "yer": "ekonomi/icerik:855",
+  "sablon": false,
+  "gorunen": "ÜÇÜNCÜ GARSON"
+ },
+ {
+  "no": 244,
+  "metin": "3. Garsonu tut",
+  "yer": "ekonomi/icerik:855",
+  "sablon": false,
+  "gorunen": "3. Garsonu tut"
+ },
+ {
+  "no": 245,
+  "metin": "Garsonun tepsisini 4'e çıkar",
+  "yer": "ekonomi/icerik:858",
+  "sablon": false,
+  "gorunen": "Garsonun tepsisini 4'e çıkar"
+ },
+ {
+  "no": 246,
+  "metin": "Lavaboyu aç",
+  "yer": "ekonomi/icerik:865",
+  "sablon": false,
+  "gorunen": "Lavaboyu aç"
+ },
+ {
+  "no": 247,
+  "metin": "ŞERİT",
+  "yer": "ekonomi/icerik:866, ekonomi/icerik:868, ekonomi/icerik:870",
+  "sablon": false,
+  "gorunen": "ŞERİT"
+ },
+ {
+  "no": 248,
+  "metin": "Şerit: 5. Masayı aç",
+  "yer": "ekonomi/icerik:866",
+  "sablon": false,
+  "gorunen": "Şerit: 5. Masayı aç"
+ },
+ {
+  "no": 249,
+  "metin": "Lavaboyu büyüt (L2)",
+  "yer": "ekonomi/icerik:867",
+  "sablon": false,
+  "gorunen": "Lavaboyu büyüt (L2)"
+ },
+ {
+  "no": 250,
+  "metin": "Şerit: 6. Masayı aç",
+  "yer": "ekonomi/icerik:868",
+  "sablon": false,
+  "gorunen": "Şerit: 6. Masayı aç"
+ },
+ {
+  "no": 251,
+  "metin": "Lavaboyu büyüt (L3)",
+  "yer": "ekonomi/icerik:869",
+  "sablon": false,
+  "gorunen": "Lavaboyu büyüt (L3)"
+ },
+ {
+  "no": 252,
+  "metin": "Şerit: 7. Masayı aç",
+  "yer": "ekonomi/icerik:870",
+  "sablon": false,
+  "gorunen": "Şerit: 7. Masayı aç"
+ },
+ {
+  "no": 253,
+  "metin": "Lavaboyu büyüt (L4)",
+  "yer": "ekonomi/icerik:871",
+  "sablon": false,
+  "gorunen": "Lavaboyu büyüt (L4)"
+ },
+ {
+  "no": 254,
+  "metin": "Şerit: 8. Masayı aç",
+  "yer": "ekonomi/icerik:872",
+  "sablon": false,
+  "gorunen": "Şerit: 8. Masayı aç"
+ },
+ {
+  "no": 255,
+  "metin": "Lavaboyu büyüt (L5)",
+  "yer": "ekonomi/icerik:873",
+  "sablon": false,
+  "gorunen": "Lavaboyu büyüt (L5)"
+ },
+ {
+  "no": 256,
+  "metin": "Şerit: 9. Masayı aç",
+  "yer": "ekonomi/icerik:874",
+  "sablon": false,
+  "gorunen": "Şerit: 9. Masayı aç"
+ },
+ {
+  "no": 257,
+  "metin": "Lavaboyu büyüt (L6)",
+  "yer": "ekonomi/icerik:875",
+  "sablon": false,
+  "gorunen": "Lavaboyu büyüt (L6)"
+ },
+ {
+  "no": 258,
+  "metin": "Şerit: 10. Masayı aç",
+  "yer": "ekonomi/icerik:876",
+  "sablon": false,
+  "gorunen": "Şerit: 10. Masayı aç"
+ },
+ {
+  "no": 259,
+  "metin": "Şerit: 11. Masayı aç",
+  "yer": "ekonomi/icerik:877",
+  "sablon": false,
+  "gorunen": "Şerit: 11. Masayı aç"
+ },
+ {
+  "no": 260,
+  "metin": "ŞERİT SONU",
+  "yer": "ekonomi/icerik:878",
+  "sablon": false,
+  "gorunen": "ŞERİT SONU"
+ },
+ {
+  "no": 261,
+  "metin": "Şerit: 12. Masayı aç",
+  "yer": "ekonomi/icerik:878",
+  "sablon": false,
+  "gorunen": "Şerit: 12. Masayı aç"
+ },
+ {
+  "no": 262,
+  "metin": "Servis",
+  "yer": "ekonomi/icerik:977",
+  "sablon": false,
+  "gorunen": "Servis"
+ },
+ {
+  "no": 263,
+  "metin": "Elden ve garsonla yapılan toplam servis",
+  "yer": "ekonomi/icerik:977",
+  "sablon": false,
+  "gorunen": "Elden ve garsonla yapılan toplam servis"
+ },
+ {
+  "no": 264,
+  "metin": "Mekân",
+  "yer": "ekonomi/icerik:979",
+  "sablon": false,
+  "gorunen": "Mekân"
+ },
+ {
+  "no": 265,
+  "metin": "Açılan masa · salon · personel",
+  "yer": "ekonomi/icerik:979",
+  "sablon": false,
+  "gorunen": "Açılan masa · salon · personel"
+ },
+ {
+  "no": 266,
+  "metin": "Kazanç",
+  "yer": "ekonomi/icerik:981",
+  "sablon": false,
+  "gorunen": "Kazanç"
+ },
+ {
+  "no": 267,
+  "metin": "Toplam kazanılan ₺",
+  "yer": "ekonomi/icerik:981",
+  "sablon": false,
+  "gorunen": "Toplam kazanılan ₺"
+ },
+ {
+  "no": 268,
+  "metin": "Temizlik",
+  "yer": "ekonomi/icerik:983",
+  "sablon": false,
+  "gorunen": "Temizlik"
+ },
+ {
+  "no": 269,
+  "metin": "Kendi elinle yıkadığın kirli bardak",
+  "yer": "ekonomi/icerik:983",
+  "sablon": false,
+  "gorunen": "Kendi elinle yıkadığın kirli bardak"
+ },
+ {
+  "no": 270,
+  "metin": "Usta",
+  "yer": "ekonomi/icerik:985",
+  "sablon": false,
+  "gorunen": "Usta"
+ },
+ {
+  "no": 271,
+  "metin": "Son seviyeye çıkardığın masa",
+  "yer": "ekonomi/icerik:985",
+  "sablon": false,
+  "gorunen": "Son seviyeye çıkardığın masa"
+ },
+ {
+  "no": 272,
+  "metin": "Bir Avuç Elmas",
+  "yer": "ekonomi/icerik:1049",
+  "sablon": false,
+  "gorunen": "Bir Avuç Elmas"
+ },
+ {
+  "no": 273,
+  "metin": "Elmas Kesesi",
+  "yer": "ekonomi/icerik:1049",
+  "sablon": false,
+  "gorunen": "Elmas Kesesi"
+ },
+ {
+  "no": 274,
+  "metin": "Elmas Sandığı",
+  "yer": "ekonomi/icerik:1049",
+  "sablon": false,
+  "gorunen": "Elmas Sandığı"
+ },
+ {
+  "no": 275,
+  "metin": "{N} çay servis et",
+  "yer": "ekonomi/icerik:1090",
+  "sablon": false,
+  "gorunen": "{N} çay servis et"
+ },
+ {
+  "no": 276,
+  "metin": "{N} çayı kendi elinle götür",
+  "yer": "ekonomi/icerik:1091",
+  "sablon": false,
+  "gorunen": "{N} çayı kendi elinle götür"
+ },
+ {
+  "no": 277,
+  "metin": "{N} para topla",
+  "yer": "ekonomi/icerik:1092",
+  "sablon": false,
+  "gorunen": "{N} para topla"
+ },
+ {
+  "no": 278,
+  "metin": "{N} kirli bardak yıka",
+  "yer": "ekonomi/icerik:1093",
+  "sablon": false,
+  "gorunen": "{N} kirli bardak yıka"
+ },
+ {
+  "no": 279,
+  "metin": "{N} ₺ kazan",
+  "yer": "ekonomi/icerik:1094",
+  "sablon": false,
+  "gorunen": "{N} ₺ kazan"
+ },
+ {
+  "no": 280,
+  "metin": "Ocaktan {N} çay al",
+  "yer": "ekonomi/icerik:1095",
+  "sablon": false,
+  "gorunen": "Ocaktan {N} çay al"
+ },
+ {
+  "no": 281,
+  "metin": "Garson {N} çay taşısın",
+  "yer": "ekonomi/icerik:1096",
+  "sablon": false,
+  "gorunen": "Garson {N} çay taşısın"
+ },
+ {
+  "no": 282,
+  "metin": "{N} tost servis et",
+  "yer": "ekonomi/icerik:1097",
+  "sablon": false,
+  "gorunen": "{N} tost servis et"
+ },
+ {
+  "no": 283,
+  "metin": "Klasik Parke",
+  "yer": "ekonomi/icerik:1188",
+  "sablon": false,
+  "gorunen": "Klasik Parke"
+ },
+ {
+  "no": 284,
+  "metin": "Restoran Fayansı",
+  "yer": "ekonomi/icerik:1190",
+  "sablon": false,
+  "gorunen": "Restoran Fayansı"
+ },
+ {
+  "no": 285,
+  "metin": "Krem Fayans",
+  "yer": "ekonomi/icerik:1191",
+  "sablon": false,
+  "gorunen": "Krem Fayans"
+ },
+ {
+  "no": 286,
+  "metin": "Dama Fayans",
+  "yer": "ekonomi/icerik:1192",
+  "sablon": false,
+  "gorunen": "Dama Fayans"
+ },
+ {
+  "no": 287,
+  "metin": "Ceviz Parke",
+  "yer": "ekonomi/icerik:1193",
+  "sablon": false,
+  "gorunen": "Ceviz Parke"
+ },
+ {
+  "no": 288,
+  "metin": "Krem Badana",
+  "yer": "ekonomi/icerik:1196",
+  "sablon": false,
+  "gorunen": "Krem Badana"
+ },
+ {
+  "no": 289,
+  "metin": "Çay Yeşili",
+  "yer": "ekonomi/icerik:1197",
+  "sablon": false,
+  "gorunen": "Çay Yeşili"
+ },
+ {
+  "no": 290,
+  "metin": "Çini Mavisi",
+  "yer": "ekonomi/icerik:1198",
+  "sablon": false,
+  "gorunen": "Çini Mavisi"
+ },
+ {
+  "no": 291,
+  "metin": "Klasik Dama",
+  "yer": "ekonomi/icerik:1211",
+  "sablon": false,
+  "gorunen": "Klasik Dama"
+ },
+ {
+  "no": 292,
+  "metin": "Kahve Dama",
+  "yer": "ekonomi/icerik:1212",
+  "sablon": false,
+  "gorunen": "Kahve Dama"
+ },
+ {
+  "no": 293,
+  "metin": "Klasik Mavi",
+  "yer": "ekonomi/icerik:1215",
+  "sablon": false,
+  "gorunen": "Klasik Mavi"
+ },
+ {
+  "no": 294,
+  "metin": "Bordo Kadife",
+  "yer": "ekonomi/icerik:1216",
+  "sablon": false,
+  "gorunen": "Bordo Kadife"
+ },
+ {
+  "no": 295,
+  "metin": "Zümrüt Yeşili",
+  "yer": "ekonomi/icerik:1217",
+  "sablon": false,
+  "gorunen": "Zümrüt Yeşili"
+ },
+ {
+  "no": 296,
+  "metin": "Altın Varak",
+  "yer": "ekonomi/icerik:1218",
+  "sablon": false,
+  "gorunen": "Altın Varak"
+ },
+ {
+  "no": 297,
+  "metin": "Klasik Çaycı",
+  "yer": "ekonomi/icerik:1227",
+  "sablon": false,
+  "gorunen": "Klasik Çaycı"
+ },
+ {
+  "no": 298,
+  "metin": "Kurucu",
+  "yer": "ekonomi/icerik:1228",
+  "sablon": false,
+  "gorunen": "Kurucu"
+ },
+ {
+  "no": 299,
+  "metin": "Yeşil Yelek",
+  "yer": "ekonomi/icerik:1229",
+  "sablon": false,
+  "gorunen": "Yeşil Yelek"
+ },
+ {
+  "no": 300,
+  "metin": "Şef Garson",
+  "yer": "ekonomi/icerik:1230",
+  "sablon": false,
+  "gorunen": "Şef Garson"
+ },
+ {
+  "no": 301,
+  "metin": "Yazlık",
+  "yer": "ekonomi/icerik:1231",
+  "sablon": false,
+  "gorunen": "Yazlık"
+ },
+ {
+  "no": 302,
+  "metin": "Kışlık",
+  "yer": "ekonomi/icerik:1232",
+  "sablon": false,
+  "gorunen": "Kışlık"
+ },
+ {
+  "no": 303,
+  "metin": "Altın Yelek",
+  "yer": "ekonomi/icerik:1233",
+  "sablon": false,
+  "gorunen": "Altın Yelek"
+ },
+ {
+  "no": 304,
+  "metin": "Klasik Tepsi",
+  "yer": "ekonomi/icerik:1236",
+  "sablon": false,
+  "gorunen": "Klasik Tepsi"
+ },
+ {
+  "no": 305,
+  "metin": "Bakır Tepsi",
+  "yer": "ekonomi/icerik:1237",
+  "sablon": false,
+  "gorunen": "Bakır Tepsi"
+ },
+ {
+  "no": 306,
+  "metin": "Kırmızı Emaye",
+  "yer": "ekonomi/icerik:1238",
+  "sablon": false,
+  "gorunen": "Kırmızı Emaye"
+ },
+ {
+  "no": 307,
+  "metin": "Gümüş Askılı",
+  "yer": "ekonomi/icerik:1239",
+  "sablon": false,
+  "gorunen": "Gümüş Askılı"
+ },
+ {
+  "no": 308,
+  "metin": "Altın Yaldız",
+  "yer": "ekonomi/icerik:1240",
+  "sablon": false,
+  "gorunen": "Altın Yaldız"
+ },
+ {
+  "no": 309,
+  "metin": "Lambalı Radyo",
+  "yer": "ekonomi/icerik:1249",
+  "sablon": false,
+  "gorunen": "Lambalı Radyo"
+ },
+ {
+  "no": 310,
+  "metin": "Okuma Koltuğu",
+  "yer": "ekonomi/icerik:1250",
+  "sablon": false,
+  "gorunen": "Okuma Koltuğu"
+ },
+ {
+  "no": 311,
+  "metin": "Ayaklı Lamba",
+  "yer": "ekonomi/icerik:1251",
+  "sablon": false,
+  "gorunen": "Ayaklı Lamba"
+ },
+ {
+  "no": 312,
+  "metin": "Eski İstanbul Tablosu",
+  "yer": "ekonomi/icerik:1252",
+  "sablon": false,
+  "gorunen": "Eski İstanbul Tablosu"
+ },
+ {
+  "no": 313,
+  "metin": "Bakır Semaver",
+  "yer": "ekonomi/icerik:1253",
+  "sablon": false,
+  "gorunen": "Bakır Semaver"
+ },
+ {
+  "no": 314,
+  "metin": "Gramofon",
+  "yer": "ekonomi/icerik:1254",
+  "sablon": false,
+  "gorunen": "Gramofon"
+ },
+ {
+  "no": 315,
+  "metin": "Kanarya Kafesi",
+  "yer": "ekonomi/icerik:1255",
+  "sablon": false,
+  "gorunen": "Kanarya Kafesi"
+ },
+ {
+  "no": 316,
+  "metin": "Sarkaçlı Saat",
+  "yer": "ekonomi/icerik:1256",
+  "sablon": false,
+  "gorunen": "Sarkaçlı Saat"
+ },
+ {
+  "no": 317,
+  "metin": "Yılbaşı Koltuğu · Kırmızı",
+  "yer": "ekonomi/icerik:1257",
+  "sablon": false,
+  "gorunen": "Yılbaşı Koltuğu · Kırmızı"
+ },
+ {
+  "no": 318,
+  "metin": "Yılbaşı Koltuğu · Yeşil",
+  "yer": "ekonomi/icerik:1258",
+  "sablon": false,
+  "gorunen": "Yılbaşı Koltuğu · Yeşil"
+ },
+ {
+  "no": 319,
+  "metin": "Yılbaşı Koltuğu · Mavi",
+  "yer": "ekonomi/icerik:1259",
+  "sablon": false,
+  "gorunen": "Yılbaşı Koltuğu · Mavi"
+ },
+ {
+  "no": 320,
+  "metin": "Yılbaşı Koltuğu · Kahve",
+  "yer": "ekonomi/icerik:1260",
+  "sablon": false,
+  "gorunen": "Yılbaşı Koltuğu · Kahve"
+ },
+ {
+  "no": 321,
+  "metin": "Ekranı sürükle, yürü",
+  "yer": "onboarding:33",
+  "sablon": false,
+  "gorunen": "Ekranı sürükle, yürü"
+ },
+ {
+  "no": 322,
+  "metin": "Ocağa yürü, yanında dur",
+  "yer": "onboarding:34",
+  "sablon": false,
+  "gorunen": "Ocağa yürü, yanında dur"
+ },
+ {
+  "no": 323,
+  "metin": "Çay bekleyenin yanına git",
+  "yer": "onboarding:35",
+  "sablon": false,
+  "gorunen": "Çay bekleyenin yanına git"
+ },
+ {
+  "no": 324,
+  "metin": "Tepsin boş, ocağa uğra",
+  "yer": "onboarding:36",
+  "sablon": false,
+  "gorunen": "Tepsin boş, ocağa uğra"
+ },
+ {
+  "no": 325,
+  "metin": "Paranın üstünden geç",
+  "yer": "onboarding:37",
+  "sablon": false,
+  "gorunen": "Paranın üstünden geç"
+ },
+ {
+  "no": 326,
+  "metin": "Müşteri içip ödeyecek",
+  "yer": "onboarding:38",
+  "sablon": false,
+  "gorunen": "Müşteri içip ödeyecek"
+ },
+ {
+  "no": 327,
+  "metin": "Alanda dur, masa açılsın",
+  "yer": "onboarding:39",
+  "sablon": false,
+  "gorunen": "Alanda dur, masa açılsın"
+ },
+ {
+  "no": 328,
+  "metin": "İlk Çay",
+  "yer": "basarim (Android):40",
+  "sablon": false,
+  "gorunen": "İlk Çay"
+ },
+ {
+  "no": 329,
+  "metin": "İlk çayını servis et.",
+  "yer": "basarim (Android):40",
+  "sablon": false,
+  "gorunen": "İlk çayını servis et."
+ },
+ {
+  "no": 330,
+  "metin": "Yeni Masa",
+  "yer": "basarim (Android):41",
+  "sablon": false,
+  "gorunen": "Yeni Masa"
+ },
+ {
+  "no": 331,
+  "metin": "İlk yeni noktanı aç.",
+  "yer": "basarim (Android):41",
+  "sablon": false,
+  "gorunen": "İlk yeni noktanı aç."
+ },
+ {
+  "no": 332,
+  "metin": "Temiz Bardak",
+  "yer": "basarim (Android):42",
+  "sablon": false,
+  "gorunen": "Temiz Bardak"
+ },
+ {
+  "no": 333,
+  "metin": "İlk kirli bardağı yıka.",
+  "yer": "basarim (Android):42",
+  "sablon": false,
+  "gorunen": "İlk kirli bardağı yıka."
+ },
+ {
+  "no": 334,
+  "metin": "Yardımcı Geldi",
+  "yer": "basarim (Android):43",
+  "sablon": false,
+  "gorunen": "Yardımcı Geldi"
+ },
+ {
+  "no": 335,
+  "metin": "Garsonun ilk çayı taşısın.",
+  "yer": "basarim (Android):43",
+  "sablon": false,
+  "gorunen": "Garsonun ilk çayı taşısın."
+ },
+ {
+  "no": 336,
+  "metin": "Tanınan Mekân",
+  "yer": "basarim (Android):44",
+  "sablon": false,
+  "gorunen": "Tanınan Mekân"
+ },
+ {
+  "no": 337,
+  "metin": "Seviye 5'e ulaş.",
+  "yer": "basarim (Android):44",
+  "sablon": false,
+  "gorunen": "Seviye 5'e ulaş."
+ },
+ {
+  "no": 338,
+  "metin": "Mahallenin Gözdesi",
+  "yer": "basarim (Android):45",
+  "sablon": false,
+  "gorunen": "Mahallenin Gözdesi"
+ },
+ {
+  "no": 339,
+  "metin": "Seviye 10'a ulaş.",
+  "yer": "basarim (Android):45",
+  "sablon": false,
+  "gorunen": "Seviye 10'a ulaş."
+ },
+ {
+  "no": 340,
+  "metin": "Çaycı Çırağı",
+  "yer": "basarim (Android):46",
+  "sablon": false,
+  "gorunen": "Çaycı Çırağı"
+ },
+ {
+  "no": 341,
+  "metin": "100 servis yap.",
+  "yer": "basarim (Android):46",
+  "sablon": false,
+  "gorunen": "100 servis yap."
+ },
+ {
+  "no": 342,
+  "metin": "Semaver Başında",
+  "yer": "basarim (Android):47",
+  "sablon": false,
+  "gorunen": "Semaver Başında"
+ },
+ {
+  "no": 343,
+  "metin": "1.000 servis yap.",
+  "yer": "basarim (Android):47",
+  "sablon": false,
+  "gorunen": "1.000 servis yap."
+ },
+ {
+  "no": 344,
+  "metin": "Mahallenin Çaycısı",
+  "yer": "basarim (Android):48",
+  "sablon": false,
+  "gorunen": "Mahallenin Çaycısı"
+ },
+ {
+  "no": 345,
+  "metin": "6.000 servis yap.",
+  "yer": "basarim (Android):48",
+  "sablon": false,
+  "gorunen": "6.000 servis yap."
+ },
+ {
+  "no": 346,
+  "metin": "Büyüyen Mekân",
+  "yer": "basarim (Android):49",
+  "sablon": false,
+  "gorunen": "Büyüyen Mekân"
+ },
+ {
+  "no": 347,
+  "metin": "10 nokta aç.",
+  "yer": "basarim (Android):49",
+  "sablon": false,
+  "gorunen": "10 nokta aç."
+ },
+ {
+  "no": 348,
+  "metin": "Dolu Mekân",
+  "yer": "basarim (Android):50",
+  "sablon": false,
+  "gorunen": "Dolu Mekân"
+ },
+ {
+  "no": 349,
+  "metin": "24 nokta aç.",
+  "yer": "basarim (Android):50",
+  "sablon": false,
+  "gorunen": "24 nokta aç."
+ },
+ {
+  "no": 350,
+  "metin": "Kasa Doluyor",
+  "yer": "basarim (Android):51",
+  "sablon": false,
+  "gorunen": "Kasa Doluyor"
+ },
+ {
+  "no": 351,
+  "metin": "Toplam 10.000 ₺ kazan.",
+  "yer": "basarim (Android):51",
+  "sablon": false,
+  "gorunen": "Toplam 10.000 ₺ kazan."
+ },
+ {
+  "no": 352,
+  "metin": "Esnaf",
+  "yer": "basarim (Android):52",
+  "sablon": false,
+  "gorunen": "Esnaf"
+ },
+ {
+  "no": 353,
+  "metin": "Toplam 200.000 ₺ kazan.",
+  "yer": "basarim (Android):52",
+  "sablon": false,
+  "gorunen": "Toplam 200.000 ₺ kazan."
+ },
+ {
+  "no": 354,
+  "metin": "Köşenin Sahibi",
+  "yer": "basarim (Android):53",
+  "sablon": false,
+  "gorunen": "Köşenin Sahibi"
+ },
+ {
+  "no": 355,
+  "metin": "Toplam 600.000 ₺ kazan.",
+  "yer": "basarim (Android):53",
+  "sablon": false,
+  "gorunen": "Toplam 600.000 ₺ kazan."
+ },
+ {
+  "no": 356,
+  "metin": "Usta Dokunuşu",
+  "yer": "basarim (Android):54",
+  "sablon": false,
+  "gorunen": "Usta Dokunuşu"
+ },
+ {
+  "no": 357,
+  "metin": "İlk Usta yükseltmesini al.",
+  "yer": "basarim (Android):54",
+  "sablon": false,
+  "gorunen": "İlk Usta yükseltmesini al."
+ },
+ {
+  "no": 358,
+  "metin": "Özenli Masalar",
+  "yer": "basarim (Android):55",
+  "sablon": false,
+  "gorunen": "Özenli Masalar"
+ },
+ {
+  "no": 359,
+  "metin": "8 masayı son seviyeye çıkar.",
+  "yer": "basarim (Android):55",
+  "sablon": false,
+  "gorunen": "8 masayı son seviyeye çıkar."
+ },
+ {
+  "no": 360,
+  "metin": "Eksiksiz Salon",
+  "yer": "basarim (Android):56",
+  "sablon": false,
+  "gorunen": "Eksiksiz Salon"
+ },
+ {
+  "no": 361,
+  "metin": "20 masayı son seviyeye çıkar.",
+  "yer": "basarim (Android):56",
+  "sablon": false,
+  "gorunen": "20 masayı son seviyeye çıkar."
+ },
+ {
+  "no": 362,
+  "metin": "Hepsi Tamam",
+  "yer": "basarim (Android):57",
+  "sablon": false,
+  "gorunen": "Hepsi Tamam"
+ },
+ {
+  "no": 363,
+  "metin": "Bütün görevleri bitir.",
+  "yer": "basarim (Android):57",
+  "sablon": false,
+  "gorunen": "Bütün görevleri bitir."
+ },
+ {
+  "no": 364,
+  "metin": "Koleksiyoncu",
+  "yer": "basarim (Android):58",
+  "sablon": false,
+  "gorunen": "Koleksiyoncu"
+ },
+ {
+  "no": 365,
+  "metin": "Bütün hedefleri topla.",
+  "yer": "basarim (Android):58",
+  "sablon": false,
+  "gorunen": "Bütün hedefleri topla."
+ },
+ {
+  "no": 366,
+  "metin": "Seviye ${levelProgress(yerel.xp).level}",
+  "yer": "bulut:248",
+  "sablon": true,
+  "gorunen": "Seviye {1}"
+ },
+ {
+  "no": 367,
+  "metin": "Çay Ocağı",
+  "yer": "kafeAdi:9, tick:1374",
+  "sablon": false,
+  "gorunen": "Çay Ocağı"
+ },
+ {
+  "no": 368,
+  "metin": "Yükselt",
+  "yer": "markerFrame:91, markerFrame:101",
+  "sablon": false,
+  "gorunen": "Yükselt"
+ },
+ {
+  "no": 369,
+  "metin": "Lavaboyu Büyüt",
+  "yer": "markerFrame:92",
+  "sablon": false,
+  "gorunen": "Lavaboyu Büyüt"
+ },
+ {
+  "no": 370,
+  "metin": "Sv ${seviye + 1}",
+  "yer": "markerFrame:94",
+  "sablon": true,
+  "gorunen": "Sv {1}"
+ },
+ {
+  "no": 371,
+  "metin": "Apple hesabında",
+  "yer": "platform:22",
+  "sablon": false,
+  "gorunen": "Apple hesabında"
+ },
+ {
+  "no": 372,
+  "metin": "Google hesabında",
+  "yer": "platform:22",
+  "sablon": false,
+  "gorunen": "Google hesabında"
+ },
+ {
+  "no": 373,
+  "metin": "mağaza hesabında",
+  "yer": "platform:22",
+  "sablon": false,
+  "gorunen": "mağaza hesabında"
+ },
+ {
+  "no": 374,
+  "metin": "Salon ${a + 1}:",
+  "yer": "rules:525",
+  "sablon": true,
+  "gorunen": "Salon {1}:"
+ },
+ {
+  "no": 375,
+  "metin": "Yeni: ${pre(a)}Masaları yükseltebilirsin 🪑",
+  "yer": "rules:535",
+  "sablon": true,
+  "gorunen": "Yeni: {1}Masaları yükseltebilirsin 🪑"
+ },
+ {
+  "no": 376,
+  "metin": "Yeni: Tezgâhı yükseltebilirsin 🍞",
+  "yer": "rules:543",
+  "sablon": false,
+  "gorunen": "Yeni: Tezgâhı yükseltebilirsin 🍞"
+ },
+ {
+  "no": 377,
+  "metin": "Yeni: Çay ocağını yükseltebilirsin ☕",
+  "yer": "rules:543",
+  "sablon": false,
+  "gorunen": "Yeni: Çay ocağını yükseltebilirsin ☕"
+ },
+ {
+  "no": 378,
+  "metin": "Yeni: ${op.label} 🔓",
+  "yer": "rules:546",
+  "sablon": true,
+  "gorunen": "Yeni: {1} 🔓"
+ },
+ {
+  "no": 379,
+  "metin": "Bulut kaydı yüklendi",
+  "yer": "store:1495",
+  "sablon": false,
+  "gorunen": "Bulut kaydı yüklendi"
+ },
+ {
+  "no": 380,
+  "metin": "Bekleyen paralar otomatik toplandı",
+  "yer": "tick:792",
+  "sablon": false,
+  "gorunen": "Bekleyen paralar otomatik toplandı"
+ },
+ {
+  "no": 381,
+  "metin": "Tezgâh",
+  "yer": "tick:1374",
+  "sablon": false,
+  "gorunen": "Tezgâh"
+ },
+ {
+  "no": 382,
+  "metin": "${unitName} L${lv + 1}${lv < stationSoftMaxLevel() ? ` → L${lv + 2}` : ' (Usta 💎)'}",
+  "yer": "tick:1378",
+  "sablon": true,
+  "gorunen": "{1} L{2}{3}"
+ },
+ {
+  "no": 383,
+  "metin": "Masa ${i + 1}: L${tableLevels[i] + 1}${tableLevels[i] < tableSoftMaxLevel() ? ` → L${tableLevels[i] + 2} (+${C.tables.tipBase} bahşiş)` : ' (Usta 💎)'}",
+  "yer": "tick:1421",
+  "sablon": true,
+  "gorunen": "Masa {1}: L{2}{3}"
+ },
+ {
+  "no": 384,
+  "metin": "Lavabo L${c.lavaboLevel}${c.lavaboLevel < lavaboMaxLevel() ? ` → L${c.lavaboLevel + 1}` : ''}",
+  "yer": "tick:1463",
+  "sablon": true,
+  "gorunen": "Lavabo L{1}{2}"
+ },
+ {
+  "no": 385,
+  "metin": "${ad} salondan kaldırıldı",
+  "yer": "vitrin:118",
+  "sablon": true,
+  "gorunen": "{1} salondan kaldırıldı"
+ },
+ {
+  "no": 386,
+  "metin": "${ad} artık elinde",
+  "yer": "vitrin:120",
+  "sablon": true,
+  "gorunen": "{1} artık elinde"
+ },
+ {
+  "no": 387,
+  "metin": "${ad} · ${o.salon + 1}. Salon",
+  "yer": "vitrin:121",
+  "sablon": true,
+  "gorunen": "{1} · {2}. Salon"
+ },
+ {
+  "no": 388,
+  "metin": "${ad} uygulandı",
+  "yer": "vitrin:122",
+  "sablon": true,
+  "gorunen": "{1} uygulandı"
+ }
+]

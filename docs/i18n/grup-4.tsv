@@ -1,0 +1,70 @@
+211	4. Masayı aç	ekonomi/icerik:819
+212	Para mıknatısını güçlendir	ekonomi/icerik:820
+213	İKİNCİ GARSON	ekonomi/icerik:822
+214	2. Garsonu tut	ekonomi/icerik:822
+215	YENİ SALON	ekonomi/icerik:824
+216	2. Salonu aç	ekonomi/icerik:824
+217	SALON 2	ekonomi/icerik:825, ekonomi/icerik:829, ekonomi/icerik:831
+218	Salon 2: 2. Masayı aç	ekonomi/icerik:825
+219	Ocağı Seviye 4'e çıkar	ekonomi/icerik:826
+220	Garsonu hızlandır	ekonomi/icerik:827
+221	MASA SEVİYESİ	ekonomi/icerik:828, ekonomi/icerik:832
+222	Bir masayı yükselt	ekonomi/icerik:828
+223	Salon 2: 3. Masayı aç	ekonomi/icerik:829
+224	BULAŞIKÇI	ekonomi/icerik:830
+225	Bulaşıkçı tut	ekonomi/icerik:830
+226	Salon 2: 4. Masayı aç	ekonomi/icerik:831
+227	2 masayı Seviye 3'e çıkar	ekonomi/icerik:832
+228	ÜÇÜNCÜ SALON	ekonomi/icerik:834
+229	3. Salonu aç	ekonomi/icerik:834
+230	SALON 3	ekonomi/icerik:835, ekonomi/icerik:837, ekonomi/icerik:843
+231	Salon 3: 2. Masayı aç	ekonomi/icerik:835
+232	TEZGÂH	ekonomi/icerik:836, ekonomi/icerik:853
+233	Tezgâhı kur	ekonomi/icerik:836
+234	Salon 3: 3. Masayı aç	ekonomi/icerik:837
+235	TOST SACI	ekonomi/icerik:839
+236	Tost sacını kur	ekonomi/icerik:839
+237	Salon 3: 4. Masayı aç	ekonomi/icerik:843
+238	GARSON TEPSİSİ	ekonomi/icerik:846, ekonomi/icerik:858
+239	Garsonun tepsisini 3'e çıkar	ekonomi/icerik:846
+240	SALON 1 BAKIMI	ekonomi/icerik:847
+241	4 masayı Seviye 5 yap	ekonomi/icerik:847
+242	Tezgâhı son seviyeye çıkar	ekonomi/icerik:853
+243	ÜÇÜNCÜ GARSON	ekonomi/icerik:855
+244	3. Garsonu tut	ekonomi/icerik:855
+245	Garsonun tepsisini 4'e çıkar	ekonomi/icerik:858
+246	Lavaboyu aç	ekonomi/icerik:865
+247	ŞERİT	ekonomi/icerik:866, ekonomi/icerik:868, ekonomi/icerik:870
+248	Şerit: 5. Masayı aç	ekonomi/icerik:866
+249	Lavaboyu büyüt (L2)	ekonomi/icerik:867
+250	Şerit: 6. Masayı aç	ekonomi/icerik:868
+251	Lavaboyu büyüt (L3)	ekonomi/icerik:869
+252	Şerit: 7. Masayı aç	ekonomi/icerik:870
+253	Lavaboyu büyüt (L4)	ekonomi/icerik:871
+254	Şerit: 8. Masayı aç	ekonomi/icerik:872
+255	Lavaboyu büyüt (L5)	ekonomi/icerik:873
+256	Şerit: 9. Masayı aç	ekonomi/icerik:874
+257	Lavaboyu büyüt (L6)	ekonomi/icerik:875
+258	Şerit: 10. Masayı aç	ekonomi/icerik:876
+259	Şerit: 11. Masayı aç	ekonomi/icerik:877
+260	ŞERİT SONU	ekonomi/icerik:878
+261	Şerit: 12. Masayı aç	ekonomi/icerik:878
+262	Servis	ekonomi/icerik:977
+263	Elden ve garsonla yapılan toplam servis	ekonomi/icerik:977
+264	Mekân	ekonomi/icerik:979
+265	Açılan masa · salon · personel	ekonomi/icerik:979
+266	Kazanç	ekonomi/icerik:981
+267	Toplam kazanılan ₺	ekonomi/icerik:981
+268	Temizlik	ekonomi/icerik:983
+269	Kendi elinle yıkadığın kirli bardak	ekonomi/icerik:983
+270	Usta	ekonomi/icerik:985
+271	Son seviyeye çıkardığın masa	ekonomi/icerik:985
+272	Bir Avuç Elmas	ekonomi/icerik:1049
+273	Elmas Kesesi	ekonomi/icerik:1049
+274	Elmas Sandığı	ekonomi/icerik:1049
+275	{N} çay servis et	ekonomi/icerik:1090
+276	{N} çayı kendi elinle götür	ekonomi/icerik:1091
+277	{N} para topla	ekonomi/icerik:1092
+278	{N} kirli bardak yıka	ekonomi/icerik:1093
+279	{N} ₺ kazan	ekonomi/icerik:1094
+280	Ocaktan {N} çay al	ekonomi/icerik:1095

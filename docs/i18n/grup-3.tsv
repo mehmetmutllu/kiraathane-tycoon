@@ -1,0 +1,70 @@
+141	{1}. Salon'u açınca alabilirsin	HUD:2079
+142	Sahipsin	HUD:2081
+143	Başlangıç Paketi'nde	HUD:2083
+144	{1} ₺	HUD:2086
+145	Salondan Kaldır	HUD:2115
+146	Uygulandı	HUD:2118
+147	. Salon'da açılır	HUD:2122
+148	Salona Koy	HUD:2125
+149	Uygula	HUD:2125
+150	Paketi Gör	HUD:2127
+151	Satın Al ·	HUD:2130
+152	PLAY GAMES	HUD:2154
+153	Bağlısın — ilerlemen buluta yedekleniyor.	HUD:2157
+154	Başarımlar	HUD:2159
+155	Bağlanamadı — tekrar dene	HUD:2164
+156	Play Games'e bağlan	HUD:2164
+157	Satın alımlar geri yüklendi	HUD:2184
+158	Mağazaya ulaşılamadı	HUD:2186
+159	Satın alımları geri yükle	HUD:2187
+160	Gizlilik politikası	HUD:2201
+161	Destek	HUD:2204
+162	Reklam tercihleri	HUD:2208
+163	Kafene bir ad ver	KafeAdiKutusu:33
+164	Kapının üstündeki tabelada bu yazacak. Sonra Ayarlar'dan değiştirebilirsin.	KafeAdiKutusu:35
+165	Kapının üstündeki tabelada yazar.	KafeAdiKutusu:35
+166	Tamam	KafeAdiKutusu:56
+167	Adım {1}/{2}	Ogretici:45
+168	Atla	Ogretici:54
+169	Geri	Sheet:39
+170	Semaver ısınıyor…	SplashScreen:85
+171	2. Masa	ekonomi/icerik:666, ekonomi/icerik:688, ekonomi/icerik:710
+172	3. Masa	ekonomi/icerik:668, ekonomi/icerik:690, ekonomi/icerik:712
+173	Garson Tut	ekonomi/icerik:670
+174	4. Masa	ekonomi/icerik:674, ekonomi/icerik:696, ekonomi/icerik:714
+175	2. Garson	ekonomi/icerik:680
+176	2. Salon	ekonomi/icerik:686
+177	Bulaşıkçı Tut	ekonomi/icerik:694
+178	3. Salon	ekonomi/icerik:708
+179	3. Garson	ekonomi/icerik:748
+180	Lavabo	ekonomi/icerik:755
+181	5. Masa	ekonomi/icerik:758
+182	6. Masa	ekonomi/icerik:760
+183	7. Masa	ekonomi/icerik:762
+184	8. Masa	ekonomi/icerik:764
+185	9. Masa	ekonomi/icerik:766
+186	10. Masa	ekonomi/icerik:768
+187	11. Masa	ekonomi/icerik:770
+188	12. Masa	ekonomi/icerik:772
+189	İLK ÇAY	ekonomi/icerik:805
+190	Ocaktan çay al	ekonomi/icerik:805
+191	İLK SERVİS	ekonomi/icerik:806
+192	Çayı müşteriye götür	ekonomi/icerik:806
+193	İLK KAZANÇ	ekonomi/icerik:807
+194	Yere düşen parayı topla	ekonomi/icerik:807
+195	İKİNCİ MASA	ekonomi/icerik:808
+196	2. Masayı aç	ekonomi/icerik:808
+197	TEPSİ	ekonomi/icerik:809, ekonomi/icerik:816
+198	Tepsini 3 bardağa çıkar	ekonomi/icerik:809
+199	İŞLER AÇILIYOR	ekonomi/icerik:810
+200	5 çay servis et	ekonomi/icerik:810
+201	Çay ocağını yükselt	ekonomi/icerik:811
+202	BULAŞIK	ekonomi/icerik:814
+203	3 kirli bardak yıka	ekonomi/icerik:814
+204	ÜÇÜNCÜ MASA	ekonomi/icerik:815
+205	3. Masayı aç	ekonomi/icerik:815
+206	Tepsini 4'e çıkar	ekonomi/icerik:816
+207	İLK GARSON	ekonomi/icerik:817
+208	Garson tut	ekonomi/icerik:817
+209	Ocağı Seviye 3'e çıkar	ekonomi/icerik:818
+210	SALON DOLDU	ekonomi/icerik:819

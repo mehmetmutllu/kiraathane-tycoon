@@ -1226,7 +1226,7 @@ export const economyConfig = {
     outfits: [
       { id: 'klasik', label: 'Klasik Çaycı', diamonds: 0 },
       { id: 'kurucu', label: 'Kurucu', diamonds: 0, paket: 'baslangic' },
-      { id: 'yesil', label: 'Kıraathane Yeleği', diamonds: 60 },
+      { id: 'yesil', label: 'Yeşil Yelek', diamonds: 60 },
       { id: 'sef', label: 'Şef Garson', diamonds: 60 },
       { id: 'yazlik', label: 'Yazlık', diamonds: 60 },
       { id: 'kislik', label: 'Kışlık', diamonds: 60 },

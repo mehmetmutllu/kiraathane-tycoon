@@ -6,6 +6,7 @@
  * Tarayıcı ve test `null`dır: orada sahte arka uçlar çalışır (reklam, satın alma).
  */
 import { Capacitor } from '@capacitor/core';
+import { t } from '../i18n';
 
 export type MagazaPlatformu = 'android' | 'ios';
 
@@ -19,5 +20,5 @@ export const playGamesVar = (p: string = Capacitor.getPlatform()): boolean => ma
 /** Satın alımların saklandığı hesabın adı — oyuncuya yazılan metin (App Store incelemesi: iOS'ta "Google" yazmaz). */
 export function magazaHesabi(p: string = Capacitor.getPlatform()): string {
   const m = magazaPlatformu(p);
-  return m === 'ios' ? 'Apple hesabında' : m === 'android' ? 'Google hesabında' : 'mağaza hesabında';
+  return m === 'ios' ? t('Apple hesabında') : m === 'android' ? t('Google hesabında') : t('mağaza hesabında');
 }

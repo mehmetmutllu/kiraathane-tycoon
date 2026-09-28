@@ -1,0 +1,38 @@
+351	Toplam 10.000 ₺ kazan.	basarim (Android):51
+352	Esnaf	basarim (Android):52
+353	Toplam 200.000 ₺ kazan.	basarim (Android):52
+354	Köşenin Sahibi	basarim (Android):53
+355	Toplam 600.000 ₺ kazan.	basarim (Android):53
+356	Usta Dokunuşu	basarim (Android):54
+357	İlk Usta yükseltmesini al.	basarim (Android):54
+358	Özenli Masalar	basarim (Android):55
+359	8 masayı son seviyeye çıkar.	basarim (Android):55
+360	Eksiksiz Salon	basarim (Android):56
+361	20 masayı son seviyeye çıkar.	basarim (Android):56
+362	Hepsi Tamam	basarim (Android):57
+363	Bütün görevleri bitir.	basarim (Android):57
+364	Koleksiyoncu	basarim (Android):58
+365	Bütün hedefleri topla.	basarim (Android):58
+366	Seviye {1}	bulut:248
+367	Çay Ocağı	kafeAdi:9, tick:1374
+368	Yükselt	markerFrame:91, markerFrame:101
+369	Lavaboyu Büyüt	markerFrame:92
+370	Sv {1}	markerFrame:94
+371	Apple hesabında	platform:22
+372	Google hesabında	platform:22
+373	mağaza hesabında	platform:22
+374	Salon {1}:	rules:525
+375	Yeni: {1}Masaları yükseltebilirsin 🪑	rules:535
+376	Yeni: Tezgâhı yükseltebilirsin 🍞	rules:543
+377	Yeni: Çay ocağını yükseltebilirsin ☕	rules:543
+378	Yeni: {1} 🔓	rules:546
+379	Bulut kaydı yüklendi	store:1495
+380	Bekleyen paralar otomatik toplandı	tick:792
+381	Tezgâh	tick:1374
+382	{1} L{2}{3}	tick:1378
+383	Masa {1}: L{2}{3}	tick:1421
+384	Lavabo L{1}{2}	tick:1463
+385	{1} salondan kaldırıldı	vitrin:118
+386	{1} artık elinde	vitrin:120
+387	{1} · {2}. Salon	vitrin:121
+388	{1} uygulandı	vitrin:122

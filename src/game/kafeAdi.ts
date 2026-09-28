@@ -5,8 +5,11 @@
  * ücretsiz değişir ve cephedeki alınlık tabelasında yazar. Kayıtta `null` = hiç sorulmadı.
  * Oyunun kendi adı (`OYUN_ADI`) yükleniyor ekranındadır; kafenin adıyla karışmasın diye ayrıdır.
  */
+import { dil, yerelBuyuk } from '../i18n';
+
 export const OYUN_ADI = 'Tea House Tycoon';
-export const KAFE_ADI_VARSAYILAN = 'Köşe Kıraathanesi';
+/** Varsayılan ad oyuncunun DİLİNDE (dil açılışta, bu modülden önce ayarlanır — i18n/baslat). */
+export const KAFE_ADI_VARSAYILAN = dil() === 'en' ? 'Tea House' : 'Çay Ocağı';
 /** 20 harf: tabelada büyük harf ~0,20 br kalır (rapor B6 — yazıyı eni de sınırlıyor). */
 export const KAFE_ADI_MAX = 20;
 
@@ -20,4 +23,4 @@ export function kafeAdiTemizle(ham: string): string {
 export const kafeAdiOku = (ham: unknown): string | null => (typeof ham === 'string' ? kafeAdiTemizle(ham) || KAFE_ADI_VARSAYILAN : null);
 
 /** Tabelada yazan metin — Türkçe büyük harf (i → İ). */
-export const tabelaYazisi = (kafeAdi: string | null): string => (kafeAdi || KAFE_ADI_VARSAYILAN).toLocaleUpperCase('tr');
+export const tabelaYazisi = (kafeAdi: string | null): string => yerelBuyuk(kafeAdi || KAFE_ADI_VARSAYILAN);

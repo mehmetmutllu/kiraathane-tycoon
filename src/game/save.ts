@@ -87,6 +87,11 @@ export interface SaveSettings {
    * alanı varsayılanla doldurur, eski kayıt hiçbir şey kaybetmez.
    */
   golge: 'oto' | 'acik' | 'kapali';
+  /**
+   * OYUNUN DİLİ (i18n, 2026-09-28). 'oto' = telefonun dili (Türkçe → tr, diğer her dil → en); 'tr'/'en' elle
+   * seçim. ADDITIVE alan → saveVersion ARTMADI (`golge` emsali).
+   */
+  dil: 'oto' | 'tr' | 'en';
 }
 
 /**
@@ -127,7 +132,7 @@ export interface SatinAlim {
 export const defaultSatinAlim = (): SatinAlim => ({ reklamsiz: false, baslangic: false, gunlukGun: -1, islenen: [], teklif: false });
 
 export function defaultSettings(): SaveSettings {
-  return { sound: true, music: true, notifications: true, soundVolume: 1, musicVolume: 1, golge: 'oto' };
+  return { sound: true, music: true, notifications: true, soundVolume: 1, musicVolume: 1, golge: 'oto', dil: 'oto' };
 }
 
 /**
@@ -159,6 +164,7 @@ export function ayarlariBirlestir(ham: unknown): SaveSettings {
     soundVolume: oran(s.soundVolume, d.soundVolume),
     musicVolume: oran(s.musicVolume, d.musicVolume),
     golge: s.golge === 'acik' || s.golge === 'kapali' || s.golge === 'oto' ? s.golge : d.golge,
+    dil: s.dil === 'tr' || s.dil === 'en' || s.dil === 'oto' ? s.dil : d.dil,
   };
 }
 

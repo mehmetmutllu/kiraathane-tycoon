@@ -4872,3 +4872,14 @@ Codemagic'te; Codemagic API + App Store Connect API ile uzaktan (kalıp: wordmas
 anahtarlar dev-ortam gizli klasöründe). iOS'ta Play Games kapalı (Game Center yok). ASC: ad "Tea House Tycoon", Apple ID
 6816790079, SKU teahouse001, birincil dil en-US. AdMob iOS: app `~4395129824`, geçişli `/3082048152`, ödüllü `/3787876732`.
 RevenueCat: ayrı proje "Tea House Tycoon" (a54ea25c), hak `reklamsiz` + `baslangic`.
+
+## D-159 · Marka her yerde "Tea House Tycoon" · oyun TR+EN iki dilli · mağaza görseli piyasa kalıbı (2026-09-28)
+
+**Karar (kullanıcı):** Ad her dilde ve her yerde "Tea House Tycoon"; "kıraathane" ekrana hiç çıkmaz (varsayılan mekân adı
+TR "Çay Ocağı" / EN "Tea House"; bekçi `tests/marka-adi.test.ts`). **İngilizce şart:** telefonun dili Türkçe → TR, diğer
+herkes → EN; Ayarlar'da dil seçimi (`settings.dil` 'oto'|'tr'|'en', additive, değişince sayfa yeniden yüklenir).
+Altyapı `src/i18n` — anahtar = koddaki Türkçe metin, `t('Seviye {1}!', n)`; EN sözlük `src/i18n/en.ts` (390 giriş,
+mikrometin + terim sözlüğü ChatGPT'ye danışılarak — kullanıcı isteği; ham: `docs/i18n/`). Mağaza görselleri: rakip
+tycoon'lar incelendi (MPH/Eatventure/Burger Please) → tam kadraj + altta eğik MOR bant + ünlemli kısa başlık + banttan
+taşan maskot (oyunun KayActor'ü, `tools/maskot-cek.mjs`); başlık fontu Luckiest Guy (Lilita One'da İ/ğ/ş YOK).
+İkon: kullanıcının ChatGPT görseli, çerçeve dışı köşeler en yakın çerçeve rengiyle dolduruldu. iPad açık, tablette HUD zoom 1,4.
