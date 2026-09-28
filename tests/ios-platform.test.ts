@@ -233,8 +233,9 @@ describe('satın alma: RevenueCat anahtarı platforma göre', () => {
     expect(h.rcAnahtar).toEqual([]);
     expect(magazaHazir()).toBe(false);
   });
-  it('başlangıçta iki anahtar da boş', () => {
-    expect(asil).toEqual({ android: null, ios: null });
+  it('iOS anahtarı girildi, Android boş (Play dondurulu, D-158)', () => {
+    expect(asil.android).toBeNull();
+    expect(asil.ios).toMatch(/^appl_/);
   });
 });
 

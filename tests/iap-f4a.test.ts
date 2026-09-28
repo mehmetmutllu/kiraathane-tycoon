@@ -175,7 +175,9 @@ describe('satın alma katmanı', () => {
   it('cihazda anahtar yoksa arka uç KAPALI — sahte arka uç cihaza düşmez', () => {
     const src = oku('src/game/iap.ts');
     expect(src).toMatch(/\?\? \(platform\s*\n?\s*\?\s*\(anahtar \? await dene\(\(\) => revenueCatArkaUcu\(anahtar\), null\) : null\)/);
-    expect(iapConfig.revenueCatAnahtar).toEqual({ android: null, ios: null });
+    // iOS anahtarı 2026-09-28'de girildi (RevenueCat herkese açık SDK anahtarı — gizli değil); Android dondurulu (D-158).
+    expect(iapConfig.revenueCatAnahtar.android).toBeNull();
+    expect(iapConfig.revenueCatAnahtar.ios).toMatch(/^appl_[A-Za-z0-9]{20,}$/);
   });
 });
 
