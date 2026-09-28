@@ -16,6 +16,7 @@ const kim = (q.get('kim') ?? 'owner') as 'owner' | 'waiter';
 const aci = Number(q.get('aci') ?? -0.5);
 const cay = Number(q.get('tepsi') ?? 6);
 
+// eslint-disable-next-line react-refresh/only-export-components -- tek seferlik çekim sayfası, hızlı yenileme gerekmez
 function Hazir() {
   (window as unknown as { MASKOT_HAZIR?: boolean }).MASKOT_HAZIR = true;
   return null;
