@@ -4894,3 +4894,6 @@ küçük i'si noktasız: yazı olan yerde KULLANILMAZ (yalnız rakam; "Şu an gi
 **App Privacy (yayımlandı):** takip = yaklaşık konum, cihaz kimliği, ürün etkileşimi, reklam verisi (AdMob); takip değil =
 kullanıcı kimliği + satın alma geçmişi (RevenueCat, uygulama işlevi), çökme/performans/diğer tanılama (analiz); hiçbiri
 kimliğe bağlı değil. Paid Apps sözleşmesi/banka/vergi zaten aktifti.
+**Sıra kilidi notu (D-084):** 14bbfbc `rules.ts`/`tick.ts`'e dokundu ama DENGE değil — yalnız ekrana giden metin `t()` ile
+sarıldı (görev bildirimi, aktif pad etiketi, pad tetik çerçevesi `padCercevesi(t(pad.label))`). Türkçede `t()` kimliktir →
+sayı/tempo birebir aynı; ölçüm turu gerekmedi. Bekçi: tetik-s24 çizim=tetik aynı üreticiden.
