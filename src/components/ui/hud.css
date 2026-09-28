@@ -2238,3 +2238,15 @@
     animation: none;
   }
 }
+
+/* ── TABLET: ARAYÜZ BİR BASAMAK BÜYÜR (iPad · `feedback_hud_natural_width`) ──────────────────
+   Telefon ölçüsünde çizilen arayüz 1032 px'lik iPad'de parmak için küçük kalıyordu (üst şerit
+   ekranın ~%3'ü). 353 sabit piksel değeri belirteçten gelmediği için ölçek belirteçle değil
+   katmanın tamamına `zoom` ile verilir; oranlar ve ortalama (560 px kuralı) aynen korunur.
+   Joystick `.hud`un dışında: dokunma hesabı ölçekten etkilenmez. Eşik iki eksende 700 px —
+   telefon yatayı (412 yükseklik) ve büyük telefon portresi (~430 genişlik) girmez. */
+@media (min-width: 700px) and (min-height: 700px) {
+  .hud {
+    zoom: 1.4;
+  }
+}

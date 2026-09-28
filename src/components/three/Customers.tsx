@@ -479,6 +479,12 @@ export function Customers() {
     havuz.kullanilan.clear();
 
     kapsul.count = kapsulCount;
+    // Dev ölçüm: kapsül koluna düşen müşteri sayısı (tavan/sızıntı denetimi — duman + kare aracı okur).
+    if (import.meta.env.DEV) {
+      const w = window as unknown as { __musteriCizim?: { toplam: number; kapsul: number; enCokKapsul: number; yuva: number } };
+      const o = w.__musteriCizim;
+      w.__musteriCizim = { toplam: n, kapsul: kapsulCount, enCokKapsul: Math.max(o?.enCokKapsul ?? 0, kapsulCount), yuva: yuvalar.length };
+    }
     kapsul.instanceMatrix.needsUpdate = true;
     if (kapsul.instanceColor) kapsul.instanceColor.needsUpdate = true;
     for (let u = 0; u < URUNLER.length; u++) {

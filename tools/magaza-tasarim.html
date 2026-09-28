@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Mağaza görseli — tasarım</title>
+<style>
+  /* Tasarımlı App Store görseli. Tek sayfa = tek görsel.
+     ?c=iphone|ipad &i=1-6 &v=A|B|C &d=tr|en
+     Ham kareler: docs/magaza-kareleri/ham (tools/kare-oyun-ici.mjs). Üretim: node tools/magaza-tasarim.mjs
+     Fontlar oyunun kendisi (Lilita One başlık · Baloo 2 alt metin), palet oyunun HUD paleti (D-107). */
+  @font-face{font-family:'Lilita One';src:url('../node_modules/@fontsource/lilita-one/files/lilita-one-latin-ext-400-normal.woff2') format('woff2');unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+  @font-face{font-family:'Lilita One';src:url('../node_modules/@fontsource/lilita-one/files/lilita-one-latin-400-normal.woff2') format('woff2')}
+  @font-face{font-family:'Baloo 2';font-weight:700;src:url('../node_modules/@fontsource/baloo-2/files/baloo-2-latin-ext-700-normal.woff2') format('woff2');unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+  @font-face{font-family:'Baloo 2';font-weight:700;src:url('../node_modules/@fontsource/baloo-2/files/baloo-2-latin-700-normal.woff2') format('woff2')}
+  @font-face{font-family:'Baloo 2';font-weight:800;src:url('../node_modules/@fontsource/baloo-2/files/baloo-2-latin-ext-800-normal.woff2') format('woff2');unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+  @font-face{font-family:'Baloo 2';font-weight:800;src:url('../node_modules/@fontsource/baloo-2/files/baloo-2-latin-800-normal.woff2') format('woff2')}
+
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{overflow:hidden;background:#000}
+  body{-webkit-font-smoothing:antialiased}
+  #tuval{position:relative;overflow:hidden}
+  #ic{position:absolute;left:0;top:0;width:1320px;transform-origin:0 0}
+  .zemin{position:absolute;inset:0;overflow:hidden}
+
+  /* A — GECE KIRAATHANESİ: HUD'un mor-laciverdi, amber ışık */
+  .v-A .zemin{background:radial-gradient(120% 70% at 50% 0%,#5a4bb0 0%,#352a7a 38%,#1b1443 100%)}
+  /* B — ÇAY SICAĞI: demli çay amberi, koyu mor yazı */
+  .v-B .zemin{background:linear-gradient(170deg,#ffd36a 0%,#ffb238 38%,#f0802a 100%)}
+  /* C — KİLİM: krem zemin, fes bordosu, kilim şeridi */
+  .v-C .zemin{background:linear-gradient(180deg,#fbf3e4 0%,#f4e6cc 100%)}
+
+  .isik{position:absolute;border-radius:50%;filter:blur(120px)}
+  .v-B .isik,.v-C .isik{display:none}
+  .desen{position:absolute;inset:0;opacity:.5}
+  .v-A .desen{background-image:radial-gradient(rgba(255,194,75,.16) 3px,transparent 3.5px);background-size:56px 56px}
+  .v-B .desen{background-image:radial-gradient(rgba(255,255,255,.28) 3px,transparent 3.5px);background-size:56px 56px}
+  .v-C .desen{opacity:1;background:
+      linear-gradient(45deg,transparent 46%,rgba(155,28,34,.07) 46% 54%,transparent 54%) 0 0/120px 120px,
+      linear-gradient(-45deg,transparent 46%,rgba(155,28,34,.07) 46% 54%,transparent 54%) 0 0/120px 120px}
+  .kilim{position:absolute;left:0;right:0;height:44px;display:none;
+    background:
+      linear-gradient(45deg,#9b1c22 25%,transparent 25%) 0 0/44px 44px,
+      linear-gradient(-45deg,#9b1c22 25%,transparent 25%) 0 0/44px 44px,
+      linear-gradient(45deg,transparent 75%,#9b1c22 75%) 0 0/44px 44px,
+      linear-gradient(-45deg,transparent 75%,#9b1c22 75%) 0 0/44px 44px,
+      #e09415}
+  .v-C .kilim{display:block}
+  /* Çay bardağı silueti (ince belli) — arka plan süsü */
+  .bardak{position:absolute;opacity:.10}
+  .v-A .bardak{opacity:.09}
+  .v-C .bardak{opacity:.08}
+
+  .baslik{position:absolute;left:60px;right:60px;text-align:center;z-index:5;text-wrap:balance}
+  .baslik h1,.baslik p{text-wrap:balance}
+  .baslik h1{font-family:'Lilita One',sans-serif;font-weight:400;font-size:142px;line-height:1.0;letter-spacing:.5px;color:#fff;
+    paint-order:stroke fill;-webkit-text-stroke:18px #100b2e;text-shadow:0 12px 0 #100b2e}
+  .baslik h1 em{font-style:normal;color:#ffc24b}
+  .baslik p{margin-top:30px;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:54px;line-height:1.2;color:#eae3ff}
+  .v-B .baslik h1 em{color:#fff4c7}
+  .v-B .baslik p{color:#3a2206}
+  .v-C .baslik h1{color:#9b1c22;-webkit-text-stroke:0;text-shadow:none}
+  .v-C .baslik h1 em{color:#e0702a}
+  .v-C .baslik p{color:#5a3a22}
+
+  /* Telefon (tasarım uzayı 583×1242) */
+  .cihaz{position:absolute;left:50%;transform-origin:50% 0;z-index:3}
+  .tel{width:583px;height:1242px;margin-left:-291.5px}
+  .tablet{width:1000px;height:1318px;margin-left:-500px}
+  .govde{position:relative;width:100%;height:100%;padding:11px;
+    background:linear-gradient(128deg,#3a3c40 0%,#9fa1a5 5%,#2d2f33 13%,#56585c 24%,#1f2124 36%,#6c6e72 50%,#26282b 63%,#5a5c60 76%,#222427 88%,#4a4c50 100%);
+    box-shadow:inset 0 2px 3px rgba(255,255,255,.45),inset 0 -2px 3px rgba(0,0,0,.45),0 50px 90px -20px rgba(0,0,0,.55),0 120px 160px -60px rgba(0,0,0,.45)}
+  .tel .govde{border-radius:96px}
+  .tablet .govde{border-radius:64px;padding:26px}
+  .v-B .govde,.v-C .govde{background:linear-gradient(128deg,#8d8f92 0%,#e2e3e5 5%,#74767a 13%,#b0b2b6 24%,#5d5f63 36%,#c9cbce 50%,#696b6f 63%,#bcbec2 76%,#5f6165 88%,#a2a4a8 100%)}
+  .ekran{position:relative;width:100%;height:100%;overflow:hidden;background:#1b1443}
+  .tel .ekran{border-radius:85px}
+  .tablet .ekran{border-radius:40px}
+  .tablet .govde{background:#17181b}
+  .ekran img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top}
+  .durum{position:absolute;left:0;right:0;top:0;height:82px;z-index:30;display:flex;align-items:center;justify-content:space-between;padding:0 52px;color:#fff;
+    font:700 31px -apple-system,'Baloo 2',sans-serif;text-shadow:0 1px 3px rgba(0,0,0,.4)}
+  .tablet .durum{height:40px;padding:0 34px;font-size:22px}
+  .simgeler{display:flex;align-items:flex-end;gap:11px}
+  .ada{position:absolute;left:50%;top:15px;width:174px;height:52px;margin-left:-87px;background:#000;border-radius:26px;z-index:35}
+  .tablet .ada{display:none}
+  .cizgi{position:absolute;left:50%;bottom:11px;width:195px;height:7px;margin-left:-97.5px;background:rgba(255,255,255,.7);border-radius:4px;z-index:35}
+  .tablet .cizgi{width:260px;bottom:9px}
+  .parlama{position:absolute;inset:0;z-index:38;background:linear-gradient(116deg,rgba(255,255,255,.12) 0%,rgba(255,255,255,.03) 16%,rgba(255,255,255,0) 34%,rgba(255,255,255,0) 62%,rgba(255,255,255,.05) 78%,rgba(255,255,255,0) 100%)}
+
+  /* Etiket kartı — oyunun kart dili: koyu kontur + kaydırılmış katı gölge (D-106) */
+  .cip{position:absolute;z-index:6;display:flex;align-items:center;gap:20px;padding:22px 36px 22px 22px;border-radius:34px;white-space:nowrap;
+    font-family:'Baloo 2',sans-serif;font-weight:800;font-size:46px;line-height:1;
+    background:linear-gradient(180deg,#3a3178,#2e2764);color:#fff;border:5px solid #100b2e;box-shadow:inset 0 3px 0 rgba(255,255,255,.35),0 9px 0 #100b2e,0 26px 40px rgba(0,0,0,.3)}
+  .v-C .cip{background:#fffaf0;color:#3a2206;border-color:#5a3a22;box-shadow:0 9px 0 #5a3a22,0 26px 40px rgba(90,58,34,.25)}
+  .cip i{width:78px;height:78px;border-radius:22px;display:grid;place-items:center;border:4px solid #100b2e;flex:none}
+  .cip i svg{width:48px;height:48px}
+</style>
+</head>
+<body>
+<div id="tuval"><div id="ic">
+  <div class="zemin">
+    <div class="isik" style="width:900px;height:900px;left:-340px;top:-200px;background:#ffc24b;opacity:.35"></div>
+    <div class="isik" style="width:1000px;height:1000px;left:640px;top:1500px;background:#6b5bd6;opacity:.7"></div>
+    <div class="desen"></div>
+    <div class="kilim" style="top:0"></div>
+    <div class="kilim" style="bottom:0"></div>
+    <svg class="bardak" style="left:-60px;top:900px;width:340px" viewBox="0 0 100 150"><path d="M20 5h60l-6 45q-9 18 0 36l6 50H20l6-50q9-18 0-36z" fill="currentColor"/><ellipse cx="50" cy="143" rx="44" ry="6" fill="currentColor"/></svg>
+    <svg class="bardak" style="right:-70px;top:1900px;width:400px;transform:rotate(12deg)" viewBox="0 0 100 150"><path d="M20 5h60l-6 45q-9 18 0 36l6 50H20l6-50q9-18 0-36z" fill="currentColor"/><ellipse cx="50" cy="143" rx="44" ry="6" fill="currentColor"/></svg>
+  </div>
+  <div class="baslik" id="baslik"><h1></h1><p></p></div>
+  <div class="cihaz" id="cihaz"><div class="govde"><div class="ekran"><img id="kare" alt="">
+    <div class="durum"><div>9:41</div><div class="simgeler">
+      <svg width="30" height="21" viewBox="0 0 30 21" fill="#fff"><rect x="0" y="14" width="5" height="7" rx="1.6"/><rect x="8" y="10" width="5" height="11" rx="1.6"/><rect x="16" y="5" width="5" height="16" rx="1.6"/><rect x="24" y="0" width="5" height="21" rx="1.6" opacity=".38"/></svg>
+      <svg width="27" height="21" viewBox="0 0 27 20" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><path d="M2 6.5a17.5 17.5 0 0 1 23 0"/><path d="M7 12a10.5 10.5 0 0 1 13 0"/><circle cx="13.5" cy="17" r="1.8" fill="#fff" stroke="none"/></svg>
+      <svg width="38" height="20" viewBox="0 0 38 20"><rect x="1" y="1" width="31" height="18" rx="5.5" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="2"/><rect x="4" y="4" width="21" height="12" rx="3" fill="#fff"/><path d="M35 7v6a3.4 3.4 0 0 0 0-6z" fill="#fff" fill-opacity=".6"/></svg>
+    </div></div>
+    <div class="ada"></div><div class="cizgi"></div><div class="parlama"></div>
+  </div></div></div>
+  <div id="cipler"></div>
+</div></div>
+<script>
+const q = new URLSearchParams(location.search);
+const C = q.get('c') || 'iphone', I = +(q.get('i') || 1), V = (q.get('v') || 'A').toUpperCase(), D = q.get('d') || 'tr';
+const OLCU = { iphone: [1320, 2868], ipad: [2064, 2752] };
+const [W, H] = OLCU[C];
+
+const IKON = {
+  para: '<svg viewBox="0 0 48 48"><ellipse cx="24" cy="29" rx="18" ry="9" fill="#e09415" stroke="#100b2e" stroke-width="3.5"/><ellipse cx="24" cy="22" rx="18" ry="9" fill="#ffd45e" stroke="#100b2e" stroke-width="3.5"/><ellipse cx="24" cy="22" rx="8" ry="3.6" fill="none" stroke="#e09415" stroke-width="3"/></svg>',
+  elmas: '<svg viewBox="0 0 48 48"><path d="M8 18l7-9h18l7 9-16 21z" fill="#7fd9ff" stroke="#100b2e" stroke-width="3.5" stroke-linejoin="round"/><path d="M8 18h32M18 9l-3 9 9 21 9-21-3-9" fill="none" stroke="#100b2e" stroke-width="2.5" stroke-linejoin="round"/></svg>',
+  cay: '<svg viewBox="0 0 48 48"><path d="M13 7h22l-2.5 14q-3.5 6 0 12L35 41H13l2.5-8q3.5-6 0-12z" fill="#c1272d" stroke="#100b2e" stroke-width="3.5" stroke-linejoin="round"/><path d="M14 11h20" stroke="#ffd9c7" stroke-width="3"/></svg>',
+  saat: '<svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="17" fill="#eae3ff" stroke="#100b2e" stroke-width="3.5"/><path d="M24 14v11l7 5" fill="none" stroke="#100b2e" stroke-width="4" stroke-linecap="round"/></svg>',
+  ok: '<svg viewBox="0 0 48 48"><path d="M24 7l14 15h-8v18H18V22h-8z" fill="#7bd46a" stroke="#100b2e" stroke-width="3.5" stroke-linejoin="round"/></svg>',
+};
+const RENK = { para: '#ffc24b', elmas: '#3a3178', cay: '#ffe7d6', saat: '#6b5bd6', ok: '#2e2764' };
+
+/* k: ham kare adı · c: etiketler (x,y cihaz kutusuna oran, s: taraf) */
+const EKRANLAR = [
+  { k: 'dolu-salon',
+    tr: ['Kıraathaneni <em>büyüt</em>', 'Üç salon, yirmi masa, hiç boş kalmayan sandalyeler'],
+    en: ['Grow your <em>tea house</em>', 'Three halls, twenty tables, never an empty seat'],
+    c: [{ ik: 'para', tr: 'Kazanç akıyor', en: 'Coins pour in', x: -.06, y: .34, s: 'sol' }] },
+  { k: 'ilk-servis',
+    tr: ['Çayı demle, <em>servis et</em>', 'Tepsini doldur, masaları tek tek gez'],
+    en: ['Brew tea, <em>serve it hot</em>', 'Fill your tray and work every table'],
+    c: [{ ik: 'cay', tr: 'Taze çay', en: 'Fresh tea', x: 1.06, y: .40, s: 'sag' }] },
+  { k: 'garson-servis',
+    tr: ['Garson tut, <em>rahatla</em>', 'Ekibin servisi yapsın, sen büyümeye bak'],
+    en: ['Hire <em>waiters</em>', 'Let your crew serve while you expand'],
+    c: [{ ik: 'ok', tr: 'Daha hızlı servis', en: 'Faster service', x: 1.06, y: .22, s: 'sag' }] },
+  { k: 'mutfak',
+    tr: ['Mutfağı aç, <em>tost ekle</em>', 'Menü büyüdükçe her masa daha çok kazandırır'],
+    en: ['Open the <em>kitchen</em>', 'Add toast to the menu and earn more per table'],
+    c: [{ ik: 'para', tr: 'Yeni menü', en: 'New menu', x: -.06, y: .58, s: 'sol' }] },
+  { k: 'genis',
+    tr: ['Masaları <em>yükselt</em>', 'Tabureden kanepeye, her seviye daha çok bahşiş'],
+    en: ['Upgrade your <em>tables</em>', 'From stools to sofas, every level tips better'],
+    c: [{ ik: 'ok', tr: 'Seviye atla', en: 'Level up', x: 1.06, y: .30, s: 'sag' }, { ik: 'elmas', tr: 'Elmas ödülleri', en: 'Gem rewards', x: -.06, y: .62, s: 'sol' }] },
+  { k: 'salon-3b',
+    tr: ['Sen yokken de <em>kazan</em>', 'Kıraathane kapalıyken de bir süre çalışır'],
+    en: ['Earn while <em>away</em>', 'Your tea house keeps working for a while'],
+    c: [{ ik: 'saat', tr: 'Çevrimdışı kazanç', en: 'Offline earnings', x: 1.06, y: .20, s: 'sag' }] },
+];
+const E = EKRANLAR[I - 1];
+const tuval = document.getElementById('tuval');
+tuval.className = 'v-' + V + ' c-' + C;
+tuval.style.width = W + 'px'; tuval.style.height = H + 'px';
+const f = W / 1320, HH = H / f;
+const ic = document.getElementById('ic');
+ic.style.transform = `scale(${f})`; ic.style.height = HH + 'px';
+document.querySelector('.zemin').style.height = HH + 'px';
+document.querySelectorAll('.bardak').forEach((b) => { b.style.color = V === 'A' ? '#ffc24b' : V === 'B' ? '#fff' : '#9b1c22'; });
+
+const B = document.getElementById('baslik');
+B.querySelector('h1').innerHTML = E[D][0];
+B.querySelector('p').textContent = E[D][1];
+const ust = HH * (C === 'ipad' ? .045 : .055) + (V === 'C' ? 30 : 0);
+B.style.top = ust + 'px';
+
+const cihaz = document.getElementById('cihaz');
+cihaz.classList.add(C === 'ipad' ? 'tablet' : 'tel');
+document.getElementById('kare').src = `../docs/magaza-kareleri/ham/${C}-${E.k}.png`;
+const [bw, bh] = C === 'ipad' ? [1000, 1318] : [583, 1242];
+/* Cihaz başlığın altından başlar ve alttan TAŞAR (kesik alt kenar: modern mağaza kalıbı).
+   Ölçek genişlikle sınırlı (telefon tuvalin ~%80'i), boşluk kalırsa başlık aşağı iner. */
+const tf = C === 'ipad' ? .98 : 1.86;
+const tasma = C === 'ipad' ? .10 : .15;
+const telUst = HH - bh * tf * (1 - tasma);
+const bosluk = telUst - (ust + B.offsetHeight);
+B.style.top = (ust + Math.max(0, (bosluk - HH * .035) * .45)) + 'px';
+cihaz.style.top = telUst + 'px';
+cihaz.style.transform = `scale(${tf})`;
+
+const telW = bw * tf, telH = bh * tf, telX = 660 - telW / 2;
+E.c.forEach((c) => {
+  const d = document.createElement('div'); d.className = 'cip';
+  d.innerHTML = `<i style="background:${RENK[c.ik]}">${IKON[c.ik]}</i><span>${c[D]}</span>`;
+  document.getElementById('cipler').appendChild(d);
+  const x = telX + c.x * telW, y = telUst + c.y * telH;
+  d.style.top = y + 'px';
+  if (c.s === 'sol') d.style.left = Math.max(28, x - d.offsetWidth * .35) + 'px';
+  else d.style.left = Math.min(1320 - 28 - d.offsetWidth, x - d.offsetWidth * .65) + 'px';
+  d.style.transform = `rotate(${c.s === 'sol' ? -3 : 3}deg)`;
+});
+window.HAZIR = true;
+</script>
+</body>
+</html>

@@ -77,3 +77,10 @@ android/*.jks
 # Raporun okuduğu ham çıktı `docs/olcum-nav-korpus-t5b-*.txt`tir ve o commit'lenir.
 # Korpus yeniden üretilebilir: OLCUM=tam T5B_ETIKET=<kosul> node tools/olcum-nav-ab-t5b.mjs
 docs/olcum-nav-korpus-t5b-*.json
+
+# Mağaza görseli araçlarının çıktısı — yeniden üretilebilir (tools/kare-oyun-ici.mjs, tools/magaza-tasarim.mjs)
+docs/magaza-kareleri/ham/
+docs/magaza-kareleri/ham-tam/
+docs/magaza-kareleri/ham-pano/
+docs/magaza-kareleri/tasarim/
+docs/magaza-kareleri/onizleme/

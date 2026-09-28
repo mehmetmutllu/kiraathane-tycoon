@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Mağaza görseli — tam kadraj</title>
+<link rel="stylesheet" href="fonts/luckiest-guy.css">
+<style>
+  /* Tam kadraj App Store görseli: sahne tuvalin kendisi, telefon çerçevesi YOK.
+     ?c=iphone|ipad &i=1-6 &v=D|E|F|C &d=tr|en
+     D kurdele · E büyüteç · F panorama (6 kare tek sahne) · C kilim (yedek)
+     Ham kareler: KIP=tam / KIP=panorama node tools/kare-oyun-ici.mjs
+     Başlık fontu Luckiest Guy: Türkçe harflerin tamamı var (Lilita One'da İ/ğ/ş yok, incelip yedek fonta düşüyordu). */
+  @font-face{font-family:'Baloo 2';font-weight:800;src:url('../node_modules/@fontsource/baloo-2/files/baloo-2-latin-ext-800-normal.woff2') format('woff2');unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+  @font-face{font-family:'Baloo 2';font-weight:800;src:url('../node_modules/@fontsource/baloo-2/files/baloo-2-latin-800-normal.woff2') format('woff2')}
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{overflow:hidden;background:#000}
+  body{-webkit-font-smoothing:antialiased}
+  #tuval{position:relative;overflow:hidden;background:#c98a4b}
+  .sahne{position:absolute;inset:0;background-repeat:no-repeat;background-size:cover;background-position:center}
+
+  /* Başlık: kalın, konturlu, oyun yazısı (D-106 kontur dili) */
+  .yazi{font-family:'Luckiest Guy','Baloo 2',sans-serif;color:#fff;text-align:center;line-height:.98;letter-spacing:.02em;
+    paint-order:stroke fill;-webkit-text-stroke:var(--kontur,26px) #100b2e;text-shadow:0 var(--golge,16px) 0 #100b2e;text-wrap:balance}
+  .yazi em{font-style:normal;color:#ffc24b}
+
+  /* D — KURDELE: üstte karartma + eğik amber kurdele, başlık kurdelenin ÜSTÜNDE */
+  .karart{position:absolute;left:0;right:0;top:0;height:46%;background:linear-gradient(180deg,rgba(16,11,46,.78) 0%,rgba(16,11,46,.42) 55%,rgba(16,11,46,0) 100%)}
+  .kurdele{position:absolute;left:-40px;right:-40px;transform:rotate(-4deg);background:linear-gradient(180deg,#ffd36a,#e09415);
+    border-block:12px solid #100b2e;box-shadow:0 18px 0 rgba(16,11,46,.55)}
+  .kurdele .alt{font-family:'Baloo 2',sans-serif;font-weight:800;color:#3a2206;text-align:center}
+
+  /* E — BÜYÜTEÇ: yuvarlak mercek + alt eğik bant */
+  .mercek{position:absolute;border-radius:50%;border:26px solid #fff;box-shadow:0 0 0 12px #100b2e,0 30px 60px rgba(0,0,0,.45);
+    background-repeat:no-repeat;overflow:hidden}
+  .mercek::after{content:'';position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 30% 25%,rgba(255,255,255,.35),rgba(255,255,255,0) 40%)}
+  .sap{position:absolute;height:70px;border-radius:35px;background:linear-gradient(180deg,#6b5bd6,#3a3178);border:12px solid #100b2e;transform-origin:0 50%}
+  .bant{position:absolute;left:-60px;right:-60px;bottom:-40px;transform:rotate(-5deg);transform-origin:50% 100%;
+    background:linear-gradient(180deg,#463c86,#221b52);border-top:14px solid #100b2e;box-shadow:0 -14px 0 #ffc24b inset}
+
+  /* F — PANORAMA: sahne 6 tuval enindeki tek kareden kesilir */
+  .pano-ust{position:absolute;left:0;right:0;top:0;height:38%;background:linear-gradient(180deg,rgba(34,27,82,.85),rgba(34,27,82,0))}
+  .rozet{position:absolute;font-family:'Baloo 2',sans-serif;font-weight:800;color:#3a2206;background:linear-gradient(180deg,#ffd36a,#e09415);
+    border:10px solid #100b2e;border-radius:999px;box-shadow:0 12px 0 #100b2e;white-space:nowrap}
+
+  /* C — KİLİM (yedek): krem çerçeve, kilim şeritleri, sahne ortada kartta */
+  .c-zemin{position:absolute;inset:0;background:linear-gradient(180deg,#fbf3e4,#f4e6cc)}
+  .kilim{position:absolute;left:0;right:0;height:60px;background:
+      linear-gradient(45deg,#9b1c22 25%,transparent 25%) 0 0/60px 60px,linear-gradient(-45deg,#9b1c22 25%,transparent 25%) 0 0/60px 60px,
+      linear-gradient(45deg,transparent 75%,#9b1c22 75%) 0 0/60px 60px,linear-gradient(-45deg,transparent 75%,#9b1c22 75%) 0 0/60px 60px,#e09415}
+  .kart{position:absolute;border:14px solid #5a3a22;border-radius:60px;overflow:hidden;box-shadow:0 22px 0 #5a3a22,0 50px 80px rgba(90,58,34,.3);background-size:cover;background-position:center}
+  .v-C .yazi{color:#9b1c22;-webkit-text-stroke:0;text-shadow:0 8px 0 rgba(90,58,34,.18)}
+  .v-C .yazi em{color:#e0702a}
+</style>
+</head>
+<body>
+<div id="tuval"></div>
+<script>
+const q = new URLSearchParams(location.search);
+const C = q.get('c') || 'iphone', I = +(q.get('i') || 1), V = (q.get('v') || 'D').toUpperCase(), D = q.get('d') || 'tr';
+const [W, H] = { iphone: [1320, 2868], ipad: [2064, 2752] }[C];
+const T = document.getElementById('tuval');
+T.className = 'v-' + V; T.style.width = W + 'px'; T.style.height = H + 'px';
+const u = W / 1320; /* ölçü birimi: iPhone genişliğine göre */
+
+/* Metinler: vurgu kelimesi <em>. Oyunun adı ya da "kıraathane" geçmez (kullanıcı kararı). */
+const EKRAN = [
+  { k: 'dolu-salon', tr: 'Çay <em>İmparatoru</em> Ol', en: 'Build Your Tea <em>Empire</em>',
+    mercek: { x: .50, y: .50, z: 2.4 } },
+  { k: 'ilk-servis', tr: 'Sıcak Çay, <em>Hızlı Servis</em>', en: 'Serve It <em>Piping Hot</em>',
+    mercek: { x: .49, y: .49, z: 2.5 } },
+  { k: 'garson-servis', tr: 'Ekibini <em>Büyüt</em>', en: 'Hire a <em>Dream Team</em>',
+    mercek: { x: .48, y: .50, z: 2.5 } },
+  { k: 'mutfak', tr: 'Mutfağı <em>Çalıştır</em>', en: 'Fire Up the <em>Kitchen</em>',
+    mercek: { x: .42, y: .38, z: 2.2 } },
+  { k: 'genis', tr: 'Her Şeyi <em>Yükselt</em>', en: 'Upgrade <em>Everything</em>',
+    mercek: { x: .48, y: .50, z: 2.5 } },
+  { k: 'salon-3b', tr: 'Sen Yokken de <em>Kazan</em>', en: 'Earn While <em>You’re Away</em>',
+    mercek: { x: .77, y: .46, z: 2.4 } },
+];
+const E = EKRAN[I - 1];
+const baslik = E[D].toLocaleUpperCase(D === 'tr' ? 'tr-TR' : 'en-US').replace(/<\/?EM>/g, (m) => m.toLowerCase());
+const kare = `../docs/magaza-kareleri/ham-tam/${C}-${E.k}.png`;
+const el = (sinif, stil = {}, html = '') => { const d = document.createElement('div'); d.className = sinif; Object.assign(d.style, stil); d.innerHTML = html; T.appendChild(d); return d; };
+
+if (V === 'D') {
+  el('sahne', { backgroundImage: `url(${kare})` });
+  el('karart');
+  const k = el('kurdele', { top: `${H * .085}px`, padding: `${60 * u}px ${110 * u}px ${46 * u}px` });
+  const y = el('yazi', { fontSize: `${150 * u}px`, '--kontur': `${24 * u}px`, '--golge': `${14 * u}px` }, baslik);
+  k.appendChild(y);
+} else if (V === 'E') {
+  el('sahne', { backgroundImage: `url(${kare})` });
+  const m = E.mercek, r = (C === 'ipad' ? 430 : 360) * u / (C === 'ipad' ? 1.3 : 1);
+  const cx = W * (m.x < .6 ? .60 : .36), cy = H * .27;
+  const merc = el('mercek', { width: `${2 * r}px`, height: `${2 * r}px`, left: `${cx - r}px`, top: `${cy - r}px`,
+    backgroundImage: `url(${kare})`, backgroundSize: `${W * m.z}px ${H * m.z}px`,
+    backgroundPosition: `${r - W * m.x * m.z}px ${r - H * m.y * m.z}px` });
+  const aci = Math.atan2(H * m.y - cy, W * m.x - cx), uz = Math.hypot(W * m.x - cx, H * m.y - cy) - r - 40 * u;
+  el('sap', { left: `${cx + Math.cos(aci) * (r + 20 * u)}px`, top: `${cy + Math.sin(aci) * (r + 20 * u) - 35}px`, width: `${Math.max(0, uz)}px`, transform: `rotate(${aci}rad)` });
+  T.appendChild(merc);
+  const b = el('bant', { height: `${H * .25}px`, padding: `${70 * u}px ${90 * u}px 0` });
+  b.appendChild(el('yazi', { fontSize: `${146 * u}px`, '--kontur': `${24 * u}px`, '--golge': `${14 * u}px` }, baslik));
+} else if (V === 'F') {
+  /* Panorama: 6 tuval enindeki tek karenin I. dilimi. iPad'in panoraması yoksa iPhone'unki ölçeklenir. */
+  // iPad'in kendi panoraması kullanılmaz: geniş+kısa tuvalde kamera salona çok yaklaşıyordu. iPhone panoraması
+  // (7920×2868) iPad şeridinin enine büyütülür, fazla yükseklik ortadan kırpılır.
+  const pano = '../docs/magaza-kareleri/ham-pano/iphone-orta.png';
+  const ph = C === 'ipad' ? W * 6 * 2868 / 7920 : H;
+  el('sahne', { backgroundImage: `url(${pano})`, backgroundSize: `${W * 6}px ${ph}px`, backgroundPosition: `${-(I - 1) * W}px ${(H - ph) / 2}px` });
+  el('pano-ust');
+  el('yazi', { position: 'absolute', left: `${70 * u}px`, right: `${70 * u}px`, top: `${H * .07}px`, fontSize: `${150 * u}px`, '--kontur': `${24 * u}px`, '--golge': `${14 * u}px` }, baslik);
+} else {
+  el('c-zemin');
+  el('kilim', { top: 0 }); el('kilim', { bottom: 0 });
+  el('yazi', { position: 'absolute', left: `${70 * u}px`, right: `${70 * u}px`, top: `${H * .06}px`, fontSize: `${140 * u}px` }, baslik);
+  const pay = 70 * u, ust = H * .25;
+  el('kart', { left: `${pay}px`, right: `${pay}px`, top: `${ust}px`, bottom: `${-60 * u}px`, backgroundImage: `url(${kare})` });
+}
+/* SIĞDIR: kelime bölünmez; taşan başlık sığana dek küçülür (uzun Türkçe kelime ekrandan taşıyordu). */
+document.querySelectorAll('.yazi').forEach((y) => {
+  let f = parseFloat(y.style.fontSize);
+  while (y.scrollWidth > y.clientWidth + 1 && f > 60) { f -= 4; y.style.fontSize = f + 'px'; }
+});
+window.HAZIR = true;
+</script>
+</body>
+</html>
