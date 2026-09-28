@@ -1,0 +1,139 @@
+=== F4c-5 — 💎 VİTRİN FİYATLARI: kazanma hızı · kollar · paket hizası ===
+
+economy.config.ts DOSYASI DEĞİŞMEDİ — fiyat kolları yalnız defterde koşar.
+
+--- §0 ETİK: kozmetik ilerleme veriyor mu? (statik tarama) ---
+src/game/*.ts (38 dosya, izinli: store.ts · save.ts · vitrin.ts · devHooks.ts · audio.ts · audioBridge.ts) içinde kozmetik alanı okuyan satır: 0
+💎 kozmetik alımı (store.buyGemCosmetic) oynanış alanı yazıyor mu: hayır (yazdıkları: diamonds · ownedCosmetics · outfit/trayLook/dekor · bildirim)
+Dekor yuvaları müşteri/oyuncu yolunda değil: 9 yuvada trafik %0,0 (D-155, docs/dekor-raporu-f4c2.md).
+
+--- §1 SİM: aktif oyun saatine göre hedef 💎 · Usta'ya uygun masa · salon (Normal profil) ---
+Taban izi 38fd43d5 (F4a T0 ile aynı) · gözlü koşu 38fd43d5
+aktif sa | hedef 💎 (sim) | +Temizlik modeli | toplam | tavandaki masa | açık salon
+    0,50 |             14 |                8 |     22 |              0 | 1
+    1,00 |             27 |               16 |     43 |              0 | 2
+    2,00 |             60 |               28 |     88 |              7 | 2
+    3,00 |             68 |               28 |     96 |              9 | 3
+    5,58 |            110 |               50 |    160 |             12 | 3
+    8,00 |            132 |               50 |    182 |             12 | 3
+   12,00 |            132 |               50 |    182 |             12 | 3
+Salon açılışları (sa): 0,65 · 2,07
+12 sa'te düşen hedef 💎: 182 / 250 (kalanı 12 sa'ten sonra — defterde SAYILMADI, alt sınır)
+
+--- §2a 💎 KAZANMA HIZI (günde 1 sa aktif oyun · birikimli kazanılan, harcamadan bağımsız) ---
+oyuncu | gün 1 | gün 7 | gün 30 | ad
+E0     |    53 |   252 |    482 | reklam izlemez, satın almaz
+İ      |    63 |   322 |    782 | ödüllü izler: günlük 💎 2× + günde 1 Usta videoyla
+K      |    63 |   322 |    782 | Reklamları Kaldır aldı (+10/gün), izlemez
+K+İ    |    73 |   392 |   1082 | Reklamları Kaldır + ödüllü izler
+B      |   153 |   352 |    582 | başlangıç paketi (100 💎, gün 1) · izlemez
+Usta talebi: 20 masa × 25 = 500 💎 (aynı havuzdan).
+
+--- §2b DEFTER · harcama sırası: KOZMETİK ÖNCE (en ucuzu biriktirip alır; Usta vitrin bitince) ---
+kol | oyuncu | ilk kozmetik (gün) | 7. gün adet | 30. gün adet | her yuvaya bir (18) gün | hepsi (21) gün | 20 Usta biter (gün)
+K0  | E0     |                  1 |           5 |            9 |                     139 |            139 |                 189
+K0  | İ      |                  1 |           6 |           13 |                      70 |             70 |                  21
+K0  | K      |                  1 |           6 |           13 |                      70 |             70 |                  95
+K0  | K+İ    |                  1 |           7 |           16 |                      47 |             47 |                  21
+K0  | B      |                  1 |           6 |           10 |                     129 |            129 |                 179
+K1  | E0     |                  1 |          11 |           16 |                      51 |             51 |                 101
+K1  | İ      |                  1 |          12 |           21 |                      26 |             26 |                  21
+K1  | K      |                  1 |          12 |           21 |                      26 |             26 |                  51
+K1  | K+İ    |                  1 |          14 |           21 |                      17 |             17 |                  19
+K1  | B      |                  1 |          13 |           19 |                      41 |             41 |                  91
+K2  | E0     |                  1 |           5 |            9 |                     140 |            140 |                 190
+K2  | İ      |                  1 |           7 |           13 |                      70 |             70 |                  21
+K2  | K      |                  1 |           7 |           13 |                      70 |             70 |                  95
+K2  | K+İ    |                  1 |           8 |           16 |                      47 |             47 |                  21
+K2  | B      |                  1 |           7 |           11 |                     130 |            130 |                 180
+K3  | E0     |                  2 |           3 |            6 |                     260 |            260 |                 310
+K3  | İ      |                  1 |           4 |            9 |                     130 |            130 |                  21
+K3  | K      |                  1 |           4 |            9 |                     130 |            130 |                 155
+K3  | K+İ    |                  1 |           5 |           11 |                      87 |             87 |                  21
+K3  | B      |                  1 |           4 |            7 |                     250 |            250 |                 300
+
+--- §2b DEFTER · harcama sırası: USTA ÖNCE (uygun masaya Usta, artanla en ucuz kozmetik) ---
+kol | oyuncu | ilk kozmetik (gün) | 7. gün adet | 30. gün adet | her yuvaya bir (18) gün | hepsi (21) gün | 20 Usta biter (gün)
+K0  | E0     |                  1 |           1 |            1 |                     189 |            189 |                  36
+K0  | İ      |                  1 |           3 |            9 |                      85 |             85 |                  16
+K0  | K      |                  1 |           1 |            5 |                      95 |             95 |                  22
+K0  | K+İ    |                  1 |           4 |           12 |                      58 |             58 |                  15
+K0  | B      |                  1 |           3 |            3 |                     179 |            179 |                  36
+K1  | E0     |                  1 |           3 |            3 |                     101 |            101 |                  37
+K1  | İ      |                  1 |           7 |           18 |                      38 |             38 |                  17
+K1  | K      |                  1 |           4 |           11 |                      51 |             51 |                  22
+K1  | K+İ    |                  1 |           8 |           21 |                      27 |             27 |                  16
+K1  | B      |                  1 |           7 |            7 |                      91 |             91 |                  37
+K2  | E0     |                  1 |           2 |            2 |                     190 |            190 |                  37
+K2  | İ      |                  1 |           3 |            9 |                      85 |             85 |                  16
+K2  | K      |                  1 |           2 |            6 |                      95 |             95 |                  20
+K2  | K+İ    |                  1 |           4 |           13 |                      57 |             57 |                  16
+K2  | B      |                  1 |           3 |            3 |                     180 |            180 |                  33
+K3  | E0     |                 38 |           0 |            0 |                     310 |            310 |                  32
+K3  | İ      |                  1 |           2 |            6 |                     145 |            145 |                  16
+K3  | K      |                  1 |           1 |            4 |                     155 |            155 |                  22
+K3  | K+İ    |                  1 |           3 |            8 |                      98 |             98 |                  15
+K3  | B      |                  1 |           2 |            2 |                     300 |            300 |                  34
+
+--- §2d TEK ÜRÜN HEDEFİ: yalnız o ürün için biriktiren oyuncu kaçıncı günde alır (harcama yok, 1 sa/gün) ---
+Başka hiçbir şeye 💎 harcamadan: birikimli kazanılan ≥ fiyat olduğu ilk gün. Usta alan oyuncuda gecikme §2b'de.
+kol | Bakır Tepsi | Kıraathane Yeleği | Okuma Koltuğu | Yılbaşı Koltuğu · Kırmızı | Altın Yaldız | Altın Yelek
+K0  | 40💎→E0 1.g | 60💎→E0 2.g | 80💎→E0 3.g | 100💎→E0 2.g | 100💎→E0 2.g | 150💎→E0 4.g
+K0  | 40💎→İ 1.g | 60💎→İ 1.g | 80💎→İ 3.g | 100💎→İ 2.g | 100💎→İ 2.g | 150💎→İ 3.g
+K0  | 40💎→K 1.g | 60💎→K 1.g | 80💎→K 3.g | 100💎→K 2.g | 100💎→K 2.g | 150💎→K 3.g
+K1  | 15💎→E0 1.g | 25💎→E0 1.g | 40💎→E0 3.g | 40💎→E0 1.g | 60💎→E0 2.g | 60💎→E0 2.g
+K1  | 15💎→İ 1.g | 25💎→İ 1.g | 40💎→İ 3.g | 40💎→İ 1.g | 60💎→İ 1.g | 60💎→İ 1.g
+K1  | 15💎→K 1.g | 25💎→K 1.g | 40💎→K 3.g | 40💎→K 1.g | 60💎→K 1.g | 60💎→K 1.g
+K2  | 25💎→E0 1.g | 60💎→E0 2.g | 90💎→E0 3.g | 90💎→E0 2.g | 150💎→E0 4.g | 150💎→E0 4.g
+K2  | 25💎→İ 1.g | 60💎→İ 1.g | 90💎→İ 3.g | 90💎→İ 2.g | 150💎→İ 3.g | 150💎→İ 3.g
+K2  | 25💎→K 1.g | 60💎→K 1.g | 90💎→K 3.g | 90💎→K 2.g | 150💎→K 3.g | 150💎→K 3.g
+K3  | 60💎→E0 2.g | 100💎→E0 2.g | 150💎→E0 4.g | 150💎→E0 4.g | 300💎→E0 12.g | 300💎→E0 12.g
+K3  | 60💎→İ 1.g | 100💎→İ 2.g | 150💎→İ 3.g | 150💎→İ 3.g | 300💎→İ 6.g | 300💎→İ 6.g
+K3  | 60💎→K 1.g | 100💎→K 2.g | 150💎→K 3.g | 150💎→K 3.g | 300💎→K 6.g | 300💎→K 6.g
+
+--- §2e RİTİM: hedef 💎'ı bittikten sonra yalnız günlük akışla bir ürün kaç günde (fiyat ÷ günlük 💎) ---
+kol | kademe A | B | C | D   (E0 10/gün · İ ve K 20/gün · K+İ 30/gün)
+K0  | 40💎: 4,0 / 2,0 / 1,3 g | 60💎: 6,0 / 3,0 / 2,0 g | 100💎: 10,0 / 5,0 / 3,3 g | 150💎: 15,0 / 7,5 / 5,0 g
+K1  | 15💎: 1,5 / 0,8 / 0,5 g | 25💎: 2,5 / 1,3 / 0,8 g | 40💎: 4,0 / 2,0 / 1,3 g | 60💎: 6,0 / 3,0 / 2,0 g
+K2  | 25💎: 2,5 / 1,3 / 0,8 g | 60💎: 6,0 / 3,0 / 2,0 g | 90💎: 9,0 / 4,5 / 3,0 g | 150💎: 15,0 / 7,5 / 5,0 g
+K3  | 60💎: 6,0 / 3,0 / 2,0 g | 100💎: 10,0 / 5,0 / 3,3 g | 150💎: 15,0 / 7,5 / 5,0 g | 300💎: 30,0 / 15,0 / 10,0 g
+(K0 kademe içinde fiyat farklıysa en pahalısı yazılır.)
+
+--- §2c DUYARLILIK: günlük aktif oyun süresi (E0 · kozmetik önce · ilk kozmetik / 30. gün adet / hepsi) ---
+kol | 0,5 sa/gün | 1 sa/gün | 2 sa/gün
+K0  |    2 / 9 / 139 |    1 / 9 / 139 |    1 / 9 / 139
+K1  |    1 / 16 / 51 |    1 / 16 / 51 |    1 / 16 / 51
+K2  |    1 / 9 / 140 |    1 / 9 / 140 |    1 / 9 / 140
+K3  |    2 / 6 / 260 |    2 / 6 / 260 |    1 / 6 / 260
+
+--- §3 PAKET HİZASI: paket TEK BAŞINA (0 💎 bakiye) ne alır · en iyi kombinasyonda artık 💎 ---
+kol | paket | en pahalı tek ürün | en ucuzdan kaç adet | en az artık 💎
+K0  |    25 | HİÇBİR ŞEY                         |                   0 | 25
+K0  |    60 | Kıraathane Yeleği (60)             |                   1 | 0
+K0  |   150 | Altın Yelek (150)                  |                   3 | 0
+K1  |    25 | Kıraathane Yeleği (25)             |                   1 | 0
+K1  |    60 | Altın Yelek (60)                   |                   3 | 0
+K1  |   150 | Altın Yelek (60)                   |                   7 | 0
+K2  |    25 | Bakır Tepsi (25)                   |                   1 | 0
+K2  |    60 | Kıraathane Yeleği (60)             |                   2 | 0
+K2  |   150 | Altın Yelek (150)                  |                   4 | 0
+K3  |    25 | HİÇBİR ŞEY                         |                   0 | 25
+K3  |    60 | Bakır Tepsi (60)                   |                   1 | 0
+K3  |   150 | Gümüş Askılı (150)                 |                   2 | 0
+
+--- §3b Vitrin toplamı ve kademe dağılımı ---
+K0 bugünkü TASLAK (config): toplam 1570 💎 · kıyafet [60, 60, 60, 60, 150] · tepsi [40, 40, 80, 100] · dekor [60, 80, 40, 60, 80, 80, 60, 60, 100, 100, 100, 100]
+K1 ucuz — A 15 · B 25 · C 40 · D 60: toplam 685 💎 · kıyafet [25, 25, 25, 25, 60] · tepsi [15, 15, 40, 60] · dekor [25, 40, 15, 25, 40, 40, 25, 25, 40, 40, 40, 40]
+K2 orta, paket-hizalı — A 25 · B 60 · C 90 · D 150: toplam 1575 💎 · kıyafet [60, 60, 60, 60, 150] · tepsi [25, 25, 90, 150] · dekor [60, 90, 25, 60, 90, 90, 60, 60, 90, 90, 90, 90]
+K3 pahalı — A 60 · B 100 · C 150 · D 300: toplam 2780 💎 · kıyafet [100, 100, 100, 100, 300] · tepsi [60, 60, 150, 300] · dekor [100, 150, 60, 100, 150, 150, 100, 100, 150, 150, 150, 150]
+
+Oyuncular:
+  E0   reklam izlemez, satın almaz · 10 💎/gün
+  İ    ödüllü izler: günlük 💎 2× + günde 1 Usta videoyla · 20 💎/gün
+  K    Reklamları Kaldır aldı (+10/gün), izlemez · 20 💎/gün
+  K+İ  Reklamları Kaldır + ödüllü izler · 30 💎/gün
+  B    başlangıç paketi (100 💎, gün 1) · izlemez · 10 💎/gün · peşin 100
+Kademe: A lamba · bakır · emaye | B 4 yelek/kıyafet · radyo · tablo · kanarya · saat | C askılı tepsi · koltuk · semaver · gramofon · 4 yılbaşı | D altın yelek · altın tepsi
+MODEL SINIRLARI: (1) günlük görev her gün tamamlanır; (2) hedef 💎 12 sa aktif oyundan sonra düşmüyor sayılır (alt sınır);
+(3) Temizlik kademeleri Servis ile aynı anda; (4) 12 sa'ten sonra 20 masa Usta'ya uygun (talep üst sınırı);
+(5) dekor yuvası salonu açılınca alınır (3. Salon: Normal profil saati).
