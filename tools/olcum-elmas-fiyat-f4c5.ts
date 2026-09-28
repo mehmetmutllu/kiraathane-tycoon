@@ -345,7 +345,7 @@ console.log('');
 function paketAnalizi(kol: FiyatKolu, P: number) {
   const fiyatlar = URUNLER.map((u) => kol.fiyat(u));
   // Alt küme toplamı (her ürün bir kez): P'yi aşmayan en büyük toplam → artık = P − o.
-  let ulas = new Set<number>([0]);
+  const ulas = new Set<number>([0]);
   for (const f of fiyatlar) for (const s of [...ulas]) if (s + f <= P) ulas.add(s + f);
   const enIyi = Math.max(...ulas);
   const tek = URUNLER.filter((u) => kol.fiyat(u) <= P).sort((a, b) => kol.fiyat(b) - kol.fiyat(a))[0];

@@ -32,13 +32,18 @@ const SPLASH = oku('src/components/ui/SplashScreen.tsx');
 const TABLES = oku('src/components/three/Tables.tsx');
 const CUSTOMERS = oku('src/components/three/Customers.tsx');
 const KAYACTOR = oku('src/components/three/KayActor.tsx');
+const SCENE = oku('src/components/three/Scene.tsx');
 
 describe('yükleme döngüsü — açılışta "Maximum update depth exceeded" geri gelmesin', () => {
   it('SplashScreen ilerlemeye ABONE OLMAZ, store\'u OKUR', () => {
     // `useProgress()` çağrısı = abonelik = dosya başına bir render. Yasak olan bu.
     expect(SPLASH).not.toMatch(/\buseProgress\(\)/);
-    // Okuma yolu: render'sız anlık görüntü.
-    expect(SPLASH).toMatch(/useProgress\.getState\(\)/);
+    // Okuma yolu: render'sız anlık görüntü. Kod-bölmeden beri ekran drei'yi hiç import etmez
+    // (three ilk pakete girerdi); `game/yukleme` köprüsünü okur, köprüye Scene kaydeder.
+    expect(SPLASH).not.toMatch(/@react-three/);
+    expect(SPLASH).toMatch(/yuklemeOku\(\)/);
+    expect(SCENE).toMatch(/yuklemeOkuyucusuKaydet\(\(\) => useProgress\.getState\(\)\)/);
+    expect(SCENE).not.toMatch(/\buseProgress\(\)/);
   });
 
   it('SplashScreen\'in tamamlanma kancası `progress`e BAĞLI DEĞİL', () => {

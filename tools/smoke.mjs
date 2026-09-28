@@ -668,7 +668,8 @@ try {
     await page.waitForSelector('[data-testid="level-up"]', { state: 'detached', timeout: 5000 });
     const sonra = (await page.evaluate(() => window.__game())).wallet;
     const odullu = (await page.evaluate(() => window.__ads.durum())).odullu;
-    if (sonra - once >= 1000 && odullu >= 1) pass(`"İzle, 2× al" seviye ödülünü ikiye katladı (+${Math.round(sonra - once)} ₺, ödüllü ${odullu})`);
+    // Eşik 1× (500) ile 2× (1000) ARASI: pencere boyunca tick kasayı birkaç ₺ oynatır (ölçüldü: +999,x ve +1005).
+    if (sonra - once >= 900 && odullu >= 1) pass(`"İzle, 2× al" seviye ödülünü ikiye katladı (+${Math.round(sonra - once)} ₺, ödüllü ${odullu})`);
     else fail(`"İzle, 2× al" 2× vermedi (+${Math.round(sonra - once)} ₺, ödüllü ${odullu})`);
   }
 
