@@ -14,7 +14,10 @@
 - `npm run play` = kimlik bekçisi + gerçek reklamlı imzalı AAB + damga. Bekçi bugün 3 eksiği yakaladı (doğru).
 - AAB zinciri doğrulandı (`npm run yayin` → 15,7 MB imzalı; test reklamlı → zip'e girmez).
 
-## ⏭️ SIRADAKİ ADIM (kullanıcı Chrome oturumunu açınca)
+## ⏭️ SIRADAKİ ADIM — Claude in Chrome ile (kullanıcı oturumu Chrome'la açacak)
+> Taslak zip KULLANICIYA YETMEZ (AAB yok). Bu oturumun tek işi: kimlikler → AAB → TAM zip.
+> Panel işleri **Claude in Chrome** (`mcp__claude-in-chrome__*`, önce `anthropic-skills:chrome-browser` skill'i) ile,
+> mutlubadem.dev hesabında. **Google Play Console'a GİRME — kalıcı yasak, Play adımları arkadaşın.**
 1. **AdMob** (mutlubadem.dev): Android uygulaması "Tea House Tycoon" (henüz yayında değil) + geçişli + ödüllü birim →
    `AndroidManifest.xml` APPLICATION_ID + `ads.config.ts` `birim.android`. (GDPR/UMP mesajı da Android'i kapsasın.)
 2. **RevenueCat** (proje a54ea25c): Play Store uygulaması ekle, paket `com.mutlubadem.teahouse` → `goog_` anahtar →
