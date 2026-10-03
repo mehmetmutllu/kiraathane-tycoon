@@ -55,13 +55,12 @@
         </provider>
 
         <!--
-            REKLAM (F3 · D-144). Değer Google'ın RESMÎ TEST uygulama kimliği; gerçek kimlik AdMob
-            hesabından gelince yalnız bu satır ve `src/config/ads.config.ts` değişir. Gerçek
-            kimlikle geliştirme/test yapmak hesabın askıya alınma sebebidir.
+            REKLAM (F3 · D-144). GERÇEK AdMob Android uygulama kimliği (mutlubadem.dev, 2026-10-04).
+            Birimler `src/config/ads.config.ts`'te; geliştirme/test derlemesi test birimlerini kullanır.
         -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3940256099942544~3347511713" />
+            android:value="ca-app-pub-9532352817217002~7822557727" />
 
         <!-- PLAY GAMES (F4b · D-153). Değer strings.xml'de; boşken eklenti SDK'yı hiç kurmaz. -->
         <meta-data

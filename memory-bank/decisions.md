@@ -4908,3 +4908,6 @@ PDF rehber `docs/play/rehber.html` + metinler `docs/play/metin/` + ikon 512 + ö
 RevenueCat `goog_` anahtarı Play'siz üretilir (paket adıyla) → AAB tek seferde tam; servis hesabı JSON'u arkadaş sonra gönderir.
 Hedef kitle 13+ (çocuk programı reklam kısıtı ister, D-151 ile çelişir). Play Games v1'de KAPALI (APP_ID boş).
 
+**Kimlikler girildi (2026-10-04, Chrome, mutlubadem.dev):** AdMob Android uygulaması `~7822557727` + geçişli/ödüllü birim;
+AdMob GDPR mesajı ("tüm uygulamalar") iki Tea House uygulamasını da kapsamıyordu → ikisi gizlilik URL'siyle eklendi (iOS dahil).
+RevenueCat Play uygulaması `appc0cb3555a3` + 5 ürün iOS'un aynısı (elmas consumable, reklamsiz/baslangic haklara bağlı).

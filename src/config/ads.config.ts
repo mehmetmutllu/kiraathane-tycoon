@@ -11,8 +11,7 @@ import type { MagazaPlatformu } from '../game/platform';
  * kullanılır — gerçek birimle geliştirme/test yapmak hesabın askıya alınma sebebidir. Yalnız Codemagic yayın
  * derlemesinde `test` false olur ve `birim` devreye girer; elle değiştirilmez. Kimliklerin durduğu yerler — başka yer YOK:
  *  - iOS:     `birim.ios` (GERÇEK, AdMob iOS uygulaması) + `ios/App/App/Info.plist` → `GADApplicationIdentifier`
- *  - Android: `birim.android` + `AndroidManifest.xml` → `APPLICATION_ID`. Android AdMob uygulaması
- *    henüz AÇILMADI: ikisi de hâlâ Google test kimliği (Android yayını sonraya bırakıldı).
+ *  - Android: `birim.android` (GERÇEK, AdMob Android uygulaması) + `AndroidManifest.xml` → `APPLICATION_ID`
  */
 type Birimler = Record<MagazaPlatformu, { gecisli: string; odullu: string }>;
 
@@ -21,8 +20,8 @@ export const adsConfig = {
   test: (import.meta as { env?: Record<string, string | undefined> }).env?.VITE_REKLAM !== 'gercek',
   birim: {
     android: {
-      gecisli: 'ca-app-pub-3940256099942544/1033173712',
-      odullu: 'ca-app-pub-3940256099942544/5224354917',
+      gecisli: 'ca-app-pub-9532352817217002/1423661177',
+      odullu: 'ca-app-pub-9532352817217002/7797497835',
     },
     ios: {
       gecisli: 'ca-app-pub-9532352817217002/3082048152',

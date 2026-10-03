@@ -48,7 +48,7 @@ if (!js.some((d) => fs.readFileSync(path.join(KOK, 'dist/assets', d), 'utf8').in
 }
 kos('npx cap sync android');
 kos('node tools/apk-temizle.mjs');
-kos(process.platform === 'win32' ? 'gradlew.bat bundleRelease' : './gradlew bundleRelease', path.join(KOK, 'android'));
+kos(process.platform === 'win32' ? '.\\gradlew.bat bundleRelease' : './gradlew bundleRelease', path.join(KOK, 'android'));
 // Damga: play-paket.mjs zip'e yalnız bu denetimden geçmiş AAB'yi koyar (`npm run yayin` test reklamlı AAB de üretir).
 const aab = path.join(KOK, 'android/app/build/outputs/bundle/release/app-release.aab');
 fs.writeFileSync(aab + '.play.json', JSON.stringify({ boyut: fs.statSync(aab).size, mtime: fs.statSync(aab).mtimeMs }));

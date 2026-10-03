@@ -12,7 +12,7 @@ import type { MagazaPlatformu } from '../game/platform';
  * panelinden gelir (proje → uygulama → "Public API key"): Android `goog_…`, iOS `appl_…`.
  */
 export const iapConfig = {
-  revenueCatAnahtar: { android: null, ios: 'appl_YEKJgMxeqxalKAwxjAXgcNtfSKF' } as Record<MagazaPlatformu, string | null>,
+  revenueCatAnahtar: { android: 'goog_UUbLMugYKLVHptXojEiKKCpAfpY', ios: 'appl_YEKJgMxeqxalKAwxjAXgcNtfSKF' } as Record<MagazaPlatformu, string | null>,
   /** RevenueCat "entitlement" kimlikleri — kalıcı sahiplikler (geri yüklenir). */
   hak: { reklamsiz: 'reklamsiz', baslangic: 'baslangic' },
   /**
