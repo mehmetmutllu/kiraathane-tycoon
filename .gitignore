@@ -86,3 +86,6 @@ docs/magaza-kareleri/tasarim/
 docs/magaza-kareleri/onizleme/
 docs/magaza-kareleri/ham-reklam/
 docs/magaza-kareleri/maskot/
+
+# Google Play teslim paketi (tools/play-paket.mjs üretir; AAB içerir, git'e girmez)
+/dist-play/

@@ -7,7 +7,7 @@
 <style>
   /* Piyasa kalıbı (My Perfect Hotel · Eatventure · Burger Please · Pizza Ready incelendi, 2026-09-28):
      tam ekran YAKIN sahne, canlı renk, altta EĞİK bant + 2-3 kelimelik ünlemli başlık, banttan TAŞAN maskot.
-     ?c=iphone|ipad &i=1-6 &v=M|N|P &d=tr|en
+     ?c=iphone|ipad|android &i=1-6 &v=M|N|P &d=tr|en
      M mavi bant · N amber bant · O mor bant (oyunun HUD moru) · P yazısız (Burger Please/Pizza Ready gibi saf oynanış + maskot)
      Ham: KIP=reklam node tools/kare-oyun-ici.mjs · maskot: node tools/maskot-cek.mjs */
   *{margin:0;padding:0;box-sizing:border-box}
@@ -32,7 +32,9 @@
 <script>
 const q = new URLSearchParams(location.search);
 const C = q.get('c') || 'iphone', I = +(q.get('i') || 1), V = (q.get('v') || 'M').toUpperCase(), D = q.get('d') || 'tr';
-const [W, H] = { iphone: [1320, 2868], ipad: [2064, 2752] }[C];
+const [W, H] = { iphone: [1320, 2868], ipad: [2064, 2752], android: [1080, 1920] }[C];
+/* android (Google Play telefon, 9:16): iPhone ham karesinden kırpılır; Play en fazla 2:1 oran kabul eder. */
+const HAM = C === 'android' ? 'iphone' : C;
 const T = document.getElementById('tuval');
 T.className = 'v-' + V; T.style.width = W + 'px'; T.style.height = H + 'px';
 
@@ -49,7 +51,7 @@ const E = EKRAN[I - 1];
 const el = (sinif, stil = {}, html = '') => { const d = document.createElement(sinif === 'img' ? 'img' : 'div'); if (sinif !== 'img') d.className = sinif; Object.assign(d.style, stil); d.innerHTML = html; T.appendChild(d); return d; };
 const u = W / 1320;
 
-el('sahne', { backgroundImage: `url(../docs/magaza-kareleri/${E.k.replace('{c}', C)}.png)` });
+el('sahne', { backgroundImage: `url(../docs/magaza-kareleri/${E.k.replace('{c}', HAM)}.png)` });
 el('isik');
 
 const bantH = H * (C === 'ipad' ? .26 : .24);

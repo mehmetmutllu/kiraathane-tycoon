@@ -1,0 +1,39 @@
+=== UYGULAMA ADI (en fazla 30) ===
+Tea House Tycoon
+
+=== KISA AÇIKLAMA (en fazla 80) ===
+Çay demle, servis yap, küçük çay ocağını şehrin en kalabalık kahvehanesi yap!
+
+=== TAM AÇIKLAMA (en fazla 4000) ===
+Mahallenin köşesinde küçük bir çay ocağı… Onu şehrin en sevilen kahvehanesine sen dönüştür!
+
+Tea House Tycoon, sıcak bir Türk kahvehanesini sıfırdan büyüttüğün 3D bir işletme (tycoon) oyunu. İnce belli bardaklarda çayı demle, tepsini doldur, müşterilerine servis et; kazandığın parayla yeni masalar, garsonlar ve salonlar aç.
+
+NASIL OYNANIR
+• Ocaktan çayı al, tepsiyle masalara taşı.
+• Müşteriler çayını içip hesabı öder; parayı topla.
+• Parayı mekânın içindeki noktalarda harca: yeni masa, daha hızlı ocak, garson, bulaşıkçı.
+• Masaları yükselt; sade tabureler kanepeye, masalar daha şık hâllerine dönüşsün.
+
+KAHVEHANENİ BÜYÜT
+• Üç salon, yirmi masa: tek odadan kalabalık bir kahvehaneye.
+• Mutfak açılınca menüye tost girer; garsonlar ve bulaşıkçı yükünü hafifletir.
+• Masaları Usta'ya çıkar: o masanın bahşişi kalıcı olarak artar.
+• Günlük görevler, hedefler ve seviye ödülleriyle her gün yeni bir amaç.
+
+SENİN MEKÂNIN
+• Mekânına kendi adını ver; tabelada o yazsın.
+• Radyo, semaver, gramofon, sarkaçlı saat, kanarya kafesi… Salonu kendi zevkine göre döşe.
+• Çaycına yeni kıyafetler, tepsine yeni desenler seç.
+• Masa, zemin ve duvar temalarıyla salonun rengini değiştir.
+
+RAHAT OYNA
+• Tek elle, dikey ekranda oynanır.
+• Oyun kapalıyken de mekânın bir süre kazanmaya devam eder.
+• Reklam izlemek her zaman isteğe bağlı; ilerlemek için zorunlu değil.
+• Sürpriz kutusu, şans çarkı ya da kumar yok. Ne aldığını görerek alırsın.
+
+Bir çay daha? Mekânın seni bekliyor.
+
+=== SÜRÜM NOTU (en fazla 500) ===
+Tea House Tycoon açıldı! Üç salon, yirmi masa, mutfak ve tost, Usta masalar, günlük görevler ve salonu süsleyen dekor eşyaları seni bekliyor. Görüşlerini bekliyoruz!

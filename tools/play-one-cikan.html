@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Google Play öne çıkan görsel (1024×500)</title>
+<style>
+  /* Play "feature graphic": 1024×500, alfasız. Mağaza kareleriyle aynı dil (O: oyunun HUD moru + amber şerit + maskot).
+     Play bu görselin üstüne kendi oynat düğmesini/başlığını koyabilir: orta-alt boş kalır, yazı solda. */
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:1024px;height:500px;overflow:hidden;background:#221b52}
+  .sahne{position:absolute;inset:0;background:url(../docs/magaza-kareleri/ham-pano/iphone-salon.png) 62% 55%/auto 115% no-repeat;filter:saturate(1.22) contrast(1.06) brightness(1.03)}
+  .serit{position:absolute;left:-40px;width:560px;top:-60px;bottom:-60px;transform:skewX(-8deg);background:linear-gradient(180deg,#463c86 0%,#221b52 100%);border-right:10px solid #ffc24b;box-shadow:8px 0 0 #100b2e}
+  .logo{position:absolute;left:40px;top:100px;width:420px;filter:drop-shadow(0 8px 0 #100b2e)}
+  .maskot{position:absolute;height:470px;right:10px;bottom:-95px;filter:drop-shadow(0 14px 20px rgba(0,0,0,.4))}
+  .garson{position:absolute;height:390px;right:250px;bottom:-85px;transform:scaleX(-1);filter:drop-shadow(0 14px 20px rgba(0,0,0,.4))}
+</style>
+</head>
+<body>
+<div class="sahne"></div>
+<div class="serit"></div>
+<img class="logo" src="../docs/logotasarim/logo-yazi-saydam.png">
+<img class="garson" src="../docs/magaza-kareleri/maskot/waiter.png">
+<img class="maskot" src="../docs/magaza-kareleri/maskot/owner.png">
+</body>
+</html>

@@ -4897,3 +4897,14 @@ kimliğe bağlı değil. Paid Apps sözleşmesi/banka/vergi zaten aktifti.
 **Sıra kilidi notu (D-084):** 14bbfbc `rules.ts`/`tick.ts`'e dokundu ama DENGE değil — yalnız ekrana giden metin `t()` ile
 sarıldı (görev bildirimi, aktif pad etiketi, pad tetik çerçevesi `padCercevesi(t(pad.label))`). Türkçede `t()` kimliktir →
 sayı/tempo birebir aynı; ölçüm turu gerekmedi. Bekçi: tetik-s24 çizim=tetik aynı üreticiden.
+
+## D-161 · Google Play: arkadaş yükler, Claude zip hazırlar · Play Console Claude'a KALICI yasak (2026-10-03)
+
+**Karar (kullanıcı):** Android yayını açıldı. Play'i kullanıcının arkadaşı yönetir (ortak hesap); Claude Play Console'u **hiçbir
+şekilde kullanmaz** (D-158'in yasağı kalıcı). Teslim = zip: `npm run play` (kimlik bekçisi `tools/play-hazir-mi.mjs`: AdMob uygulama
++ 2 birim + RevenueCat `goog_` test değilse gerçek reklam kipiyle imzalı AAB + damga) → `npm run play:paket` (`tools/play-paket.mjs`:
+PDF rehber `docs/play/rehber.html` + metinler `docs/play/metin/` + ikon 512 + öne çıkan 1024×500 `tools/play-one-cikan.html` + telefon
+1080×1920 (`magaza-tasarim3` `c=android`, O varyantı) + tablet = iPad kareleri; damgasız AAB zip'e girmez → TASLAK).
+RevenueCat `goog_` anahtarı Play'siz üretilir (paket adıyla) → AAB tek seferde tam; servis hesabı JSON'u arkadaş sonra gönderir.
+Hedef kitle 13+ (çocuk programı reklam kısıtı ister, D-151 ile çelişir). Play Games v1'de KAPALI (APP_ID boş).
+

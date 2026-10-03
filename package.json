@@ -18,6 +18,8 @@
     "cap:sync": "npm run build && npx cap sync android",
     "ios:sync": "npm run build && npx cap sync ios && node tools/ios-duzelt.mjs",
     "apk": "npm run build && npx cap sync android && node tools/apk-temizle.mjs && cd android && .\\gradlew.bat assembleDebug",
+    "play": "node tools/play-hazir-mi.mjs",
+    "play:paket": "node tools/play-paket.mjs",
     "yayin": "npm run build && npx cap sync android && node tools/apk-temizle.mjs && cd android && .\\gradlew.bat assembleRelease bundleRelease"
   },
   "dependencies": {

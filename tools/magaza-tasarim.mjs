@@ -2,7 +2,7 @@
  * magaza-tasarim.mjs — `tools/magaza-tasarim.html`i kare kare çeker (tasarımlı App Store görselleri).
  * Önce ham kareler: node tools/kare-oyun-ici.mjs
  * Kullanım: V=A,B,C C=iphone,ipad D=tr,en I=1,2 node tools/magaza-tasarim.mjs
- * Çıktı: docs/magaza-kareleri/tasarim/<V>/<cihaz>-<dil>-<n>.png (iPhone 1320×2868 · iPad 2064×2752, alfasız).
+ * Çıktı: docs/magaza-kareleri/tasarim/<V>/<cihaz>-<dil>-<n>.png (iPhone 1320×2868 · iPad 2064×2752 · android 1080×1920, alfasız).
  */
 import { chromium } from 'playwright';
 import { mkdirSync } from 'node:fs';
@@ -10,7 +10,7 @@ import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const KOK = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const OLCU = { iphone: [1320, 2868], ipad: [2064, 2752] };
+const OLCU = { iphone: [1320, 2868], ipad: [2064, 2752], android: [1080, 1920] };
 const liste = (ad, vars) => (process.env[ad] ?? vars).split(',');
 const VS = liste('V', 'A,B,C'), CS = liste('C', 'iphone,ipad'), DS = liste('D', 'tr,en'), IS = liste('I', '1,2,3,4,5,6');
 // V içinde D/E/F varsa tam kadraj şablonu (magaza-tasarim2.html), yoksa çerçeveli şablon. C iki şablonda da var:

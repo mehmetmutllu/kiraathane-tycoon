@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Tea House Tycoon — Google Play Yayın Rehberi</title>
+<style>
+  @page { size: A4; margin: 16mm 15mm 18mm; }
+  :root { --mor:#221b52; --mor2:#463c86; --amber:#ffc24b; --yazi:#1d1b2b; --gri:#6b6880; --cizgi:#e4e1ef; --zemin:#f6f4fb; --yesil:#1d7a46; --kirmizi:#b3261e; }
+  * { box-sizing: border-box; }
+  body { font-family: "Segoe UI", system-ui, sans-serif; color: var(--yazi); font-size: 10.2pt; line-height: 1.45; margin: 0; }
+  h1 { font-size: 26pt; margin: 0 0 4mm; color: var(--mor); line-height: 1.1; }
+  h2 { font-size: 15pt; color: var(--mor); margin: 0 0 3mm; padding: 2.5mm 0 2mm; border-bottom: 2px solid var(--amber); break-after: avoid; }
+  h3 { font-size: 11.5pt; margin: 5mm 0 1.5mm; color: var(--mor2); break-after: avoid; }
+  p { margin: 0 0 2.5mm; }
+  section { break-before: page; }
+  .kapak { height: 255mm; display: flex; flex-direction: column; justify-content: center; }
+  .kapak img.logo { width: 120mm; margin-bottom: 8mm; }
+  .kapak .alt { font-size: 13pt; color: var(--gri); }
+  .kutu { background: var(--zemin); border: 1px solid var(--cizgi); border-radius: 3mm; padding: 3mm 4mm; margin: 3mm 0; break-inside: avoid; }
+  .uyari { background: #fff4e0; border-color: #f3c46a; }
+  .tehlike { background: #fdeceb; border-color: #f0b3ae; }
+  .tamam { background: #e9f6ee; border-color: #a9d8bb; }
+  .kutu > b:first-child { display: block; margin-bottom: 1mm; }
+  ol, ul { margin: 0 0 2.5mm; padding-left: 6mm; }
+  li { margin: 0.8mm 0; }
+  table { width: 100%; border-collapse: collapse; margin: 2mm 0 3mm; font-size: 9.5pt; break-inside: auto; }
+  th, td { border: 1px solid var(--cizgi); padding: 1.6mm 2.2mm; text-align: left; vertical-align: top; }
+  th { background: var(--mor); color: #fff; font-weight: 600; }
+  tr { break-inside: avoid; }
+  code, .kod { font-family: Consolas, "Cascadia Mono", monospace; font-size: 9.3pt; background: #efedf6; padding: 0.3mm 1.2mm; border-radius: 1mm; }
+  .yol { font-weight: 600; color: var(--mor2); }
+  .cevap { font-weight: 700; color: var(--yesil); }
+  .hayir { font-weight: 700; color: var(--kirmizi); }
+  pre.metin { white-space: pre-wrap; font-family: "Segoe UI", system-ui, sans-serif; font-size: 9.3pt; background: #fff; border: 1px dashed var(--mor2); border-radius: 2mm; padding: 3mm; margin: 1.5mm 0 3mm; }
+  .izgara { display: grid; grid-template-columns: repeat(6, 1fr); gap: 2mm; margin: 2mm 0; }
+  .izgara img { width: 100%; border-radius: 1.5mm; border: 1px solid var(--cizgi); }
+  .izgara4 { grid-template-columns: repeat(6, 1fr); }
+  .etiket { font-size: 8pt; color: var(--gri); text-align: center; }
+  .adim { display: inline-block; background: var(--mor); color: #fff; border-radius: 50%; width: 7mm; height: 7mm; text-align: center; line-height: 7mm; font-weight: 700; margin-right: 2mm; font-size: 10pt; }
+  .icindekiler { list-style: none; padding-left: 0; }
+  .icindekiler li { margin: 1.4mm 0; }
+  .kucuk { font-size: 9pt; color: var(--gri); }
+  .kontrol li { list-style: none; margin: 0.2mm 0 0.2mm -5mm; }
+  .kontrol li::before { content: "☐  "; font-size: 11pt; }
+</style>
+</head>
+<body>
+
+<div class="kapak">
+  <img class="logo" src="gorsel/logo.png" alt="Tea House Tycoon">
+  <h1>Google Play Yayın Rehberi</h1>
+  <p class="alt">Tea House Tycoon'u Google Play'e adım adım yüklemek için gereken her şey.<br>
+  Paket, görseller, metinler ve formların cevapları bu klasörde hazır. Senin işin kopyalayıp yapıştırmak ve dosya yüklemek.</p>
+  <p class="kucuk" style="margin-top:10mm">Paket adı: <code>com.mutlubadem.teahouse</code> · Sürüm: <code>{{SURUM}}</code> · Hazırlanma: {{TARIH}}</p>
+</div>
+
+<section>
+  <h2>Önce bunu oku (2 dakika)</h2>
+  <h3>Klasörde ne var?</h3>
+  <table>
+    <tr><th style="width:38%">Dosya / klasör</th><th>Ne işe yarar</th></tr>
+    <tr><td><code>1-REHBER.pdf</code></td><td>Bu belge.</td></tr>
+    <tr><td><code>2-paket/app-release.aab</code></td><td>Google Play'e yüklenecek oyun dosyası. İmzalı ve hazır. <b>Açma, değiştirme</b>, olduğu gibi yükle.</td></tr>
+    <tr><td><code>3-gorseller/ikon-512.png</code></td><td>Mağaza simgesi (512×512).</td></tr>
+    <tr><td><code>3-gorseller/one-cikan-1024x500.png</code></td><td>Mağaza sayfasının üstündeki geniş görsel ("Feature graphic").</td></tr>
+    <tr><td><code>3-gorseller/telefon-en/</code>, <code>telefon-tr/</code></td><td>Telefon ekran görüntüleri: 6 İngilizce, 6 Türkçe (1080×1920).</td></tr>
+    <tr><td><code>3-gorseller/tablet-en/</code>, <code>tablet-tr/</code></td><td>Tablet ekran görüntüleri: 6 İngilizce, 6 Türkçe.</td></tr>
+    <tr><td><code>4-metinler/</code></td><td>Mağaza metinleri (kopyala-yapıştır için düz metin) ve ürün listesi.</td></tr>
+  </table>
+
+  <h3>Kısaca yapılacaklar</h3>
+  <ol class="icindekiler">
+    <li><span class="adim">1</span>Hesabın türünü kontrol et (bu, yayına ne kadar sürede çıkacağını belirler).</li>
+    <li><span class="adim">2</span>Play Console'da uygulamayı oluştur.</li>
+    <li><span class="adim">3</span>"Uygulama içeriği" formlarını doldur (cevaplar hazır).</li>
+    <li><span class="adim">4</span>Mağaza sayfasını doldur: metinler + görseller (İngilizce + Türkçe).</li>
+    <li><span class="adim">5</span>Ülkeleri ve fiyatı ayarla (ücretsiz, tüm ülkeler).</li>
+    <li><span class="adim">6</span>Paketi <b>dahili teste</b> yükle, kendi telefonuna kurup dene.</li>
+    <li><span class="adim">7</span>5 uygulama içi ürünü oluştur.</li>
+    <li><span class="adim">8</span>Satın almalar için "hizmet hesabı" aç ve dosyasını Mehmet'e gönder.</li>
+    <li><span class="adim">9</span>Yayına gönder (yeni kişisel hesapsa önce 14 günlük kapalı test).</li>
+    <li><span class="adim">10</span>Sonrası: incelemeler, güncellemeler, sık hatalar.</li>
+  </ol>
+
+  <div class="kutu tehlike"><b>Değiştirilmemesi gerekenler</b>
+    <ul>
+      <li>Paket adı <code>com.mutlubadem.teahouse</code>. AAB'nin içinde gömülü, Play'de sonradan değiştirilemez.</li>
+      <li>Ürün kimlikleri (Adım 7'deki <code>kiraathane_…</code> adları). Oyun bu adları arıyor. Tek harf farkı satın almayı bozar ve Play'de silinen bir kimlik bir daha kullanılamaz.</li>
+      <li>Hedef kitlede <b>13 yaş altı seçilmez</b> (Adım 3.4). Seçilirse Google çocuk politikalarını uygular ve uygulama reddedilir.</li>
+    </ul>
+  </div>
+  <div class="kutu"><b>Menü yerini bulamazsan</b>
+    Google, Play Console menülerinin adını ve yerini zaman zaman değiştiriyor. Bu rehberde menü yolları <span class="yol">mor kalınla</span> ve İngilizce adlarıyla yazıldı (Türkçe arayüzde karşılığı parantezde). Bulamazsan sol üstteki <b>arama kutusuna</b> menünün adını yaz (örn. "Data safety").
+  </div>
+  <div class="kutu"><b>Mehmet'e geri göndereceğin tek dosya</b>
+    Adım 8'de oluşturacağın <b>hizmet hesabı JSON dosyası</b>. Onunla satın almaları bağlayacak. Bu dosya bir anahtar sayılır: herkese açık bir yere koyma, doğrudan Mehmet'e gönder.
+  </div>
+</section>
+
+<section>
+  <h2><span class="adim">1</span>Hesap türünü kontrol et</h2>
+  <p>Play Console'da sol menüden <span class="yol">Settings (Ayarlar) → Developer account (Geliştirici hesabı) → Account details (Hesap ayrıntıları)</span> sayfasına gir. Hesap türüne ve açılış tarihine bak:</p>
+  <table>
+    <tr><th>Hesabın</th><th>Ne demek</th></tr>
+    <tr><td><b>Organization</b> (Kuruluş) hesabı</td><td>Doğrudan yayına çıkabilirsin. Adım 9'da <b>9B</b>'yi uygula.</td></tr>
+    <tr><td><b>Personal</b> (Kişisel) hesap, <b>13 Kasım 2023'ten önce</b> açılmış</td><td>Doğrudan yayına çıkabilirsin. Adım 9'da <b>9B</b>'yi uygula.</td></tr>
+    <tr><td><b>Personal</b> (Kişisel) hesap, <b>13 Kasım 2023'ten sonra</b> açılmış</td><td>Google önce <b>kapalı test</b> istiyor: en az <b>12 kişi</b> oyunu <b>14 gün boyunca kesintisiz</b> test listesinde tutmalı ve gerçekten oynamalı. Ondan sonra "üretim erişimi" başvurusu yapılır. Adım 9'da <b>9A</b>'yı uygula. <b>12 kişiyi şimdiden ayarlamaya başla</b>: Gmail adresleri lazım, Android telefonları olmalı.</td></tr>
+  </table>
+  <div class="kutu uyari"><b>Hesap kimlik doğrulaması</b>Hesap yeni açıldıysa Google kimlik ve telefon doğrulaması isteyebilir. Doğrulama bitmeden yayın yapılamaz. Ana sayfada uyarı varsa önce onu tamamla.</div>
+
+  <h2 style="margin-top:8mm"><span class="adim">2</span>Uygulamayı oluştur</h2>
+  <p><span class="yol">Home (Ana sayfa) → Create app (Uygulama oluştur)</span> düğmesine bas ve şunları gir:</p>
+  <table>
+    <tr><th style="width:40%">Alan</th><th>Gir / seç</th></tr>
+    <tr><td>App name (Uygulama adı)</td><td><code>Tea House Tycoon</code></td></tr>
+    <tr><td>Default language (Varsayılan dil)</td><td><b>English (United States) – en-US</b> <span class="kucuk">(Türkçe'yi Adım 4'te ekleyeceğiz)</span></td></tr>
+    <tr><td>App or game (Uygulama mı oyun mu)</td><td><b>Game</b> (Oyun)</td></tr>
+    <tr><td>Free or paid (Ücretsiz mi ücretli mi)</td><td><b>Free</b> (Ücretsiz). <span class="kucuk">Sonradan ücretliye çevrilemez; doğrusu bu, gelir reklam ve uygulama içi satın almadan geliyor.</span></td></tr>
+    <tr><td>Declarations (Beyanlar)</td><td>İki kutuyu da işaretle: Developer Program Policies + US export laws.</td></tr>
+  </table>
+  <p><b>Create app</b>'e bas. Uygulamanın panosu (Dashboard) açılır. Panoda <b>"Set up your app"</b> (Uygulamanızı kurun) başlıklı bir görev listesi göreceksin. Sonraki adımlar o listedeki görevler.</p>
+</section>
+
+<section>
+  <h2><span class="adim">3</span>Uygulama içeriği formları</h2>
+  <p>Hepsi <span class="yol">Policy and programs (Politika ve programlar) → App content (Uygulama içeriği)</span> sayfasında. Her birini açıp aşağıdaki cevapları ver, en sonda <b>Save</b> (Kaydet) de.</p>
+
+  <h3>3.1 Privacy policy (Gizlilik politikası)</h3>
+  <p>URL: <code>https://mehmetmutllu.github.io/tea-house-tycoon/privacy.html</code></p>
+
+  <h3>3.2 App access (Uygulama erişimi)</h3>
+  <p><span class="cevap">All functionality is available without any access restrictions</span> (Tüm işlevler kısıtlama olmadan kullanılabilir). Oyunda giriş veya üyelik yok.</p>
+
+  <h3>3.3 Ads (Reklamlar)</h3>
+  <p>"Does your app contain ads?" → <span class="cevap">Yes, my app contains ads</span> (Evet). Oyunda geçiş reklamı ve isteğe bağlı ödüllü video var (Google AdMob).</p>
+
+  <h3>3.4 Target audience and content (Hedef kitle ve içerik)</h3>
+  <ul>
+    <li>Target age groups (Hedef yaş grupları): <span class="cevap">13–15, 16–17, 18 and over</span>. <span class="hayir">5–12 ve altını seçme.</span></li>
+    <li>"Could your store listing unintentionally appeal to children?" (Mağaza sayfası çocukların ilgisini çekebilir mi?) → <span class="cevap">No</span>.</li>
+  </ul>
+  <div class="kutu uyari"><b>Neden 13+?</b>13 yaş altı seçilirse uygulama Google'ın "Aileler" programına girer. Bu program reklam ayarlarında özel kısıtlar istiyor ve oyunun reklam kurulumu bunlara göre yapılmadı. 13+ seçmek doğru ve yeterli.</div>
+
+  <h3>3.5 Content rating (İçerik derecelendirmesi), IARC anketi</h3>
+  <ol>
+    <li>E-posta: <code>mutlubadem.dev@gmail.com</code></li>
+    <li>Kategori: <span class="cevap">Game</span> (Oyun, "All other app types" değil).</li>
+    <li>Soruların cevapları:</li>
+  </ol>
+  <table>
+    <tr><th>Soru (özet)</th><th style="width:22%">Cevap</th></tr>
+    <tr><td>Violence (şiddet), blood (kan), weapons (silah)</td><td class="hayir">No</td></tr>
+    <tr><td>Fear / horror (korku)</td><td class="hayir">No</td></tr>
+    <tr><td>Sexuality / nudity (cinsellik / çıplaklık)</td><td class="hayir">No</td></tr>
+    <tr><td>Language / crude humor (küfür / kaba mizah)</td><td class="hayir">No</td></tr>
+    <tr><td>Controlled substances: drugs, alcohol, tobacco (uyuşturucu, alkol, tütün)</td><td class="hayir">No</td></tr>
+    <tr><td>Gambling, simulated gambling (kumar, kumar simülasyonu)</td><td class="hayir">No</td></tr>
+    <tr><td>Random / loot box items purchasable (rastgele ödüllü satın alma)</td><td class="hayir">No</td></tr>
+    <tr><td>Users can interact or exchange content (kullanıcılar etkileşir / içerik paylaşır)</td><td class="hayir">No</td></tr>
+    <tr><td>Shares user's physical location (konum paylaşır)</td><td class="hayir">No</td></tr>
+    <tr><td>Allows purchase of digital goods (dijital ürün satın alma)</td><td class="cevap">Yes</td></tr>
+    <tr><td>Unrestricted internet / web browser (sınırsız internet erişimi)</td><td class="hayir">No</td></tr>
+  </table>
+  <p class="kucuk">Beklenen sonuç: PEGI 3 / ESRB Everyone / USK 0 civarı. Anketi bitirince <b>Submit</b> (Gönder) de.</p>
+
+  <h3>3.6 Data safety (Veri güvenliği)</h3>
+  <p>Bu formun cevapları oyundaki iki hazır hizmete göre verildi: <b>Google AdMob</b> (reklam) ve <b>RevenueCat</b> (satın alma). Oyunun kendisi kişisel veri toplamıyor, oyunda üyelik yok.</p>
+  <p><b>Genel sorular</b></p>
+  <table>
+    <tr><th>Soru</th><th style="width:30%">Cevap</th></tr>
+    <tr><td>Does your app collect or share any of the required user data types? (Veri topluyor veya paylaşıyor mu?)</td><td class="cevap">Yes</td></tr>
+    <tr><td>Is all of the user data collected by your app encrypted in transit? (Aktarımda şifreli mi?)</td><td class="cevap">Yes</td></tr>
+    <tr><td>Which account creation methods does your app support? (Hesap oluşturma)</td><td><b>My app does not allow users to create an account</b> (Hesap oluşturulmuyor)</td></tr>
+    <tr><td>Do you provide a way for users to request that their data is deleted? (Veri silme talebi)</td><td><b>No</b></td></tr>
+  </table>
+  <p><b>Veri türleri</b>: yalnızca bunları işaretle, diğer her şey boş kalacak.</p>
+  <table>
+    <tr><th>Kategori → tür</th><th>Collected (Toplanıyor)</th><th>Shared (Paylaşılıyor)</th><th>Required / Optional</th><th>Amaçlar (Purposes)</th></tr>
+    <tr><td>Location → <b>Approximate location</b> (Yaklaşık konum)</td><td>✔</td><td>✔</td><td>Required</td><td>Advertising or marketing · Analytics · Fraud prevention, security, and compliance</td></tr>
+    <tr><td>App activity → <b>App interactions</b> (Uygulama etkileşimleri)</td><td>✔</td><td>✔</td><td>Required</td><td>Advertising or marketing · Analytics · Fraud prevention, security, and compliance</td></tr>
+    <tr><td>App info and performance → <b>Crash logs</b> (Kilitlenme günlükleri)</td><td>✔</td><td>✔</td><td>Required</td><td>Analytics · Fraud prevention, security, and compliance</td></tr>
+    <tr><td>App info and performance → <b>Diagnostics</b> (Teşhis)</td><td>✔</td><td>✔</td><td>Required</td><td>Analytics · Fraud prevention, security, and compliance</td></tr>
+    <tr><td>Device or other IDs → <b>Device or other IDs</b> (Cihaz kimlikleri)</td><td>✔</td><td>✔</td><td>Required</td><td>Advertising or marketing · Analytics · Fraud prevention, security, and compliance</td></tr>
+    <tr><td>Financial info → <b>Purchase history</b> (Satın alma geçmişi)</td><td>✔</td><td>—</td><td>Required</td><td>App functionality · Analytics</td></tr>
+  </table>
+  <p class="kucuk">Her türde ayrıca "Is this data processed ephemerally?" (yalnız anlık mı işleniyor?) sorusu gelir: hepsine <b>No</b>. Ad, e-posta, telefon, kesin konum, fotoğraf, kişiler, sağlık, mesajlar vb. <b>toplanmıyor</b>: işaretleme.</p>
+
+  <h3>3.7 Advertising ID (Reklam kimliği)</h3>
+  <p>"Does your app use advertising ID?" → <span class="cevap">Yes</span>. Amaçlar: <b>Advertising or marketing</b> + <b>Analytics</b>.</p>
+
+  <h3>3.8 Diğer beyanlar</h3>
+  <table>
+    <tr><th>Form</th><th>Cevap</th></tr>
+    <tr><td>Government apps (Devlet uygulaması)</td><td class="hayir">No</td></tr>
+    <tr><td>Financial features (Finansal özellikler)</td><td><b>My app doesn't provide any financial features</b></td></tr>
+    <tr><td>Health apps (Sağlık)</td><td>Hiçbirini işaretleme / <b>My app does not have any health features</b></td></tr>
+    <tr><td>News apps (Haber uygulaması)</td><td class="hayir">No</td></tr>
+    <tr><td>Photo and video permissions, Foreground service vb.</td><td>Sorulursa: oyun bu izinleri kullanmıyor, yalnız internet izni var.</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2><span class="adim">4</span>Mağaza sayfası (Store listing)</h2>
+  <h3>4.1 Kategori ve iletişim</h3>
+  <p><span class="yol">Grow users (Kullanıcı kazanın) → Store presence (Mağaza varlığı) → Store settings (Mağaza ayarları)</span></p>
+  <table>
+    <tr><th style="width:40%">Alan</th><th>Gir / seç</th></tr>
+    <tr><td>App or game</td><td>Game</td></tr>
+    <tr><td>Category (Kategori)</td><td><b>Simulation</b> (Simülasyon)</td></tr>
+    <tr><td>Tags (Etiketler, en fazla 5)</td><td>Listeden bulabildiklerin: <b>Tycoon</b>, <b>Management</b>, <b>Idle</b>, <b>Casual</b>, <b>Stylized</b></td></tr>
+    <tr><td>Email address</td><td><code>mutlubadem.dev@gmail.com</code></td></tr>
+    <tr><td>Website</td><td><code>https://mehmetmutllu.github.io/tea-house-tycoon/support.html</code></td></tr>
+    <tr><td>Phone</td><td>Boş bırak.</td></tr>
+  </table>
+
+  <h3>4.2 Ana mağaza girişi: İngilizce (varsayılan)</h3>
+  <p><span class="yol">Grow users → Store presence → Main store listing (Ana mağaza girişi)</span>. Metinleri <code>4-metinler/en-US.txt</code> dosyasından kopyala:</p>
+  {{METIN_EN}}
+
+  <h3>4.3 Görseller (İngilizce sayfa)</h3>
+  <table>
+    <tr><th>Alan</th><th>Dosya</th><th>Not</th></tr>
+    <tr><td>App icon (Simge)</td><td><code>3-gorseller/ikon-512.png</code></td><td>512×512</td></tr>
+    <tr><td>Feature graphic (Öne çıkan görsel)</td><td><code>3-gorseller/one-cikan-1024x500.png</code></td><td>1024×500, zorunlu</td></tr>
+    <tr><td>Phone screenshots (Telefon ekran görüntüleri)</td><td><code>3-gorseller/telefon-en/</code> içindeki 6 dosya</td><td>1'den 6'ya sırayla yükle</td></tr>
+    <tr><td>7-inch tablet screenshots</td><td><code>3-gorseller/tablet-en/</code> içindeki 6 dosya</td><td>Aynı dosyalar</td></tr>
+    <tr><td>10-inch tablet screenshots</td><td><code>3-gorseller/tablet-en/</code> içindeki 6 dosya</td><td>Aynı dosyalar</td></tr>
+    <tr><td>Video (YouTube)</td><td>Boş bırak</td><td>İsteğe bağlı</td></tr>
+  </table>
+  <div class="izgara">{{IZGARA_TELEFON_EN}}</div>
+  <p class="etiket">Telefon, İngilizce (1→6)</p>
+  <div style="display:flex;gap:4mm;align-items:flex-start;margin-top:3mm">
+    <div style="width:22mm"><img src="gorsel/ikon-512.png" style="width:100%;border-radius:4mm"><p class="etiket">Simge</p></div>
+    <div style="flex:1"><img src="gorsel/one-cikan-1024x500.png" style="width:100%;border-radius:2mm"><p class="etiket">Öne çıkan görsel</p></div>
+  </div>
+
+  <h3>4.4 Türkçe sayfayı ekle</h3>
+  <p>Aynı sayfada üstteki <b>Manage translations (Çevirileri yönet) → Add your own translations (Kendi çevirilerinizi ekleyin)</b> → <b>Turkish – tr-TR</b> seç → Apply. Sonra dil seçiciden <b>Turkish</b>'e geç ve <code>4-metinler/tr-TR.txt</code> dosyasındaki metinleri gir:</p>
+  {{METIN_TR}}
+  <p>Türkçe sayfanın görsellerinde: simge ve öne çıkan görsel aynı dosyalar; telefon için <code>telefon-tr/</code>, tabletler için <code>tablet-tr/</code> klasörü.</p>
+  <div class="izgara">{{IZGARA_TELEFON_TR}}</div>
+  <p class="etiket">Telefon, Türkçe (1→6)</p>
+  <div class="kutu"><b>Kaydet</b>Her dil için sayfanın altındaki <b>Save</b>'e bas. Metinlerin sayfaya sığdığı kontrol edildi (ad 16/30, kısa açıklama 74 ve 77/80).</div>
+</section>
+
+<section>
+  <h2><span class="adim">5</span>Ülkeler ve fiyat</h2>
+  <ul>
+    <li>Fiyat: Adım 2'de <b>Free</b> seçildi, başka bir şey yapma.</li>
+    <li>Ülkeler: <span class="yol">Test and release (Test et ve yayınla) → Production (Üretim) → Countries / regions (Ülkeler / bölgeler)</span> → <b>Add countries / regions</b> → <b>tümünü seç</b> → Save.</li>
+  </ul>
+  <p class="kucuk">Not: Ülke seçimi her test kanalı (dahili / kapalı / üretim) için ayrı yapılır. Kapalı testte de tüm ülkeleri seç.</p>
+
+  <h2 style="margin-top:8mm"><span class="adim">6</span>Dahili test: paketi yükle ve dene</h2>
+  <p>Dahili test, yalnız senin seçtiğin kişilere açık hızlı bir kanal. Google incelemesi birkaç dakika ile birkaç saat sürer. Ürünleri (Adım 7) açabilmek için önce bir paket yüklenmiş olmalı, bu yüzden bu adım önce geliyor.</p>
+  <ol>
+    <li><span class="yol">Test and release → Testing (Test) → Internal testing (Dahili test)</span> → <b>Testers</b> sekmesi → <b>Create email list</b> → ad: <code>Ekip</code> → kendi Gmail adresini ve Mehmet'inkini ekle → Save. Listeyi işaretle.</li>
+    <li><b>Create new release</b> (Yeni sürüm oluştur).</li>
+    <li>"App integrity / Play App Signing" sorulursa: <span class="cevap">Use Google-generated key</span> (Google'ın oluşturduğu anahtarı kullan, varsayılan). <span class="kucuk">Paketin içindeki imza "yükleme anahtarı"dır, Mehmet'te durur; Google mağazadaki asıl imzayı kendisi yönetir.</span></li>
+    <li><b>App bundles</b> alanına <code>2-paket/app-release.aab</code> dosyasını sürükle. Yükleme bitince sürüm numarası <code>{{SURUM}}</code> görünmeli.</li>
+    <li>Release name (Sürüm adı): otomatik gelen kalsın.</li>
+    <li>Release notes (Sürüm notları): <code>en-US.txt</code> ve <code>tr-TR.txt</code> dosyalarının en altındaki sürüm notu metinlerini şu biçimde tek kutuya yapıştır:
+      <pre class="metin">&lt;en-US&gt;
+{{NOT_EN}}
+&lt;/en-US&gt;
+&lt;tr-TR&gt;
+{{NOT_TR}}
+&lt;/tr-TR&gt;</pre></li>
+    <li><b>Next</b> → uyarıları oku (sarı uyarılar engel değil, kırmızı hata engeldir) → <b>Save and publish</b>.</li>
+    <li><b>Testers</b> sekmesindeki <b>"Copy link"</b> bağlantısını telefonunda aç → <b>Accept invite</b> → Play Store'dan oyunu kur ve 5 dakika oyna.</li>
+  </ol>
+  <div class="kutu"><b>Test satın alımı (ücretsiz)</b>Satın almaları para ödemeden denemek için hesap düzeyinde <span class="yol">Settings (Ayarlar) → License testing (Lisans testi)</span> → aynı e-posta listesini ekle → Save. Bu listedeki hesaplar satın alma ekranında "Test card, always approves" görür ve para çekilmez. <span class="kucuk">Satın almalar ancak Adım 7 ve 8 bittikten sonra çalışır.</span></div>
+  <div class="kutu uyari"><b>Reklamlar hakkında</b>Yeni uygulamada gerçek reklamlar ilk saatlerde/günlerde az gelebilir veya hiç gelmeyebilir; bu normal. <b>Kendi oyunundaki reklamlara tıklama</b>: Google bunu sahte tıklama sayar ve reklam hesabını kapatabilir.</div>
+</section>
+
+<section>
+  <h2><span class="adim">7</span>Uygulama içi ürünler (5 adet)</h2>
+  <p><span class="yol">Monetize with Play (Play ile para kazanın) → Products (Ürünler) → One-time products (Tek seferlik ürünler)</span> → <b>Create one-time product</b>. Her ürün için:</p>
+  <ol>
+    <li><b>Product ID</b>: tablodaki kimlik, <b>harfi harfine</b>.</li>
+    <li><b>Name</b> (Ad) ve <b>Description</b> (Açıklama): önce İngilizce, sonra "Add translation" ile Türkçe.</li>
+    <li><b>Purchase option</b> (Satın alma seçeneği): bir tane ekle, tür <b>Buy</b> (Satın al), ID olarak örn. <code>buy</code> yaz.</li>
+    <li><b>Price</b>: USD fiyatını gir → "Update prices for all countries" ile diğer para birimlerini Google otomatik çevirir → listede <b>Türkiye</b>'yi bulup TRY fiyatını elle tabloya göre düzelt.</li>
+    <li><b>Save</b> → <b>Activate</b> (Etkinleştir). Etkin olmayan ürün oyunda görünmez.</li>
+  </ol>
+  <table>
+    <tr><th>Product ID</th><th>EN ad / açıklama</th><th>TR ad / açıklama</th><th>USD</th><th>TRY</th></tr>
+    <tr><td><code>kiraathane_reklamsiz</code></td><td><b>Remove Ads</b><br>No more interstitial ads, plus 10 gems every day.</td><td><b>Reklamları Kaldır</b><br>Geçiş reklamları kalkar, her gün 10 elmas hediye.</td><td>3.99</td><td>129,99</td></tr>
+    <tr><td><code>kiraathane_baslangic</code></td><td><b>Starter Pack</b><br>100 gems and the Founder outfit, only in this pack.</td><td><b>Başlangıç Paketi</b><br>100 elmas ve yalnız bu pakette olan Kurucu kıyafeti.</td><td>1.99</td><td>64,99</td></tr>
+    <tr><td><code>kiraathane_elmas_25</code></td><td><b>Handful of Gems</b><br>25 gems.</td><td><b>Bir Avuç Elmas</b><br>25 elmas.</td><td>0.99</td><td>34,99</td></tr>
+    <tr><td><code>kiraathane_elmas_60</code></td><td><b>Pouch of Gems</b><br>60 gems.</td><td><b>Elmas Kesesi</b><br>60 elmas.</td><td>1.99</td><td>64,99</td></tr>
+    <tr><td><code>kiraathane_elmas_150</code></td><td><b>Chest of Gems</b><br>150 gems.</td><td><b>Elmas Sandığı</b><br>150 elmas.</td><td>3.99</td><td>129,99</td></tr>
+  </table>
+  <div class="kutu uyari"><b>Fiyatlar</b>Bunlar App Store için önerilen fiyatlar. Mehmet App Store'da farklı fiyat girdiyse ona sor, iki mağazada aynı olsun. Fiyat sonradan da değiştirilebilir, oyunun güncellenmesi gerekmez.</div>
+  <p class="kucuk">"Tüketilen" (elmas) ve "tüketilmeyen" (reklamsız, başlangıç) ayrımını Play'de seçmene gerek yok; bunu satın alma altyapısı (RevenueCat) tarafında Mehmet ayarlayacak.</p>
+  <p class="kucuk">"Create one-time product" düğmesi gri ise: Adım 6'daki paket henüz yüklenmemiş veya işlenmemiştir; birkaç dakika bekleyip sayfayı yenile.</p>
+</section>
+
+<section>
+  <h2><span class="adim">8</span>Satın almalar için hizmet hesabı (RevenueCat bağlantısı)</h2>
+  <p>Oyun satın almaları <b>RevenueCat</b> adlı bir hizmetle yönetiyor. RevenueCat'in Google Play'deki satın almaları doğrulayabilmesi için bir <b>hizmet hesabı</b> (robot kullanıcı) ve onun anahtar dosyası (JSON) gerekiyor. 10 dakikalık iş:</p>
+
+  <h3>8.1 Google Cloud'da hizmet hesabı oluştur</h3>
+  <ol>
+    <li><code>https://console.cloud.google.com</code> adresine Play Console'a girdiğin <b>aynı Google hesabıyla</b> gir.</li>
+    <li>Üstteki proje seçiciden <b>New project</b> → ad: <code>tea-house-play</code> → Create. Projenin seçili olduğundan emin ol.</li>
+    <li>Arama kutusuna <b>Google Play Android Developer API</b> yaz → aç → <b>Enable</b>.</li>
+    <li>Aynı şekilde <b>Google Play Developer Reporting API</b> → <b>Enable</b>.</li>
+    <li>Sol menü <span class="yol">IAM &amp; Admin → Service Accounts</span> → <b>Create service account</b> → ad: <code>revenuecat</code> → Create and continue.</li>
+    <li>Roller (Grant access): <b>Pub/Sub Admin</b> ve <b>Monitoring Viewer</b> ekle → Continue → Done.</li>
+    <li>Listede oluşan hesaba tıkla → <b>Keys</b> sekmesi → <b>Add key → Create new key → JSON</b> → Create. Bilgisayarına bir <code>.json</code> dosyası iner. <b>Bu dosyayı sakla.</b></li>
+    <li>Hesabın e-posta adresini kopyala (<code>revenuecat@tea-house-play….iam.gserviceaccount.com</code> gibi).</li>
+  </ol>
+
+  <h3>8.2 Hizmet hesabını Play Console'a davet et</h3>
+  <ol>
+    <li>Play Console'da <b>tüm uygulamalar</b> ekranına dön (sol üst ok) → <span class="yol">Users and permissions (Kullanıcılar ve izinler)</span> → <b>Invite new users</b>.</li>
+    <li>E-posta: 8.1'de kopyaladığın hizmet hesabı adresi.</li>
+    <li><b>App permissions</b> sekmesi → <b>Add app</b> → Tea House Tycoon → şu izinleri işaretle:
+      <ul>
+        <li>View app information and download bulk reports (read-only)</li>
+        <li>View financial data, orders, and cancellation survey responses</li>
+        <li>Manage orders and subscriptions</li>
+      </ul></li>
+    <li>Apply → <b>Invite user</b> → onayla.</li>
+  </ol>
+
+  <h3>8.3 Mehmet'e gönder</h3>
+  <div class="kutu tamam"><b>Mehmet'e gönderilecek</b>
+    <ul>
+      <li>İndirdiğin <b>.json dosyası</b> (doğrudan, özel mesajla; herkese açık gruba veya buluta paylaşım linkiyle koyma).</li>
+      <li>"Ürünler etkin, hizmet hesabı davet edildi" bilgisi.</li>
+    </ul>
+    Mehmet dosyayı RevenueCat'e yükleyecek. Google'ın yeni hizmet hesabını tanıması <b>36 saate kadar</b> sürebilir; bu sürede satın alma testi "geçersiz kimlik" hatası verebilir, normal.
+  </div>
+</section>
+
+<section>
+  <h2><span class="adim">9</span>Yayına gönder</h2>
+  <p>Adım 1'de hesabın hangi türde çıktıysa ona göre <b>9A</b> veya <b>9B</b>'yi uygula. Önce panodaki <b>"Set up your app"</b> listesinde tüm görevlerin yeşil tik aldığını kontrol et.</p>
+
+  <h3>9A: Yeni kişisel hesap (13 Kasım 2023 sonrası): 14 günlük kapalı test</h3>
+  <ol>
+    <li><span class="yol">Test and release → Testing → Closed testing (Kapalı test)</span> → varsayılan "Alpha" kanalını aç → <b>Testers</b> sekmesi → <b>Create email list</b> → en az <b>12</b>, tercihen <b>15–20</b> kişinin Gmail adresini ekle (birkaçı unutup çıkarsa sayı 12'nin altına düşmesin).</li>
+    <li>Countries / regions: tüm ülkeler.</li>
+    <li><b>Create new release</b> → Adım 6'daki aynı AAB'yi seç (<b>Add from library</b> ile, yeniden yüklemeden) → aynı sürüm notu → <b>Save → Send for review</b>.</li>
+    <li>Google onaylayınca (birkaç saat, bazen 1–3 gün) <b>Testers</b> sekmesindeki <b>katılım bağlantısını</b> 12+ kişiye gönder. Her biri bağlantıyı Android telefonunda açıp <b>"Become a tester"</b> demeli, sonra Play Store'dan oyunu kurmalı.</li>
+    <li><b>14 gün</b> boyunca testçiler listeden çıkmamalı ve oyunu ara ara açmalı (Google 2026'dan beri testçilerin oyunu gerçekten kullandığına da bakıyor).</li>
+    <li>14 gün dolunca panoda <b>"Apply for production"</b> (Üretim erişimine başvur) etkinleşir. Formdaki sorulara dürüstçe cevap ver, örnek:
+      <ul>
+        <li>Testçileri nasıl buldun? <i>"Friends and family, 15+ Android users."</i></li>
+        <li>Geri bildirim nasıl toplandı? <i>"In person and via messaging; we fixed balance and UI issues they reported."</i></li>
+        <li>Uygulama kimin için? <i>"Casual players 13+ who enjoy idle/tycoon games."</i></li>
+      </ul></li>
+    <li>Onay gelince (genelde ≤ 7 gün) 9B'ye geç.</li>
+  </ol>
+
+  <h3>9B: Üretime yayınla</h3>
+  <ol>
+    <li><span class="yol">Test and release → Production (Üretim)</span> → <b>Create new release</b>.</li>
+    <li><b>Add from library</b> → aynı AAB → aynı sürüm notu.</li>
+    <li>İstersen <b>staged rollout</b> (kademeli yayın) yüzdesini %100 bırak (yeni uygulamada kademe gereksiz).</li>
+    <li><b>Next → Save → Send for review</b> (İncelemeye gönder). <span class="yol">Publishing overview (Yayınlama özeti)</span> sayfasında "Changes in review" görünür.</li>
+    <li>İnceleme yeni uygulamada genelde <b>1–7 gün</b>. Onaylanınca oyun otomatik yayına girer (Publishing overview'da "Managed publishing" <b>kapalı</b> kalsın).</li>
+  </ol>
+  <div class="kutu tamam"><b>Yayına çıkınca Mehmet'e haber ver</b>Mehmet reklam hesabını (AdMob) mağaza sayfasına bağlayacak. Bu bağlantı reklam gelirinin tam açılması için gerekli.</div>
+</section>
+
+<section>
+  <h2><span class="adim">10</span>Sonrası ve sık sorunlar</h2>
+  <h3>Güncelleme geldiğinde</h3>
+  <p>Mehmet sana yeni bir <code>app-release.aab</code> gönderir (sürüm numarası her seferinde büyür). <span class="yol">Production → Create new release</span> → yeni AAB'yi yükle → sürüm notunu Mehmet'in verdiği metinle doldur → Send for review. Mağaza sayfasına ve formlara dokunmak gerekmez.</p>
+
+  <h3>Sık hatalar</h3>
+  <table>
+    <tr><th style="width:38%">Gördüğün</th><th>Ne yapmalı</th></tr>
+    <tr><td>"Version code {{KOD}} has already been used"</td><td>Aynı AAB'yi ikinci kez <b>yükledin</b>. Yeniden yükleme yerine <b>Add from library</b> ile mevcut olanı seç. Yeni sürüm lazımsa Mehmet'ten yeni AAB iste.</td></tr>
+    <tr><td>"You uploaded an APK or Android App Bundle that is signed with the wrong key"</td><td>Yanlış dosya. Yalnız Mehmet'in gönderdiği AAB yüklenir. Mehmet'e haber ver.</td></tr>
+    <tr><td>"Your app doesn't have any in-app products yet"</td><td>Adım 6 tamamlanmamış veya paket işleniyor. Birkaç dakika bekle.</td></tr>
+    <tr><td>Oyunda mağaza "hazır değil" diyor</td><td>Ürünler <b>Active</b> mi? Ürün kimlikleri birebir aynı mı? Hizmet hesabı 36 saati doldurdu mu? Oyunu Play Store'dan (test bağlantısıyla) kurdun mu? Elle APK kurulumunda satın alma çalışmaz.</td></tr>
+    <tr><td>Data safety ret / uyarı</td><td>Adım 3.6 tablosuyla birebir aynı olduğunu kontrol et. AdMob ve RevenueCat dışında veri yok.</td></tr>
+    <tr><td>"Policy violation" e-postası</td><td>E-postayı olduğu gibi Mehmet'e ilet; panelden itiraz etmeden önce birlikte bakın.</td></tr>
+    <tr><td>Kapalı testte sayaç ilerlemiyor</td><td>12 kişinin hepsi bağlantıdan "Become a tester" demiş ve oyunu <b>Play Store'dan</b> kurmuş olmalı. Sayaç, onaydan ve 12. kişiden sonra başlar.</td></tr>
+  </table>
+
+  <h3>Son kontrol listesi</h3>
+  <ul class="kontrol">
+    <li>Hesap türü kontrol edildi (9A mı 9B mi belli)</li>
+    <li>Uygulama oluşturuldu: Tea House Tycoon, Game, Free, en-US</li>
+    <li>App content: gizlilik · erişim · reklam · hedef kitle 13+ · IARC · veri güvenliği · reklam kimliği · diğer beyanlar</li>
+    <li>Store settings: Simulation, e-posta, web sitesi</li>
+    <li>Mağaza sayfası EN: metinler + simge + öne çıkan görsel + 6 telefon + tablet görselleri</li>
+    <li>Mağaza sayfası TR: çeviri eklendi, metinler + görseller</li>
+    <li>Ülkeler: tümü</li>
+    <li>Dahili test: AAB yüklendi, telefonda kuruldu ve açıldı</li>
+    <li>License testing listesi eklendi</li>
+    <li>5 ürün oluşturuldu ve <b>Active</b></li>
+    <li>Hizmet hesabı: API'ler açık, JSON indirildi, Play'e davet edildi, <b>JSON Mehmet'e gönderildi</b></li>
+    <li>9A: 12+ testçi, 14 gün → üretim başvurusu / 9B: üretim incelemeye gönderildi</li>
+    <li>Yayına çıkınca Mehmet'e haber verildi</li>
+  </ul>
+</section>
+
+</body>
+</html>

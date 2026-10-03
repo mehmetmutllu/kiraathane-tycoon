@@ -1,0 +1,22 @@
+UYGULAMA İÇİ ÜRÜNLER — Play Console › Monetize with Play › Products › One-time products
+Product ID'yi HARFİ HARFİNE gir. Her üründe: Purchase option = Buy (ID: buy) · Save · Activate.
+
+1) kiraathane_reklamsiz      USD 3.99   TRY 129,99
+   EN  Remove Ads — No more interstitial ads, plus 10 gems every day.
+   TR  Reklamları Kaldır — Geçiş reklamları kalkar, her gün 10 elmas hediye.
+
+2) kiraathane_baslangic      USD 1.99   TRY 64,99
+   EN  Starter Pack — 100 gems and the Founder outfit, only in this pack.
+   TR  Başlangıç Paketi — 100 elmas ve yalnız bu pakette olan Kurucu kıyafeti.
+
+3) kiraathane_elmas_25       USD 0.99   TRY 34,99
+   EN  Handful of Gems — 25 gems.
+   TR  Bir Avuç Elmas — 25 elmas.
+
+4) kiraathane_elmas_60       USD 1.99   TRY 64,99
+   EN  Pouch of Gems — 60 gems.
+   TR  Elmas Kesesi — 60 elmas.
+
+5) kiraathane_elmas_150      USD 3.99   TRY 129,99
+   EN  Chest of Gems — 150 gems.
+   TR  Elmas Sandığı — 150 elmas.
