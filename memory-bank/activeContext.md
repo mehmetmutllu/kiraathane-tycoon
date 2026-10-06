@@ -19,7 +19,9 @@
 1. Kullanıcı zip'i arkadaşına iletir (SendUserFile 502 verdi; dosya yerelde).
 2. Arkadaştan servis hesabı JSON'u gelince → RevenueCat Play uygulamasına yükle (Chrome, mutlubadem.dev).
 3. Play'de yayına çıkınca AdMob Android uygulamasını mağaza kaydına bağla (AdMob → Uygulama ayarları).
-4. iOS: Apple incelemesinin sonucu (2026-09-28 gönderildi) — kontrol et.
+4. iOS: 2026-10-07'de hâlâ "Waiting for Review" (~10 gün); kullanıcı Apple'a yazdı + hızlandırılmış inceleme istedi → sonucu sor.
+5. Görevler sekmesi halka düzeltmesi (2026-10-07, commit'li) ilk güncelleme derlemesine (iOS 1.0.1 / Play) girecek.
+6. Kullanıcıya açık soru: ana görev ödülüne "video izle 2×" eklensin mi? → denge+reklam sıklığı değişir, önce ölçüm (varyant kapısı).
 
 ## AÇIK KALEMLER
 - AdMob "ABD eyalet yönetmelikleri" mesajı Tea House'u kapsıyor mu bakılmadı (GDPR eklendi).

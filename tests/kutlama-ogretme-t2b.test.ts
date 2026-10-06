@@ -83,9 +83,10 @@ describe('G-62 / G-81 · kutlama halkası: bir kez çalar, talimatı yutmaz', ()
     expect(css()).toMatch(/\.navtab\.kutla:not\(\.spot\)/);
   });
 
-  it('Görevler sekmesi geçiş penceresinde, Hedefler sekmesi hazır ödülde kutlar', () => {
+  it('Görevler ve Hedefler sekmesi YALNIZ hazır ödülde kutlar (hat görevi bitişi sekmeyi yakmaz)', () => {
     const k = hud();
-    expect(k).toMatch(/id="quests"[\s\S]{0,320}kutla=\{gecisPenceresi\}/);
+    expect(k).toMatch(/id="quests"[\s\S]{0,320}kutla=\{dailyReady\}/);
+    expect(k).not.toMatch(/kutla=\{gecisPenceresi\}/);
     expect(k).toMatch(/id="goals"[\s\S]{0,320}kutla=\{goalsReady\}/);
   });
 

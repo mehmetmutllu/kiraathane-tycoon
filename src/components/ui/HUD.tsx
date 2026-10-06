@@ -508,15 +508,15 @@ export function HUD() {
           (36) gezinmenin katmanından (13) kaçamıyordu: ilk dokunuş karartmaya gidip yalnız onu
           kapatıyor, panel ikinci dokunuşta açılıyordu. */}
       <nav className={`botnav${spotlight ? ' spot-acik' : ''}`}>
-        {/* G-62: görev tamamlanınca Görevler sekmesi kendini gösterir. Bayrak kutlama
-            penceresinin KENDİSİ (0,5 + 0,8 sn) — yeni bir sayaç/zamanlayıcı eklenmedi. */}
+        {/* G-62 revize (2026-10-07): halka yalnız İÇERİDE alınacak ödül varken çalar. Hat görevinin
+            ödülü otomatik verilir; her bitişte sekmeyi yakmak boşa çağırıyordu — o anı bant kendisi kutlar. */}
         <NavTab
           id="quests"
           label={t('Görevler')}
           icon={<QuestListIcon size={25} />}
           active={sheet === 'quests'}
           bang={dailyReady}
-          kutla={gecisPenceresi}
+          kutla={dailyReady}
           onClick={() => setSheet(sheet === 'quests' ? null : 'quests')}
         />
         {/* G-81: hedef toplanabilir hâle gelince aynı farkındalık. `bang` kalıcı işarettir
