@@ -19,8 +19,8 @@
 1. Kullanıcı zip'i arkadaşına iletir (SendUserFile 502 verdi; dosya yerelde).
 2. Arkadaştan servis hesabı JSON'u gelince → RevenueCat Play uygulamasına yükle (Chrome, mutlubadem.dev).
 3. Play'de yayına çıkınca AdMob Android uygulamasını mağaza kaydına bağla (AdMob → Uygulama ayarları).
-4. iOS: 2026-10-07'de hâlâ "Waiting for Review" (~10 gün); kullanıcı Apple'a yazdı + hızlandırılmış inceleme istedi → sonucu sor.
-5. Görevler sekmesi halka düzeltmesi (2026-10-07, commit'li) ilk güncelleme derlemesine (iOS 1.0.1 / Play) girecek.
+4. iOS: 2026-10-08 eski gönderim (28 Eyl, 10 gün takılı; Deyimix aynı hesapta 1 günde onaylandı) geri çekildi → Codemagic build 2 (0760916, görev halkası dahil) + 5 IAP 15:22'de yeniden incelemeye gönderildi → sonucu izle.
+5. Görevler halka düzeltmesi iOS 1.0.0 build 2'de; Play AAB'sine henüz girmedi (Play zip'i 6cbfeba'dan).
 6. Kullanıcıya açık soru: ana görev ödülüne "video izle 2×" eklensin mi? → denge+reklam sıklığı değişir, önce ölçüm (varyant kapısı).
 
 ## AÇIK KALEMLER
