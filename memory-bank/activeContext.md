@@ -2,7 +2,7 @@
 
 > **Bu dosya ÜZERİNE YAZILIR.** ≤ 80 satır, yalnız "şu an". Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-10-04 — GOOGLE PLAY TAM PAKET HAZIR · D-161)
+## ŞU AN (2026-10-08 — iOS YENİDEN İNCELEMEDE · Play paketi arkadaşta · D-161)
 
 **Kural:** Play Console'u Claude KULLANMAZ (kalıcı yasak). Play'i kullanıcının arkadaşı yükler; Claude zip + PDF rehber hazırlar.
 
@@ -24,6 +24,8 @@
 6. Kullanıcıya açık soru: ana görev ödülüne "video izle 2×" eklensin mi? → denge+reklam sıklığı değişir, önce ölçüm (varyant kapısı).
 
 ## AÇIK KALEMLER
+- Deyimix 1.0.1 (aynı ASC hesabı) onaylı, "Pending Developer Release" — kullanıcı Release diyecek.
+- Tea House 1.0.0 'Version Release' ayarı (elle/otomatik) bu turda kontrol edilmedi; onay gelince bak.
 - AdMob "ABD eyalet yönetmelikleri" mesajı Tea House'u kapsıyor mu bakılmadı (GDPR eklendi).
 - IAP fiyatları rehberde App Store ÖNERİ tablosundan; kullanıcı ASC'de farklı girdiyse rehberi düzelt.
 - Play Games v1'de kapalı (APP_ID boş) — istenirse arkadaş Play Console'da kurar, ID gelir.
