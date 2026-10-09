@@ -9,6 +9,15 @@ import { sesDuraklat } from './game/audioWeb';
 import { HataSiniri, SahneKurtarici } from './components/ui/HataSiniri';
 import { magazaYenile, satinAlmaBaslat, uzlasmaDinle } from './game/iap';
 import { bulutBaslat, bulutDongusu, bulutKaydet } from './game/bulut';
+import { kayitSorunu, kayitSorunuGoruldu, type KayitSorunu } from './game/save';
+import { t } from './i18n';
+
+/** Kayıt açılırken sorun çıktıysa oyuncuya BİR KEZ söylenir (Sprint A P3: sessiz sıfırlama yok). */
+const KAYIT_SORUNU: Record<KayitSorunu, string> = {
+  yedekten: 'Kaydın bozulmuştu; birkaç dakika önceki yedekten devam ediyorsun.',
+  onarildi: 'Kaydında bozuk bir değer vardı; düzelttik, ilerlemen korundu.',
+  sifirdan: 'Kaydın okunamadı, oyun baştan başladı. Eski kayıt cihazda saklı; destekle iletişime geçebilirsin.',
+};
 
 const KEY_MAP: Record<string, [number, number]> = {
   KeyW: [0, -1],
@@ -48,6 +57,11 @@ export default function App() {
   useEffect(() => {
     if (IS_PROTO) return;
     useGame.getState().init();
+    const sorun = kayitSorunu();
+    if (sorun) {
+      useGame.setState({ notice: { text: t(KAYIT_SORUNU[sorun]), ttl: 8, kind: 'reveal' } });
+      kayitSorunuGoruldu();
+    }
     // F3: reklam SDK'sı + rıza (UMP). Başarısız olursa oyun reklamsız devam eder.
     void reklamBaslat();
     // F4a + Sprint A (P2): mağazanın her müşteri bilgisi (açılış · dinleyici · geri yükleme) kayda uzlaşır —

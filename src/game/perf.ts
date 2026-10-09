@@ -16,3 +16,24 @@ export interface PerfSnapshot {
 }
 
 export const perf: PerfSnapshot = { fps: 0, calls: 0, tris: 0, isMs: 0 };
+
+/**
+ * ÜRETİMDE ÖLÇÜM ANAHTARI (Sprint A). Cihazda kare işini okumak için `chrome://inspect` konsolunda
+ * `localStorage.setItem('kiraathane-olcum','1')` + yeniden yükle → `window.__perf()` açılır.
+ * Kayda değil cihaza ait bir teşhis anahtarı; oyuncuya hiçbir yüzeyde görünmez.
+ */
+export const OLCUM_ANAHTARI = 'kiraathane-olcum';
+
+export function olcumAcik(): boolean {
+  try {
+    return typeof localStorage !== 'undefined' && localStorage.getItem(OLCUM_ANAHTARI) === '1';
+  } catch {
+    return false; // özel sekme / kapalı depo
+  }
+}
+
+/** `window.__perf` — DEV kancasıyla aynı biçim: anlık görüntünün kopyası. */
+export function perfPenceresiAc(): void {
+  if (typeof window === 'undefined') return;
+  (window as unknown as { __perf?: () => PerfSnapshot }).__perf = () => ({ ...perf });
+}

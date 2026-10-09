@@ -1,13 +1,13 @@
 import { useEffect, useRef, useSyncExternalStore } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { KareTavani } from '../three/KareTavani';
+import { KareSayaci, KareTavani } from '../three/KareTavani';
 import { useGame } from '../../game/store';
 import { dekorAcik, vitrinUrunu } from '../../game/vitrin';
 import { dekorKaresi } from '../three/DekorCekimi';
 import { DUVAR_PAYI, duvarProfili, vitrinYuva } from '../../config/decor';
 import { PREVIEW_GL } from '../../config/palette';
 import { DekorGovde } from '../three/VitrinDekor';
-import { GOVDE } from '../three/vitrinDekorLook';
+import { CANLI_YUVALAR, GOVDE } from '../three/vitrinDekorLook';
 import { FixedCam, SalonLights, FloorPatch, WallBack } from './SalonSlice';
 
 const abone = (f: () => void) => {
@@ -75,8 +75,8 @@ function YalitikOnizleme({ id }: { id: string }) {
   return (
     <div className="shop-preview" data-testid="dekor-onizleme">
       <div className="preview-canvas">
-        <Canvas dpr={[1, 1.5]} gl={PREVIEW_GL} frameloop="never">
-          <KareTavani />
+        <Canvas dpr={[1, 1.5]} gl={PREVIEW_GL} frameloop="demand">
+          {CANLI_YUVALAR.has(yuvaId) ? <KareTavani /> : <KareSayaci />}
           <FixedCam d={d} ty={Math.max(0.4, tepe * 0.5)} />
           <SalonLights />
           <FloorPatch floorId={floorId} checkerHalf={3} />

@@ -133,8 +133,10 @@ function gorevTutari(q: QuestView, padFills: Record<string, number>): number | n
 type Sheet = 'quests' | 'goals' | 'shop' | 'char' | 'settings' | null;
 
 export function HUD() {
-  const wallet = useGame((s) => s.wallet);
-  const diamonds = useGame((s) => s.diamonds);
+  // Perf #7 (Sprint A): para/elmas/tutar BİÇİMLİ METİN olarak okunur — ham Decimal her karede yeni nesne,
+  // metin ise yalnız ekranda görünen sayı değişince değişir; HUD dolum sırasında saniyede 60 kez çizilmez.
+  const cuzdanMetni = useGame((s) => fmt(gorunenCuzdan({ wallet: s.wallet, offlineEarned: s.offlineEarned })));
+  const elmasMetni = useGame((s) => fmt(s.diamonds));
   const xp = useGame((s) => s.xp);
   const settings = useGame((s) => s.settings);
   const setSetting = useGame((s) => s.setSetting);
@@ -158,7 +160,7 @@ export function HUD() {
     return () => clearTimeout(t);
   }, [questBitti]);
   const focusQuest = useGame((s) => s.focusQuest);
-  const padFills = useGame((s) => s.padFills);
+  const gorevTutarMetni = useGame((s) => (s.quest ? fmt(gorevTutari(s.quest, s.padFills) ?? 0) : ''));
   const hardReset = useGame((s) => s.hardReset);
   const charPanelSeen = useGame((s) => s.charPanelSeen);
   const markCharPanelSeen = useGame((s) => s.markCharPanelSeen);
@@ -195,7 +197,7 @@ export function HUD() {
   const videoKalan = useGame((s) => videoRights(s.reklam, Date.now()).kalan);
   // Ayarlar künyesi (E3 · S23) — oyuncunun kendi geçmişi, ekranın boş kalan altını doldurur.
   const stats = useGame((s) => s.stats);
-  const lifetime = useGame((s) => s.lifetime);
+  const toplamKazancMetni = useGame((s) => fmt(s.lifetime));
   const padsDone = useGame((s) => s.padsDone);
   // D3: alt nav'daki Hedefler sekmesi, toplanabilir ödül varsa işaretlenir. Sahnede işaret
   // ÇIKMAZ — Tek Odak (D-080) aktif adımın işaretini tek tutar; hedefler panelde bekler.
@@ -340,11 +342,11 @@ export function HUD() {
         <div className="purse">
           <div className="cur" data-testid="wallet">
             <CoinIcon size={34} />
-            <span className="cur-val">{fmt(gorunenCuzdan({ wallet, offlineEarned }))}</span>
+            <span className="cur-val">{cuzdanMetni}</span>
           </div>
           <div className="cur gem" data-testid="diamonds">
             <GemIcon size={26} />
-            <span className="cur-val">{fmt(diamonds)}</span>
+            <span className="cur-val">{elmasMetni}</span>
           </div>
         </div>
 
@@ -479,7 +481,7 @@ export function HUD() {
             ) : quest.cost != null ? (
               <span className="band-sub" data-testid="quest-cost">
                 <CoinIcon size={15} />
-                {fmt(gorevTutari(quest, padFills) ?? 0)}
+                {gorevTutarMetni}
               </span>
             ) : (
               <span className="band-sub dim">{charQuestActive ? t('Çaycı panelinden al') : t('Hedefe git')}</span>
@@ -672,7 +674,7 @@ export function HUD() {
             <div className="sheet-sec">{t('KÜNYE')}</div>
             <div className="kunye" data-testid="kunye">
               <div><span>{t('Kayıt şeması')}</span><b>v{SAVE_VERSION}</b></div>
-              <div><span>{t('Toplam kazanç')}</span><b>{fmt(lifetime)} ₺</b></div>
+              <div><span>{t('Toplam kazanç')}</span><b>{toplamKazancMetni} ₺</b></div>
               <div><span>{t('Servis edilen çay')}</span><b>{fmt(stats.teasServed + stats.waiterServed)}</b></div>
               <div><span>{t('Yıkanan bulaşık')}</span><b>{fmt(stats.dishesWashed)}</b></div>
               <div><span>{t('Açılan nokta')}</span><b>{padsDone.length}</b></div>

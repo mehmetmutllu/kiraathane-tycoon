@@ -4,6 +4,7 @@ import { Mesh, type Object3D, type MeshStandardMaterial } from 'three';
 import { useGame } from '../../game/store';
 import { LAYOUT } from '../../game/store';
 import { Model } from './Model';
+import { MERGED_KARE } from './mergedKare';
 import { PALETTE } from '../../config/palette';
 import { tableSeats, tableThemeColor, type TableKind } from '../../config/economy.config';
 import { recoloredAtlas, atlasReady, onAtlasReady } from './recolor';
@@ -321,7 +322,7 @@ function InstancedTables({ tables, tableLevels }: { tables: number; tableLevels:
           uzak salona (örn. salon 2/3) odaklanınca TÜM batch yanlışlıkla kırpılıyordu → masalar kaybolup
           sadece ayrı-mesh örtü plakaları kalıyordu. Per-instance dünya konumları küreye yansımıyor; kırpmayı
           kapatmak doğru çözüm (mobilya zaten ekranda, az sayıda batch). */}
-      <Merged meshes={meshes} frustumCulled={false}>
+      <Merged meshes={meshes} frustumCulled={false} frames={MERGED_KARE}>
         {(comps) => (
           <>
             {FURNITURE.map((k) => {

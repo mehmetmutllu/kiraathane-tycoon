@@ -563,14 +563,20 @@ try {
    *     bunu görmez; sayaç 0 kalırsa yakalanır.
    *   ② tavan tutuyor mu — sayaç saniyede ~60'ı aşarsa tavan delinmiş demektir (şikâyetin kendisi).
    *   ③ ÖNİZLEME tuvali de sürülüyor mu — paneldeki `<Canvas frameloop="never">` sürücüsüz
-   *     kalsaydı önizleme BOŞ çıkardı; panel açılınca hız ikiye katlanmalı.
+   *     kalsaydı önizleme BOŞ çıkardı.
+   *
+   * Sprint A (perf #2a/b): sayaç artık ÇİZİLEN kareyi sayar. Opak panel açıkken ana sahne çizmez
+   * (tick sürer) ve durağan önizlemeler yalnız değişince çizer — yani panel açılınca hız eskisi
+   * gibi "ikiye katlanmaz". Denetim: panel açıkken ana sahne 0 kare (`__sahneKaresi`), önizleme
+   * ≥ 1 kare; panel kapanınca sahne yeniden çiziyor.
    */
   {
+    const say = () => page.evaluate(() => ({ t: window.__kareSayaci ?? -1, s: window.__sahneKaresi ?? -1 }));
     const olc = async (ms) => {
-      const a = await page.evaluate(() => window.__kareSayaci ?? -1);
+      const a = await say();
       await page.waitForTimeout(ms);
-      const b = await page.evaluate(() => window.__kareSayaci ?? -1);
-      return ((b - a) / ms) * 1000;
+      const b = await say();
+      return ((b.t - a.t) / ms) * 1000;
     };
     const tek = await olc(1500);
     // ALT SINIR bilerek düşük: başsız tarayıcıda ve yüklü makinede rAF'in kendisi 60'a yaklaşmaz
@@ -585,9 +591,15 @@ try {
     // F4c: mağaza 💎 vitrininde (Kıyafet) açılır; önizlemesi sahibin kendisi.
     await tikla('[data-testid="shop"]');
     await page.waitForSelector('[data-testid="vitrin-onizleme"]', { timeout: 5000 });
-    const cift = await olc(1500);
-    if (cift > tek * 1.4) pass(`Önizleme tuvali de sürülüyor (${tek.toFixed(0)}→${cift.toFixed(0)} kare/sn)`);
-    else fail(`Önizleme tuvali çizmiyor — boş kalır (${tek.toFixed(0)}→${cift.toFixed(0)} kare/sn)`);
+    await page.waitForTimeout(300);
+    const pa = await say();
+    await page.waitForTimeout(1500);
+    const pb = await say();
+    const onizlemeKare = pb.t - pa.t - (pb.s - pa.s);
+    if (onizlemeKare >= 1) pass(`Önizleme tuvali çiziyor (${onizlemeKare} kare / 1,5 sn)`);
+    else fail(`Önizleme tuvali çizmiyor — boş kalır (${onizlemeKare} kare / 1,5 sn)`);
+    if (pb.s >= 0 && pb.s === pa.s) pass('Opak panel açıkken sahne çizilmiyor (0 kare / 1,5 sn, tick sürüyor)');
+    else fail(`Panel açıkken sahne hâlâ çiziliyor (${pb.s - pa.s} kare / 1,5 sn)`);
 
     // F4c 💎 VİTRİNİ uçtan uca: çeşidi seç → tek düğmeyle al → 💎 düşer, sahip onu giyer.
     await page.evaluate(() => window.__setState({ diamonds: 100 }));
@@ -604,7 +616,13 @@ try {
     // padsDone'dan TÜRER), denetimden sonra aynı liste geri yazılır.
     const padsOnce = await page.evaluate(() => window.__game().padsDone);
     await page.evaluate(() => window.__setState({ padsDone: [] }));
+    const da = await say();
     await tikla('[data-testid="shop-card-decor-semaver"]');
+    // Kilitli dekor yalıtık önizlemede, `frameloop="demand"`: seçilince en az bir kare çizer.
+    await page.waitForTimeout(500);
+    const db = await say();
+    if (db.t - da.t - (db.s - da.s) >= 1) pass(`Durağan dekor önizlemesi seçilince çizdi (${db.t - da.t - (db.s - da.s)} kare)`);
+    else fail('Durağan dekor önizlemesi hiç çizmedi — boş kalır');
     const kilit = await page.evaluate(() => {
       const d = document.querySelector('[data-testid="shop-buy"]');
       return { kapali: !!d?.disabled, metin: d?.textContent ?? '' };
@@ -644,6 +662,11 @@ try {
     else fail('Dekor önizlemesi salondan çekilmedi — kutu boş kalır');
     await tikla('[data-testid="shop-panel"] .sheet-back');
     await page.waitForSelector('[data-testid="shop-panel"]', { state: 'detached', timeout: 5000 });
+    const ka = await say();
+    await page.waitForTimeout(1000);
+    const kb = await say();
+    if (kb.s - ka.s >= 1) pass(`Panel kapanınca sahne yeniden çiziliyor (${kb.s - ka.s} kare / sn)`);
+    else fail('Panel kapandı ama sahne çizilmiyor — ekran donuk kalır');
   }
 
   // Dikey (portrait) orana çevir → responsive kamera/HUD hatasız mı

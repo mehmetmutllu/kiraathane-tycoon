@@ -19,7 +19,19 @@
  * olabilir; ölçüm yalanı, kare süresi gerçeği söyler.
  */
 
-const ANAHTAR = 'kiraathane-cihaz-sinifi';
+/**
+ * ÖLÇÜM SÜRÜMÜ (Sprint A · perf #3a). Sınıf bir kez ölçülüp `localStorage`a yazılıyor ve bir daha
+ * hiç sorulmuyordu — güncelleme bile sıfırlamıyordu. Ölçümü bozan bir kusur (ör. ilk karelerde
+ * shader derlemesi, kısık tarayıcı) bir telefonu yanlışlıkla "zayıf" damgaladıysa o telefon
+ * gölgeyi KALICI olarak kaybediyordu. Anahtar sürümlüdür: ölçüm/sınıflandırma kuralı değişince
+ * bu sayı artar, eski damga okunmaz (ve silinir), cihaz bir sonraki açılışta yeniden ölçülür.
+ */
+export const PERF_SURUM = 2;
+
+const KOK_ANAHTAR = 'kiraathane-cihaz-sinifi';
+const ANAHTAR = `${KOK_ANAHTAR}-v${PERF_SURUM}`;
+/** Önceki sürümlerin anahtarları: v1 sürümsüz yazılıyordu. */
+const ESKI_ANAHTARLAR = [KOK_ANAHTAR, ...Array.from({ length: PERF_SURUM - 2 }, (_, i) => `${KOK_ANAHTAR}-v${i + 2}`)];
 
 export type CihazSinifi = 'guclu' | 'zayif' | 'bilinmiyor';
 
@@ -43,9 +55,13 @@ function depo(): Storage | null {
   }
 }
 
-/** Bu cihaz için daha önce ölçülmüş sınıf. */
+/** Bu cihaz için BU SÜRÜMDE ölçülmüş sınıf. Eski sürümün damgası yok sayılır ve temizlenir. */
 export function cihazSinifiOku(): CihazSinifi {
-  const v = depo()?.getItem(ANAHTAR);
+  const d = depo();
+  try {
+    for (const k of ESKI_ANAHTARLAR) d?.removeItem(k);
+  } catch { /* yazılamayan depo: eski damga zaten okunmuyor */ }
+  const v = d?.getItem(ANAHTAR);
   return v === 'guclu' || v === 'zayif' ? v : 'bilinmiyor';
 }
 

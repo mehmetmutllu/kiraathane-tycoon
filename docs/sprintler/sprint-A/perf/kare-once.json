@@ -1,0 +1,105 @@
+{
+ "etiket": "once",
+ "oyun": [
+  {
+   "isP50": 60.2,
+   "isOrt": 64.99,
+   "cagri": 209,
+   "karePerSn": 14.6,
+   "sahnePerSn": 0,
+   "npc": 56,
+   "musteri": {
+    "toplam": 56,
+    "kapsul": 0,
+    "enCokKapsul": 53,
+    "yuva": 56
+   }
+  },
+  {
+   "isP50": 64,
+   "isOrt": 66.59,
+   "cagri": 217,
+   "karePerSn": 14.4,
+   "sahnePerSn": 0,
+   "npc": 59,
+   "musteri": {
+    "toplam": 59,
+    "kapsul": 0,
+    "enCokKapsul": 53,
+    "yuva": 59
+   }
+  },
+  {
+   "isP50": 69.9,
+   "isOrt": 71.9,
+   "cagri": 225,
+   "karePerSn": 13.4,
+   "sahnePerSn": 0,
+   "npc": 62,
+   "musteri": {
+    "toplam": 62,
+    "kapsul": 0,
+    "enCokKapsul": 53,
+    "yuva": 65
+   }
+  }
+ ],
+ "panel": [
+  {
+   "isP50": 64.3,
+   "isOrt": 66.57,
+   "cagri": 216,
+   "karePerSn": 27.6,
+   "sahnePerSn": 0,
+   "npc": 58,
+   "musteri": {
+    "toplam": 58,
+    "kapsul": 0,
+    "enCokKapsul": 53,
+    "yuva": 65
+   }
+  },
+  {
+   "isP50": 58.9,
+   "isOrt": 60.34,
+   "cagri": 210,
+   "karePerSn": 30.8,
+   "sahnePerSn": 0,
+   "npc": 57,
+   "musteri": {
+    "toplam": 57,
+    "kapsul": 0,
+    "enCokKapsul": 53,
+    "yuva": 65
+   }
+  },
+  {
+   "isP50": 69.65,
+   "isOrt": 71.97,
+   "cagri": 214,
+   "karePerSn": 25.8,
+   "sahnePerSn": 0,
+   "npc": 61,
+   "musteri": {
+    "toplam": 61,
+    "kapsul": 0,
+    "enCokKapsul": 53,
+    "yuva": 65
+   }
+  }
+ ],
+ "kapandi": {
+  "isP50": 75.85,
+  "isOrt": 74.74,
+  "cagri": 230,
+  "karePerSn": 13,
+  "sahnePerSn": 0,
+  "npc": 57,
+  "musteri": {
+   "toplam": 57,
+   "kapsul": 0,
+   "enCokKapsul": 53,
+   "yuva": 65
+  }
+ }
+}

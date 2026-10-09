@@ -121,3 +121,11 @@ export const YILBASI_MODEL: Record<string, string> = {
   'yilbasi-mavi': 'chair_large_blue',
   'yilbasi-kahve': 'chair_large_brown',
 };
+
+/**
+ * Kendi kendine kıpırdayan gövdeler (`VitrinDekor`: plak döner, kanarya seker, sarkaç sallanır).
+ * Yalıtık önizlemede (`DekorOnizleme`) bunlar sürekli çizilir; geri kalanı durağandır ve
+ * `frameloop="demand"` ile yalnız değişince çizilir (perf #2b · Sprint A). Yeni bir `useFrame`li
+ * gövde eklenirse buraya da yazılır — bekçi: `tests/perf-sprintA.test.ts`.
+ */
+export const CANLI_YUVALAR: ReadonlySet<string> = new Set(['gramofon', 'kanarya', 'saat']);

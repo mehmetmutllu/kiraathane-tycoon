@@ -22,17 +22,33 @@ const KISALTMA: Record<Dil, { ayrac: string; birim: string[] }> = {
   en: { ayrac: '', birim: ['M', 'B', 'T', 'Qa', 'Qi'] },
 };
 
+/**
+ * Biçimleyici ÖNBELLEĞİ (Sprint A · perf). `toLocaleString(yerel)` her çağrıda yeni bir
+ * `Intl.NumberFormat` kurar (yerel verisini çözer) — `fmt` HUD'da her karede çağrılabiliyor.
+ * Dil başına iki biçimleyici bir kez kurulur; çıktı `toLocaleString` ile birebir aynı.
+ */
+const TAM = new Map<Dil, Intl.NumberFormat>();
+const ONDALIK1 = new Map<Dil, Intl.NumberFormat>();
+function bicimci(harita: Map<Dil, Intl.NumberFormat>, dil: Dil, secenek?: Intl.NumberFormatOptions) {
+  let b = harita.get(dil);
+  if (!b) {
+    b = new Intl.NumberFormat(YEREL[dil], secenek);
+    harita.set(dil, b);
+  }
+  return b;
+}
+
 /** ₺/💎/zemin tutarı — oyundaki HER para gösterimi buradan geçer. */
 export function fmt(v: Numberish, dil: Dil = aktifDil()): string {
   const d = D(v);
   if (d.lt(0)) return '-' + fmt(d.neg(), dil);
-  if (d.lt(1e6)) return Math.floor(d.toNumber()).toLocaleString(YEREL[dil]);
+  if (d.lt(1e6)) return bicimci(TAM, dil).format(Math.floor(d.toNumber()));
   const grup = Math.floor(d.exponent / 3); // 2 = milyon
   const { ayrac, birim } = KISALTMA[dil];
   if (grup - 2 >= birim.length) return d.toExponential(1);
   // Aşağı yuvarlanır: 1,29 Mn "1,3 Mn" yazılırsa oyuncu olmayan parayı görür (ve 999,96 Mn "1000 Mn" olurdu).
   const deger = Math.floor(d.mantissa * Math.pow(10, d.exponent - grup * 3) * 10) / 10;
-  return deger.toLocaleString(YEREL[dil], { maximumFractionDigits: 1 }) + ayrac + birim[grup - 2];
+  return bicimci(ONDALIK1, dil, { maximumFractionDigits: 1 }).format(deger) + ayrac + birim[grup - 2];
 }
 
 /** Para OLMAYAN ondalık değer (mıknatıs alanı "2,6", hız "1,5") — dilin ondalık ayracıyla. */

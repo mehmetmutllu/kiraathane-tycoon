@@ -4,6 +4,7 @@ import { Mesh } from 'three';
 import { useSandbox } from '../../game/devSandbox';
 import { gozDegistir } from './atlasUV';
 import { Model } from './Model';
+import { MERGED_KARE } from './mergedKare';
 import { PALETTE } from '../../config/palette';
 import { useGame } from '../../game/store';
 import { THE_SERVICE } from '../../game/world';
@@ -258,7 +259,7 @@ function Fayans() {
   const karolar = useMemo(() => fayansKarolari(karo), [karo]);
   if (!mesh) return null;
   return (
-    <Merged meshes={{ karo: mesh }} frustumCulled={false}>
+    <Merged meshes={{ karo: mesh }} frustumCulled={false} frames={MERGED_KARE}>
       {(comps) => {
         const C = comps.karo;
         if (!C) return null;

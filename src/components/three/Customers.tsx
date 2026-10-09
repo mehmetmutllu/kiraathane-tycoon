@@ -15,6 +15,10 @@ import {
   BufferAttribute,
   Box3,
   Vector3,
+  Sphere,
+  Frustum,
+  Matrix4,
+  type BufferGeometry,
   type AnimationAction,
   type AnimationClip,
   type InstancedMesh,
@@ -34,7 +38,7 @@ import {
   KAY_OTURMA_ILERI,
   NPC_SKIN_CAP,
 } from '../../config/actor';
-import { PALETTE } from '../../config/palette';
+import { LIGHTING, PALETTE } from '../../config/palette';
 import {
   ekipmanMi, basMi, kafaKucult, useKayKlipler, KLIP, LOKOMOSYON_YURUYUS, lokomosyonSec, YURUME_ESIGI,
 } from './KayActor';
@@ -91,9 +95,52 @@ const NPC_CAP = 128; // baloncuk + kapsül kolunun tavanı (npcCount tipik ~10-3
 /** Müşterinin durumu OTURUYOR mu — gerçek oturuş klibi ve kök kaldırması buna bağlı. */
 const oturuyorMu = (durum: string) => durum === 'waitingForTea' || durum === 'drinking';
 
+/**
+ * KIRPMA KÜRESİ PAYI (perf #1 · Sprint A). Gövdeler eskiden `frustumCulled = false` idi: ekran
+ * dışındaki (öbür salon, sokak) müşteri de her karede çiziliyordu. Kırpma açılınca küre
+ * DİNLENME pozundan kurulur; yürüyüş/oturuş klibi uzuvları onun dışına taşırabilir — ×1,5 pay
+ * bunu örter (kenarda yarım görünen müşteri pat diye kaybolmasın).
+ */
+const KIRPMA_PAYI = 1.5;
+
+/**
+ * Gövde TÜRÜ başına (Knight, Rogue…) bir kez kaynatılan geometri (perf #11 · Sprint A).
+ * Eskiden her yuva baş ve gövdeyi KENDİ kopyasına kaynatıyordu: 80 yuva = 160 geometri, beş
+ * türün köşe verisi tür başına ~16 kez GPU'ya yükleniyordu. Kaynak sahne aynıysa sonuç da aynı
+ * (renk köşeye TÜRDEN yazılır, müşterinin rengi materyalde) — paylaşmak birebir.
+ */
+type TurGeo = { bas: BufferGeometry | null; govde: BufferGeometry | null };
+const turGeolari = new WeakMap<Group, TurGeo>();
+
+/** Dinlenme pozundaki sınır küresi, kırpma payıyla büyütülmüş. */
+function kirpmaKuresi(geo: BufferGeometry): Sphere {
+  if (!geo.boundingSphere) geo.computeBoundingSphere();
+  const k = geo.boundingSphere!.clone();
+  k.radius *= KIRPMA_PAYI;
+  return k;
+}
+
+/**
+ * ANİMASYON GÖRÜNÜRLÜK KÜRESİ (perf #1). `mixer.update` yalnız müşteri YA DA GÖLGESİ kamerada
+ * olabilecekse koşar. Gölge güneşin tersine düşer: boy `ACTOR_HEIGHT` iken uç, ayaktan
+ * `boy × (güneşXZ / güneşY)` uzakta. Küre gövdeyle gölge ucunun ortasına oturur, ikisini de
+ * kapsar, üstüne kırpma payı ve kamera gecikmesi payı biner — yani çizilen kırpma küresinden
+ * HER ZAMAN büyüktür: çizilen hiçbir müşteri bayat pozla çizilmez.
+ */
+const GUNES_YATAY = Math.hypot(LIGHTING.sunPos[0], LIGHTING.sunPos[2]) / LIGHTING.sunPos[1];
+const GOLGE_X = (-LIGHTING.sunPos[0] / LIGHTING.sunPos[1]) * ACTOR_HEIGHT;
+const GOLGE_Z = (-LIGHTING.sunPos[2] / LIGHTING.sunPos[1]) * ACTOR_HEIGHT;
+const ANIM_KURE_R = (ACTOR_HEIGHT / 2 + (GUNES_YATAY * ACTOR_HEIGHT) / 2) * KIRPMA_PAYI + 0.5;
+
 type Yuva = {
   kok: Group;
   mixer: AnimationMixer;
+  /**
+   * Görünmezken biriken animasyon süresi (perf #1). Ekranda ne gövdesi ne gölgesi olabilecek
+   * müşterinin `mixer.update`i atlanır; görünür olduğu karede birikenle TEK adımda ilerler —
+   * klipler döngüsel, geçişler doğrusal: poz, her kare ilerlemiş olsaydı neyse o.
+   */
+  bekleyenDt: number;
   eylemler: Record<string, AnimationAction>;
   govdeMat: MeshStandardMaterial;
   /** Yuvayı şu an kullanan müşteri — değişince renk yeniden yazılır. */
@@ -129,18 +176,9 @@ function yuvaKur(kaynak: Group, klipler: AnimationClip[], faz: number): Yuva {
   // Gövde rengi KÖŞE RENGİNDEN gelir: gömlek ve pantolon tek mesh'te, ayrı renkte.
   // `govdeMat` yuvaya ait — müşteri değişince `color` yeniden yazılır ve gömlek onunla döner.
   const govdeMat = new MeshStandardMaterial({ color: '#ffffff', roughness: 0.85, vertexColors: true });
-  if (bas.length) {
-    const geo = mergeGeometries(bas.map((p) => p.geometry.clone()), false);
-    if (geo) {
-      const mesh = new SkinnedMesh(geo, ana.material);
-      mesh.bind(ana.skeleton, ana.bindMatrix);
-      mesh.castShadow = true;
-      mesh.frustumCulled = false;
-      ust.add(mesh);
-    }
-  }
-  if (govde.length) {
-    const geolar = govde.map((p) => {
+  let tur = turGeolari.get(kaynak);
+  if (!tur) {
+    const govdeGeolari = govde.map((p) => {
       const g = p.geometry.clone();
       // Pantolon KOYU, gömlek AÇIK: renk köşeye yazılır, materyal tek kalır.
       const renk = new Color(/leg/i.test(p.name) ? PALETTE.pants : '#ffffff');
@@ -154,15 +192,24 @@ function yuvaKur(kaynak: Group, klipler: AnimationClip[], faz: number): Yuva {
       g.setAttribute('color', new BufferAttribute(dizi, 3));
       return g;
     });
-    const geo = mergeGeometries(geolar, false);
-    if (geo) {
-      const mesh = new SkinnedMesh(geo, govdeMat);
-      mesh.bind(ana.skeleton, ana.bindMatrix);
-      mesh.castShadow = true;
-      mesh.frustumCulled = false;
-      ust.add(mesh);
-    }
+    tur = {
+      bas: bas.length ? mergeGeometries(bas.map((p) => p.geometry.clone()), false) : null,
+      govde: govde.length ? mergeGeometries(govdeGeolari, false) : null,
+    };
+    turGeolari.set(kaynak, tur);
   }
+  const tak = (geo: BufferGeometry | null, mat: SkinnedMesh['material']) => {
+    if (!geo) return;
+    const mesh = new SkinnedMesh(geo, mat);
+    mesh.bind(ana.skeleton, ana.bindMatrix);
+    mesh.castShadow = true;
+    // Kırpma AÇIK, küre elle verilir: three'nin kendi `SkinnedMesh` küresi ilk testte o anki
+    // pozdan, köşe başına kemik dönüşümüyle hesaplanır — hem pahalı hem pozun şansına kalır.
+    mesh.boundingSphere = kirpmaKuresi(geo);
+    ust.add(mesh);
+  };
+  tak(tur.bas, ana.material);
+  tak(tur.govde, govdeMat);
 
   kafaKucult(kok);
   kok.scale.setScalar(KAY_SCALE);
@@ -182,7 +229,7 @@ function yuvaKur(kaynak: Group, klipler: AnimationClip[], faz: number): Yuva {
   mixer.setTime(faz * 0.17); // faz kaydır: müşteriler aynı karede nefes alıp adım atmasın
 
   return {
-    kok, mixer, eylemler, govdeMat,
+    kok, mixer, bekleyenDt: 0, eylemler, govdeMat,
     npcId: -1, suAnKlip: KLIP.dur, hedefAci: 0, aci: 0, sonX: 0, sonZ: 0, yeniYuva: true,
   };
 }
@@ -331,6 +378,7 @@ export function Customers() {
   const col = useMemo(() => new Color(), []);
   const havuz = useMusteriHavuzu();
   const { grup, yuvalar } = havuz;
+  const gorus = useMemo(() => ({ frustum: new Frustum(), m: new Matrix4(), kure: new Sphere() }), []);
 
   useFrame((st, dt) => {
     const kapsul = bodyRef.current;
@@ -339,6 +387,10 @@ export function Customers() {
     const n = Math.min(npcs.length, NPC_CAP);
     havuz.buyut(n); // havuz müşteri geldikçe büyür (gerekçe: YUVA_BASINA_KARE)
     const t = st.clock.elapsedTime;
+    // Görüş hacmi karede bir kez kurulur. Kamera bu karede henüz kıpırdamadı (CameraRig sonra
+    // koşar) — geçen karenin hacmi; aradaki fark `ANIM_KURE_R`ın payında kalır.
+    gorus.m.multiplyMatrices(st.camera.projectionMatrix, st.camera.matrixWorldInverse);
+    gorus.frustum.setFromProjectionMatrix(gorus.m);
     /** Ürün başına ayrı sayaç — her instanced mesh kendi `count`unu taşır. */
     const bubbleCount = URUNLER.map(() => 0);
     let kapsulCount = 0;
@@ -414,7 +466,15 @@ export function Customers() {
         const hedefKlip = oturan ? KLIP.otur : secim ? secim.klip : KLIP.dur;
         const yeni = y.eylemler[hedefKlip];
         if (yeni) {
-          yeni.timeScale = secim ? secim.timeScale : 1;
+          const oran = secim ? secim.timeScale : 1;
+          // Birikmiş süre ESKİ klibe ve ESKİ hıza aittir: klip ya da hız değişmeden önce
+          // boşaltılır — yoksa yeni klip/hız görünmezken geçen süreyi de kendi hesabına yazar
+          // ve müşteri ekrana girdiğinde poz, hiç atlanmamış olsaydı olacağından sapar.
+          if (y.bekleyenDt > 0 && (hedefKlip !== y.suAnKlip || oran !== yeni.timeScale)) {
+            y.mixer.update(y.bekleyenDt);
+            y.bekleyenDt = 0;
+          }
+          yeni.timeScale = oran;
           if (hedefKlip !== y.suAnKlip) {
             const eski = y.eylemler[y.suAnKlip];
             yeni.reset().play();
@@ -422,7 +482,14 @@ export function Customers() {
             y.suAnKlip = hedefKlip;
           }
         }
-        y.mixer.update(dt);
+        // Görünmeyende animasyon atlanır, süre birikir (gerekçe: `ANIM_KURE_R`).
+        y.bekleyenDt += dt;
+        gorus.kure.center.set(x + capaX + GOLGE_X / 2, ACTOR_HEIGHT / 2, z + capaZ + GOLGE_Z / 2);
+        gorus.kure.radius = ANIM_KURE_R;
+        if (gorunurluk > 0 && gorus.frustum.intersectsSphere(gorus.kure)) {
+          y.mixer.update(y.bekleyenDt);
+          y.bekleyenDt = 0;
+        }
       } else {
         // ---- KAPSÜL KOLU: bütçeyi aşan müşteri (gerekçe actor.ts → NPC_SKIN_CAP) ----
         // Kapsül oturamaz; oturan müşteri `SEATED_DROP` kadar iner ve taburenin üstünde

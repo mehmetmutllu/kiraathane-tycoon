@@ -1,5 +1,5 @@
 import { Canvas } from '@react-three/fiber';
-import { KareTavani } from '../three/KareTavani';
+import { KareSayaci } from '../three/KareTavani';
 import { economyConfig } from '../../config/economy.config';
 import { Model } from '../three/Model';
 import { PREVIEW_GL } from '../../config/palette';
@@ -47,9 +47,10 @@ export function TableThemePreview({ id }: { id: string }) {
   return (
     <div className="shop-preview" data-testid="shop-preview">
       <div className="preview-canvas">
-        <Canvas dpr={[1, 2]} gl={PREVIEW_GL} frameloop="never">
-          {/* K-A: önizleme de tavanlı — panel açıkken durağan kareyi 120 kez çizmesin. */}
-          <KareTavani />
+        <Canvas dpr={[1, 2]} gl={PREVIEW_GL} frameloop="demand">
+          {/* Perf #2b (Sprint A): önizleme DURAĞAN — yalnız bir şey değişince (seçim, model
+              yüklenmesi, boyut) çizilir. Eskiden tavanlı da olsa saniyede 60 kez aynı kare. */}
+          <KareSayaci />
           <FixedCam d={3.9} ty={0.5} />
           <SalonLights />
           <FloorPatch floorId="parke" checkerHalf={3} />

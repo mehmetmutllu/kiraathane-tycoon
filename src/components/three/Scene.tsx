@@ -72,7 +72,10 @@ import {
 import { banketKademe, banketSutunlari, type BanketSutun } from './banketLook';
 import { banketAdaGeo } from './banketGeo';
 import { CAMERA_FOCUS_MUL, CAMERA_FOV, CAMERA_ZOOM_OUT_MUL, cameraDistance } from '../../config/camera';
-import { perf } from '../../game/perf';
+import { perf, olcumAcik, perfPenceresiAc } from '../../game/perf';
+import { sahneOrtulu } from './sahneOrtusu';
+import { cekimBuKare } from './DekorCekimi';
+import { sahneKaresiSay } from './KareTavani';
 import { devCam, devTimeScale, devTopDown, useSandbox } from '../../game/devSandbox';
 import { screenPointer } from '../../game/screenPointer';
 import { activeStep } from '../../game/activeStep';
@@ -167,6 +170,11 @@ function PerfProbe() {
   const scene = useThree((s) => s.scene);
   const camera = useThree((s) => s.camera);
   const acc = useRef({ frames: 0, time: 0 });
+  // ÜRETİMDE ÖLÇÜM (Sprint A): `localStorage['kiraathane-olcum']==='1'` ise `window.__perf` açılır —
+  // cihazda `chrome://inspect` ile kare işi okunabilsin. DEV'de kanca zaten `devHooks`ta.
+  useEffect(() => {
+    if (!import.meta.env.DEV && olcumAcik()) perfPenceresiAc();
+  }, []);
   useFrame((_, dt) => {
     const a = acc.current;
     a.frames += 1;
@@ -190,6 +198,32 @@ function PerfProbe() {
 // aynı sahne için 1,6-2,25 kat piksel. Burada toplam piksel sayısına tavan konur: küçük tuvalde
 // (telefon, UI önizlemeleri) hiçbir şey değişmez, büyük tuvalde dpr 1'e kadar iner. 1'in ALTINA
 // İNMEZ — bulanıklık görsel bir karardır, ölçüm kararı değil.
+/**
+ * SAHNEYİ ÇİZEN TEK YER (Sprint A · perf #2a). Önceliği > 0 olan bir `useFrame` varken r3f
+ * kendiliğinden `gl.render` ÇAĞIRMAZ; çizimi bu abone yapar ve öncelik 1 olduğu için bütün
+ * öncelik-0 aboneler (tick, kamera, müşteri, `DekorCekimi`) ondan ÖNCE koşar — sıra eskisiyle aynı.
+ *
+ * Opak panel (`Sheet`) açıkken çizim ATLANIR, simülasyon sürer. İki istisna:
+ *  · `scene.updateMatrixWorld()` yine koşar — drei `Merged` örnek matrislerini yalnız ilk
+ *    birkaç karede okur (`frames={3}`); panel açıkken bir alım masayı değiştirirse matrisler
+ *    bayat kalmasın.
+ *  · `DekorCekimi` bu karede tuvalin köşesine çektiyse tam kare de çizilir: tampon köşe
+ *    çekimiyle sunulup panel kapanınca bir kare yarım görünmesin (saniyede ~2 kez, yalnız
+ *    dekor sekmesinde).
+ */
+function SahneCizimi() {
+  useFrame((st) => {
+    const cekim = cekimBuKare();
+    if (sahneOrtulu() && !cekim) {
+      st.scene.updateMatrixWorld();
+      return;
+    }
+    st.gl.render(st.scene, st.camera);
+    if (import.meta.env.DEV) sahneKaresiSay();
+  }, 1);
+  return null;
+}
+
 /**
  * GÖLGE ANAHTARI CANLI ÇEVRİLİNCE MATERYALLERİ TAZELER (F2 · D-125).
  *
@@ -1340,11 +1374,14 @@ export function Scene() {
   return (
     // GÖLGE AÇIK (D-073 — D-054 kullanıcı tarafından geri alındı, 2026-09-07): maket üstten
     // görüldü ve *"maketteki ışık ve gölgeler baya iyiymiş, gölgeleri tekrar istiyorum"* dendi.
-    // Gölge takımı maket v13'ün değerleri (palette.ts LIGHTING): PCFSoft (`shadows="soft"`) ·
+    // Gölge takımı maket v13'ün değerleri (palette.ts LIGHTING): PCF (`shadows="percentage"`) ·
     // 2048 harita · bias/normalBias duvar kalınlığına göre · ortografik ±30. Bedeli ölçülmüştü
     // (kare süresi ~+0,6 ms); Faz 7'de telefonda yeniden ölçülecek.
     <Canvas
-      shadows={golgeAcik ? 'soft' : false}
+      // `percentage` = PCF. Eskiden `soft` (PCFSoft) yazıyordu ama three r184 onu kullanımdan
+      // kaldırdı ve ilk gölge karesinde PCF'ye çeviriyor (konsol uyarısıyla) — çizilen gölge
+      // birebir aynı, yalnız uyarı ve tür değişimi gidiyor.
+      shadows={golgeAcik ? 'percentage' : false}
       // K-A (D-136): r3f'in kendi döngüsü kapalı — kareyi `KareSurucusu` tavanlı sürer.
       frameloop="never"
       camera={{ position: [0, 9, 11], fov: CAMERA_FOV }}
@@ -1400,6 +1437,7 @@ export function Scene() {
       <QuestPointer />
       <OgreticiIz />
       <PerfProbe />
+      <SahneCizimi />
     </Canvas>
   );
 }

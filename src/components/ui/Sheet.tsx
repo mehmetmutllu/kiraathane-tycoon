@@ -1,5 +1,6 @@
-import type { ReactNode } from 'react';
+import { useLayoutEffect, type ReactNode } from 'react';
 import { useGame, gorunenCuzdan } from '../../game/store';
+import { sahneOrtusuAc } from '../three/sahneOrtusu';
 import { fmt } from '../../game/decimal';
 import { BackIcon, CoinIcon, GemIcon } from './icons';
 import { t } from '../../i18n';
@@ -33,6 +34,10 @@ export function Sheet({
   const wallet = useGame((s) => s.wallet);
   const diamonds = useGame((s) => s.diamonds);
   const offlineEarned = useGame((s) => s.offlineEarned);
+  // Perf #2a (Sprint A): zemin (`.screen-backdrop`) ilk karesinden OPAK ve tam ekran — altındaki
+  // sahne görünmez, çizilmesi boşa iş. Kabuk açık kaldıkça sahne çizimi atlanır, tick sürer.
+  // Layout efekti: kapanışta örtü boya ÖNCESİ kalkar, sahne bir sonraki karede çizilir.
+  useLayoutEffect(() => sahneOrtusuAc(), []);
   return (
     <div className="modal-backdrop screen-backdrop" data-testid={testid}>
       <div className="modal-card screen">

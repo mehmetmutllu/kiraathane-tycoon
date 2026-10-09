@@ -3,6 +3,7 @@ import { Component, useMemo, type ReactNode } from 'react';
 import { Mesh, type Object3D } from 'three';
 import { kayDuvar, type WallRun } from './wallLook';
 import { WallPanels } from './wallPanel';
+import { MERGED_KARE } from './mergedKare';
 import type { WallTheme } from '../../config/palette';
 
 /**
@@ -53,7 +54,7 @@ function KayGovde({ runs }: { runs: WallRun[] }) {
   return (
     // frustumCulled=false: InstancedMesh'in sınır küresi origin'de (yerel geometri) kalır →
     // uzak salona odaklanınca batch toptan kırpılırdı (Tables/floorPattern ile aynı sınıf bug).
-    <Merged meshes={{ wall: mesh }} frustumCulled={false}>
+    <Merged meshes={{ wall: mesh }} frustumCulled={false} frames={MERGED_KARE}>
       {(comps) => {
         const C = comps.wall;
         if (!C) return null;

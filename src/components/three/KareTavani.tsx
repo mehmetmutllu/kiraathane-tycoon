@@ -1,17 +1,40 @@
 import { useEffect } from 'react';
-import { useThree } from '@react-three/fiber';
+import { useFrame, useThree } from '@react-three/fiber';
 import { KARE_TAVANI_FPS, kareZamanlayici } from '../../game/kareTavani';
 import { perf } from '../../game/perf';
 
 /**
- * DEV sayacı: **her tuvalin** ilerlettiği kare buraya eklenir (duman testi bunu okur).
+ * DEV sayacı: **her tuvalin ÇİZDİĞİ** kare buraya eklenir (duman testi bunu okur).
  * İki şeyi aynı anda kanıtlar: ① sürücü gerçekten dönüyor (0 kalırsa sahne donmuştur)
  * ② tavan tutuyor (saniyede tuval başına ~60'ı aşmaz). 3D sahne gözle doğrulanamadığı için
  * (CLAUDE.md) "önizleme boş çıktı" gibi sessiz bir gerileme ancak böyle yakalanır.
+ *
+ * Sprint A: sayılan şey ilerletme değil ÇİZİM. Ana sahne opak panel altında çizmez (tick
+ * sürer) ve durağan önizlemeler `frameloop="demand"` ile yalnız değişince çizer — ikisi de
+ * "kare sayısı düştü" diye görünmeli, yoksa kazanç ölçülemez. Ana sahnenin karesi ayrıca
+ * `__sahneKaresi`nde de sayılır: panel açıkken durduğu, kapanınca sürdüğü oradan okunur.
  */
 function sayacArtir() {
   const w = window as unknown as { __kareSayaci?: number };
   w.__kareSayaci = (w.__kareSayaci ?? 0) + 1;
+}
+
+/** Ana sahne bir kare ÇİZDİ (DEV). Çağıran: `Scene.tsx` → `SahneCizimi`. */
+export function sahneKaresiSay() {
+  sayacArtir();
+  const w = window as unknown as { __sahneKaresi?: number };
+  w.__sahneKaresi = (w.__sahneKaresi ?? 0) + 1;
+}
+
+/**
+ * `frameloop="demand"` tuvallerinin sayacı (DEV): orada `KareTavani` yok, kareyi r3f yalnız
+ * bir şey değişince çizer — her çizilen kare bir `useFrame` turudur.
+ */
+export function KareSayaci() {
+  useFrame(() => {
+    if (import.meta.env.DEV) sayacArtir();
+  });
+  return null;
 }
 
 /**
@@ -38,11 +61,13 @@ export function KareTavani({ fps = KARE_TAVANI_FPS, olc = false }: { fps?: numbe
       raf = requestAnimationFrame(dongu);
       const gecen = dene(simdi);
       if (gecen === null) return;
-      if (import.meta.env.DEV) sayacArtir();
       if (!olc) {
+        if (import.meta.env.DEV) sayacArtir();
         advance(gecen);
         return;
       }
+      // Ana sahne (`olc`) kendi karesini ÇİZDİĞİ yerde sayar (`sahneKaresiSay`): panel altında
+      // ilerletme sürer ama çizim yoktur.
       // Karenin İŞİ ayrı ölçülür: tavanlı kipte kareler-arası süre artık maliyeti göstermez
       // (60 fps'te 16,7 ms, sahne ne kadar ucuz olursa olsun). Yalnız ANA sahne yazar —
       // önizleme tuvalleri de yazsaydı `perf.isMs` iki farklı sahnenin karışımı olurdu.

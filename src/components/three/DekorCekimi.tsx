@@ -31,6 +31,17 @@ export const onizlemeGrubuKaydet = (g: Object3D | null) => {
   onizlemeGrubu = g;
 };
 
+/**
+ * Bu karede köşeye çekim yapıldı mı — `SahneCizimi` okur ve SIFIRLAR. Panel sahneyi örterken
+ * çizim atlanır; çekim yapılan karede tam kare yine çizilir ki tampon köşe çekimiyle kalmasın.
+ */
+let cekildi = false;
+export function cekimBuKare(): boolean {
+  const v = cekildi;
+  cekildi = false;
+  return v;
+}
+
 /** İlk çekimden sonra kaç saniyede bir yenilenir: model geç yüklenir, salon da canlı. */
 const YENILEME_SN = 0.5;
 
@@ -88,6 +99,7 @@ export function DekorCekimi() {
     tuval.getContext('2d')?.drawImage(el, 0, el.height - boy, en, boy, 0, 0, en, boy);
     gl.setScissorTest(false);
     gl.setViewport(eskiVp);
+    cekildi = true;
     dekorKaresi.surum++;
     dekorKaresi.dinleyiciler.forEach((f) => f());
   });
