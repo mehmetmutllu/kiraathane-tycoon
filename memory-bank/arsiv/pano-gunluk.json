@@ -2,8 +2,21 @@
  "not": "İlerleme panosunun ESKİ oturum kartları. Pano her turda büyüyordu (67 kart / 219 KB) ve yayını canlı sürümün tamamının okunmasını şart koştuğu için tur başına maliyeti ARTIYORDU — okunanın neredeyse tamamı bir daha bakılmayacak arşivdi. Projenin kendi kuralı buraya da uygulandı (eski anlatı → arsiv/). Pano son 8 turu gösterir; öncesi burada ve git geçmişinde durur.",
  "kaynak": "docs/pano/ilerleme-panosu.html",
  "tasindi": "2026-09-25",
- "kart": 81,
+ "kart": 82,
  "gunluk": [
+  {
+   "tarih": "24.09.2026",
+   "etiket": "T9d — arayüz/metin düzeltmeleri (D-148)",
+   "baslik": "Para her yerde <b>tek biçimde</b>; tost görevi <b>3 tosta</b> indi",
+   "govde": "T9b taramasının arayüz ve metin bulguları kapandı. Para artık üst şeritte, zeminde, ödülde aynı yazılıyor: “6.042”, “1,2 Mn”. Hat bitince alt bantta günlük görev duruyor.<br><br><b>Ölçülen tek kol, tost görevi:</b> elle 5 tost ortalama 5,1 dk sürüyordu ama 1,4–8,9 dk arasında saçılıyordu, çünkü garsonlar hazır tostu önce kapıyor. Kullanıcı 3 tostu seçti: ortalama 2,7 dk, en kötü 3,9 dk. Görev yine yalnız oyuncunun tostunu sayıyor.",
+   "maddeler": [
+    "<b>Çaycı</b> ve <b>Seviye</b> adları · Sv 2-4 ekranında tek <b>“Harika!”</b> · bant zeminle aynı kalan tutarı yazıyor",
+    "ipucunda <b>ilk dokunuş</b> sekmeyi açıyor · tepsi ipucu ilk servisin ortasında çıkmıyor · garson görevi Garson sekmesinde açılıyor",
+    "sönük alımlar <b>“X eksik”</b> yazıyor · dokunma alanları 44 px · bildirim düğmeye binmiyor",
+    "çevrimdışı kazanç “Al”dan sonra görünüyor · işlevsiz Bildirimler anahtarı kalktı · sıfırlama onayı oyunun kutusunda",
+    "bekçi 26 test · 10/10 mutasyon · duman 51/51"
+   ]
+  },
   {
    "tarih": "24.09.2026",
    "etiket": "T9c — mantık/kilit düzeltmeleri (D-147)",

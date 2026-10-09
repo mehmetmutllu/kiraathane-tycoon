@@ -4923,3 +4923,15 @@ gidebilir (D-107 o turda yeniden karara bağlanır). Kullanıcının şikâyetle
 çapraz iki renk pullar (→ eşyanın küçük resmi), kırmızı kutu. Alt bar ihtiyaca göre; 4 sekme yetiyorsa sayı kalır.
 **Sprint C:** UI uygulama. iOS'a inceleme bitmeden build gitmez; Play kapalı teste güncelleme serbest.
 Açık: Başlangıç Paketi geri yükleme 💎 sorusu (§4.4). Rapor: `docs/tarama-raporu-2026-10-09.md`.
+
+## D-163 · Sprint A bitti: Başlangıç Paketi geri yüklemesi kol A · iOS 1.0.1 ayrı dalda · Android 1.0.1 (2026-10-10)
+
+**Karar (kullanıcı, 2026-10-09):** Başlangıç Paketi geri yüklemesi **kıyafet + 100 💎** verir, bir kayıtta bir kez
+(`SatinAlim.baslangicElmas`). Aynı kayıtta geri yükleme hiçbir şey vermez; yalnız kaydı gelmeyen yeni cihaz kaybolan içeriği alır.
+**Uygulama:** mağaza bilgisi tek yoldan kayda uzlaşır (`magazaUzlasUygula` ← `uzlasmaDinle`; `sahiplikEsitle` kalktı);
+RevenueCat kalıcı kimlik (`rcKimlik` + `logIn`); reklamsız yalnız AYNI kimlikte düşer. Görev hattı kaynağı `questsDone`
+(geri çekilen hat ikinci kez ödemez). iOS parçaları (iCloud KVS eklentisi, entitlement, codemagic denetimi) **`ios-1.0.1`
+dalında bekler** — Apple portalında App ID → iCloud açılmadan imza düşer; 1.0.0 incelemesi bitince birleşir.
+Android 1.0.1 (kod 10001) TAM zip arkadaşa. Defter: `docs/sprintler/sprint-A-defter.md`.
+**Sıra kilidi uyarısı (e25cfc5, tick.ts):** ölçüm commit'i yok — bilerek: dokunuş denge sayısı değil NÖTR hata düzeltmesi
+(`teasServedByArea` klonu + önceden tamamlanmış görevin yeniden ödenmemesi; normal akışta ödeme aynı). Bekçi `tests/sprintA-p3.test.ts`, 4/4 mutasyon.

@@ -123,6 +123,7 @@ Bütçe düzeltmelerinin tarihçesi (73 → 121) ve bitmiş fazların tam anlat�
   · 2026-10-07: Görevler sekmesi halkası yalnız hazır günlük ödülde (hat görevi bitişi bant kendisi kutlar) · Apple 10 gündür "Waiting for Review" → kullanıcı hızlandırılmış inceleme istedi
   · 2026-10-08: takılı iOS gönderimi geri çekildi → Codemagic build 2 (görev halkası dahil) + 5 IAP yeniden incelemeye gönderildi (15:22)
   · 2026-10-09: genel tarama (9 Opus ajan, kod yok) → Sprint A (mağaza/kayıp/perf) → B (ChatGPT tasarım turu) → C (UI) planı · D-162 · `docs/tarama-raporu-2026-10-09.md` · ASC: hâlâ Waiting for Review, hesap tarafı temiz
+  · 2026-10-10: **Sprint A bitti** (4 Opus ajan): mağaza yeniden deneme + uzlaşma + kalıcı kimlik · reklam rıza/ATT + zaman aşımı · kalıcı kayıt + yedek · görev çift ödeme · perf P1 (kare −%36 / mağaza −%81) · Başlangıç geri yükleme kol A · D-163 · `docs/sprintler/sprint-A-defter.md` · Android 1.0.1 TAM zip · iOS parçaları `ios-1.0.1` dalında bekler
 - ✅ **F6 — açılış ekranı + ekran yönü + yatay/tablet HUD** (F1b iki tur + tur 3) …
 
 ## Faz T — TUR SERİSİ: GERİ BİLDİRİM + PERFORMANS (13/13) ✅
