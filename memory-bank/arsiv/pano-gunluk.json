@@ -2,8 +2,21 @@
  "not": "İlerleme panosunun ESKİ oturum kartları. Pano her turda büyüyordu (67 kart / 219 KB) ve yayını canlı sürümün tamamının okunmasını şart koştuğu için tur başına maliyeti ARTIYORDU — okunanın neredeyse tamamı bir daha bakılmayacak arşivdi. Projenin kendi kuralı buraya da uygulandı (eski anlatı → arsiv/). Pano son 8 turu gösterir; öncesi burada ve git geçmişinde durur.",
  "kaynak": "docs/pano/ilerleme-panosu.html",
  "tasindi": "2026-09-25",
- "kart": 80,
+ "kart": 81,
  "gunluk": [
+  {
+   "tarih": "24.09.2026",
+   "etiket": "T9c — mantık/kilit düzeltmeleri (D-147)",
+   "baslik": "Görev hattının <b>30. görevdeki kilidi</b> açıldı; çay artık masanın <b>köşesinden</b> de bırakılıyor",
+   "govde": "T9b'nin bulduğu mantık hataları kapandı. “5 tost servis et” görevinin sayacı hiç yazılmamıştı; artık sayılıyor ve bekçi hattın <b>her</b> görevinin bitebildiğini denetliyor.<br><br><b>Ölçülen tek kol — servis mesafesi:</b> masaya çay bırakma masa merkezinden 1,6 br daireydi; dörtlü masanın köşesine dayanan oyuncu dışarıda kalıyordu (yanaşık yönlerin %69,3'ü). Masanın gövdesinden 0,70 pay seçildi — kirli bardak toplamayla aynı tetik, köşe dahil %100, komşu masaya taşma yok.",
+   "maddeler": [
+    "<b>q_tost5</b> kilidi açıldı · masa görevinde ok canlı masayı gösteriyor",
+    "<b>arka plandan dönüş</b> çevrimdışı kazanç veriyor · kapanırken yerdeki para kayda giriyor · <b>geri tuşu</b> paneli kapatıyor",
+    "<b>kayıt</b> yeni sürüm üstüne yazılmıyor · eksik alan çökertmiyor · seviye ödülü kaybolmuyor",
+    "<b>Usta</b> çerçevenin üstünde durunca açılıyor · kapatınca çıkana dek açılmıyor",
+    "<b>günlük</b> hedef gün başında sabit · saati geri almak 💎 vermiyor · vitest 1469 · duman 51/51"
+   ]
+  },
   {
    "tarih": "24.09.2026",
    "etiket": "T9b — oynanış taraması (D-146)",

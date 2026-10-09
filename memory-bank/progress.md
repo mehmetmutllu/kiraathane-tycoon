@@ -122,6 +122,7 @@ Bütçe düzeltmelerinin tarihçesi (73 → 121) ve bitmiş fazların tam anlat�
   · 2026-10-03 D-161: Google Play teslim zip'i (PDF rehber + görseller + metinler) hazır · 2026-10-04 AdMob Android + RevenueCat goog_ girildi → `npm run play` → TAM zip kullanıcıya · kalan: arkadaş Play'e yükler + servis hesabı JSON'u → RC
   · 2026-10-07: Görevler sekmesi halkası yalnız hazır günlük ödülde (hat görevi bitişi bant kendisi kutlar) · Apple 10 gündür "Waiting for Review" → kullanıcı hızlandırılmış inceleme istedi
   · 2026-10-08: takılı iOS gönderimi geri çekildi → Codemagic build 2 (görev halkası dahil) + 5 IAP yeniden incelemeye gönderildi (15:22)
+  · 2026-10-09: genel tarama (9 Opus ajan, kod yok) → Sprint A (mağaza/kayıp/perf) → B (ChatGPT tasarım turu) → C (UI) planı · D-162 · `docs/tarama-raporu-2026-10-09.md` · ASC: hâlâ Waiting for Review, hesap tarafı temiz
 - ✅ **F6 — açılış ekranı + ekran yönü + yatay/tablet HUD** (F1b iki tur + tur 3) …
 
 ## Faz T — TUR SERİSİ: GERİ BİLDİRİM + PERFORMANS (13/13) ✅

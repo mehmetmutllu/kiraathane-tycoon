@@ -4911,3 +4911,15 @@ Hedef kitle 13+ (çocuk programı reklam kısıtı ister, D-151 ile çelişir). 
 **Kimlikler girildi (2026-10-04, Chrome, mutlubadem.dev):** AdMob Android uygulaması `~7822557727` + geçişli/ödüllü birim;
 AdMob GDPR mesajı ("tüm uygulamalar") iki Tea House uygulamasını da kapsamıyordu → ikisi gizlilik URL'siyle eklendi (iOS dahil).
 RevenueCat Play uygulaması `appc0cb3555a3` + 5 ürün iOS'un aynısı (elmas consumable, reklamsiz/baslangic haklara bağlı).
+
+## D-162 · Genel tarama sonrası sıra: Sprint A → B → C · ChatGPT tasarım turu kuralları (2026-10-09)
+
+**Karar (kullanıcı):** 9 ajanlı salt-okunur taramanın bulguları (mağaza ret riski 6, satın alma/kayıt kaybı 6, saat hilesi,
+perf 18, UI) üç sprinte ayrıldı. **Sprint A önce:** mağaza/reklam sağlamlığı + satın alma uzlaşması (RevenueCat kalıcı
+kimlik) + kalıcı kayıt (Preferences + yedek + karantina; iOS iCloud KVS 1.0.1'de, Android Auto Backup) + perf Paket 1 +
+kırmızı kutu hatası. **Sprint B:** arayüz ChatGPT'ye çizdirilir (AI Dungeon yöntemi: Claude yorum katmaz, parça sayfası
+kesilip birebir kullanılır); DÜZEN kuralları katı, **renk paletini ChatGPT seçer** (2-3 palet seçeneği), mor kalabilir de
+gidebilir (D-107 o turda yeniden karara bağlanır). Kullanıcının şikâyetleri istemde açıkça: boğuk/tek ton paneller, alt bar,
+çapraz iki renk pullar (→ eşyanın küçük resmi), kırmızı kutu. Alt bar ihtiyaca göre; 4 sekme yetiyorsa sayı kalır.
+**Sprint C:** UI uygulama. iOS'a inceleme bitmeden build gitmez; Play kapalı teste güncelleme serbest.
+Açık: Başlangıç Paketi geri yükleme 💎 sorusu (§4.4). Rapor: `docs/tarama-raporu-2026-10-09.md`.
