@@ -287,3 +287,11 @@ export function bulutDongusu(): () => void {
     clearInterval(y);
   };
 }
+
+/** Sprint A ortak sözleşmesi: platformdan bağımsız bulut kaydı arka ucu (iOS iCloud KVS · Android Play Games). */
+export interface BulutArkaUcu {
+  varMi(): Promise<boolean>;
+  /** Hiç yazılmamışsa null; okunamazsa HATA fırlatır. */
+  oku(): Promise<string | null>;
+  yaz(veri: string): Promise<void>;
+}

@@ -127,6 +127,13 @@ export interface SatinAlim {
   /** `islenen`deki işlemin verdiği 💎 (Y-25): bulut kaydı yereli ezerken bulutta olmayan işlemin
    *  💎'ı taşınır. Eski kayıtta yok (additive) → o işlemler 0 sayılır. */
   islemElmas?: Record<string, number>;
+  /** Sprint A (P2): bu andan (ms) önceki mağaza işlemleri işlenmiş sayılır. Eski kayıtta yok → ilk
+   *  açılışta "şimdi" yazılır (geçmiş işlemler yeniden ödenmesin). */
+  uzlasmaBasi?: number;
+  /** Başlangıç paketinin 100 💎'ı bu kayıtta verildi mi — geri yüklemede bir kez (kol A, 2026-10-09). */
+  baslangicElmas?: boolean;
+  /** Reklamsız/başlangıç hakkını veren mağaza kimliği (RevenueCat appUserID) — iade düşüşü yalnız aynı kimlikte. */
+  hakKimlik?: string;
 }
 
 export const defaultSatinAlim = (): SatinAlim => ({ reklamsiz: false, baslangic: false, gunlukGun: -1, islenen: [], teklif: false });
