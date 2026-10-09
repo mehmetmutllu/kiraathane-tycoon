@@ -10,10 +10,11 @@ import { Ogretici } from './Ogretici';
 import { ekranKanali, geriTusu, tepsiIpucuZamani } from '../../game/ekranKanali';
 import { Capacitor } from '@capacitor/core';
 import { App as CapApp } from '@capacitor/app';
-import { odulAlindi, odulluIzle, odulluReklamHazir, panelKapandi, reklamAbone, reklamTercihleriGerekli, reklamTercihleriniAc, sogumaSifirla } from '../../game/ads';
-import { yasalConfig } from '../../config/yasal.config';
+import { odulAlindi, odulluIzleSonuc, odulluReklamHazir, panelKapandi, reklamAbone, reklamTercihleriGerekli, reklamTercihleriniAc, sogumaSifirla } from '../../game/ads';
+import { yasalAdres } from '../../config/yasal.config';
 import { screenPointer } from '../../game/screenPointer';
-import { satinAl, satinAlimlariGeriYukle, satinAlmaAbone, satinAlmaSurumu, urunFiyati } from '../../game/iap';
+import { magazaDurumu, magazaYenile, satinAlimlariGeriYukle, urunFiyati, type SatinAlCevap } from '../../game/iap';
+import { useSatinAl } from './useSatinAl';
 import { basarimlariGoster, bulutAbone, bulutSifirla, bulutSurumu, girisYap, playGamesDurumu } from '../../game/bulut';
 import { iapConfig } from '../../config/iap.config';
 import { magazaHesabi } from '../../game/platform';
@@ -962,7 +963,7 @@ function VideoKarti({ onClose }: { onClose: () => void }) {
   const izle = async () => {
     if (izleniyor) return;
     setIzleniyor(true);
-    if (await odulluIzle()) claimVideo();
+    if (await odulluIzleBildir()) claimVideo();
     setIzleniyor(false);
   };
   const dk = Math.ceil(yenilenmeMs / 60000);
@@ -1012,7 +1013,7 @@ function UstaModal({ id, onClose }: { id: string; onClose: () => void }) {
   const izle = async () => {
     if (izleniyor) return;
     setIzleniyor(true);
-    if (await odulluIzle()) buyMasterAd(id);
+    if (await odulluIzleBildir()) buyMasterAd(id);
     setIzleniyor(false);
   };
   const izlenebilir = hazir && reklamHakki > 0 && !izleniyor;
@@ -1117,7 +1118,7 @@ function QuestsSheet({ onClose }: { onClose: () => void }) {
   const tables = useGame((s) => s.tables);
   const daily = useGame((s) => s.daily);
   const claimDailyQuest = useGame((s) => s.claimDailyQuest);
-  const [gunOdul, setGunOdul] = useState<DailyQuestView | null>(null);
+  const [gunOdul, setGunOdul] = useState<(DailyQuestView & { gun: number }) | null>(null);
   const gunler = dailyViews(daily, tables, dailyCountersOf({ stats, lifetime }));
   const gunHazir = gunler.filter((g) => g.state === 'claimable').length;
   const gunKalan = gunler.filter((g) => g.state !== 'claimed').reduce((a, g) => a + g.diamonds, 0);
@@ -1151,7 +1152,7 @@ function QuestsSheet({ onClose }: { onClose: () => void }) {
                 <button
                   className="goal-claim"
                   data-testid={`daily-claim-${g.id}`}
-                  onClick={() => setGunOdul(g)}
+                  onClick={() => setGunOdul({ ...g, gun: daily.day })}
                 >
                   {t('Ödülü al')}
                 </button>
@@ -1184,11 +1185,11 @@ function QuestsSheet({ onClose }: { onClose: () => void }) {
           diamonds={gunOdul.diamonds}
           claimTestid="daily-reward-ok"
           onClaim={() => {
-            claimDailyQuest(gunOdul.id);
+            claimDailyQuest(gunOdul.id, false, gunOdul.gun);
             setGunOdul(null);
           }}
           onIzle={() => {
-            claimDailyQuest(gunOdul.id, true);
+            claimDailyQuest(gunOdul.id, true, gunOdul.gun);
             setGunOdul(null);
           }}
         />
@@ -1442,19 +1443,14 @@ function useOdulluHazir(): boolean {
  * indirim baskısı YOK (monetization.md §2); "Şimdi değil" eşit ağırlıkta, paket Mağaza'da durur.
  */
 function BaslangicTeklifi({ onClose }: { onClose: () => void }) {
-  useSyncExternalStore(satinAlmaAbone, satinAlmaSurumu);
-  const satinAlimIsle = useGame((s) => s.satinAlimIsle);
+  const sa = useSatinAl();
   const trayLook = useGame((s) => s.trayLook);
   const urun = iapConfig.urun.baslangic;
   const fiyat = urunFiyati(urun);
-  const [bekle, setBekle] = useState(false);
   // F4c-4 (D-157 · metin 14): alım sessiz bitmez — kart kapanmadan önce içindekiler gösterilir.
   const [alinan, setAlinan] = useState<number | null>(null);
   const al = async () => {
-    setBekle(true);
-    const r = await satinAl(urun);
-    const elmas = r ? satinAlimIsle(r) : null;
-    setBekle(false);
+    const elmas = satinAlimOdulu(await sa.al(urun));
     if (elmas != null) setAlinan(elmas);
   };
   if (alinan != null) return <SatinOdulu urun={urun} elmas={alinan} onClose={onClose} />;
@@ -1488,9 +1484,12 @@ function BaslangicTeklifi({ onClose }: { onClose: () => void }) {
             </span>
           </li>
         </ul>
-        <button className="sheet-cta" data-testid="teklif-al" disabled={!fiyat || bekle} onClick={() => void al()}>
-          {fiyat ? t('Al · {1}', fiyat) : MAGAZA_YOK}
+        <button className="sheet-cta" data-testid="teklif-al" disabled={!fiyat || sa.mesgul} onClick={() => void al()}>
+          {sa.islemde === urun ? t('Bekleniyor…') : fiyat ? t('Al · {1}', fiyat) : MAGAZA_YOK}
         </button>
+        {sa.mesaj && sa.sonuc?.sonuc !== 'tamam' && (
+          <div className="sheet-foot-note" data-testid="satin-sonuc">{t(sa.mesaj)}</div>
+        )}
         <button className="sheet-cta ad" data-testid="teklif-kapat" onClick={onClose}>
           {t('Şimdi değil')}
         </button>
@@ -1501,6 +1500,27 @@ function BaslangicTeklifi({ onClose }: { onClose: () => void }) {
 
 /** Mağaza fiyat vermediyse (bağlantı yok / hesap yok) — sebep + ne yapılacağı (metin 3). */
 const MAGAZA_YOK = t('Mağazaya bağlanılamadı');
+
+/** Ödüllü video: ödül geldiyse true. Hiç gösterilemediyse oyuncuya söylenir (sessiz kalmaz). */
+async function odulluIzleBildir(): Promise<boolean> {
+  const r = await odulluIzleSonuc();
+  if (r === 'gosterilemedi') useGame.setState({ notice: { text: t('Reklam şu an yüklenemedi'), ttl: 3, kind: 'reveal' } });
+  return r === 'odul';
+}
+
+/**
+ * Satın alma cevabını kayda işler → ödül kartında gösterilecek 💎 (başarısızsa null). İşlem doğrudan
+ * ödenir; müşteri bilgisi de uzlaştırılır (aynı işlem iki kez ödenmez). Dinleyici işlemi önceden
+ * işlediyse kartın 💎'ı kayıttan okunur.
+ */
+function satinAlimOdulu(c: SatinAlCevap): number | null {
+  if (c.sonuc !== 'tamam') return null;
+  const g = useGame.getState();
+  let elmas = c.islem ? g.satinAlimIsle(c.islem) : null;
+  const uzlasan = c.musteri ? g.magazaUzlasUygula(c.musteri) : 0;
+  if (elmas == null && c.islem) elmas = useGame.getState().satin.islemElmas?.[c.islem.islem] ?? null;
+  return elmas ?? uzlasan;
+}
 
 /**
  * GERÇEK PARAYLA ALIMIN KARŞILIĞI (F4c-4 · D-157 · metin 14). Eskiden alım sessizdi: paket kartı
@@ -1616,7 +1636,7 @@ function RewardModal({
     if (!onIzle || izleniyor) return;
     setIzleniyor(true);
     // Ödül YALNIZ video sonuna dek izlendiyse verilir; yarıda kalırsa ekran açık kalır, "Al" durur.
-    if (await odulluIzle()) onIzle();
+    if (await odulluIzleBildir()) onIzle();
     else setIzleniyor(false);
   };
   /** Ödül SATIRLARI — her ödül kendi elemanı. Liste burada kuruluyor ki "+" ayıracı ancak
@@ -1735,19 +1755,23 @@ function RewardModal({
  * Başlangıç paketi ve elmas paketleri `iapConfig.vitrin` açılana dek görünmez.
  */
 function Paketler() {
-  useSyncExternalStore(satinAlmaAbone, satinAlmaSurumu);
+  const sa = useSatinAl();
   const satin = useGame((s) => s.satin);
-  const satinAlimIsle = useGame((s) => s.satinAlimIsle);
   const U = iapConfig.urun;
   const P = economyConfig.iap;
   const [alinan, setAlinan] = useState<{ urun: string; elmas: number } | null>(null);
   const al = async (urun: string) => {
-    const r = await satinAl(urun);
-    const elmas = r ? satinAlimIsle(r) : null;
+    const elmas = satinAlimOdulu(await sa.al(urun));
     if (elmas != null) setAlinan({ urun, elmas });
   };
+  const fiyatYok = [U.reklamsiz, U.baslangic, ...U.elmas].filter((u) => !urunFiyati(u)).length;
+  // Sekme açılınca mağaza yeniden denenir (fiyat gelmediyse ya da bağlantı sonradan geldiyse).
+  useEffect(() => {
+    if (magazaDurumu() !== 'hazir' || fiyatYok > 0) void magazaYenile('paketler');
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
   // Fiyatı gelmeyen ürün satılmaz; sebep düğmelerde değil, listenin üstünde BİR KEZ söylenir (metin 3).
-  const baglantiYok = [U.reklamsiz, U.baslangic, ...U.elmas].some((u) => !urunFiyati(u));
+  // Yalnız mağaza gerçekten YOKSA (denemeler bitti) ve hiç fiyat yoksa — tek eksik ürün listeyi kirletmez.
+  const baglantiYok = sa.durum === 'yok' && fiyatYok === 2 + U.elmas.length;
   const kart = (urun: string, ad: string, not: string, odul: number | null, sahip: boolean) => {
     const fiyat = urunFiyati(urun);
     return (
@@ -1766,14 +1790,14 @@ function Paketler() {
           <button
             className="goal-claim"
             data-testid={`paket-al-${urun}`}
-            disabled={sahip || !fiyat}
+            disabled={sahip || !fiyat || sa.mesgul}
             onClick={() => void al(urun)}
           >
             {sahip ? (
               <>
                 <TickIcon size={13} /> {t('Alındı')}
               </>
-            ) : (fiyat ?? '—')}
+            ) : sa.islemde === urun ? t('Bekleniyor…') : (fiyat ?? '—')}
           </button>
         </span>
       </li>
@@ -1784,8 +1808,14 @@ function Paketler() {
       {alinan && <SatinOdulu urun={alinan.urun} elmas={alinan.elmas} onClose={() => setAlinan(null)} />}
       {baglantiYok && (
         <div className="sheet-foot-note paket-baglanti" data-testid="paket-baglanti-yok">
-          {MAGAZA_YOK}{t('. İnternetini kontrol edip tekrar dene.')}
+          {MAGAZA_YOK}{t('. İnternetini kontrol edip tekrar dene.')}{' '}
+          <button className="goal-claim" data-testid="magaza-tekrar" onClick={() => void magazaYenile('elle')}>
+            {t('Tekrar dene')}
+          </button>
         </div>
+      )}
+      {sa.mesaj && sa.sonuc?.sonuc !== 'tamam' && (
+        <div className="sheet-foot-note" data-testid="satin-sonuc">{t(sa.mesaj)}</div>
       )}
       <ul className="goals">
         {kart(
@@ -1806,6 +1836,7 @@ function Paketler() {
       <div className="sheet-foot-note">
         {t('Aldıkların')} {magazaHesabi()} {t('saklanır. Telefon değiştirirsen Ayarlar\'dan geri yükleyebilirsin.')}
       </div>
+      <GeriYukle />
     </div>
   );
 }
@@ -2201,12 +2232,11 @@ function PlayGamesBolumu() {
 
 /** "Satın alımları geri yükle" — silip yükleyen ya da telefon değiştiren oyuncu kalıcı ürünlerini alır. */
 function GeriYukle() {
-  const sahiplikEsitle = useGame((s) => s.sahiplikEsitle);
   const [durum, setDurum] = useState<'bos' | 'bekle' | 'tamam' | 'hata'>('bos');
+  // Geri yüklenen müşteri bilgisi `uzlasmaDinle` üzerinden store'a uzlaşır (App açılışta bağlar).
   const yukle = async () => {
     setDurum('bekle');
     const h = await satinAlimlariGeriYukle();
-    if (h) sahiplikEsitle(h);
     setDurum(h ? 'tamam' : 'hata');
   };
   return (
@@ -2228,10 +2258,10 @@ function YasalSatir() {
   const tercih = useSyncExternalStore(reklamAbone, reklamTercihleriGerekli);
   return (
     <div className="yasal-satir">
-      <a href={yasalConfig.gizlilik} target="_blank" rel="noopener noreferrer" data-testid="gizlilik-link">
+      <a href={yasalAdres('gizlilik', dil())} target="_blank" rel="noopener noreferrer" data-testid="gizlilik-link">
         {t('Gizlilik politikası')}
       </a>
-      <a href={yasalConfig.destek} target="_blank" rel="noopener noreferrer" data-testid="destek-link">
+      <a href={yasalAdres('destek', dil())} target="_blank" rel="noopener noreferrer" data-testid="destek-link">
         {t('Destek')}
       </a>
       {tercih && (

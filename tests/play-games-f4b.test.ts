@@ -214,7 +214,10 @@ describe('bulut akışı (sahte arka uç)', () => {
     pg = sahteArkaUc();
     await bulutBaslat(kanca, pg);
     useGame.getState().hardReset();
-    expect(await bulutKaydet()).toBe(false); // olağan yazım daha ileri bulutu ezmez
+    // Sprint A: sıfırlama sayacı (`sifirlamaNo`) ilerlemeden önce gelir → sıfırlanan kayıt artık
+    // olağan yazımda da "daha ileri"dir; zorla yazım yine çalışır.
+    expect(await bulutKaydet()).toBe(true);
+    expect(JSON.parse(pg.veri!).sifirlamaNo).toBeGreaterThan(0);
     expect(await bulutSifirla()).toBe(true);
     expect(JSON.parse(pg.veri!).lifetime).toBe('0');
   });

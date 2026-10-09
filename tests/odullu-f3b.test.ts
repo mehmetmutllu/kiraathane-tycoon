@@ -179,7 +179,7 @@ describe('HUD kabloları', () => {
   it('seviye, çevrimdışı (ek > 0 iken) ve günlük görev ekranları "İzle"ye bağlı', () => {
     expect(hud).toContain('onIzle={() => claimLevelUp(true)}');
     expect(hud).toContain('onIzle={offlineIzleEki > 0 ? () => claimOffline(true) : undefined}');
-    expect(hud).toMatch(/onIzle=\{\(\) => \{\s*claimDailyQuest\(gunOdul\.id, true\);/);
+    expect(hud).toMatch(/onIzle=\{\(\) => \{\s*claimDailyQuest\(gunOdul\.id, true, gunOdul\.gun\);/);
   });
   it('hedef ekranında "İzle" YOK (hedef 💎 2× Usta kuyruğunu bitiriyordu)', () => {
     const i = hud.indexOf('testid="goal-reward"');
@@ -187,8 +187,8 @@ describe('HUD kabloları', () => {
     expect(blok).not.toContain('onIzle');
   });
   it('ödül YALNIZ video izlenince verilir', () => {
-    expect(hud).toMatch(/if \(await odulluIzle\(\)\) onIzle\(\);/);
-    expect(hud).toMatch(/if \(await odulluIzle\(\)\) buyMasterAd\(id\);/);
-    expect(hud).toMatch(/if \(await odulluIzle\(\)\) claimVideo\(\);/);
+    expect(hud).toMatch(/if \(await odulluIzleBildir\(\)\) onIzle\(\);/);
+    expect(hud).toMatch(/if \(await odulluIzleBildir\(\)\) buyMasterAd\(id\);/);
+    expect(hud).toMatch(/if \(await odulluIzleBildir\(\)\) claimVideo\(\);/);
   });
 });

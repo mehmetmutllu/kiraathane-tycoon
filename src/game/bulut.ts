@@ -1,14 +1,16 @@
 /**
- * bulut.ts — PLAY GAMES KATMANI: giriş + bulut kaydı + başarımlar (F4b · D-153). Oyun Play Games'i
- * yalnız bu modülden görür.
+ * bulut.ts — BULUT KAYDI + PLAY GAMES (F4b · D-153 · Sprint A). Oyun bulutu yalnız bu modülden görür.
  *
- * Yalnız ANDROID'de açılır (`platform.ts` · `playGamesVar`): orada kendi native eklentimiz
- * (`PlayGamesPlugin.java`). iOS'ta ve tarayıcıda katman hiç kurulmaz — tek çağrı yapılmaz, Ayarlar'da
- * bölüm görünmez. Testler SAHTE arka ucu `ozel` ile verir. Android'de Play Games kimliği (APP_ID)
- * girilmemişse eklenti "kullanılamaz" der ve katman yine KAPALI kalır — oyun olduğu gibi oynanır.
+ * Kayıt kanalı platformdan bağımsız `BulutArkaUcu`dur (dosya sonu):
+ * - ANDROID (`playGamesVar`): Play Games Saved Games — kendi native eklentimiz (`PlayGamesPlugin.java`).
+ *   Giriş + başarımlar da yalnız burada. APP_ID girilmemişse eklenti "kullanılamaz" der, katman KAPALI.
+ * - iOS: iCloud Key-Value Storage — yerel eklenti `eklentiler/bulut-kayit/` (`BulutKayit`). Giriş
+ *   ekranı yok: cihaz iCloud'a bağlıysa sessizce eşitlenir; değilse katman kapalı. Ayarlar'da Play
+ *   Games bölümü iOS'ta görünmez (`playGamesDurumu` yalnız Play'i söyler).
+ * - Tarayıcı: kurulmaz. Testler SAHTE arka ucu `ozel` ile verir (Play: `sahteArkaUc`, KVS: `sahteBulut`).
  *
- * ÇAKIŞMA KURALI (kullanıcı kararı 2026-09-24): DAHA İLERİ kayıt kazanır. İlerleme = toplam kazanç,
- * eşitse XP (`kayitIleriMi`). Buluttaki daha ileriyse açılışta yüklenir; yereldeki ileriyse buluta
+ * ÇAKIŞMA KURALI (kullanıcı kararı 2026-09-24 + Sprint A): DAHA İLERİ kayıt kazanır. Sıra: bilinçli
+ * sıfırlama sayısı (`sifirlamaNo`) > toplam kazanç > XP > son kayıt anı (`kayitIleriMi`). Buluttaki daha ileriyse açılışta yüklenir; yereldeki ileriyse buluta
  * yazılır. Daha ileri bir bulut kaydının üstüne ASLA yazılmaz — tek istisna oyuncunun bilinçli
  * sıfırlamasıdır (`bulutSifirla`). Bulut okunamadıysa hiç yazılmaz: bilinmeyen bir kaydı ezmemek için.
  *
@@ -20,8 +22,8 @@ import { levelProgress } from '../config/economy.config';
 import { playGamesConfig } from '../config/playGames.config';
 import { acikBasarimlar } from './basarim';
 import { D } from './decimal';
-import { playGamesVar } from './platform';
-import { kayitCoz, kayitKilitli, type SaveData } from './save';
+import { magazaPlatformu, playGamesVar } from './platform';
+import { kayitKilitli, kayitMetni, kayitMetniCoz, type SaveData } from './save';
 import { t } from '../i18n';
 
 export interface PlayGamesArkaUcu {
@@ -96,10 +98,82 @@ export function sahteArkaUc(o: { girisli?: boolean; veri?: string | null } = {})
   return s;
 }
 
-/** `a`, `b`'den DAHA İLERİ mi: toplam kazanç, eşitse XP. Eşit kayıt ileri sayılmaz. */
-export function kayitIleriMi(a: Pick<SaveData, 'lifetime' | 'xp'>, b: Pick<SaveData, 'lifetime' | 'xp'>): boolean {
+/** iOS iCloud KVS eklentisi (`eklentiler/bulut-kayit/ios`). */
+interface BulutKayitYerli {
+  varMi(): Promise<{ var: boolean }>;
+  oku(o: { anahtar: string }): Promise<{ veri: string | null }>;
+  yaz(o: { anahtar: string; veri: string }): Promise<void>;
+}
+
+const KVS_ANAHTARI = 'kiraathane.save';
+
+/** iOS: iCloud Key-Value Storage. `varMi` = cihaz iCloud'a bağlı (ubiquityIdentityToken). */
+export function icloudArkaUcu(): BulutArkaUcu {
+  const P = registerPlugin<BulutKayitYerli>('BulutKayit');
+  return {
+    varMi: async () => (await P.varMi()).var,
+    oku: async () => (await P.oku({ anahtar: KVS_ANAHTARI })).veri ?? null,
+    yaz: (veri) => P.yaz({ anahtar: KVS_ANAHTARI, veri }),
+  };
+}
+
+/** Play Games'in kayıt kanalı `BulutArkaUcu` kalıbında: ilerleme + açıklama metnin kendisinden türer. */
+export function playGamesKayitUcu(pg: PlayGamesArkaUcu): BulutArkaUcu {
+  return {
+    varMi: async () => (await pg.durum()).girisli,
+    oku: () => pg.oku(),
+    yaz: (veri) => {
+      const d = kayitMetniCoz(veri)?.data;
+      return pg.yaz(veri, d ? ilerlemeDegeri(d) : 0, t('Seviye {1}', levelProgress(d?.xp ?? 0).level));
+    },
+  };
+}
+
+/** Tarayıcı / test: bellekte bir KVS. */
+export interface SahteBulut extends BulutArkaUcu {
+  veri: string | null;
+  yazmaSayisi: number;
+  bagli: boolean;
+  okumaHatasi: boolean;
+}
+
+export function sahteBulut(o: { bagli?: boolean; veri?: string | null } = {}): SahteBulut {
+  const s: SahteBulut = {
+    veri: o.veri ?? null,
+    yazmaSayisi: 0,
+    bagli: o.bagli ?? true,
+    okumaHatasi: false,
+    varMi: async () => s.bagli,
+    oku: async () => {
+      if (s.okumaHatasi) throw new Error('okunamadı');
+      return s.veri;
+    },
+    yaz: async (veri) => {
+      s.veri = veri;
+      s.yazmaSayisi++;
+    },
+  };
+  return s;
+}
+
+const oyunUcuMu = (u: PlayGamesArkaUcu | BulutArkaUcu): u is PlayGamesArkaUcu => 'girisYap' in u;
+
+/** Seçim kuralının okuduğu alanlar (eski çağıranlar yalnız kazanç + XP verir). */
+export type Ilerleme = Pick<SaveData, 'lifetime' | 'xp'> & Partial<Pick<SaveData, 'sifirlamaNo' | 'lastSaved'>>;
+
+/**
+ * `a`, `b`'den DAHA İLERİ mi: bilinçli sıfırlama sayısı > toplam kazanç > XP > son kayıt anı.
+ * Sıfırlama önce gelir: oyuncunun sıfırladığı oyun, başka cihazda kalan eski ilerlemeye yenilmesin.
+ * Tümü eşit kayıt ileri sayılmaz.
+ */
+export function kayitIleriMi(a: Ilerleme, b: Ilerleme): boolean {
+  const sa = a.sifirlamaNo ?? 0;
+  const sb = b.sifirlamaNo ?? 0;
+  if (sa !== sb) return sa > sb;
   const k = D(a.lifetime).cmp(D(b.lifetime));
-  return k > 0 || (k === 0 && a.xp > b.xp);
+  if (k !== 0) return k > 0;
+  if (a.xp !== b.xp) return a.xp > b.xp;
+  return (a.lastSaved ?? 0) > (b.lastSaved ?? 0);
 }
 
 /**
@@ -112,6 +186,11 @@ export function bulutlaBirlestir(bulut: SaveData, yerel: SaveData): SaveData {
   const b = yerel.satin;
   const yereldeKalan = b.islenen.filter((i) => !a.islenen.includes(i));
   const tasinan = yereldeKalan.reduce((t, i) => t + (b.islemElmas?.[i] ?? 0), 0);
+  // Sprint A uzlaşma alanları: biri yoksa öbürü korunur (yok → "şimdi" kuralı `magazaUzlas`ın).
+  // `uzlasmaBasi` ikisinde de varsa GEÇ olanı: öncesi işlenmiş sayılır → bir işlem iki kez ödenmez.
+  const uzlasmaBasi = a.uzlasmaBasi === undefined ? b.uzlasmaBasi
+    : b.uzlasmaBasi === undefined ? a.uzlasmaBasi : Math.max(a.uzlasmaBasi, b.uzlasmaBasi);
+  const hakKimlik = b.hakKimlik ?? a.hakKimlik;
   return {
     ...bulut,
     diamonds: tasinan > 0 ? D(bulut.diamonds).add(tasinan).toString() : bulut.diamonds,
@@ -124,6 +203,9 @@ export function bulutlaBirlestir(bulut: SaveData, yerel: SaveData): SaveData {
       // Eski bulut kaydında alan yok (additive) — `!!` undefined'ı false sayar.
       teklif: !!a.teklif || !!b.teklif,
       islemElmas: { ...a.islemElmas, ...b.islemElmas },
+      ...(uzlasmaBasi !== undefined && { uzlasmaBasi }),
+      ...((a.baslangicElmas !== undefined || b.baslangicElmas !== undefined) && { baslangicElmas: !!a.baslangicElmas || !!b.baslangicElmas }),
+      ...(hakKimlik !== undefined && { hakKimlik }),
     },
   };
 }
@@ -140,12 +222,16 @@ export interface BulutKancasi {
 }
 
 // ─── Oturum durumu ───────────────────────────────────────────────────────────────────────────
+/** Play Games (giriş + başarım) — yalnız Android. */
 let arkaUc: PlayGamesArkaUcu | null = null;
+/** Kayıt kanalı: Play Games'in kayıt ucu ya da iCloud KVS. */
+let kayitUcu: BulutArkaUcu | null = null;
+let tur: 'playGames' | 'icloud' | null = null;
 let kanca: BulutKancasi | null = null;
 let girisli = false;
 let okundu = false;
 /** Bulutta bildiğimiz en son kayıt (okunan ya da yazılan) — daha ileriyse üstüne yazılmaz. */
-let bilinen: Pick<SaveData, 'lifetime' | 'xp'> | null = null;
+let bilinen: Ilerleme | null = null;
 let sonImza = '';
 const gonderilen = new Set<string>();
 let kuyruk: Promise<unknown> = Promise.resolve();
@@ -157,7 +243,9 @@ export const bulutAbone = (f: () => void): (() => void) => {
   dinleyiciler.add(f);
   return () => dinleyiciler.delete(f);
 };
-export const playGamesDurumu = () => ({ kullanilabilir: arkaUc != null, girisli });
+export const playGamesDurumu = () => ({ kullanilabilir: arkaUc != null, girisli: arkaUc != null && girisli });
+/** Hangi bulut açık ve eşitlendi mi (Ayarlar'da iCloud satırı için). */
+export const bulutDurumu = () => ({ tur, esitlendi: girisli && okundu });
 
 /** Saved Games aynı kaydı iki kez aynı anda açamaz — bulut işleri sıraya girer. */
 function sirada<T>(is: () => Promise<T>): Promise<T> {
@@ -178,8 +266,10 @@ async function dene<T>(is: () => Promise<T>, yedek: T): Promise<T> {
  * Uygulama açılışında bir kez. Play Games v2 girişi açılışta kendiliğinden dener; oyuncu bağlıysa
  * bulut hemen eşitlenir. `ozel` verilirse o arka uç kullanılır (test).
  */
-export async function bulutBaslat(k: BulutKancasi, ozel?: PlayGamesArkaUcu): Promise<void> {
+export async function bulutBaslat(k: BulutKancasi, ozel?: PlayGamesArkaUcu | BulutArkaUcu): Promise<void> {
   arkaUc = null;
+  kayitUcu = null;
+  tur = null;
   kanca = k;
   girisli = false;
   okundu = false;
@@ -187,14 +277,28 @@ export async function bulutBaslat(k: BulutKancasi, ozel?: PlayGamesArkaUcu): Pro
   sonImza = '';
   gonderilen.clear();
   kuyruk = Promise.resolve();
+  if (ozel && !oyunUcuMu(ozel)) return kvsBaslat(ozel);
+  if (!ozel && magazaPlatformu() === 'ios') return kvsBaslat(icloudArkaUcu());
   const secilen = ozel ?? (playGamesVar() ? yerliArkaUc() : null);
   if (!secilen) { bildir(); return; }
   const d = await dene(() => secilen.durum(), null);
   if (!d?.kullanilabilir) { bildir(); return; }
   arkaUc = secilen;
+  kayitUcu = playGamesKayitUcu(secilen);
+  tur = 'playGames';
   girisli = d.girisli;
   bildir();
   if (girisli) await esitle();
+}
+
+/** iCloud KVS (ya da sahte KVS): giriş düğmesi yok — cihaz bağlıysa açılışta eşitlenir. */
+async function kvsBaslat(u: BulutArkaUcu): Promise<void> {
+  if (!(await dene(() => u.varMi(), false))) { bildir(); return; }
+  kayitUcu = u;
+  tur = 'icloud';
+  girisli = true;
+  bildir();
+  await esitle();
 }
 
 /** Ayarlar'daki "Bağlan" düğmesi. */
@@ -209,19 +313,13 @@ export async function girisYap(): Promise<boolean> {
 }
 
 async function esitle(): Promise<void> {
-  if (!arkaUc || !kanca) return;
-  const a = arkaUc;
+  if (!kayitUcu || !kanca) return;
+  const a = kayitUcu;
   const ham = await dene<string | null | undefined>(() => sirada(() => a.oku()), undefined);
   if (ham === undefined) return; // okunamadı → yazma da yok: bilinmeyen kaydı ezme
   okundu = true;
-  let bulut: { data: SaveData; yeniSurum: boolean } | null = null;
-  if (ham) {
-    try {
-      bulut = kayitCoz(JSON.parse(ham) as Record<string, unknown>);
-    } catch {
-      bulut = null; // bozuk bulut kaydı: yereldeki onun yerine geçer
-    }
-  }
+  // Bozuk bulut kaydı (JSON · sağlama · NaN cüzdan): yereldeki onun yerine geçer.
+  const bulut = ham ? kayitMetniCoz(ham) : null;
   const yerel = kanca.yerel();
   if (bulut && kayitIleriMi(bulut.data, yerel)) {
     bilinen = bulut.data;
@@ -237,16 +335,16 @@ async function esitle(): Promise<void> {
 
 /** Yerel kaydı buluta yazar. Yazdıysa true. `zorla`: sıfırlamadan sonra (daha geri kayıt da yazılır). */
 export async function bulutKaydet(o: { zorla: boolean } = { zorla: false }): Promise<boolean> {
-  if (!arkaUc || !kanca || !girisli || !okundu || kayitKilitli()) return false;
+  if (!kayitUcu || !kanca || !girisli || !okundu || kayitKilitli()) return false;
   const yerel = kanca.yerel();
   if (!o.zorla && bilinen && kayitIleriMi(bilinen, yerel)) return false;
   const { lastSaved: _z, ...icerik } = yerel;
   const imza = JSON.stringify(icerik);
   if (!o.zorla && imza === sonImza) return false;
-  const a = arkaUc;
-  const veri = JSON.stringify(yerel);
+  const a = kayitUcu;
+  const veri = kayitMetni(yerel);
   const ok = await dene(async () => {
-    await sirada(() => a.yaz(veri, ilerlemeDegeri(yerel), t('Seviye {1}', levelProgress(yerel.xp).level)));
+    await sirada(() => a.yaz(veri));
     return true;
   }, false);
   if (ok) {
@@ -278,13 +376,31 @@ export async function basarimlariGoster(): Promise<void> {
   if (arkaUc && girisli) await dene(arkaUc.basarimlariGoster, undefined);
 }
 
-/** Açık oyunda düzenli yoklama: başarımlar kısa, bulut yazımı uzun aralıkla. Temizleyiciyi döndürür. */
+/**
+ * Açık oyunda düzenli yoklama: başarımlar kısa, bulut yazımı uzun aralıkla. Temizleyiciyi döndürür.
+ * Sayfa GİZLİYKEN (arka plan, kilit ekranı) zamanlayıcılar DURUR — arka planda pil/ağ harcamasın
+ * (perf #5); gizlenme anındaki son yazımı App'in `visibilitychange`i zaten yapıyor.
+ */
 export function bulutDongusu(): () => void {
-  const b = setInterval(() => void basarimlariGonder(), playGamesConfig.basarimAraligiSn * 1000);
-  const y = setInterval(() => void bulutKaydet(), playGamesConfig.yazmaAraligiSn * 1000);
+  let b: ReturnType<typeof setInterval> | null = null;
+  let y: ReturnType<typeof setInterval> | null = null;
+  const baslat = () => {
+    if (b) return;
+    b = setInterval(() => void basarimlariGonder(), playGamesConfig.basarimAraligiSn * 1000);
+    y = setInterval(() => void bulutKaydet(), playGamesConfig.yazmaAraligiSn * 1000);
+  };
+  const durdur = () => {
+    if (b) clearInterval(b);
+    if (y) clearInterval(y);
+    b = y = null;
+  };
+  const belge = typeof document === 'undefined' ? null : document;
+  const gorunurluk = () => (belge?.visibilityState === 'hidden' ? durdur() : baslat());
+  belge?.addEventListener('visibilitychange', gorunurluk);
+  gorunurluk();
   return () => {
-    clearInterval(b);
-    clearInterval(y);
+    durdur();
+    belge?.removeEventListener('visibilitychange', gorunurluk);
   };
 }
 

@@ -11,7 +11,13 @@ import '@fontsource/baloo-2/latin-ext-800.css';
 import './assets/fonts/luckiest-guy.css';
 import './index.css';
 import App from './App.tsx';
+import { kalicilikHazirla } from './game/kalicilik';
 
+// Sprint A: kayıt deposu (Preferences) önbelleğe okunmadan oyun kaydı okunmaz — `init` render'dan
+// sonra çalışır ve kaydı SENKRON ister. Depo hata verirse de oyun açılır (localStorage ile).
 // StrictMode bilerek kapalı: çift mount, useFrame tick'ini ikiye katlayıp
 // simülasyonu hızlandırırdı (R3F oyunlarında yaygın tercih).
-createRoot(document.getElementById('root')!).render(<App />);
+const kok = createRoot(document.getElementById('root')!);
+void kalicilikHazirla()
+  .catch(() => {})
+  .finally(() => kok.render(<App />));

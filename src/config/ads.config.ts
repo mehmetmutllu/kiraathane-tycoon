@@ -44,6 +44,22 @@ export const adsConfig = {
    * ödül ekranının ardından reklam gelmez (kullanıcı: "ala bastıktan sonra gelmesin").
    */
   gecisli: { sogumaSn: 180 },
+  /**
+   * YÜKLEME HATASI (Sprint A · P1 #5): reklam yüklenemezse geri çekilerek yeniden denenir —
+   * ilk bekleme `ilkSn`, her hatada iki katı, `tavanSn`de durur. Başarılı yükleme sayacı sıfırlar.
+   */
+  yeniden: { ilkSn: 15, tavanSn: 300 },
+  /**
+   * GÖSTERİM BEKÇİSİ: `show*` çağrısından sonra "açıldı" olayı `acilmaSn` içinde gelmezse reklam
+   * gösterilemedi sayılır; açıldıysa da en geç `ustSinirSn`de beklemek bırakılır. Takılan bir reklam
+   * oyunu (ödüllü düğme, arka plan kaydı) asla kilitli bırakmaz.
+   */
+  gosterim: { acilmaSn: 10, ustSinirSn: 180 },
+  /**
+   * iOS ATT penceresi uygulama ÖN PLANDA değilse sessizce düşer: soru, belge görünür olana dek en
+   * çok `gorunurBekleSn` bekletilir.
+   */
+  izin: { gorunurBekleSn: 3 },
   /*
    * SDK tarafında KISIT YOK (D-151, kullanıcı kararı): çocuk işareti · yaş etiketi · içerik derecesi ·
    * kişiselleştirilmemiş reklam zorlaması yazılmaz. Reklam içeriği AdMob panelindeki engelleme

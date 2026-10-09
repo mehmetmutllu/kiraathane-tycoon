@@ -1,4 +1,5 @@
-// localStorage kayıt + saveVersion. Backend yok: cihaz = veritabanı.
+// Kalıcı kayıt + saveVersion. Backend yok: cihaz = veritabanı (depo: `kalicilik.ts` — Preferences +
+// localStorage hızlı kopya). Sprint A: sağlama zarfı + dönen yedekler + bozuk kayıt karantinası.
 // v31 (D-058): migrasyon YOK — eski sürüm bulunursa ilerleme sıfırlanır, ayarlar korunur.
 // v32 (D-088): görev hattının kimliği sıra numarası olmaktan çıktı → GERÇEK migrasyon (aşağıda).
 import { defaultDaily, type DailyState } from './dailyQuests';
@@ -9,6 +10,8 @@ import {
 } from '../config/economy.config';
 import { activeQuestIndex, completedQuestIds } from './questProgress';
 import type { LevelUpOdul } from './rules';
+import { D } from './decimal';
+import { kaliciOku, kaliciSil, kaliciYaz, kaliciYerelOku } from './kalicilik';
 
 /**
  * KAYIT ŞEMASI SÜRÜMÜ. Bir denge sayısı değil, bu dosyanın kendi kavramı — bu yüzden
@@ -21,6 +24,8 @@ import type { LevelUpOdul } from './rules';
 export const SAVE_VERSION = 34;
 
 const KEY = 'kiraathane.save';
+/** Oturumun bildiği bilinçli sıfırlama sayısı (`SaveData.sifirlamaNo`): yükleme okur, `clearSave` artırır. */
+let sifirlamaNo = 0;
 
 /**
  * Kalıcı (transient NPC/coin hariç) oyun durumu. Sayılar string Decimal serisi.
@@ -284,6 +289,12 @@ export interface SaveData {
   /** T9c/A7: alınmamış seviye ödülü (yalnız ₺ > 0 iken). Ekran açıkken uygulama kapanırsa ödül
    *  yanıyordu; yüklemede ekran geri gelir. Additive → sürüm ARTMADI (`washTipSeen` deseni). */
   levelUp: LevelUpOdul | null;
+  /**
+   * BİLİNÇLİ SIFIRLAMA SAYACI (Sprint A). Oyuncu "Oyunu sıfırla" dedikçe bir artar; bulut seçiminde
+   * ilerlemeden ÖNCE gelir (`kayitIleriMi`): sıfırlanmış kayıt eski ilerlemeli kayda yenilmesin —
+   * yoksa başka cihazdaki eski kayıt sıfırlamayı geri alırdı. Additive → sürüm ARTMADI (eksik = 0).
+   */
+  sifirlamaNo: number;
   lastSaved: number; // epoch ms
 }
 
@@ -336,6 +347,8 @@ export function defaultSave(): SaveData {
     washTipSeen: false,
     ogreticiAtlandi: false,
     levelUp: null,
+    // Oturumun bildiği sayaç: `kayitVerisi` bu yayılımdan başladığı için yazılan kayıt onu taşır.
+    sifirlamaNo,
     lastSaved: Date.now(),
   };
 }
@@ -460,55 +473,334 @@ export function kayitKilitli(): boolean {
   return yazmaKilidi;
 }
 
+// ─── Doğrulama (Sprint A) ────────────────────────────────────────────────────────────────────
+const sayiMi = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
+const negatifsiz = (v: unknown): number => (sayiMi(v) && v > 0 ? v : 0);
+
+/** Decimal dizgesi sonlu ve ≥ 0 mı (`'NaN'`, `'Infinity'`, `''`, `'-5'` → hayır). */
+export function gecerliTutar(v: unknown): boolean {
+  if (typeof v !== 'string' || v.trim() === '') return false;
+  try {
+    const d = D(v);
+    return Number.isFinite(d.mantissa) && Number.isFinite(d.exponent) && d.exponent < 9e15 && d.gte(0);
+  } catch {
+    return false;
+  }
+}
+
+const sayiDizisi = (v: unknown): number[] => (Array.isArray(v) ? v.map(negatifsiz) : []);
+const metinKumesi = (v: unknown): string[] => (Array.isArray(v) ? v.filter((x): x is string => typeof x === 'string') : []);
+/** Alan-başı (index anlamlı) metin dizisi: bozuk eleman düşürülmez (index kayardı) — '' olur, okuyan varsayılana düşer. */
+const metinDizisi = (v: unknown): string[] => (Array.isArray(v) ? v.map((x) => (typeof x === 'string' ? x : '')) : []);
+function sozluk<T>(v: unknown, eleman: (x: unknown) => x is T): Record<string, T> {
+  const out: Record<string, T> = {};
+  if (!v || typeof v !== 'object' || Array.isArray(v)) return out;
+  for (const [k, x] of Object.entries(v as Record<string, unknown>)) if (eleman(x)) out[k] = x;
+  return out;
+}
+const negatifsizSayiMi = (x: unknown): x is number => sayiMi(x) && x >= 0;
+const metinMi = (x: unknown): x is string => typeof x === 'string';
+
 /**
- * Ham kaydı (JSON'dan çözülmüş nesne) bugünkü şemaya getirir: göç zinciri + derin birleştirme.
- * Yerel kayıt da bulut kaydı da (F4b) AYNI yoldan geçer — iki ayrı çözücü olsaydı biri diğerinden
- * saparda (D-015 dersi). `yeniSurum`: kayıt bu paketten yeni sürümle yazılmış (okunur ama yazılmaz).
+ * KAYIT DOĞRULAMA (Sprint A). `derinBirlestir` türü tutturur ama İÇERİĞİ denetlemez: dizi olduğu
+ * gibi geçer (`[-500, 'bozuk', null]`), Decimal dizgesi `'NaN'` olabilir — NaN cüzdan her işlemde
+ * NaN üretir ve oyuncu bir daha hiçbir şey alamaz.
+ *
+ * `red`: Decimal alanlardan (cüzdan · elmas · toplam kazanç) biri sonlu ≥ 0 değil → bu kayıt ADAY
+ * OLARAK REDDEDİLİR (yükleme yedeğe düşer, bulut kaydı yok sayılır). Geri kalan her şey eleman
+ * bazında TEMİZLENİR (red sebebi değil): sayı dizileri ≥ 0, küme dizileri yalnız metin, sözlükler
+ * yalnız tutan değerler. Satın alım uzlaşma alanları (`uzlasmaBasi`…) yoksa DOLDURULMAZ — "yok →
+ * şimdi" kuralını mağaza tarafı (`magazaUzlas`) uygular; burada yalnız bozuk değer atılır.
  */
-export function kayitCoz(parsed: Record<string, unknown>): { data: SaveData; yeniSurum: boolean } {
+export function kayitDogrula(d: SaveData): { data: SaveData; red: string[] } {
+  const red: string[] = [];
+  const tutar = (alan: 'wallet' | 'diamonds' | 'lifetime'): string => {
+    if (gecerliTutar(d[alan])) return d[alan];
+    red.push(alan);
+    return '0';
+  };
+  const s = d.satin;
+  const satin: SatinAlim = {
+    reklamsiz: s.reklamsiz,
+    baslangic: s.baslangic,
+    gunlukGun: s.gunlukGun,
+    islenen: metinKumesi(s.islenen),
+    teklif: s.teklif,
+  };
+  if (s.islemElmas !== undefined) satin.islemElmas = sozluk(s.islemElmas, negatifsizSayiMi);
+  if (sayiMi(s.uzlasmaBasi)) satin.uzlasmaBasi = s.uzlasmaBasi;
+  if (typeof s.baslangicElmas === 'boolean') satin.baslangicElmas = s.baslangicElmas;
+  if (typeof s.hakKimlik === 'string') satin.hakKimlik = s.hakKimlik;
+  // Bilinmeyen (gelecek sürümün) satın alım alanları korunur: kayıt onları biz bilmeden taşır.
+  for (const [k, v] of Object.entries(s)) if (!(k in satin) && !['islemElmas', 'uzlasmaBasi', 'baslangicElmas', 'hakKimlik'].includes(k)) (satin as unknown as Record<string, unknown>)[k] = v;
+
+  const g = d.daily;
+  const daily: DailyState = {
+    ...g,
+    day: sayiMi(g.day) ? g.day : -1,
+    ids: metinKumesi(g.ids),
+    base: sozluk(g.base, sayiMi),
+    claimed: metinKumesi(g.claimed),
+  };
+  if (g.targets !== undefined) daily.targets = sozluk(g.targets, sayiMi);
+  if (g.onceki !== undefined) {
+    const o = g.onceki as unknown;
+    if (o && typeof o === 'object' && sayiMi((o as { day?: unknown }).day))
+      daily.onceki = { day: (o as { day: number }).day, hazir: sozluk((o as { hazir?: unknown }).hazir, negatifsizSayiMi) };
+    else delete daily.onceki;
+  }
+
+  const lu = d.levelUp as unknown;
+  const levelUp = lu && typeof lu === 'object' && sayiMi((lu as LevelUpOdul).amount) && sayiMi((lu as LevelUpOdul).level)
+    ? (lu as LevelUpOdul)
+    : null;
+
+  const data: SaveData = {
+    ...d,
+    wallet: tutar('wallet'),
+    diamonds: tutar('diamonds'),
+    lifetime: tutar('lifetime'),
+    stationLevels: sayiDizisi(d.stationLevels),
+    tableLevels: sayiDizisi(d.tableLevels),
+    lavaboLevel: negatifsiz(d.lavaboLevel),
+    padsDone: metinKumesi(d.padsDone),
+    padFills: sozluk(d.padFills, negatifsizSayiMi),
+    upgradeFills: sayiDizisi(d.upgradeFills),
+    tableUpgradeFills: sayiDizisi(d.tableUpgradeFills),
+    lavaboFill: negatifsiz(d.lavaboFill),
+    stats: {
+      ...d.stats,
+      teaPickups: negatifsiz(d.stats.teaPickups),
+      teasServed: negatifsiz(d.stats.teasServed),
+      tostServed: negatifsiz(d.stats.tostServed),
+      coinsCollected: negatifsiz(d.stats.coinsCollected),
+      dishesWashed: negatifsiz(d.stats.dishesWashed),
+      waiterServed: negatifsiz(d.stats.waiterServed),
+      waiterServedByService: sayiDizisi(d.stats.waiterServedByService),
+      teasServedByArea: sayiDizisi(d.stats.teasServedByArea),
+    },
+    questsDone: metinKumesi(d.questsDone),
+    goalsClaimed: metinKumesi(d.goalsClaimed),
+    mastersOwned: metinKumesi(d.mastersOwned),
+    daily,
+    satin,
+    questBase: negatifsiz(d.questBase),
+    xp: negatifsiz(d.xp),
+    floorThemeByArea: metinDizisi(d.floorThemeByArea),
+    wallThemeByArea: metinDizisi(d.wallThemeByArea),
+    ownedCosmetics: metinKumesi(d.ownedCosmetics),
+    dekor: sozluk(d.dekor, metinMi),
+    kafeAdi: typeof d.kafeAdi === 'string' ? d.kafeAdi : null,
+    levelUp,
+    sifirlamaNo: Math.floor(negatifsiz(d.sifirlamaNo)),
+  };
+  return { data, red };
+}
+
+/**
+ * Ham kaydı (JSON'dan çözülmüş nesne) bugünkü şemaya getirir: göç zinciri + derin birleştirme +
+ * doğrulama. Yerel kayıt da bulut kaydı da (F4b) AYNI yoldan geçer — iki ayrı çözücü olsaydı biri
+ * diğerinden saparda (D-015 dersi). `yeniSurum`: kayıt bu paketten yeni sürümle yazılmış (okunur ama
+ * yazılmaz). `red`: doğrulamanın reddettiği alanlar — boş değilse bu kayıt aday olarak KULLANILMAZ.
+ */
+export function kayitCoz(parsed: Record<string, unknown>): { data: SaveData; yeniSurum: boolean; red: string[] } {
+  // Zarf alanı kaydın parçası değil: buluttan/diskten gelse bile şemaya sızmaz.
+  const { [ZARF]: _zarf, ...ham } = parsed;
   // Ayarlar HER yolda birleştirilir: yüzeysel yayılım eski kaydın eksik ayar alanlarını
   // `undefined` bırakırdı ve göç bunu yakalayamazdı (sürüm zaten güncel). Bkz. `ayarlariBirlestir`.
   const ayarla = (d: Record<string, unknown>): SaveData => {
-    const b = derinBirlestir(defaultSave(), d) as SaveData;
+    const b = derinBirlestir({ ...defaultSave(), sifirlamaNo: 0 }, d) as SaveData;
     return { ...b, saveVersion: SAVE_VERSION, settings: ayarlariBirlestir(d.settings) };
   };
-  const yeniSurum = typeof parsed.saveVersion === 'number' && parsed.saveVersion > SAVE_VERSION;
-  if (parsed.saveVersion === SAVE_VERSION || yeniSurum) return { data: ayarla(parsed), yeniSurum };
-  // Göç zinciri ADIM ADIM: her göç bir sonraki sürümü üretir (v31 → v33 → v34, v32 → v33 → v34).
-  let d: Record<string, unknown> | null = parsed;
-  for (const goc of [migrateV31, migrateV32, migrateV33]) d = (d && goc(d)) ?? d;
-  return {
-    data: d && d.saveVersion === SAVE_VERSION ? ayarla(d) : resetKeepingSettings(parsed),
-    yeniSurum: false,
-  };
+  const yeniSurum = typeof ham.saveVersion === 'number' && ham.saveVersion > SAVE_VERSION;
+  let birlesik: SaveData;
+  if (ham.saveVersion === SAVE_VERSION || yeniSurum) birlesik = ayarla(ham);
+  else {
+    // Göç zinciri ADIM ADIM: her göç bir sonraki sürümü üretir (v31 → v33 → v34, v32 → v33 → v34).
+    let d: Record<string, unknown> | null = ham;
+    for (const goc of [migrateV31, migrateV32, migrateV33]) d = (d && goc(d)) ?? d;
+    birlesik = d && d.saveVersion === SAVE_VERSION ? ayarla(d) : resetKeepingSettings(ham);
+  }
+  const { data, red } = kayitDogrula(birlesik);
+  return { data, yeniSurum, red };
 }
 
-export function loadSave(): SaveData {
+// ─── Zarf · yedek · karantina (Sprint A) ─────────────────────────────────────────────────────
+/**
+ * ZARF. Kayıt metni `{...SaveData, zarf: {v, n, sum}}`: `sum` gövdenin (zarfsız JSON) sağlaması,
+ * `n` her yazımda artan sayaç. Gövde BİLEREK üst düzeyde (`data` alt nesnesinde değil): kaydı
+ * okuyan duman denetimleri ve testler (`JSON.parse(kayıt).settings`) değişmeden çalışır, zarfsız
+ * eski kayıt da aynı biçimdir. Sağlama gövdenin YENİDEN dizgeleştirilmesiyle doğrulanır:
+ * JSON.stringify'ın ürettiği metin parse → stringify turunda birebir aynı kalır.
+ */
+const ZARF = 'zarf';
+const ZARF_SURUMU = 1;
+const YEDEK_SAYISI = 3;
+/** Dönen yedek aralığı: en sık 5 dakikada bir, yalnız SAĞLAM ana kayıttan. */
+const YEDEK_ARALIGI_MS = 5 * 60_000;
+const YEDEK = (i: number) => `${KEY}.yedek.${i}`;
+const BOZUK = `${KEY}.bozuk`;
+
+/** FNV-1a 32 bit — kriptografik değil; amaç yarım/bozuk yazımı yakalamak. */
+function saglama(metin: string): string {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < metin.length; i++) {
+    h ^= metin.charCodeAt(i);
+    h = Math.imul(h, 0x01000193);
+  }
+  return (h >>> 0).toString(16).padStart(8, '0');
+}
+
+let sayac = 0;
+let sonYedekAn = 0;
+
+/** Kaydı zarflı metne çevirir (disk + bulut aynı biçim). */
+export function kayitMetni(d: SaveData, n: number = sayac): string {
+  const { [ZARF]: _eski, ...govdeNesne } = d as SaveData & { [ZARF]?: unknown };
+  const govde = JSON.stringify(govdeNesne);
+  return `${govde.slice(0, -1)},"${ZARF}":${JSON.stringify({ v: ZARF_SURUMU, n, sum: saglama(govde) })}}`;
+}
+
+interface Aday {
+  ad: string;
+  n: number;
+  /** Sağlama tuttu (ya da zarfsız eski kayıt) ve doğrulama reddetmedi. */
+  saglam: boolean;
+  cozum: { data: SaveData; yeniSurum: boolean; red: string[] } | null;
+}
+
+function adayCoz(ad: string, ham: string): Aday {
   try {
-    const raw = localStorage.getItem(KEY);
-    if (!raw) return defaultSave();
-    const { data, yeniSurum } = kayitCoz(JSON.parse(raw) as Record<string, unknown>);
-    yazmaKilidi = yeniSurum;
-    return data;
+    const obj = JSON.parse(ham) as unknown;
+    if (!obj || typeof obj !== 'object' || Array.isArray(obj)) return { ad, n: 0, saglam: false, cozum: null };
+    const o = obj as Record<string, unknown>;
+    const z = o[ZARF] as { n?: unknown; sum?: unknown } | undefined;
+    let tutuyor = true;
+    let n = 0;
+    if (z !== undefined) {
+      const { [ZARF]: _z, ...govde } = o;
+      tutuyor = !!z && typeof z === 'object' && z.sum === saglama(JSON.stringify(govde));
+      n = z && sayiMi(z.n) ? z.n : 0;
+    }
+    const cozum = kayitCoz(o);
+    return { ad, n, saglam: tutuyor && cozum.red.length === 0, cozum };
   } catch {
+    return { ad, n: 0, saglam: false, cozum: null };
+  }
+}
+
+/** Bulut kaydı metnini çözer; bozuksa (JSON/sağlama/doğrulama) null — üstüne yerel yazılır. */
+export function kayitMetniCoz(ham: string): { data: SaveData; yeniSurum: boolean } | null {
+  const a = adayCoz('bulut', ham);
+  return a.saglam && a.cozum ? { data: a.cozum.data, yeniSurum: a.cozum.yeniSurum } : null;
+}
+
+/**
+ * Açılışta kaydın başına ne geldi — UI bir kez not gösterir (metin anahtarları: Sprint A kayıt notu).
+ * `yedekten`: ana kayıt bozuktu, son sağlam yedekten açıldı (en çok ~5-10 dk geri) ·
+ * `onarildi`: hiç sağlam aday yoktu, okunabilen en iyi kayıt temizlenerek açıldı ·
+ * `sifirdan`: hiçbir kayıt okunamadı, oyun baştan başladı. Üç durumda da ham veri `…save.bozuk`ta durur.
+ */
+export type KayitSorunu = 'yedekten' | 'onarildi' | 'sifirdan';
+let sorun: KayitSorunu | null = null;
+export const kayitSorunu = (): KayitSorunu | null => sorun;
+export function kayitSorunuGoruldu(): void {
+  sorun = null;
+}
+
+/** Ham veriyi karantinaya alır — ana kayıt sonra üstüne yazılsa da bozuk hâli kaybolmaz. */
+function karantina(ana: string | null, yedekler: (string | null)[]): void {
+  const onceki = kaliciOku(BOZUK);
+  try {
+    if (onceki && (JSON.parse(onceki) as { ana?: unknown }).ana === ana) return;
+  } catch {
+    /* bozuk karantina: üstüne yazılır */
+  }
+  kaliciYaz(BOZUK, JSON.stringify({ an: Date.now(), ana, yedekler }));
+}
+
+/** Karantinadaki ham kayıt (destek / elle kurtarma için); yoksa null. */
+export const karantinadakiKayit = (): string | null => kaliciOku(BOZUK);
+
+/**
+ * KAYDI YÜKLE. Adaylar: ana kayıt (Preferences ve localStorage kopyası ayrıştıysa ikisi; büyük `n`
+ * tazedir) → yedek.0..2 (büyük `n` önce). İlk SAĞLAM aday açılır. SESSİZ SIFIRLAMA YOK: hiç sağlam
+ * aday yoksa ham veri karantinaya alınır, okunabilen en iyi kayıt temizlenip açılır (`onarildi`),
+ * o da yoksa oyun baştan başlar (`sifirdan`) — ve oyuncu not görür.
+ */
+export function loadSave(): SaveData {
+  sorun = null;
+  const anaHam = kaliciOku(KEY);
+  const yerelHam = kaliciYerelOku(KEY);
+  const yedekHam = Array.from({ length: YEDEK_SAYISI }, (_, i) => kaliciOku(YEDEK(i)));
+  const anaAdaylar = [anaHam, yerelHam !== anaHam ? yerelHam : null]
+    .map((h, i) => (h ? adayCoz(i === 0 ? 'ana' : 'yerel', h) : null))
+    .filter((a): a is Aday => a !== null);
+  // Yedek sayacı: yedek.0'ın yazıldığı an; yedek yoksa ilk yedek bu oturumun 5. dakikasında.
+  const yedek0 = yedekHam[0] ? adayCoz('yedek.0', yedekHam[0]) : null;
+  sonYedekAn = yedek0?.cozum?.data.lastSaved ?? Date.now();
+  if (anaAdaylar.length === 0 && yedekHam.every((h) => !h)) {
+    sayac = 0;
+    yazmaKilidi = false;
     return defaultSave();
   }
+  const enTaze = (l: Aday[]) => l.filter((a) => a.saglam).sort((a, b) => b.n - a.n)[0];
+  let secilen: Aday | undefined = enTaze(anaAdaylar);
+  if (!secilen) {
+    const yedekler = yedekHam
+      .map((h, i) => (i === 0 ? yedek0 : h ? adayCoz(`yedek.${i}`, h) : null))
+      .filter((a): a is Aday => a !== null);
+    secilen = enTaze(yedekler);
+    karantina(anaHam ?? yerelHam, secilen ? [] : yedekHam);
+    if (secilen) sorun = 'yedekten';
+    else {
+      secilen = [...anaAdaylar, ...yedekler].find((a) => a.cozum);
+      sorun = secilen ? 'onarildi' : 'sifirdan';
+    }
+  }
+  if (!secilen?.cozum) {
+    sayac = Math.max(0, ...anaAdaylar.map((a) => a.n));
+    yazmaKilidi = false;
+    return defaultSave();
+  }
+  const { data, yeniSurum } = secilen.cozum;
+  sayac = Math.max(secilen.n, ...anaAdaylar.map((a) => a.n));
+  sifirlamaNo = data.sifirlamaNo;
+  yazmaKilidi = yeniSurum;
+  return data;
+}
+
+/** Ana kayıt sağlamsa ve son yedekten ≥ 5 dk geçtiyse yedekleri döndürür (yedek.0 = şimdiki ana). */
+function yedekDondur(an: number): void {
+  if (an - sonYedekAn < YEDEK_ARALIGI_MS) return;
+  const ana = kaliciOku(KEY);
+  if (!ana || !adayCoz('ana', ana).saglam) return;
+  for (let i = YEDEK_SAYISI - 1; i > 0; i--) {
+    const v = kaliciOku(YEDEK(i - 1));
+    if (v) kaliciYaz(YEDEK(i), v);
+  }
+  kaliciYaz(YEDEK(0), ana);
+  sonYedekAn = an;
 }
 
 export function writeSave(data: SaveData): void {
   if (yazmaKilidi) return;
   try {
-    localStorage.setItem(KEY, JSON.stringify({ ...data, lastSaved: Date.now() }));
+    const an = Date.now();
+    yedekDondur(an);
+    sayac += 1;
+    kaliciYaz(KEY, kayitMetni({ ...data, lastSaved: an }, sayac));
   } catch {
     /* quota / private mode — sessiz geç */
   }
 }
 
+/** Bilinçli sıfırlama: kayıt + yedekler silinir, `sifirlamaNo` artar (karantina durur). */
 export function clearSave(): void {
   yazmaKilidi = false;
-  try {
-    localStorage.removeItem(KEY);
-  } catch {
-    /* ignore */
-  }
+  sorun = null;
+  sifirlamaNo += 1;
+  sonYedekAn = Date.now();
+  kaliciSil(KEY);
+  for (let i = 0; i < YEDEK_SAYISI; i++) kaliciSil(YEDEK(i));
 }

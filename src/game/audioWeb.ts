@@ -51,7 +51,35 @@ export function sesBaglami(): AudioContext | null {
  * Bağlam henüz kurulmadıysa hiçbir şey yapmaz (kurulumu ilk ses çağrısı yapar).
  */
 export function sesiUyandir(): void {
+  if (sesDuraklatildi()) return;
   if (ctx && ctx.state !== 'running' && ctx.state !== 'closed') void ctx.resume().catch(() => {});
+}
+
+/**
+ * SUSTURMA NEDENLERİ (Sprint A · perf #5): uygulama arka planda (`gizli`) ya da ekranda tam ekran
+ * reklam var (`reklam`). Herhangi biri sürdükçe bağlam ASKIDA: müzik döngüsü yerinde durur, olay
+ * sesleri çalınmaz (dönüşte birikmiş sesler bir anda patlamasın), Android'de arka planda ses/pil
+ * harcanmaz. Son neden kalkınca bağlam — yalnız onu BİZ askıya aldıysak — kaldığı yerden sürer.
+ */
+export type SusturmaNedeni = 'gizli' | 'reklam';
+const susturma = new Set<SusturmaNedeni>();
+let bizAskiyaAldik = false;
+
+export const sesDuraklatildi = (): boolean => susturma.size > 0;
+
+export function sesDuraklat(neden: SusturmaNedeni, aktif: boolean): void {
+  if (aktif) susturma.add(neden);
+  else susturma.delete(neden);
+  if (!ctx || ctx.state === 'closed') return;
+  if (susturma.size > 0) {
+    if (ctx.state !== 'suspended') {
+      bizAskiyaAldik = true;
+      void ctx.suspend().catch(() => {});
+    }
+  } else if (bizAskiyaAldik) {
+    bizAskiyaAldik = false;
+    void ctx.resume().catch(() => {});
+  }
 }
 
 export function webSesArkaUcu(): SesArkaUc {
@@ -94,11 +122,13 @@ export function webSesArkaUcu(): SesArkaUc {
     simdi: () => (baglam()?.currentTime ?? performance.now() / 1000),
 
     kilidiAc() {
+      if (sesDuraklatildi()) return;
       const c = baglam();
       if (c && c.state !== 'running' && c.state !== 'closed') void c.resume().catch(() => {});
     },
 
     dosyaCal(yol, gain, yarimSes) {
+      if (sesDuraklatildi()) return true; // susturuldu: ne dosya ne sentez
       const c = baglam();
       if (!c) return false;
       const buf = dosyaTamponlari.get(yol);
@@ -113,6 +143,7 @@ export function webSesArkaUcu(): SesArkaUc {
     },
 
     sentezCal(id: SesId, katmanlar: readonly Katman[], yarimSes: number, gain: number) {
+      if (sesDuraklatildi()) return;
       const c = baglam();
       if (!c) return;
       const anahtar = `${id}:${yarimSes}`;

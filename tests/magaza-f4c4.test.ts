@@ -182,7 +182,7 @@ describe('alım sessiz bitmez: ses', () => {
     expect(kesitAl(useGame.getState()).alimSayisi).toBe(once + 1);
     useGame.setState({ satin: { ...defaultSatinAlim(), islenen: ['t1'] } });
     expect(kesitAl(useGame.getState()).alimSayisi).toBe(once + 2);
-    useGame.getState().sahiplikEsitle({ reklamsiz: true, baslangic: true });
+    useGame.getState().magazaUzlasUygula({ kimlik: 'k', hak: { reklamsiz: true, baslangic: true }, islemler: [] });
     expect(kesitAl(useGame.getState()).alimSayisi).toBe(once + 2);
   });
 });

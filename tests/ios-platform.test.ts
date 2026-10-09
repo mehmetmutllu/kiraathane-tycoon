@@ -2,7 +2,7 @@
  * BEKÇİ — iOS izi (App Store önce; Android sonra). Platforma bağlı her seçim `platform.ts`ten türer:
  *  - Play Games yalnız Android'de: iOS'ta ve tarayıcıda eklenti HİÇ çağrılmaz, Ayarlar'da bölüm/metin yok.
  *  - Reklam birimi platforma göre; `test` açıkken Google test birimi, kapalıyken gerçek birim.
- *  - iOS'ta izin sırası: UMP (rıza) → ATT → reklam yükleme. Android'de ATT çağrısı yok.
+ *  - iOS'ta izin sırası: UMP (rıza) → ATT (ayrı deneme) → `canRequestAds` ise SDK → yükleme. Android'de ATT yok.
  *  - RevenueCat anahtarı platforma göre; o platformun anahtarı yoksa cihazda satın alma kapalı.
  *  - Xcode projesi: AdMob uygulama kimliği, ATT metni (tr/en), SKAdNetwork, sürüm package.json'dan.
  */
@@ -17,6 +17,8 @@ const h = vi.hoisted(() => ({
   att: 'notDetermined',
   rcAnahtar: [] as string[],
   tercih: 'REQUIRED',
+  rizaHata: false,
+  reklamIzni: true,
 }));
 
 vi.mock('@capacitor/core', () => ({
@@ -39,18 +41,22 @@ vi.mock('@capacitor-community/admob', () => {
     if (o?.adId) h.adId.push(o.adId);
     return donus;
   };
+  const bilgi = () => ({
+    status: 'REQUIRED', isConsentFormAvailable: true, privacyOptionsRequirementStatus: h.tercih, canRequestAds: h.reklamIzni,
+  });
   return {
     AdmobConsentStatus: { REQUIRED: 'REQUIRED' },
-    InterstitialAdPluginEvents: { Dismissed: 'd', FailedToShow: 'f' },
-    RewardAdPluginEvents: { Dismissed: 'd', FailedToShow: 'f', Rewarded: 'r' },
+    InterstitialAdPluginEvents: { Dismissed: 'd', FailedToShow: 'f', Showed: 's' },
+    RewardAdPluginEvents: { Dismissed: 'd', FailedToShow: 'f', Showed: 's', Rewarded: 'r' },
     AdMob: {
       initialize: kaydet('initialize'),
       requestConsentInfo: async () => {
         h.admob.push('requestConsentInfo');
-        return { status: 'REQUIRED', isConsentFormAvailable: true, privacyOptionsRequirementStatus: h.tercih };
+        if (h.rizaHata) throw new Error('ağ yok');
+        return bilgi();
       },
       showPrivacyOptionsForm: kaydet('showPrivacyOptionsForm'),
-      showConsentForm: kaydet('showConsentForm'),
+      showConsentForm: async () => { h.admob.push('showConsentForm'); return bilgi(); },
       trackingAuthorizationStatus: async () => {
         h.admob.push('trackingAuthorizationStatus');
         return { status: h.att };
@@ -68,13 +74,18 @@ vi.mock('@revenuecat/purchases-capacitor', () => ({
   Purchases: {
     configure: async (o: { apiKey: string }) => { h.rcAnahtar.push(o.apiKey); },
     getProducts: async () => ({ products: [] }),
-    getCustomerInfo: async () => ({ customerInfo: { entitlements: { active: {} } } }),
+    getCustomerInfo: async () => ({ customerInfo: { entitlements: { active: {} }, nonSubscriptionTransactions: [] } }),
+    // Sprint A (P2): kalıcı kimlik + dinleyici + Android sessiz eşitleme.
+    logIn: async () => ({}),
+    getAppUserID: async () => ({ appUserID: 'test-kimlik' }),
+    syncPurchases: async () => {},
+    addCustomerInfoUpdateListener: async () => 'dinleyici',
   },
 }));
 
 import { magazaHesabi, magazaPlatformu, playGamesVar } from '../src/game/platform';
 import { bulutBaslat, playGamesDurumu, sahteArkaUc as sahteBulut } from '../src/game/bulut';
-import { reklamBaslat, reklamDurumu, reklamTercihleriGerekli, reklamTercihleriniAc } from '../src/game/ads';
+import { reklamBaslat, reklamDurumu, reklamTercihleriGerekli, reklamTercihleriniAc, reklamYenidenKur } from '../src/game/ads';
 import { magazaHazir, satinAlmaBaslat } from '../src/game/iap';
 import { adsConfig } from '../src/config/ads.config';
 import { iapConfig } from '../src/config/iap.config';
@@ -91,6 +102,8 @@ beforeEach(() => {
   h.att = 'notDetermined';
   h.rcAnahtar = [];
   h.tercih = 'REQUIRED';
+  h.rizaHata = false;
+  h.reklamIzni = true;
 });
 
 describe('platform tek kaynak', () => {
@@ -114,10 +127,10 @@ describe('platform tek kaynak', () => {
 });
 
 describe('Play Games: iOS ve tarayıcıda kapalı', () => {
-  it('iOS: eklentiye tek çağrı yok, katman kullanılamaz', async () => {
+  it('iOS: Play Games eklentisine tek çağrı yok (yalnız iCloud KVS sorulur, Sprint A), katman kullanılamaz', async () => {
     h.platform = 'ios';
     await bulutBaslat(kanca);
-    expect(h.yerliCagri).toEqual([]);
+    expect(h.yerliCagri).toEqual(['varMi']);
     expect(playGamesDurumu().kullanilabilir).toBe(false);
   });
   it('tarayıcı: sahte bulut da kurulmaz — Ayarlar\'da bölüm görünmez', async () => {
@@ -148,15 +161,39 @@ describe('reklam: platforma göre birim + iOS izin sırası', () => {
   const testKipi = adsConfig.test;
   afterEach(() => { (adsConfig as { test: boolean }).test = testKipi; });
 
-  it('iOS: UMP → ATT → yükleme; test kipinde Google iOS test birimleri', async () => {
+  it('iOS: rıza → form → ATT → SDK başlatma → yükleme; test kipinde Google iOS test birimleri', async () => {
     h.platform = 'ios';
     await reklamBaslat();
     expect(reklamDurumu().kuruldu).toBe(true);
     const i = (ad: string) => h.admob.indexOf(ad);
+    expect(i('requestConsentInfo')).toBe(0);
     expect(i('showConsentForm')).toBeGreaterThan(i('requestConsentInfo'));
     expect(i('requestTrackingAuthorization')).toBeGreaterThan(i('showConsentForm'));
-    expect(i('prepareInterstitial')).toBeGreaterThan(i('requestTrackingAuthorization'));
+    expect(i('initialize')).toBeGreaterThan(i('requestTrackingAuthorization'));
+    expect(i('prepareInterstitial')).toBeGreaterThan(i('initialize'));
     expect(h.adId.sort()).toEqual(['ca-app-pub-3940256099942544/1712485313', 'ca-app-pub-3940256099942544/4411468910']);
+  });
+  it('iOS: rıza bilgisi alınamazsa ATT YİNE sorulur ama SDK başlatılmaz; ön plana dönüşte yeniden kurulur', async () => {
+    h.platform = 'ios';
+    h.rizaHata = true;
+    await reklamBaslat();
+    expect(h.admob).toContain('requestTrackingAuthorization');
+    expect(h.admob).not.toContain('initialize');
+    expect(h.admob).not.toContain('prepareInterstitial');
+    expect(reklamDurumu().kuruldu).toBe(false);
+    h.rizaHata = false;
+    expect(await reklamYenidenKur()).toBe(true);
+    expect(h.admob).toContain('initialize');
+    expect(reklamDurumu().kuruldu).toBe(true);
+  });
+  it('rıza reklama izin vermiyorsa (canRequestAds false) SDK başlatılmaz, reklam yüklenmez', async () => {
+    h.platform = 'android';
+    h.reklamIzni = false;
+    await reklamBaslat();
+    expect(h.admob).toContain('requestConsentInfo');
+    expect(h.admob).not.toContain('initialize');
+    expect(h.adId).toEqual([]);
+    expect(reklamDurumu().kuruldu).toBe(false);
   });
   it('iOS: ATT kararı verilmişse pencere yeniden istenmez', async () => {
     h.platform = 'ios';

@@ -139,13 +139,17 @@ describe('store: satın alım akışı', () => {
     expect(useGame.getState().diamonds.toNumber()).toBe(0);
     expect(reklamDurumu().reklamsiz).toBe(true);
   });
-  it('mağaza kaynaktır: iade edilen reklamsız düşer, 💎 verilmez', () => {
-    useGame.getState().satinAlimIsle({ islem: 'a', urun: U.reklamsiz });
+  it('mağaza kaynaktır: AYNI hesapta iade edilen reklamsız düşer, 💎 verilmez (Sprint A asimetrik)', () => {
+    const m = (reklamsiz: boolean, kimlik = 'k1') => ({ kimlik, hak: { reklamsiz, baslangic: false }, islemler: [] });
+    useGame.getState().magazaUzlasUygula(m(false)); // eski kayıt → uzlaşma başlar
+    useGame.getState().magazaUzlasUygula(m(true));
     const once = useGame.getState().diamonds.toNumber();
-    useGame.getState().sahiplikEsitle({ reklamsiz: false, baslangic: false });
+    // Başka (anonim/yeni) hesabın boş mağazası satın alımı düşürmez.
+    useGame.getState().magazaUzlasUygula(m(false, 'baska'));
+    expect(useGame.getState().satin.reklamsiz).toBe(true);
+    useGame.getState().magazaUzlasUygula(m(false));
     expect(useGame.getState().satin.reklamsiz).toBe(false);
     expect(reklamDurumu().reklamsiz).toBe(false);
-    useGame.getState().sahiplikEsitle({ reklamsiz: true, baslangic: true });
     expect(useGame.getState().diamonds.toNumber()).toBe(once);
   });
 });
@@ -189,11 +193,14 @@ describe('arayüz kabloları', () => {
     expect(hud).toContain('data-testid="reklamsiz-hediye-al"');
   });
   it('satın alma düğmesi fiyat bilinmeden basılamaz ve ödül store\'dan geçer', () => {
-    expect(hud).toContain('disabled={sahip || !fiyat}');
+    expect(hud).toContain('disabled={sahip || !fiyat || sa.mesgul}');
     // F4c-4 (D-157): ödül store'dan geçer, dönen 💎 alım kartına gider (alım sessiz bitmez).
-    expect(hud).toContain('const elmas = r ? satinAlimIsle(r) : null;');
+    expect(hud).toContain('const elmas = satinAlimOdulu(await sa.al(urun));');
+    expect(hud).toContain('let elmas = c.islem ? g.satinAlimIsle(c.islem) : null;');
   });
-  it('açılışta mağaza sahiplikleri eşitlenir', () => {
-    expect(oku('src/App.tsx')).toContain('satinAlmaBaslat().then((h) => h && useGame.getState().sahiplikEsitle(h))');
+  it('mağazanın müşteri bilgisi kayda uzlaşır (açılış · dinleyici · geri yükleme) ve ön planda yenilenir', () => {
+    const app = oku('src/App.tsx');
+    expect(app).toContain('uzlasmaDinle((m) => useGame.getState().magazaUzlasUygula(m))');
+    expect(app).toContain("void magazaYenile('onPlan');");
   });
 });

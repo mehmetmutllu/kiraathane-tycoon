@@ -43,6 +43,10 @@ export interface DailyState {
    *  sayısından türüyordu: "20 çay" 20/20 dolmuşken masa açınca 22 olup "ilerliyor"a dönüyordu.
    *  Eski kayıtta yok → o gün türetilen hedefle devam eder (additive, sürüm ARTMAZ). */
   targets?: Record<string, number>;
+  /** Gün dönümünde HAZIR ama alınmamış kalan ödüller (kimlik → 💎). Gece yarısı ödül kartı açıkken
+   *  (ya da reklam izlenirken) gün dönerse ödül kaybolmasın: o kart önceki günü adlandırarak alır
+   *  (Sprint A P3). Yalnız bir önceki gün tutulur; additive, sürüm ARTMAZ. */
+  onceki?: { day: number; hazir: Record<string, number> };
 }
 
 export const defaultDaily = (): DailyState => ({ day: -1, ids: [], base: {}, claimed: [] });
@@ -170,7 +174,10 @@ export function rollDaily(
     base[id] = counters[t.metric] ?? 0;
     targets[id] = targetOf(t, ctx.tables);
   }
-  return { day, ids, base, claimed: [], targets };
+  const hazir: Record<string, number> = {};
+  if (prev) for (const v of dailyViews(prev, ctx.tables, counters)) if (v.state === 'claimable') hazir[v.id] = v.diamonds;
+  const onceki = prev && Object.keys(hazir).length > 0 ? { day: prev.day, hazir } : undefined;
+  return { day, ids, base, claimed: [], targets, ...(onceki ? { onceki } : {}) };
 }
 
 /**
@@ -213,7 +220,9 @@ export function claimDailyReward(
   daily: DailyState,
   tables: number,
   counters: DailyCounters,
+  gorulenGun: number = daily.day,
 ): number | null {
+  if (gorulenGun !== daily.day) return daily.onceki?.day === gorulenGun ? daily.onceki.hazir[id] ?? null : null;
   const v = dailyViews(daily, tables, counters).find((x) => x.id === id);
   return v && v.state === 'claimable' ? v.diamonds : null;
 }

@@ -49,7 +49,7 @@ describe('reklam katmanı akışı (sahte arka uç)', () => {
     return {
       ...s,
       gecisliGoster: async () => { sayac.gecisli++; return true; },
-      odulluGoster: async () => { sayac.odullu++; return true; },
+      odulluGoster: async () => { sayac.odullu++; return 'odul'; },
     };
   };
   beforeEach(async () => {
@@ -98,7 +98,7 @@ describe('reklam katmanı akışı (sahte arka uç)', () => {
   });
 
   it('ödüllü video yarıda kalırsa ödül yok', async () => {
-    await reklamBaslat({ ...sahteArkaUc(), odulluGoster: async () => false });
+    await reklamBaslat({ ...sahteArkaUc(), odulluGoster: async () => 'yarida' });
     expect(await odulluIzle()).toBe(false);
   });
 });
@@ -152,7 +152,7 @@ describe('yapılandırma bekçileri', () => {
     expect(dugme).toContain('onClick={izle}');
     expect(dugme).not.toContain('onClaim');
     // `izle` ödülü yalnız video sonuna dek izlenince verir (F3b · D-150).
-    expect(hud).toMatch(/if \(await odulluIzle\(\)\) onIzle\(\);/);
+    expect(hud).toMatch(/if \(await odulluIzleBildir\(\)\) onIzle\(\);/);
   });
 
   it('panel kapanışı ve panel-içi ödüller reklam katmanına bağlı', () => {
@@ -166,7 +166,9 @@ describe('yapılandırma bekçileri', () => {
     }
   });
 
-  it('reklam ekrandayken görünürlük değişimi çevrimdışı sayılmaz', () => {
-    expect(oku('src/App.tsx')).toMatch(/if \(reklamEkranda\(\)\) return;/);
+  it('reklam ekrandayken gizlenme çevrimdışı sayılmaz AMA kayıt yine yazılır (reklam takılsa bile)', () => {
+    const app = oku('src/App.tsx');
+    expect(app).toMatch(/if \(reklamEkranda\(\)\) useGame\.getState\(\)\.saveNow\(\);\s*else useGame\.getState\(\)\.arkaPlanaGec\(\);/);
+    expect(app).not.toMatch(/if \(reklamEkranda\(\)\) return;/);
   });
 });

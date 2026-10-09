@@ -31,4 +31,9 @@ export const iapConfig = {
    * F4c'de ikisi de AÇILDI: 💎'ın harcama yeri (Kıyafet/Tepsi) ve paketin kozmetiği (Kurucu) geldi.
    */
   vitrin: { baslangic: true, elmas: true },
+  /**
+   * Sprint A (P1 #1): kurulum ya da fiyat okuma düşerse yeniden deneme bekleyişleri (sn) — 5 deneme,
+   * sonra durum `yok` ("Tekrar dene" ya da ön plana dönüş zinciri baştan başlatır). Denge değil.
+   */
+  yeniden: [2, 4, 8, 16, 30],
 } as const;

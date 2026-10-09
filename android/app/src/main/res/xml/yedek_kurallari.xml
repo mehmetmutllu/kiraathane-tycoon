@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    ANDROID 12+ OTOMATİK YEDEK (Sprint A). Kayıt ana deposu @capacitor/preferences →
+    SharedPreferences "CapacitorStorage" (shared_prefs/CapacitorStorage.xml): kaydın kendisi,
+    dönen yedekleri, karantinası ve mağaza kimliği (rcKimlik). localStorage hızlı kopyası WebView'in
+    leveldb'sinde durur; o da dahil (Preferences'tan önce yazılmış eski kurulumlar için).
+    Yalnız bunlar yedeklenir: önbellekler (GPU/HTTP/kod) yedek kotasını (25 MB) boşuna doldurmasın.
+    Android 11 ve altı aynı kuralı `yedek_eski.xml`den okur.
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <include domain="sharedpref" path="CapacitorStorage.xml" />
+        <include domain="root" path="app_webview/Default/Local Storage/" />
+        <include domain="root" path="app_webview/Local Storage/" />
+    </cloud-backup>
+    <device-transfer>
+        <include domain="sharedpref" path="CapacitorStorage.xml" />
+        <include domain="root" path="app_webview/Default/Local Storage/" />
+        <include domain="root" path="app_webview/Local Storage/" />
+    </device-transfer>
+</data-extraction-rules>

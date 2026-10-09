@@ -108,8 +108,8 @@ function Eksik({ cost, cash }: { cost: number | null; cash: number }) {
 }
 
 const STAT_ROWS: { stat: CharStat; name: string; unit: string; icon: React.ReactNode }[] = [
-  { stat: 'tray', name: t('Tepsi'), unit: 'bardak', icon: <TrayIcon size={34} /> },
-  { stat: 'magnet', name: t('Para Mıknatısı'), unit: 'alan', icon: <MagnetIcon size={34} /> },
+  { stat: 'tray', name: t('Tepsi'), unit: t('bardak'), icon: <TrayIcon size={34} /> },
+  { stat: 'magnet', name: t('Para Mıknatısı'), unit: t('alan'), icon: <MagnetIcon size={34} /> },
   { stat: 'speed', name: t('Hareket Hızı'), unit: t('hız'), icon: <BootIcon size={34} /> },
 ];
 

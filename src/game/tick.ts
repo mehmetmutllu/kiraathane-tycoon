@@ -10,6 +10,7 @@
  * değişebilen çalışma değerleridir. `store.tick()` ctx'i kurar, `runTick`i çağırır, sonucu tek
  * `set()` ile yazar. Bu ayrım sayesinde sistemler saf, tek tek okunabilir ve test edilebilir kalır.
  */
+import { activeQuestIndex, eksikPadGorevi } from './questProgress';
 import { olcKoş, olcumAcik } from './olcum';
 import type { Decimal } from './decimal';
 import type { Coin, Dish, Npc, Vec3, Waiter } from './types';
@@ -193,6 +194,8 @@ export interface TickCtx {
   xp: number;
   stats: SaveStats;
   questIndex: number;
+  /** Tamamlanmış görev kimlikleri (store'un kaynağı) — bitişte YENİ dizi yazılır. */
+  questsDone: string[];
   questBase: number;
   camFocus: CamFocus | null;
   camPrio: number;
@@ -284,8 +287,13 @@ export function createTickCtx(s: GameState, dt: number): TickCtx {
     questPhaseT: s.questPhaseT,
     xp: s.xp, // toplam XP (bu karede eylem ödülleriyle artabilir; level türetilir)
     // Kalıcı eylem sayaçları (bu karede artabilir). waiterServedByService dizisi de klonlanır (v21).
-    stats: { ...s.stats, waiterServedByService: s.stats.waiterServedByService.slice() },
+    stats: {
+      ...s.stats,
+      waiterServedByService: s.stats.waiterServedByService.slice(),
+      teasServedByArea: s.stats.teasServedByArea.slice(),
+    },
     questIndex: s.questIndex,
+    questsDone: s.questsDone,
     questBase: s.questBase,
     camFocus: s.camFocus,
     // Kamera odak tetikleri aynı karede üst üste binebilir (reveal + görev geçişi + alan açılışı) —
@@ -1520,18 +1528,25 @@ function questSystem(c: TickCtx): void {
   let questDoneIndex = s.questDoneIndex;
   if (questPhase === 'active') {
     if (questIndex < C.quests.length && questTargetMet(C.quests[questIndex].target, questCtx)) {
-      // BİTİŞ ANI: ödül + tamamlama toast'u + xp (bir kez).
-      const qReward = C.quests[questIndex].reward ?? 0;
+      // BİTİŞ ANI: ödül + tamamlama toast'u + xp (bir kez). Pad onarımının (Y-23) geri çektiği,
+      // önceden tamamlanmış görev yeniden biterse ÖDENMEZ (Sprint A P3).
+      const biten = C.quests[questIndex];
+      const ilkKez = !c.questsDone.includes(biten.id);
+      const qReward = ilkKez ? biten.reward ?? 0 : 0;
       if (qReward > 0) {
         wallet = wallet.add(qReward);
         lifetime = lifetime.add(qReward);
       }
-      enqueueNotice({ text: t(C.quests[questIndex].title), ttl: 3.5, kind: 'quest', reward: qReward > 0 ? qReward : undefined });
-      xp += C.xp.perQuest;
+      enqueueNotice({ text: t(biten.title), ttl: 3.5, kind: 'quest', reward: qReward > 0 ? qReward : undefined });
+      if (ilkKez) {
+        xp += C.xp.perQuest;
+        c.questsDone = [...c.questsDone, biten.id];
+      }
       // GÖREV BU ANDA İLERLER (kutlama yalnız görsel). Yoksa 1,3 sn'lik kutlama penceresinde
       // yapılan eylem yeni görevin TABANINA yazılır ve sayaç 0/1'de kilitlenirdi (q_coin domino'su).
+      // Sonraki konum kimliklerden türer: geri çekilmiş hat kaldığı yere döner.
       questDoneIndex = questIndex;
-      questIndex += 1;
+      questIndex = Math.max(questIndex + 1, eksikPadGorevi(C.quests, activeQuestIndex(C.quests, c.questsDone), padsDone));
       const nt = questIndex < C.quests.length ? C.quests[questIndex].target : null;
       questBase = nt ? questCounterValue(nt, stats) ?? 0 : 0;
       questCtx.questBase = questBase;

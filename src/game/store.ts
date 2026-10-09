@@ -44,7 +44,8 @@ import {
 import { KAFE_ADI_VARSAYILAN, kafeAdiOku, kafeAdiTemizle } from './kafeAdi';
 import { dekorAcik, dekorDegistir, satinBildirimi, vitrinSahip, vitrinUrunu, type DekorYerlesim, type VitrinTuru } from './vitrin';
 import { reklamsizAyarla } from './ads';
-import type { Islem, Sahiplik } from './iap';
+import type { Islem } from './iap';
+import { magazaUzlas, type MusteriOzu } from './satinAlimUzlas';
 
 import {
   LAYOUT,
@@ -259,7 +260,8 @@ export function kayitVerisi(s: GameState): SaveData {
     lavaboFill: s.lavaboFill,
     stats: { ...s.stats },
     // D-088: kayda index DEĞİL kimlik gider — hat değişse de kaydın yeri kaymasın.
-    questsDone: completedQuestIds(C.quests, s.questIndex),
+    // index'in gerisindekiler de eklenir: dev kancası/sandbox index'i ileri atabilir.
+    questsDone: [...new Set([...s.questsDone, ...completedQuestIds(C.quests, s.questIndex)])],
     goalsClaimed: [...(s.goalsClaimed ?? [])],
     mastersOwned: [...(s.mastersOwned ?? [])],
     reklam: { ...s.reklam },
@@ -433,8 +435,12 @@ export interface GameState {
   nearMaster: string | null;
   /** K4: oyuncunun KAPATTIĞI Usta noktası — o noktadan çıkana kadar yeniden dolmaz (GEÇİCİ). */
   ustaKapali: string | null;
-  /** Sıradaki görevin index'i (persist; >= quests.length ⇒ görev hattı bitti). */
+  /** Sıradaki görevin index'i (>= quests.length ⇒ görev hattı bitti). `questsDone`'dan türer
+   *  (yükleme + görev bitişi); pad onarımı (Y-23) onu GERİ çekebilir, liste geri gitmez. */
   questIndex: number;
+  /** Tamamlanmış görev kimlikleri — KAYDIN kaynağı (D-088). Geri çekilen index bunları silemez,
+   *  yeniden tamamlanan görev ikinci kez ödenmez (Sprint A P3). */
+  questsDone: string[];
   /** Aktif sayaç görevinin başlangıç sayaç değeri (persist; delta hedefi tabanı). */
   questBase: number;
   /** Toplam oyuncu XP'si (persist v17). Seviye `levelProgress(xp)` ile türetilir — ayrı saklanmaz. */
@@ -537,14 +543,16 @@ export interface GameState {
   /** F4a: mağazanın onayladığı işlemin ödülü. Verilen 💎 (0 olabilir); işlem tanınmıyorsa ya da
    *  daha önce işlendiyse null. */
   satinAlimIsle: (islem: Islem) => number | null;
-  /** F4a: mağaza hesabının kalıcı sahiplikleri (açılış · geri yükleme) — önbellek bununla eşitlenir. */
-  sahiplikEsitle: (h: Sahiplik) => void;
+  /** Sprint A (P2): mağazanın müşteri bilgisi (açılış · dinleyici · geri yükleme · satın alma dönüşü)
+   *  kayda uygulanır — işlenmemiş işlemler bir kez ödenir, reklamsız asimetrik eşitlenir. Verilen 💎. */
+  magazaUzlasUygula: (m: MusteriOzu) => number;
   /** F4b: buluttaki daha ileri kaydı yükle (`bulut.ts` birleştirilmiş kaydı verir). */
   bulutKaydiYukle: (d: SaveData) => void;
   /** F4a: reklamsızın bugünkü 💎'ını al. Hazır değilse 0. */
   claimAdFreeDaily: () => number;
-  /** D8: bugünün bir günlük görevinin 💎 ödülünü al. Eşik doğrulaması `dailyQuests.ts`te. */
-  claimDailyQuest: (id: string, izledi?: boolean) => boolean;
+  /** D8: bugünün bir günlük görevinin 💎 ödülünü al. Eşik doğrulaması `dailyQuests.ts`te.
+   *  `gorulenGun`: ödül kartının açıldığı gün — gün o arada döndüyse önceki günün hazır ödülü verilir. */
+  claimDailyQuest: (id: string, izledi?: boolean, gorulenGun?: number) => boolean;
   /** Sahne katmanı çağırır: oyuncunun menzilindeki Usta noktası (yoksa `null`). */
   setNearMaster: (id: string | null) => void;
   /** K4: Usta penceresi kapatıldı → nokta, oyuncu çıkıp yeniden basana kadar kilitli. */
@@ -698,6 +706,7 @@ export const useGame = create<GameState>((set, get) => ({
   nearMaster: null,
   ustaKapali: null,
   questIndex: 0,
+  questsDone: [],
   questBase: 0,
   questPhase: 'active',
   questPhaseT: 0,
@@ -887,6 +896,7 @@ export const useGame = create<GameState>((set, get) => ({
       satin: { ...save.satin, islenen: [...save.satin.islenen] },
       daily: loadedDaily,
       questIndex: loadedQuestIndex,
+      questsDone: [...save.questsDone],
       questBase: loadedQuestBase,
       questPhase: 'active',
       questPhaseT: 0,
@@ -1000,6 +1010,7 @@ export const useGame = create<GameState>((set, get) => ({
         // bağlamına eklemek `tick.ts`e (denge dosyası) dokunmak olurdu ve buraya `undefined`
         // yazıyordu — 49 test bu yüzden kırıldı.
         questIndex: c.questIndex,
+        questsDone: c.questsDone,
         questBase: c.questBase,
         questPhase: c.questPhase,
         questPhaseT: c.questPhaseT,
@@ -1138,19 +1149,22 @@ export const useGame = create<GameState>((set, get) => ({
     if (!r) return null;
     // Başlangıç paketi YENİ alındıysa kurucu kıyafeti hemen giyilir — paketin görünen karşılığı.
     const kurucu = r.satin.baslangic && !s.satin.baslangic;
-    set({ satin: r.satin, diamonds: s.diamonds.add(r.diamonds), ...(kurucu ? { outfit: 'kurucu' } : {}) });
+    const satin = kurucu && r.diamonds > 0 ? { ...r.satin, baslangicElmas: true } : r.satin;
+    set({ satin, diamonds: s.diamonds.add(r.diamonds), ...(kurucu ? { outfit: 'kurucu' } : {}) });
     reklamsizAyarla(r.satin.reklamsiz);
     get().saveNow();
     return r.diamonds;
   },
 
-  sahiplikEsitle: (h) => {
+  magazaUzlasUygula: (m) => {
     const s = get();
-    if (s.satin.reklamsiz === h.reklamsiz && s.satin.baslangic === h.baslangic) return;
-    // Mağaza kaynaktır: iade edilen ürün de burada düşer. 💎 verilmez — o yalnız işlemle gelir.
-    set({ satin: { ...s.satin, reklamsiz: h.reklamsiz, baslangic: h.baslangic } });
-    reklamsizAyarla(h.reklamsiz);
+    const r = magazaUzlas(s.satin, m, Date.now());
+    if (r.satin === s.satin && r.elmas === 0) return 0;
+    const kurucu = r.satin.baslangic && !s.satin.baslangic;
+    set({ satin: r.satin, diamonds: s.diamonds.add(r.elmas), ...(kurucu ? { outfit: 'kurucu' } : {}) });
+    reklamsizAyarla(r.satin.reklamsiz);
     get().saveNow();
+    return r.elmas;
   },
 
   claimAdFreeDaily: () => {
@@ -1184,17 +1198,25 @@ export const useGame = create<GameState>((set, get) => ({
    * `dailyQuests.ts`te (iki yerde kural olsaydı biri diğerinden sapardı — D-015 dersi).
    * Kayıt sürümü ARTMAZ, XP VERMEZ (ölçülmemiş İtibar enjeksiyonu olurdu — `economy.config.ts`).
    */
-  claimDailyQuest: (id, izledi = false) => {
+  claimDailyQuest: (id, izledi = false, gorulenGun) => {
     const s = get();
+    const gun = gorulenGun ?? s.daily.day;
     const odul = claimDailyReward(
       id,
       s.daily,
       s.tables,
       dailyCountersOf({ stats: s.stats, lifetime: s.lifetime }),
+      gun,
     );
     if (odul === null) return false;
+    const onceki = s.daily.onceki;
+    const kalan = onceki && gun !== s.daily.day
+      ? Object.fromEntries(Object.entries(onceki.hazir).filter(([k]) => k !== id))
+      : null;
     set({
-      daily: { ...s.daily, claimed: [...s.daily.claimed, id] },
+      daily: kalan
+        ? { ...s.daily, onceki: Object.keys(kalan).length > 0 ? { day: onceki!.day, hazir: kalan } : undefined }
+        : { ...s.daily, claimed: [...s.daily.claimed, id] },
       diamonds: s.diamonds.add(odul * (izledi ? C.rewarded.claimMult : 1)),
     });
     get().saveNow();

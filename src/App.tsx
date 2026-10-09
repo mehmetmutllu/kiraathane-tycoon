@@ -4,8 +4,10 @@ import { Joystick } from './components/ui/Joystick';
 import { SplashScreen } from './components/ui/SplashScreen';
 import { kayitVerisi, useGame } from './game/store';
 import { sesiBagla } from './game/audioBridge';
-import { reklamBaslat, reklamEkranda } from './game/ads';
-import { satinAlmaBaslat } from './game/iap';
+import { reklamAbone, reklamBaslat, reklamEkranda, reklamYenidenKur } from './game/ads';
+import { sesDuraklat } from './game/audioWeb';
+import { HataSiniri, SahneKurtarici } from './components/ui/HataSiniri';
+import { magazaYenile, satinAlmaBaslat, uzlasmaDinle } from './game/iap';
 import { bulutBaslat, bulutDongusu, bulutKaydet } from './game/bulut';
 
 const KEY_MAP: Record<string, [number, number]> = {
@@ -48,8 +50,10 @@ export default function App() {
     useGame.getState().init();
     // F3: reklam SDK'sı + rıza (UMP). Başarısız olursa oyun reklamsız devam eder.
     void reklamBaslat();
-    // F4a: mağaza hesabının kalıcı sahiplikleri (reklamsız · başlangıç) — okunamazsa kayıttaki önbellek geçerli.
-    void satinAlmaBaslat().then((h) => h && useGame.getState().sahiplikEsitle(h));
+    // F4a + Sprint A (P2): mağazanın her müşteri bilgisi (açılış · dinleyici · geri yükleme) kayda uzlaşır —
+    // işlenmemiş işlem bir kez ödenir, reklamsız asimetrik eşitlenir. Okunamazsa kayıttaki önbellek geçerli.
+    const uzlasmaCoz = uzlasmaDinle((m) => useGame.getState().magazaUzlasUygula(m));
+    void satinAlmaBaslat();
     // F4b: Play Games — açılışta sessiz giriş; bağlıysa bulut eşitlenir (daha ileri kayıt kazanır).
     void bulutBaslat({
       yerel: () => kayitVerisi(useGame.getState()),
@@ -98,16 +102,27 @@ export default function App() {
     window.addEventListener('keyup', up);
     window.addEventListener('blur', blur);
     window.addEventListener('beforeunload', onHide);
+    // ARKA PLAN / ÖN PLAN — tek giriş noktası; yeni tetikler (mağaza yenileme vb.) bu iki fonksiyona eklenir.
     // A3 (T9c): mobilde en sık yol arka plandan SICAK dönüş — sayfa yeniden yüklenmez, `init`
     // çalışmaz; çevrimdışı gelir dönüşte ayrıca sayılır.
-    // Tam ekran reklam WebView'u gizler — o süre "arka plan" değil, çevrimdışı gelir sayılmaz.
-    const onVisibility = () => {
-      if (reklamEkranda()) return;
-      if (document.visibilityState === 'hidden') {
-        useGame.getState().arkaPlanaGec();
-        void bulutKaydet();
-      } else useGame.getState().onPlanaDon();
+    const arkaPlanda = () => {
+      sesDuraklat('gizli', true);
+      // Kayıt HER durumda yazılır. Tam ekran reklam WebView'u gizler — o süre "arka plan" değil:
+      // çevrimdışı saat başlatılmaz (dönüşte `onPlanaDon` gizlenme anı olmadığı için hiçbir şey saymaz).
+      if (reklamEkranda()) useGame.getState().saveNow();
+      else useGame.getState().arkaPlanaGec();
+      void bulutKaydet();
     };
+    const onPlanda = () => {
+      sesDuraklat('gizli', false);
+      useGame.getState().onPlanaDon();
+      // Açılışta rıza/SDK kurulamadıysa (ağ yok) dönüşte yeniden dener; kuruluysa bir şey yapmaz.
+      void reklamYenidenKur();
+      void magazaYenile('onPlan');
+    };
+    const onVisibility = () => (document.visibilityState === 'hidden' ? arkaPlanda() : onPlanda());
+    // Reklam ekrandayken müzik/sesler susar, kapanınca döner.
+    const reklamSesCoz = reklamAbone(() => sesDuraklat('reklam', reklamEkranda()));
     document.addEventListener('visibilitychange', onVisibility);
 
     return () => {
@@ -118,6 +133,8 @@ export default function App() {
       document.removeEventListener('visibilitychange', onVisibility);
       sesiCoz();
       bulutCoz();
+      reklamSesCoz();
+      uzlasmaCoz();
     };
   }, []);
 
@@ -132,18 +149,22 @@ export default function App() {
   }
 
   return (
-    <div className="app">
-      <Suspense fallback={null}>
-        <Scene />
-      </Suspense>
-      <HUD />
-      <Joystick />
-      <SplashScreen />
-      {DevSandbox && (
-        <Suspense fallback={null}>
-          <DevSandbox />
-        </Suspense>
-      )}
-    </div>
+    <HataSiniri>
+      <div className="app">
+        <SahneKurtarici>
+          <Suspense fallback={null}>
+            <Scene />
+          </Suspense>
+        </SahneKurtarici>
+        <HUD />
+        <Joystick />
+        <SplashScreen />
+        {DevSandbox && (
+          <Suspense fallback={null}>
+            <DevSandbox />
+          </Suspense>
+        )}
+      </div>
+    </HataSiniri>
   );
 }
