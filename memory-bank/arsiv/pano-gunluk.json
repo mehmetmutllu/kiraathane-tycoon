@@ -6,6 +6,19 @@
  "gunluk": [
   {
    "tarih": "24.09.2026",
+   "etiket": "F3 — reklam altyapısı (D-149) + ödüllü videonun ödülü (D-150)",
+   "baslik": "Reklam <b>bağlandı</b>: geçişli 3 dk, ödüllü video <b>isteğe bağlı</b>",
+   "govde": "AdMob eklentisi kuruldu, çocuk-güvenli kipte: reklam kimliği ve Privacy Sandbox izinleri çıkarıldı, banner yok. Geçişli reklam açılıştan 3 dk sonra, yalnız bir panel kapanınca ve ödül ekranının ardından hiç çıkmıyor.<br><br><b>Ölçülen: ödüllü videonun ödülü.</b> Seviye 2× ile video hakkı birlikte Kat 1'i %4,5 kısaltıyor (sınır %7). Hedef ekranında 2× Usta katmanını ilk gün bitiriyordu, orada düğme yok. Kullanıcı üç soruda da önerilen kolu seçti.",
+   "maddeler": [
+    "“İzle, 2× al”: <b>seviye ₺ · günlük 💎 · kısa yokluk</b> — çevrimdışı tavanı korunuyor, tavandaysa düğme yok",
+    "Usta “İzle”: <b>günde 1 video = 1 Usta</b> (izlemeyen 2,5 gün/Usta, izleyen 0,7)",
+    "video hakkı: <b>2 saatte 4 video</b>, her biri son dakikanın kazancı",
+    "kare yakaladı: ödül parası bir sonraki ödüle sayılıyordu (240 → 460), düzeltildi",
+    "bekçi 19 + 20 test · 10/10 + 11/11 mutasyon · duman 54/54 · APK 11,24 MiB"
+   ]
+  },
+  {
+   "tarih": "24.09.2026",
    "etiket": "T9d — arayüz/metin düzeltmeleri (D-148)",
    "baslik": "Para her yerde <b>tek biçimde</b>; tost görevi <b>3 tosta</b> indi",
    "govde": "T9b taramasının arayüz ve metin bulguları kapandı. Para artık üst şeritte, zeminde, ödülde aynı yazılıyor: “6.042”, “1,2 Mn”. Hat bitince alt bantta günlük görev duruyor.<br><br><b>Ölçülen tek kol, tost görevi:</b> elle 5 tost ortalama 5,1 dk sürüyordu ama 1,4–8,9 dk arasında saçılıyordu, çünkü garsonlar hazır tostu önce kapıyor. Kullanıcı 3 tostu seçti: ortalama 2,7 dk, en kötü 3,9 dk. Görev yine yalnız oyuncunun tostunu sayıyor.",

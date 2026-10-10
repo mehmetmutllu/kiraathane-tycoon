@@ -216,14 +216,14 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "ozet": {
-  "etiket": "Bu oturum — Sprint A (10 Ekim)",
-  "baslik": "Mağaza, kayıt ve pil <b>sağlamlaştırıldı</b>",
-  "aciklama": "Satın almalar kaybolmuyor, kayıt telefonun kalıcı deposunda yedekli, reklam takılmıyor, panel açıkken sahne çizilmiyor. Android 1.0.1 paketi hazır; iOS parçaları onay bekliyor."
+  "etiket": "Bu oturum — Sprint B kısmi (10 Ekim)",
+  "baslik": "Eşyaların <b>küçük resimleri</b> ve yeni metinler hazır",
+  "aciklama": "38 kozmetiğin gerçek resmi çekildi, metinler ChatGPT'den geçti, ekran envanteri ve kesim betikleri hazır. ChatGPT'nin yeni arayüz yönleri beğenilmedi; tasarım turu durdu, mor dil geçerli."
  },
  "siradaki": {
-  "etiket": "Sırada — Sprint B",
-  "baslik": "Arayüz <b>ChatGPT tasarım turu</b>",
-  "aciklama": "Paneller, alt bar ve pullar ChatGPT'ye çizdirilir (renkleri o seçer); yeni metinler iki dilde gözden geçirilir. iOS onayı gelince 1.0.1 iCloud kaydıyla gider."
+  "etiket": "Sırada — Sprint C",
+  "baslik": "Mağazaya <b>küçük resimleri bağla</b> + arayüz kusurları",
+  "aciklama": "Mevcut imzayla: pullar yerine eşyanın resmi, görev bandı \"0/1\", kırmızı kutu, dar ekranda kesik şerit. iOS onayı gelince 1.0.1 iCloud kaydıyla gider."
  },
  "donemler": [
   {
@@ -397,6 +397,18 @@ h2{font-size:21px;font-weight:800}
  "gunluk": [
   {
    "tarih": "10.10.2026",
+   "etiket": "Sprint B kısmi — 3 ajan + ChatGPT (D-164)",
+   "baslik": "Mağaza eşyaları artık <b>kendi resmiyle</b> hazır; tasarım turu durdu",
+   "govde": "38 kozmetiğin gerçek küçük resmi oyunun kendi modelleriyle çekildi (çapraz iki renk pulların yerine geçecek; bağlama Sprint C'de). Yeni metinler ChatGPT'den geçti, öğreticinin İngilizce satırları telefonda artık kesilmiyor.<br><br>ChatGPT'den baştan arayüz yönü iki turda reddedildi; doğru soru 'imzayı bozmadan mağazayı güzelleştir' çıktı, sonra tur durduruldu. Mor dil (D-107) geçerli.",
+   "maddeler": [
+    "test <b>1861</b>",
+    "küçük resim <b>38</b> · toplam <b>143 KB</b>",
+    "mikrometin <b>16</b> metin değişti",
+    "ekran envanteri <b>22</b> ekran"
+   ]
+  },
+  {
+   "tarih": "10.10.2026",
    "etiket": "Sprint A — 4 ajan (D-163)",
    "baslik": "Para ve ilerleme <b>kaybolmuyor</b>, telefon daha serin",
    "govde": "Dört ajan paralel çalıştı: mağaza bağlantısı kendini yeniliyor ve her sonucu söylüyor, telefon değiştiren oyuncunun alımları kalıcı kimlikle dönüyor; reklam rızası/izin sırası düzeldi, takılan reklam 3 dakikada çözülüyor; kayıt yedekli ve bozulursa sessizce sıfırlanmıyor; görev hattının çift ödemesi kapandı.<br><br>Başlangıç Paketi geri yüklemesi: kıyafet + 100 elmas, kayıt başına bir kez (karar A).",
@@ -477,19 +489,6 @@ h2{font-size:21px;font-weight:800}
     "elmas paketleri <b>25/60/150</b> kodda, vitrinde kapalı",
     "aynı işlem iki kez ödül vermez · sıfırlama satın alımı silmez · geri yükle",
     "bekçi 25 test · 11/11 mutasyon · duman 55/55"
-   ]
-  },
-  {
-   "tarih": "24.09.2026",
-   "etiket": "F3 — reklam altyapısı (D-149) + ödüllü videonun ödülü (D-150)",
-   "baslik": "Reklam <b>bağlandı</b>: geçişli 3 dk, ödüllü video <b>isteğe bağlı</b>",
-   "govde": "AdMob eklentisi kuruldu, çocuk-güvenli kipte: reklam kimliği ve Privacy Sandbox izinleri çıkarıldı, banner yok. Geçişli reklam açılıştan 3 dk sonra, yalnız bir panel kapanınca ve ödül ekranının ardından hiç çıkmıyor.<br><br><b>Ölçülen: ödüllü videonun ödülü.</b> Seviye 2× ile video hakkı birlikte Kat 1'i %4,5 kısaltıyor (sınır %7). Hedef ekranında 2× Usta katmanını ilk gün bitiriyordu, orada düğme yok. Kullanıcı üç soruda da önerilen kolu seçti.",
-   "maddeler": [
-    "“İzle, 2× al”: <b>seviye ₺ · günlük 💎 · kısa yokluk</b> — çevrimdışı tavanı korunuyor, tavandaysa düğme yok",
-    "Usta “İzle”: <b>günde 1 video = 1 Usta</b> (izlemeyen 2,5 gün/Usta, izleyen 0,7)",
-    "video hakkı: <b>2 saatte 4 video</b>, her biri son dakikanın kazancı",
-    "kare yakaladı: ödül parası bir sonraki ödüle sayılıyordu (240 → 460), düzeltildi",
-    "bekçi 19 + 20 test · 10/10 + 11/11 mutasyon · duman 54/54 · APK 11,24 MiB"
    ]
   }
  ],
@@ -745,7 +744,7 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "gunlukArsiv": {
-  "kart": 82,
+  "kart": 83,
   "ilk": "05.06 – 17.06.2026",
   "son": "24.09.2026",
   "yer": "memory-bank/arsiv/pano-gunluk.json"

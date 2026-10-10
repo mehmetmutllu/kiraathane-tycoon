@@ -4935,3 +4935,13 @@ dalında bekler** — Apple portalında App ID → iCloud açılmadan imza düş
 Android 1.0.1 (kod 10001) TAM zip arkadaşa. Defter: `docs/sprintler/sprint-A-defter.md`.
 **Sıra kilidi uyarısı (e25cfc5, tick.ts):** ölçüm commit'i yok — bilerek: dokunuş denge sayısı değil NÖTR hata düzeltmesi
 (`teasServedByArea` klonu + önceden tamamlanmış görevin yeniden ödenmemesi; normal akışta ödeme aynı). Bekçi `tests/sprintA-p3.test.ts`, 4/4 mutasyon.
+
+## D-164 · Sprint B: ChatGPT tasarım turu DURDU; yeni stil yok, imza korunur (2026-10-10)
+
+**Karar (kullanıcı):** ChatGPT'den baştan tasarım yönü istemek iki turda reddedildi (YÖN 1 krem/kahve "zerre beğenmedim";
+A ahşap / B taze-renkli / C neon — "hâlâ çok kötü"). Doğru soru **"imzayı bozmadan mağazayı güzelleştir"** çıktı: D-107 mor
+paleti + Luckiest Guy/Baloo 2 + panel yerleşimi kısıt verilince ChatGPT mağaza cilası (küçük resimli şerit, büyük elmas
+kartları + bonus kurdeleleri, Başlangıç Paketi afişi) çizdi; kullanıcı ardından "boşver" dedi, tur burada durdu, görsel
+indirilmedi. **D-107 geçerli kalır**; yeni renk ailesi önerilmez. Sprint B'den kalan iş kullanıcı açarsa: imzalı mağaza cilası
+→ parça sayfası → kesim (betik hazır `tools/ui-kit/`). Biten: 38 küçük resim (`public/assets/thumbs/`), mikrometin turu
+(`docs/metinler/sprint-B-mikrometin.md`), ekran envanteri (`docs/tasarim/sprint-B/`). Plan: `docs/sprintler/sprint-B-plan.md`.
