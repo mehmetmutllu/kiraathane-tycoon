@@ -11,10 +11,10 @@ import type { SatinAlSonuc } from '../../game/satinAlimTipleri';
 
 /** Sonucun metni (Türkçe = i18n anahtarı; çağıran `t()` ile çevirir). `tamam`ın yerine ödül kartı çıkar. */
 const SONUC_METNI: Record<SatinAlSonuc, string> = {
-  tamam: 'Satın alma tamam!',
+  tamam: 'Satın alma başarılı!',
   vazgecti: 'Satın almadan vazgeçtin.',
-  bekliyor: 'Ödeme onay bekliyor; onaylanınca ödülün gelecek.',
-  zatenSahip: 'Bu ürün zaten sende; geri yüklendi.',
+  bekliyor: 'Ödeme bekleniyor. Onaylanınca ödülün gelecek.',
+  zatenSahip: 'Bu ürün zaten sende. Geri yüklendi!',
   hata: 'Mağazaya ulaşılamadı. Tekrar dene.',
 };
 export const sonucAnahtari = (s: SatinAlSonuc) => SONUC_METNI[s];

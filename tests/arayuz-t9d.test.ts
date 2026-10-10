@@ -170,7 +170,7 @@ describe('K1 — hat sonu günlük görev bandı', () => {
 describe('K3 — Sv 2-4 ekranı', () => {
   it('katlanacak ödül yoksa tek "Harika!", "İzle, 2×" gizli', () => {
     expect(HUD).toMatch(/const katlanir = amount > 0 \|\| diamonds > 0;/);
-    expect(HUD).toMatch(/\{katlanir \? t\('Al'\) : t\('Harika!'\)\}/);
+    expect(HUD).toMatch(/\{katlanir \? t\('Ücretsiz al'\) : t\('Harika!'\)\}/);
     expect(HUD).toMatch(/\{katlanir && onIzle && \(\s*<button\s+className=\{`sheet-cta ad/);
   });
 });

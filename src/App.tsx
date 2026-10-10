@@ -14,9 +14,9 @@ import { t } from './i18n';
 
 /** Kayıt açılırken sorun çıktıysa oyuncuya BİR KEZ söylenir (Sprint A P3: sessiz sıfırlama yok). */
 const KAYIT_SORUNU: Record<KayitSorunu, string> = {
-  yedekten: 'Kaydın bozulmuştu; birkaç dakika önceki yedekten devam ediyorsun.',
-  onarildi: 'Kaydında bozuk bir değer vardı; düzelttik, ilerlemen korundu.',
-  sifirdan: 'Kaydın okunamadı, oyun baştan başladı. Eski kayıt cihazda saklı; destekle iletişime geçebilirsin.',
+  yedekten: 'Kayıt sorunu oluştu. Yedekten devam ediyorsun.',
+  onarildi: 'Kayıt düzeltildi. İlerlemen korundu.',
+  sifirdan: 'Kayıt okunamadı. Yeni oyun başladı. Eski kaydın cihazda duruyor; destekten yardım alabilirsin.',
 };
 
 const KEY_MAP: Record<string, [number, number]> = {

@@ -31,11 +31,11 @@ export const ONBOARDING = {
    */
   metin: {
     yuru: 'Ekranı sürükle, yürü',
-    'cay-al': 'Ocağa yürü, yanında dur',
-    servis: 'Çay bekleyenin yanına git',
-    'servis-bos': 'Tepsin boş, ocağa uğra',
+    'cay-al': 'Ocağa git, yanında dur',
+    servis: 'Bekleyene git',
+    'servis-bos': 'Tepsin boşsa ocağa git',
     para: 'Paranın üstünden geç',
-    'para-bekle': 'Müşteri içip ödeyecek',
+    'para-bekle': 'Müşteri içer, sonra öder',
     pad: 'Alanda dur, masa açılsın',
   } as const,
   /** Satırın harf tavanı (yukarıdaki kural; bekçi okur). */

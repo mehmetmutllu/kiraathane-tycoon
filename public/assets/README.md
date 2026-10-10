@@ -146,6 +146,8 @@ ayrı CC0 paket; eklenince ayrı modüler klasöre (`public/assets/models/<paket
 
 > iOS yerel açılış görseli (`ios/App/App/Assets.xcassets/Splash.imageset/`, 2732²) aynı logo + oyunun mor zemini.
 
+**Kozmetik küçük resimleri (`public/assets/thumbs/<tur>-<id>.webp`, 38 adet, 192², saydam — Sprint B):** oyunun kendi modelleri/bileşenleriyle çekildi (`npx tsx tools/kucuk-resim.mjs`); kaynak yukarıdaki KayKit paketleri + projenin ilkel çizimleri, lisans aynı (CC0 / projenin kendi görseli). Bekçi: `tests/kucuk-resim.test.ts`.
+
 ## Sesler (`public/assets/audio/`) — **KLASÖR BİLEREK BOŞ**
 
 **Kaynak seçildi ve seçim "dosya değil KOD" oldu (E4 · D-096).** Sesler

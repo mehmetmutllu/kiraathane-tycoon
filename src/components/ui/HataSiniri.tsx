@@ -15,13 +15,13 @@ import { dil } from '../../i18n';
 // i18n: geçici sabit — orkestratör t() anahtarlarına taşıyacak (_taslak, ChatGPT mikrometin turu).
 const METIN = {
   tr: {
-    baslik: 'Bir şeyler ters gitti',
-    aciklama: 'Oyun beklenmedik bir hatayla durdu. Yeniden başlatınca son kaydından devam edersin.',
+    baslik: 'Oyun durdu',
+    aciklama: 'Beklenmeyen bir hata oluştu. Yeniden başlatıp son kaydından devam et.',
     dugme: 'Yeniden başlat',
   },
   en: {
-    baslik: 'Something went wrong',
-    aciklama: 'The game stopped because of an unexpected error. Restart to continue from your last save.',
+    baslik: 'Game stopped',
+    aciklama: 'An unexpected error occurred. Restart to resume your last save.',
     dugme: 'Restart',
   },
 } as const;

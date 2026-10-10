@@ -1,0 +1,68 @@
+{
+  "olcek": 0.5,
+  "parcalar": [
+    {
+      "ad": "panel"
+    },
+    {
+      "ad": "modal"
+    },
+    {
+      "ad": "kart"
+    },
+    {
+      "ad": "kapat",
+      "dokuz": false
+    },
+    {
+      "ad": "sekme-secili"
+    },
+    {
+      "ad": "sekme-secisiz"
+    },
+    {
+      "ad": "altbar-secili"
+    },
+    {
+      "ad": "altbar-secisiz"
+    },
+    {
+      "ad": "fiyat-hapi"
+    },
+    {
+      "ad": "kilit-rozeti",
+      "dokuz": false
+    },
+    {
+      "ad": "bildirim-noktasi",
+      "dokuz": false
+    },
+    {
+      "ad": "dugme-birincil"
+    },
+    {
+      "ad": "dugme-ikincil"
+    },
+    {
+      "ad": "dugme-devredisi"
+    },
+    {
+      "ad": "cubuk-bos"
+    },
+    {
+      "ad": "cubuk-dolu"
+    },
+    {
+      "ad": "kare-bos"
+    },
+    {
+      "ad": "kare-secili"
+    },
+    {
+      "ad": "kare-kilitli"
+    },
+    {
+      "ad": "kare-uygulanan"
+    }
+  ]
+}

@@ -1,0 +1,1492 @@
+{
+ "hataSayisi": {
+  "390x844-tr": 0,
+  "390x844-en": 0,
+  "360x640-tr": 0,
+  "360x640-en": 0
+ },
+ "notlar": [
+  "[390x844-tr] ilerleme: masa=7 padsDone=9 görev=q_z2table4",
+  "[390x844-en] ilerleme: masa=7 padsDone=9 görev=q_z2table4",
+  "[360x640-tr] ilerleme: masa=7 padsDone=9 görev=q_z2table4",
+  "[360x640-en] ilerleme: masa=7 padsDone=9 görev=q_z2table4"
+ ],
+ "ham": {
+  "390x844-tr": {
+   "yukleme": {
+    "sinif": {
+     "splash__glow": 1,
+     "splash__logo": 1,
+     "splash__bar": 1,
+     "splash__fill": 1,
+     "splash__hint": 1
+    },
+    "dugme": {},
+    "enUzun": [
+     "Semaver ısınıyor…"
+    ]
+   },
+   "kafe-adi": {
+    "sinif": {
+     "modal-card": 1,
+     "reward-card": 1,
+     "kafe-adi-kart": 1,
+     "reward-title": 1,
+     "onay-metin": 1,
+     "kafe-adi-girdi": 1,
+     "kafe-adi-sayac": 1,
+     "sheet-cta": 1
+    },
+    "dugme": {
+     "sheet-cta": 1
+    },
+    "enUzun": [
+     "Kapının üstündeki tabelada bu yazacak. Sonra Ayarlar'dan değiştirebilirsin.",
+     "Kafene bir ad ver",
+     "Tamam"
+    ]
+   },
+   "ogretici": {
+    "sinif": {
+     "ogretici-el-alan": 1,
+     "ogretici-taban": 1,
+     "ogretici-dugme": 1,
+     "ogretici-el": 1,
+     "ogretici-satir": 1,
+     "ogretici-noktalar": 1,
+     "simdi": 1,
+     "ogretici-metin": 1,
+     "ogretici-atla": 1
+    },
+    "dugme": {
+     "ogretici-atla": 1
+    },
+    "enUzun": [
+     "Ekranı sürükle, yürü",
+     "Atla"
+    ]
+   },
+   "hud": {
+    "sinif": {
+     "topbar": 1,
+     "rep": 1,
+     "rep-medal": 1,
+     "rep-num": 1,
+     "rep-bar": 1,
+     "rep-fill": 1,
+     "purse": 1,
+     "cur": 2,
+     "cur-val": 2,
+     "gem": 1,
+     "round-btn": 3,
+     "gear": 1,
+     "edge-arrow": 1,
+     "edge-arrow-glyph": 1,
+     "side-stack": 1,
+     "tray-btn": 1,
+     "video-btn": 1,
+     "tray-count": 1,
+     "band": 1,
+     "band-photo": 1,
+     "band-body": 1,
+     "band-kicker": 1,
+     "band-title": 1,
+     "band-sub": 1,
+     "band-reward": 1,
+     "band-go": 1,
+     "botnav": 1,
+     "navtab": 4,
+     "kutla": 2,
+     "navtab-icon": 4,
+     "navtab-bang": 2,
+     "navtab-label": 4
+    },
+    "dugme": {
+     "rep": 1,
+     "round-btn": 3,
+     "edge-arrow": 1,
+     "band": 1,
+     "navtab": 4
+    },
+    "enUzun": [
+     "SALON 2Salon 2: 4. Masayı aç1.400+200",
+     "SALON 2Salon 2: 4. Masayı aç1.400",
+     "Salon 2: 4. Masayı aç"
+    ]
+   },
+   "gorevler": {
+    "sinif": {
+     "modal-card": 1,
+     "screen": 1,
+     "screen-top": 1,
+     "sheet-back": 1,
+     "screen-title": 1,
+     "screen-purse": 1,
+     "screen-cur": 2,
+     "sheet-body": 1,
+     "sheet-sec": 4,
+     "goals": 1,
+     "goal": 3,
+     "ready": 2,
+     "goal-top": 3,
+     "goal-num": 3,
+     "goal-track": 3,
+     "goal-fill": 3,
+     "goal-foot": 3,
+     "goal-note": 3,
+     "goal-claim": 2,
+     "goal-reward": 1,
+     "sheet-foot-note": 1,
+     "qbig": 1,
+     "qbig-photo": 1,
+     "qbig-body": 1,
+     "qbig-kicker": 1,
+     "qbig-title": 1,
+     "band-sub": 1,
+     "qbig-reward": 1,
+     "qlist": 2,
+     "qrow": 25,
+     "next": 3,
+     "qrow-dot": 3,
+     "qrow-title": 25,
+     "qrow-check": 22,
+     "qrow-reward": 22
+    },
+    "dugme": {
+     "sheet-back": 1,
+     "goal-claim": 2,
+     "qbig": 1
+    },
+    "enUzun": [
+     "9 çayı kendi elinle götür0/9Her gün yenilenir3",
+     "14 çay servis et14/14Her gün yenilenirÖdülü al",
+     "520 ₺ kazan520/520Her gün yenilenirÖdülü al"
+    ]
+   },
+   "hedefler": {
+    "sinif": {
+     "modal-card": 1,
+     "screen": 1,
+     "screen-top": 1,
+     "sheet-back": 1,
+     "screen-title": 1,
+     "screen-purse": 1,
+     "screen-cur": 2,
+     "sheet-body": 1,
+     "rep-hero": 1,
+     "rep-hero-medal": 1,
+     "rep-hero-body": 1,
+     "rep-bar": 1,
+     "wide": 1,
+     "rep-fill": 1,
+     "rep-text": 1,
+     "usta-strip": 1,
+     "usta-count": 1,
+     "usta-body": 1,
+     "usta-price": 1,
+     "sheet-sec": 1,
+     "goals": 1,
+     "goal": 5,
+     "ready": 2,
+     "goal-top": 5,
+     "goal-tier": 5,
+     "goal-num": 5,
+     "goal-track": 5,
+     "goal-fill": 5,
+     "goal-foot": 5,
+     "goal-note": 5,
+     "goal-claim": 2,
+     "goal-reward": 3
+    },
+    "dugme": {
+     "sheet-back": 1,
+     "goal-claim": 2
+    },
+    "enUzun": [
+     "8Seviye 81108/1538Her hedef seviyeni yükseltir · seviye bonusu +%14 servis hızı.",
+     "Seviye 81108/1538Her hedef seviyeni yükseltir · seviye bonusu +%14 servis hızı.",
+     "0/7Usta masalarMasayı para tavanına çıkarınca Usta noktası açılır25"
+    ]
+   },
+   "magaza-kiyafet": {
+    "sinif": {
+     "modal-card": 1,
+     "screen": 1,
+     "screen-top": 1,
+     "sheet-back": 1,
+     "screen-title": 1,
+     "screen-purse": 1,
+     "screen-cur": 2,
+     "sheet-body": 1,
+     "shop-card": 1,
+     "shop-tabs": 1,
+     "shop-tab": 7,
+     "elmas": 4,
+     "active": 1,
+     "shop-tab-lock": 1,
+     "shop-bildirim-capa": 1,
+     "shop-preview": 1,
+     "preview-canvas": 1,
+     "shop-strip": 1,
+     "shop-chip": 7,
+     "sel": 2,
+     "shop-chip-swatch": 7,
+     "shop-chip-badge": 1,
+     "shop-name-row": 1,
+     "shop-buy": 1
+    },
+    "dugme": {
+     "sheet-back": 1,
+     "shop-tab": 7,
+     "shop-chip": 7,
+     "shop-buy [devre dışı]": 1
+    },
+    "enUzun": [
+     "Klasik ÇaycıŞu an giyiyorsun",
+     "Şu an giyiyorsun",
+     "Klasik Çaycı"
+    ]
+   },
+   "magaza-tepsi": {
+    "sinif": {
+     "modal-card": 1,
+     "screen": 1,
+     "screen-top": 1,
+     "sheet-back": 1,
+     "screen-title": 1,
+     "screen-purse": 1,
+     "screen-cur": 2,
+     "sheet-body": 1,
+     "shop-card": 1,
+     "shop-tabs": 1,
+     "shop-tab": 7,
+     "elmas": 4,
+     "active": 1,
+     "shop-tab-lock": 1,
+     "shop-bildirim-capa": 1,
+     "shop-preview": 1,
+     "preview-canvas": 1,
+     "shop-strip": 1,
+     "shop-chip": 5,
+     "sel": 2,
+     "shop-chip-swatch": 5,
+     "shop-chip-badge": 1,
+     "shop-name-row": 1,
+     "shop-buy": 1
+    },
+    "dugme": {
+     "sheet-back": 1,
+     "shop-tab": 7,
+     "shop-chip": 5,
+     "shop-buy [devre dışı]": 1
+    },
+    "enUzun": [
+     "Klasik TepsiŞu an elinde",
+     "Klasik Tepsi",
+     "Şu an elinde"
+    ]
+   },
+   "magaza-dekor": {
+    "sinif": {
+     "modal-card": 1,
+     "screen": 1,
+     "screen-top": 1,
+     "sheet-back": 1,
+     "screen-title": 1,
+     "screen-purse": 1,
+     "screen-cur": 2,
+     "sheet-body": 1,
+     "shop-card": 1,
+     "shop-tabs": 1,
+     "shop-tab": 7,
+     "elmas": 4,
+     "active": 1,
+     "shop-tab-lock": 1,
+     "shop-bildirim-capa": 1,
+     "shop-preview": 1,
+     "preview-canvas": 1,
+     "shop-strip": 1,
+     "shop-chip": 12,
+     "sel": 1,
+     "shop-chip-swatch": 12,
+     "shop-name-row": 1,
+     "shop-buy": 1,
+     "kilitli": 1
+    },
+    "dugme": {
+     "sheet-back": 1,
+     "shop-tab": 7,
+     "shop-chip": 12,
+     "shop-buy [devre dışı]": 1
+    },
+    "enUzun": [
+     "Lambalı Radyo3. Salon'u açınca alabilirsin",
+     "3. Salon'u açınca alabilirsin",
+     "3. Salon'da açılır"
+    ]
+   },
+   "magaza-masa": {
+    "sinif": {
+     "modal-card": 1,
+     "screen": 1,
+     "screen-top": 1,
+     "sheet-back": 1,
+     "screen-title": 1,
+     "screen-purse": 1,
+     "screen-cur": 2,
+     "sheet-body": 1,
+     "shop-card": 1,
+     "shop-tabs": 1,
+     "shop-tab": 7,
+     "elmas": 4,
+     "active": 1,
+     "shop-tab-lock": 1,
+     "shop-bildirim-capa": 1,
+     "shop-locked": 1,
+     "shop-locked-icon": 1,
+     "shop-locked-title": 1,
+     "shop-locked-desc": 1,
+     "shop-locked-reqs": 1,
+     "req": 2
+    },
+    "dugme": {
+     "sheet-back": 1,
+     "shop-tab": 7
+    },
+    "enUzun": [
+     "Tüm salonları aç ve bütün masaları son seviyeye getir; sonra masalarını renklendirebilirsin.",
+     "Salon 2/3 Son seviye masa 0/7",
+     "Masa temaları kilitli"
+    ]
+   },
+   "magaza-zemin": {
+    "sinif": {
+     "modal-card": 1,
+     "screen": 1,
+     "screen-top": 1,
+     "sheet-back": 1,
+     "screen-title": 1,
+     "screen-purse": 1,
+     "screen-cur": 2,
+     "sheet-body": 1,
+     "shop-card": 1,
+     "shop-tabs": 1,
+     "shop-tab": 7,
+     "elmas": 4,
+     "shop-tab-lock": 1,
+     "active": 1,
+     "shop-bildirim-capa": 1,
+     "shop-preview": 1,
+     "preview-canvas": 1,
+     "shop-zones": 1,
+     "shop-zone-btn": 2,
+     "sel": 3,
+     "shop-strip": 1,
+     "shop-chip": 5,
+     "shop-chip-swatch": 5,
+     "shop-chip-badge": 1,
+     "shop-name-row": 1,
+     "shop-buy": 1
+    },
+    "dugme": {
+     "sheet-back": 1,
+     "shop-tab": 7,
+     "shop-zone-btn": 2,
+     "shop-chip": 5,
+     "shop-buy [devre dışı]": 1
+    },
+    "enUzun": [
+     "Klasik ParkeŞu an salonda",
+     "Şu an salonda",
+     "Klasik Parke"
+    ]
+   },
+   "magaza-duvar": {
+    "sinif": {
+     "modal-card": 1,
+     "screen": 1,
+     "screen-top": 1,
+     "sheet-back": 1,
+     "screen-title": 1,
+     "screen-purse": 1,
+     "screen-cur": 2,
+     "sheet-body": 1,
+     "shop-card": 1,
+     "shop-tabs": 1,
+     "shop-tab": 7,
+     "elmas": 4,
+     "shop-tab-lock": 1,
+     "active": 1,
+     "shop-bildirim-capa": 1,
+     "shop-preview": 1,
+     "preview-canvas": 1,
+     "shop-zones": 1,
+     "shop-zone-btn": 2,
+     "sel": 3,
+     "shop-strip": 1,
+     "shop-chip": 3,
+     "shop-chip-swatch": 3,
+     "shop-chip-badge": 1,
+     "shop-name-row": 1,
+     "shop-buy": 1
+    },
+    "dugme": {
+     "sheet-back": 1,
+     "shop-tab": 7,
+     "shop-zone-btn": 2,
+     "shop-chip": 3,
+     "shop-buy [devre dışı]": 1
+    },
+    "enUzun": [
+     "Krem BadanaŞu an salonda",
+     "Şu an salonda",
+     "Krem Badana"
+    ]
+   },
+   "magaza-paketler": {
+    "sinif": {
+     "modal-card": 1,
+     "screen": 1,
+     "screen-top": 1,
+     "sheet-back": 1,
+     "screen-title": 1,
+     "screen-purse": 1,
+     "screen-cur": 2,
+     "sheet-body": 1,
+     "shop-card": 1,
+     "shop-tabs": 1,
+     "shop-tab": 7,
+     "elmas": 4,
+     "active": 1,
+     "shop-tab-lock": 1,
+     "shop-bildirim-capa": 1,
+     "paketler": 1,
+     "goals": 1,
+     "goal": 5,
+     "goal-top": 5,
+     "goal-foot": 5,
+     "goal-note": 5,
+     "goal-claim": 5,
+     "goal-reward": 4,
+     "sheet-foot-note": 1,
+     "sheet-cta": 1
+    },
+    "dugme": {
+     "sheet-back": 1,
+     "shop-tab": 7,
+     "goal-claim": 5,
+     "sheet-cta": 1
+    },
+    "enUzun": [
+     "Reklamları KaldırOyunun arasına giren reklamlar kalkar. Ödüllü videoları yine istediğinde izlersin. Her gün 10 elmas hediye.Test",
+     "Oyunun arasına giren reklamlar kalkar. Ödüllü videoları yine istediğinde izlersin. Her gün 10 elmas hediye.",
+     "Başlangıç Paketi100100 elmas ve yalnız bu pakette olan Kurucu kıyafeti. Bir kez alınabilir.Test"
+    ]
+   },
+   "satin-odul": {
+    "sinif": {
+     "modal-card": 1,
+     "reward-card": 1,
+     "reward-glow": 1,
+     "reward-title": 1,
+     "reward-amount": 1,
+     "odul-sat": 1,
+     "sheet-cta": 1
+    },
+    "dugme": {
+     "sheet-cta": 1
+    },
+    "enUzun": [
+     "Bir Avuç Elmas",
+     "Harika!",
+     "+25"
+    ]
+   },
+   "cayci-oyuncu": {
+    "sinif": {
+     "modal-card": 1,
+     "screen": 1,
+     "screen-top": 1,
+     "sheet-back": 1,
+     "screen-title": 1,
+     "screen-purse": 1,
+     "screen-cur": 2,
+     "sheet-body": 1,
+     "char-card": 1,
+     "char-head": 1,
+     "char-lvl": 1,
+     "char-tabs": 1,
+     "char-tab": 3,
+     "active": 1,
+     "char-canvas": 1,
+     "char-stat": 3,
+     "char-stat-icon": 3,
+     "char-stat-info": 3,
+     "char-stat-name": 3,
+     "char-stat-val": 3,
+     "char-buy": 3
+    },
+    "dugme": {
+     "sheet-back": 1,
+     "char-tab": 3,
+     "char-buy": 3
+    },
+    "enUzun": [
+     "Para Mıknatısı2,6 3,4 alan",
+     "Hareket Hızı4,5 4,65 hız",
+     "Tepsi2 3 bardak"
+    ]
+   },
+   "cayci-garson": {
+    "sinif": {
+     "modal-card": 1,
+     "screen": 1,
+     "screen-top": 1,
+     "sheet-back": 1,
+     "screen-title": 1,
+     "screen-purse": 1,
+     "screen-cur": 2,
+     "sheet-body": 1,
+     "char-card": 1,
+     "char-head": 1,
+     "char-lvl": 1,
+     "char-tabs": 1,
+     "char-tab": 3,
+     "active": 1,
+     "char-canvas": 1,
+     "char-stat": 2,
+     "char-stat-icon": 2,
+     "char-stat-info": 2,
+     "char-stat-name": 2,
+     "char-stat-val": 2,
+     "char-buy": 2,
+     "char-note": 1
+    },
+    "dugme": {
+     "sheet-back": 1,
+     "char-tab": 3,
+     "char-buy": 2
+    },
+    "enUzun": [
+     "Garsonların ortak tepsisi ve hızı — hepsi tek havuzdan, her masaya.",
+     "Tepsi2 3 ürün",
+     "Hız1,5 2 hız"
+    ]
+   },
+   "cayci-bulasikci": {
+    "sinif": {
+     "modal-card": 1,
+     "screen": 1,
+     "screen-top": 1,
+     "sheet-back": 1,
+     "screen-title": 1,
+     "screen-purse": 1,
+     "screen-cur": 2,
+     "sheet-body": 1,
+     "char-card": 1,
+     "char-head": 1,
+     "char-lvl": 1,
+     "char-tabs": 1,
+     "char-tab": 3,
+     "active": 1,
+     "char-canvas": 1,
+     "char-stat": 2,
+     "char-stat-icon": 2,
+     "char-stat-info": 2,
+     "char-stat-name": 2,
+     "char-stat-val": 2,
+     "char-buy": 2,
+     "char-note": 1
+    },
+    "dugme": {
+     "sheet-back": 1,
+     "char-tab": 3,
+     "char-buy": 2
+    },
+    "enUzun": [
+     "Tüm salonların bulaşıkçılarına ortak: leğen tek turda daha çok taşır, hız turu kısaltır.",
+     "Leğen2 4 bardak",
+     "Hız2 2,4 hız"
+    ]
+   },
+   "ayarlar": {
+    "sinif": {
+     "modal-card": 1,
+     "screen": 1,
+     "screen-top": 1,
+     "sheet-back": 1,
+     "screen-title": 1,
+     "screen-purse": 1,
+     "screen-cur": 2,
+     "sheet-body": 1,
+     "sheet-pad": 1,
+     "setting-row": 5,
+     "setting-label": 7,
+     "kafe-adi-degistir": 1,
+     "dil-satir": 1,
+     "dil-secim": 1,
+     "dil-secenek": 3,
+     "secili": 1,
+     "switch": 3,
+     "on": 2,
+     "switch-knob": 3,
+     "setting-slider": 2,
+     "setting-val": 2,
+     "sheet-sec": 1,
+     "kunye": 1,
+     "sheet-cta": 1,
+     "yasal-satir": 1,
+     "sheet-foot-note": 1,
+     "danger-btn": 1
+    },
+    "dugme": {
+     "sheet-back": 1,
+     "kafe-adi-degistir": 1,
+     "dil-secenek": 3,
+     "switch": 3,
+     "sheet-cta": 1,
+     "danger-btn": 1
+    },
+    "enUzun": [
+     "DilDil değişince oyun yeniden yüklenirOtomatikTürkçeEnglish",
+     "Kayıt bu cihazda tutulur. Oyunu sıfırlarsan geri alınamaz.",
+     "DilDil değişince oyun yeniden yüklenir"
+    ]
+   },
+   "odul": {
+    "sinif": {
+     "modal-card": 1,
+     "reward-card": 1,
+     "reward-glow": 1,
+     "reward-title": 1,
+     "reward-amount": 1,
+     "odul-sat": 2,
+     "odul-arti": 1,
+     "iki-kat": 1,
+     "odul-etiket": 1,
+     "odul-gecis": 1,
+     "odul-eski": 1,
+     "odul-ok": 1,
+     "sheet-cta": 2,
+     "ad": 1
+    },
+    "dugme": {
+     "sheet-cta": 2
+    },
+    "enUzun": [
+     "+1.250+Servis hızı%2%2,5",
+     "Servis hızı%2%2,5",
+     "Servis hızı"
+    ]
+   },
+   "video": {
+    "sinif": {
+     "usta-card": 1,
+     "sheet-x": 1,
+     "usta-x": 1,
+     "usta-badge": 1,
+     "usta-head": 1,
+     "usta-note": 2,
+     "usta-acts": 1,
+     "master-buy": 1,
+     "ad": 1,
+     "off": 1
+    },
+    "dugme": {
+     "sheet-x": 1,
+     "master-buy [devre dışı]": 1
+    },
+    "enUzun": [
+     "Bir reklam izle, son dakikada kazandığın kadar para al",
+     "Önce biraz servis yap — ödül son dakikanın kazancı",
+     "İzle"
+    ]
+   },
+   "usta": {
+    "sinif": {
+     "usta-card": 1,
+     "sheet-x": 1,
+     "usta-x": 1,
+     "usta-badge": 1,
+     "usta-head": 1,
+     "usta-note": 1,
+     "usta-acts": 1,
+     "master-buy": 2,
+     "ad": 1
+    },
+    "dugme": {
+     "sheet-x": 1,
+     "master-buy": 2
+    },
+    "enUzun": [
+     "Bu masanın bahşişi kalıcı olarak ×1,5 olur",
+     "Masa 1 · Usta",
+     "· Usta"
+    ]
+   },
+   "teklif": {
+    "sinif": {
+     "modal-card": 1,
+     "reward-card": 1,
+     "teklif-card": 1,
+     "teklif-ust": 1,
+     "reward-title": 1,
+     "shop-preview": 1,
+     "preview-canvas": 1,
+     "teklif-liste": 1,
+     "teklif-ik": 2,
+     "teklif-etiket": 1,
+     "sheet-cta": 2,
+     "ad": 1
+    },
+    "dugme": {
+     "sheet-cta": 2
+    },
+    "enUzun": [
+     "Kurucu kıyafeti Yalnız bu paketteBordo yelek ve fes",
+     "100 elmasKıyafet, tepsi ve dekor için",
+     "Kıyafet, tepsi ve dekor için"
+    ]
+   }
+  },
+  "390x844-en": {
+   "yukleme": {
+    "sinif": {
+     "splash__glow": 1,
+     "splash__logo": 1,
+     "splash__bar": 1,
+     "splash__fill": 1,
+     "splash__hint": 1
+    },
+    "dugme": {},
+    "enUzun": [
+     "Warming up the samovar…"
+    ]
+   },
+   "kafe-adi": {
+    "sinif": {
+     "modal-card": 1,
+     "reward-card": 1,
+     "kafe-adi-kart": 1,
+     "reward-title": 1,
+     "onay-metin": 1,
+     "kafe-adi-girdi": 1,
+     "kafe-adi-sayac": 1,
+     "sheet-cta": 1
+    },
+    "dugme": {
+     "sheet-cta": 1
+    },
+    "enUzun": [
+     "This will appear on the sign above the door. You can change it later in Settings.",
+     "Name your café",
+     "Done"
+    ]
+   },
+   "ogretici": {
+    "sinif": {
+     "ogretici-el-alan": 1,
+     "ogretici-taban": 1,
+     "ogretici-dugme": 1,
+     "ogretici-el": 1,
+     "ogretici-satir": 1,
+     "ogretici-noktalar": 1,
+     "simdi": 1,
+     "ogretici-metin": 1,
+     "ogretici-atla": 1
+    },
+    "dugme": {
+     "ogretici-atla": 1
+    },
+    "enUzun": [
+     "Drag to move",
+     "Skip"
+    ]
+   },
+   "hud": {
+    "sinif": {
+     "topbar": 1,
+     "rep": 1,
+     "rep-medal": 1,
+     "rep-num": 1,
+     "rep-bar": 1,
+     "rep-fill": 1,
+     "purse": 1,
+     "cur": 2,
+     "cur-val": 2,
+     "gem": 1,
+     "round-btn": 3,
+     "gear": 1,
+     "edge-arrow": 1,
+     "edge-arrow-glyph": 1,
+     "side-stack": 1,
+     "tray-btn": 1,
+     "video-btn": 1,
+     "tray-count": 1,
+     "band": 1,
+     "band-photo": 1,
+     "band-body": 1,
+     "band-kicker": 1,
+     "band-title": 1,
+     "band-sub": 1,
+     "band-reward": 1,
+     "band-go": 1,
+     "botnav": 1,
+     "navtab": 4,
+     "kutla": 2,
+     "navtab-icon": 4,
+     "navtab-bang": 2,
+     "navtab-label": 4
+    },
+    "dugme": {
+     "rep": 1,
+     "round-btn": 3,
+     "edge-arrow": 1,
+     "band": 1,
+     "navtab": 4
+    },
+    "enUzun": [
+     "HALL 2Hall 2: Unlock Table 41,400+200",
+     "HALL 2Hall 2: Unlock Table 41,400",
+     "Hall 2: Unlock Table 4"
+    ]
+   },
+   "gorevler": {
+    "sinif": {
+     "modal-card": 1,
+     "screen": 1,
+     "screen-top": 1,
+     "sheet-back": 1,
+     "screen-title": 1,
+     "screen-purse": 1,
+     "screen-cur": 2,
+     "sheet-body": 1,
+     "sheet-sec": 4,
+     "goals": 1,
+     "goal": 3,
+     "ready": 2,
+     "goal-top": 3,
+     "goal-num": 3,
+     "goal-track": 3,
+     "goal-fill": 3,
+     "goal-foot": 3,
+     "goal-note": 3,
+     "goal-claim": 2,
+     "goal-reward": 1,
+     "sheet-foot-note": 1,
+     "qbig": 1,
+     "qbig-photo": 1,
+     "qbig-body": 1,
+     "qbig-kicker": 1,
+     "qbig-title": 1,
+     "band-sub": 1,
+     "qbig-reward": 1,
+     "qlist": 2,
+     "qrow": 25,
+     "next": 3,
+     "qrow-dot": 3,
+     "qrow-title": 25,
+     "qrow-check": 22,
+     "qrow-reward": 22
+    },
+    "dugme": {
+     "sheet-back": 1,
+     "goal-claim": 2,
+     "qbig": 1
+    },
+    "enUzun": [
+     "Today's remaining reward: 10 · three new tasks tomorrow",
+     "Earn 520 coins520/520Resets every dayClaim Reward",
+     "Serve 14 teas14/14Resets every dayClaim Reward"
+    ]
+   },
+   "hedefler": {
+    "sinif": {
+     "modal-card": 1,
+     "screen": 1,
+     "screen-top": 1,
+     "sheet-back": 1,
+     "screen-title": 1,
+     "screen-purse": 1,
+     "screen-cur": 2,
+     "sheet-body": 1,
+     "rep-hero": 1,
+     "rep-hero-medal": 1,
+     "rep-hero-body": 1,
+     "rep-bar": 1,
+     "wide": 1,
+     "rep-fill": 1,
+     "rep-text": 1,
+     "usta-strip": 1,
+     "usta-count": 1,
+     "usta-body": 1,
+     "usta-price": 1,
+     "sheet-sec": 1,
+     "goals": 1,
+     "goal": 5,
+     "ready": 2,
+     "goal-top": 5,
+     "goal-tier": 5,
+     "goal-num": 5,
+     "goal-track": 5,
+     "goal-fill": 5,
+     "goal-foot": 5,
+     "goal-note": 5,
+     "goal-claim": 2,
+     "goal-reward": 3
+    },
+    "dugme": {
+     "sheet-back": 1,
+     "goal-claim": 2
+    },
+    "enUzun": [
+     "8Level 81105/1538Each goal raises your level · level bonus +14% service speed.",
+     "Level 81105/1538Each goal raises your level · level bonus +14% service speed.",
+     "0/7Master TablesReach the table's coin cap to unlock its Master point25"
+    ]
+   },
+   "magaza-kiyafet": {
+    "sinif": {
+     "modal-card": 1,
+     "screen": 1,
+     "screen-top": 1,
+     "sheet-back": 1,
+     "screen-title": 1,
+     "screen-purse": 1,
+     "screen-cur": 2,
+     "sheet-body": 1,
+     "shop-card": 1,
+     "shop-tabs": 1,
+     "shop-tab": 7,
+     "elmas": 4,
+     "active": 1,
+     "shop-tab-lock": 1,
+     "shop-bildirim-capa": 1,
+     "shop-preview": 1,
+     "preview-canvas": 1,
+     "shop-strip": 1,
+     "shop-chip": 7,
+     "sel": 2,
+     "shop-chip-swatch": 7,
+     "shop-chip-badge": 1,
+     "shop-name-row": 1,
+     "shop-buy": 1
+    },
+    "dugme": {
+     "sheet-back": 1,
+     "shop-tab": 7,
+     "shop-chip": 7,
+     "shop-buy [devre dışı]": 1
+    },
+    "enUzun": [
+     "Classic Tea MakerCurrently Wearing",
+     "Classic Tea Maker",
+     "Currently Wearing"
+    ]
+   },
+   "magaza-tepsi": {
+    "sinif": {
+     "modal-card": 1,
+     "screen": 1,
+     "screen-top": 1,
+     "sheet-back": 1,
+     "screen-title": 1,
+     "screen-purse": 1,
+     "screen-cur": 2,
+     "sheet-body": 1,
+     "shop-card": 1,
+     "shop-tabs": 1,
+     "shop-tab": 7,
+     "elmas": 4,
+     "active": 1,
+     "shop-tab-lock": 1,
+     "shop-bildirim-capa": 1,
+     "shop-preview": 1,
+     "preview-canvas": 1,
+     "shop-strip": 1,
+     "shop-chip": 5,
+     "sel": 2,
+     "shop-chip-swatch": 5,
+     "shop-chip-badge": 1,
+     "shop-name-row": 1,
+     "shop-buy": 1
+    },
+    "dugme": {
+     "sheet-back": 1,
+     "shop-tab": 7,
+     "shop-chip": 5,
+     "shop-buy [devre dışı]": 1
+    },
+    "enUzun": [
+     "Classic TrayCurrently Holding",
+     "Currently Holding",
+     "Classic Tray"
+    ]
+   },
+   "magaza-dekor": {
+    "sinif": {
+     "modal-card": 1,
+     "screen": 1,
+     "screen-top": 1,
+     "sheet-back": 1,
+     "screen-title": 1,
+     "screen-purse": 1,
+     "screen-cur": 2,
+     "sheet-body": 1,
+     "shop-card": 1,
+     "shop-tabs": 1,
+     "shop-tab": 7,
+     "elmas": 4,
+     "active": 1,
+     "shop-tab-lock": 1,
+     "shop-bildirim-capa": 1,
+     "shop-preview": 1,
+     "preview-canvas": 1,
+     "shop-strip": 1,
+     "shop-chip": 12,
+     "sel": 1,
+     "shop-chip-swatch": 12,
+     "shop-name-row": 1,
+     "shop-buy": 1,
+     "kilitli": 1
+    },
+    "dugme": {
+     "sheet-back": 1,
+     "shop-tab": 7,
+     "shop-chip": 12,
+     "shop-buy [devre dışı]": 1
+    },
+    "enUzun": [
+     "Table RadioAvailable after unlocking Hall 3",
+     "Available after unlocking Hall 3",
+     "3. Unlocked in Hall"
+    ]
+   },
+   "magaza-masa": {
+    "sinif": {
+     "modal-card": 1,
+     "screen": 1,
+     "screen-top": 1,
+     "sheet-back": 1,
+     "screen-title": 1,
+     "screen-purse": 1,
+     "screen-cur": 2,
+     "sheet-body": 1,
+     "shop-card": 1,
+     "shop-tabs": 1,
+     "shop-tab": 7,
+     "elmas": 4,
+     "active": 1,
+     "shop-tab-lock": 1,
+     "shop-bildirim-capa": 1,
+     "shop-locked": 1,
+     "shop-locked-icon": 1,
+     "shop-locked-title": 1,
+     "shop-locked-desc": 1,
+     "shop-locked-reqs": 1,
+     "req": 2
+    },
+    "dugme": {
+     "sheet-back": 1,
+     "shop-tab": 7
+    },
+    "enUzun": [
+     "Unlock all Halls and max out every table; then you can customize your tables.",
+     "Hall 2/3 Max Level Table 0/7",
+     "Table themes locked"
+    ]
+   },
+   "magaza-zemin": {
+    "sinif": {
+     "modal-card": 1,
+     "screen": 1,
+     "screen-top": 1,
+     "sheet-back": 1,
+     "screen-title": 1,
+     "screen-purse": 1,
+     "screen-cur": 2,
+     "sheet-body": 1,
+     "shop-card": 1,
+     "shop-tabs": 1,
+     "shop-tab": 7,
+     "elmas": 4,
+     "shop-tab-lock": 1,
+     "active": 1,
+     "shop-bildirim-capa": 1,
+     "shop-preview": 1,
+     "preview-canvas": 1,
+     "shop-zones": 1,
+     "shop-zone-btn": 2,
+     "sel": 3,
+     "shop-strip": 1,
+     "shop-chip": 5,
+     "shop-chip-swatch": 5,
+     "shop-chip-badge": 1,
+     "shop-name-row": 1,
+     "shop-buy": 1
+    },
+    "dugme": {
+     "sheet-back": 1,
+     "shop-tab": 7,
+     "shop-zone-btn": 2,
+     "shop-chip": 5,
+     "shop-buy [devre dışı]": 1
+    },
+    "enUzun": [
+     "Classic ParquetCurrently in the Hall",
+     "Currently in the Hall",
+     "Classic Parquet"
+    ]
+   },
+   "magaza-duvar": {
+    "sinif": {
+     "modal-card": 1,
+     "screen": 1,
+     "screen-top": 1,
+     "sheet-back": 1,
+     "screen-title": 1,
+     "screen-purse": 1,
+     "screen-cur": 2,
+     "sheet-body": 1,
+     "shop-card": 1,
+     "shop-tabs": 1,
+     "shop-tab": 7,
+     "elmas": 4,
+     "shop-tab-lock": 1,
+     "active": 1,
+     "shop-bildirim-capa": 1,
+     "shop-preview": 1,
+     "preview-canvas": 1,
+     "shop-zones": 1,
+     "shop-zone-btn": 2,
+     "sel": 3,
+     "shop-strip": 1,
+     "shop-chip": 3,
+     "shop-chip-swatch": 3,
+     "shop-chip-badge": 1,
+     "shop-name-row": 1,
+     "shop-buy": 1
+    },
+    "dugme": {
+     "sheet-back": 1,
+     "shop-tab": 7,
+     "shop-zone-btn": 2,
+     "shop-chip": 3,
+     "shop-buy [devre dışı]": 1
+    },
+    "enUzun": [
+     "Cream WhitewashCurrently in the Hall",
+     "Currently in the Hall",
+     "Cream Whitewash"
+    ]
+   },
+   "magaza-paketler": {
+    "sinif": {
+     "modal-card": 1,
+     "screen": 1,
+     "screen-top": 1,
+     "sheet-back": 1,
+     "screen-title": 1,
+     "screen-purse": 1,
+     "screen-cur": 2,
+     "sheet-body": 1,
+     "shop-card": 1,
+     "shop-tabs": 1,
+     "shop-tab": 7,
+     "elmas": 4,
+     "active": 1,
+     "shop-tab-lock": 1,
+     "shop-bildirim-capa": 1,
+     "paketler": 1,
+     "goals": 1,
+     "goal": 5,
+     "goal-top": 5,
+     "goal-foot": 5,
+     "goal-note": 5,
+     "goal-claim": 5,
+     "goal-reward": 4,
+     "sheet-foot-note": 1,
+     "sheet-cta": 1
+    },
+    "dugme": {
+     "sheet-back": 1,
+     "shop-tab": 7,
+     "goal-claim": 5,
+     "sheet-cta": 1
+    },
+    "enUzun": [
+     "Remove AdsAds between gameplay are removed. You can still watch rewarded videos whenever you want. Get 10 Gems every day.Test",
+     "Ads between gameplay are removed. You can still watch rewarded videos whenever you want. Get 10 Gems every day.",
+     "Your Purchases in your store account are saved. If you change phones, you can restore them from Settings."
+    ]
+   },
+   "satin-odul": {
+    "sinif": {
+     "modal-card": 1,
+     "reward-card": 1,
+     "reward-glow": 1,
+     "reward-title": 1,
+     "reward-amount": 1,
+     "odul-sat": 1,
+     "sheet-cta": 1
+    },
+    "dugme": {
+     "sheet-cta": 1
+    },
+    "enUzun": [
+     "Handful of Gems",
+     "Awesome!",
+     "+25"
+    ]
+   },
+   "cayci-oyuncu": {
+    "sinif": {
+     "modal-card": 1,
+     "screen": 1,
+     "screen-top": 1,
+     "sheet-back": 1,
+     "screen-title": 1,
+     "screen-purse": 1,
+     "screen-cur": 2,
+     "sheet-body": 1,
+     "char-card": 1,
+     "char-head": 1,
+     "char-lvl": 1,
+     "char-tabs": 1,
+     "char-tab": 3,
+     "active": 1,
+     "char-canvas": 1,
+     "char-stat": 3,
+     "char-stat-icon": 3,
+     "char-stat-info": 3,
+     "char-stat-name": 3,
+     "char-stat-val": 3,
+     "char-buy": 3
+    },
+    "dugme": {
+     "sheet-back": 1,
+     "char-tab": 3,
+     "char-buy": 3
+    },
+    "enUzun": [
+     "Money Magnet2.6 3.4 range",
+     "Move Speed4.5 4.65 speed",
+     "4.5 4.65 speed"
+    ]
+   },
+   "cayci-garson": {
+    "sinif": {
+     "modal-card": 1,
+     "screen": 1,
+     "screen-top": 1,
+     "sheet-back": 1,
+     "screen-title": 1,
+     "screen-purse": 1,
+     "screen-cur": 2,
+     "sheet-body": 1,
+     "char-card": 1,
+     "char-head": 1,
+     "char-lvl": 1,
+     "char-tabs": 1,
+     "char-tab": 3,
+     "active": 1,
+     "char-canvas": 1,
+     "char-stat": 2,
+     "char-stat-icon": 2,
+     "char-stat-info": 2,
+     "char-stat-name": 2,
+     "char-stat-val": 2,
+     "char-buy": 2,
+     "char-note": 1
+    },
+    "dugme": {
+     "sheet-back": 1,
+     "char-tab": 3,
+     "char-buy": 2
+    },
+    "enUzun": [
+     "All waiters share one tray and speed pool across every table.",
+     "Speed1.5 2 speed",
+     "Tray2 3 item"
+    ]
+   },
+   "cayci-bulasikci": {
+    "sinif": {
+     "modal-card": 1,
+     "screen": 1,
+     "screen-top": 1,
+     "sheet-back": 1,
+     "screen-title": 1,
+     "screen-purse": 1,
+     "screen-cur": 2,
+     "sheet-body": 1,
+     "char-card": 1,
+     "char-head": 1,
+     "char-lvl": 1,
+     "char-tabs": 1,
+     "char-tab": 3,
+     "active": 1,
+     "char-canvas": 1,
+     "char-stat": 2,
+     "char-stat-icon": 2,
+     "char-stat-info": 2,
+     "char-stat-name": 2,
+     "char-stat-val": 2,
+     "char-buy": 2,
+     "char-note": 1
+    },
+    "dugme": {
+     "sheet-back": 1,
+     "char-tab": 3,
+     "char-buy": 2
+    },
+    "enUzun": [
+     "Shared by all dishwashers: the tub carries more per trip, while speed shortens each trip.",
+     "Speed2 2.4 speed",
+     "Tub2 4 cups"
+    ]
+   },
+   "ayarlar": {
+    "sinif": {
+     "modal-card": 1,
+     "screen": 1,
+     "screen-top": 1,
+     "sheet-back": 1,
+     "screen-title": 1,
+     "screen-purse": 1,
+     "screen-cur": 2,
+     "sheet-body": 1,
+     "sheet-pad": 1,
+     "setting-row": 5,
+     "setting-label": 7,
+     "kafe-adi-degistir": 1,
+     "dil-satir": 1,
+     "dil-secim": 1,
+     "dil-secenek": 3,
+     "secili": 1,
+     "switch": 3,
+     "on": 2,
+     "switch-knob": 3,
+     "setting-slider": 2,
+     "setting-val": 2,
+     "sheet-sec": 1,
+     "kunye": 1,
+     "sheet-cta": 1,
+     "yasal-satir": 1,
+     "sheet-foot-note": 1,
+     "danger-btn": 1
+    },
+    "dugme": {
+     "sheet-back": 1,
+     "kafe-adi-degistir": 1,
+     "dil-secenek": 3,
+     "switch": 3,
+     "sheet-cta": 1,
+     "danger-btn": 1
+    },
+    "enUzun": [
+     "LanguageThe game reloads when you change the languageAutomaticTürkçeEnglish",
+     "Save data is stored on this device. Resetting the game can't be undone.",
+     "LanguageThe game reloads when you change the language"
+    ]
+   },
+   "odul": {
+    "sinif": {
+     "modal-card": 1,
+     "reward-card": 1,
+     "reward-glow": 1,
+     "reward-title": 1,
+     "reward-amount": 1,
+     "odul-sat": 2,
+     "odul-arti": 1,
+     "iki-kat": 1,
+     "odul-etiket": 1,
+     "odul-gecis": 1,
+     "odul-eski": 1,
+     "odul-ok": 1,
+     "sheet-cta": 2,
+     "ad": 1
+    },
+    "dugme": {
+     "sheet-cta": 2
+    },
+    "enUzun": [
+     "+1,250+Service Speed2%2.5%",
+     "Service Speed2%2.5%",
+     "Service Speed"
+    ]
+   },
+   "video": {
+    "sinif": {
+     "usta-card": 1,
+     "sheet-x": 1,
+     "usta-x": 1,
+     "usta-badge": 1,
+     "usta-head": 1,
+     "usta-note": 2,
+     "usta-acts": 1,
+     "master-buy": 1,
+     "ad": 1,
+     "off": 1
+    },
+    "dugme": {
+     "sheet-x": 1,
+     "master-buy [devre dışı]": 1
+    },
+    "enUzun": [
+     "Serve a little first — the reward matches your last-minute earnings",
+     "Watch an ad to earn as many coins as you made in the last minute",
+     "Watch"
+    ]
+   },
+   "usta": {
+    "sinif": {
+     "usta-card": 1,
+     "sheet-x": 1,
+     "usta-x": 1,
+     "usta-badge": 1,
+     "usta-head": 1,
+     "usta-note": 1,
+     "usta-acts": 1,
+     "master-buy": 2,
+     "ad": 1
+    },
+    "dugme": {
+     "sheet-x": 1,
+     "master-buy": 2
+    },
+    "enUzun": [
+     "This table's tip becomes ×1.5 for good",
+     "Table 1 · Master",
+     "· Master"
+    ]
+   },
+   "teklif": {
+    "sinif": {
+     "modal-card": 1,
+     "reward-card": 1,
+     "teklif-card": 1,
+     "teklif-ust": 1,
+     "reward-title": 1,
+     "shop-preview": 1,
+     "preview-canvas": 1,
+     "teklif-liste": 1,
+     "teklif-ik": 2,
+     "teklif-etiket": 1,
+     "sheet-cta": 2,
+     "ad": 1
+    },
+    "dugme": {
+     "sheet-cta": 2
+    },
+    "enUzun": [
+     "Founder Outfit Only in this packBurgundy Vest and Fez",
+     "100 GemsFor outfits, trays, and decor",
+     "For outfits, trays, and decor"
+    ]
+   }
+  },
+  "360x640-tr": {},
+  "360x640-en": {}
+ }
+}

@@ -359,7 +359,7 @@ export function reklamAbone(f: () => void): () => void {
 
 /**
  * Ödüllü video, ayrıntılı sonuçla (Sprint A sözleşmesi): `odul` · `yarida` (oyuncu erken kapattı) ·
- * `gosterilemedi` (reklam yok / yüklenemedi / açılmadı → "Reklam şu an yüklenemedi").
+ * `gosterilemedi` (reklam yok / yüklenemedi / açılmadı → "Reklam yüklenemedi. Tekrar dene.").
  */
 export async function odulluIzleSonuc(): Promise<OdulluSonuc> {
   if (!arkaUc || !odulluReklamHazir()) return 'gosterilemedi';

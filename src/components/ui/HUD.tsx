@@ -1506,7 +1506,7 @@ const MAGAZA_YOK = t('Mağazaya bağlanılamadı');
 /** Ödüllü video: ödül geldiyse true. Hiç gösterilemediyse oyuncuya söylenir (sessiz kalmaz). */
 async function odulluIzleBildir(): Promise<boolean> {
   const r = await odulluIzleSonuc();
-  if (r === 'gosterilemedi') useGame.setState({ notice: { text: t('Reklam şu an yüklenemedi'), ttl: 3, kind: 'reveal' } });
+  if (r === 'gosterilemedi') useGame.setState({ notice: { text: t('Reklam yüklenemedi. Tekrar dene.'), ttl: 3, kind: 'reveal' } });
   return r === 'odul';
 }
 
@@ -1723,7 +1723,7 @@ function RewardModal({
           ])}
         </div>
         <button className="sheet-cta" data-testid={claimTestid} onClick={onClaim}>
-          {katlanir ? t('Al') : t('Harika!')}
+          {katlanir ? t('Ücretsiz al') : t('Harika!')}
         </button>
         {katlanir && onIzle && (
           <button
