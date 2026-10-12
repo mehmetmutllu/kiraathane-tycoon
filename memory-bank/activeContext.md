@@ -22,7 +22,7 @@
 3. P4 saat hilesi (varyant kapısı) + perf Paket 2/3.
 
 ## AÇIK KALEMLER
-- iOS inceleme sonucu izlenecek; hareket yoksa hızlandırılmış inceleme yeniden istenir.
+- iOS inceleme: 2026-10-12 Apple'a "App Review Status" sorgusu gönderildi (vaka 102994418818); cevap mutlubadem4456@gmail.com'a gelir. Gönderime dokunma, hızlandırılmış inceleme tekrar istenmez.
 - Play: 1.0.1 zip arkadaşa (mikrometin değişti → yeni zip gerekirse `npm run play:paket`); servis hesabı JSON'u → RevenueCat; RC'de Android baslangic/reklamsiz = Non-consumable.
 - Cihaz turu (Android 1.0.1): `sprint-A-defter.md` "Nasıl kontrol edersin" 5 adımı.
 - Deyimix 1.0.1 "Pending Developer Release" — kullanıcı Release diyecek.
