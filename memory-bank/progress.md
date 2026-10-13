@@ -127,6 +127,7 @@ Bütçe düzeltmelerinin tarihçesi (73 → 121) ve bitmiş fazların tam anlat�
   · 2026-10-10 (2.): **Sprint B kısmi** — ekran envanteri (22 ekran) · 38 kozmetik küçük resmi + bekçi · UI kit kesim betikleri · mikrometin turu (16 metin, öğretici EN ≤ 25) · ChatGPT tasarım yönü 2 tur REDDEDİLDİ, mağaza cilası (imza korunarak) çizildi, kullanıcı turu durdurdu · D-164 · `docs/sprintler/sprint-B-plan.md` · vitest 1861
   · 2026-10-12: iOS hâlâ Waiting for Review (8 Eki gönderimi) → Apple'a "App Review Status" sorgusu gönderildi, vaka no 102994418818
   · 2026-10-13: **Sprint C tur 1** — ses arka planda susar (appStateChange) · mağaza: kayan ikonlu sekmeler, küçük resimli şerit, paket afişi/ızgarası · askılı tepsi tek elde · dekor arka planı sabit · Kurucu yeleği · açık ekranlar · ChatGPT cila + 2×16 ikon onaylandı · D-165 · `docs/sprintler/sprint-C-plan.md` · vitest 1861
+  · 2026-10-13 (2.): **Sprint C tur 2 — ikonlar** · ChatGPT ızgaralarının asılları indirildi, 32 bitmap ikon (para/elmas/gezinme/sekmeler/paketler/yükseltme/görev fotoğrafı) · D-166 · vitest 1862 · duman 74/74
 - ✅ **F6 — açılış ekranı + ekran yönü + yatay/tablet HUD** (F1b iki tur + tur 3) …
 
 ## Faz T — TUR SERİSİ: GERİ BİLDİRİM + PERFORMANS (13/13) ✅

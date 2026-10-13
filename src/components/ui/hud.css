@@ -163,7 +163,8 @@
 .cur.gem::before {
   border-color: var(--elmas);
 }
-.cur > svg {
+.cur > svg,
+.cur > .ikon {
   flex: none;
   filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.45));
 }
@@ -1690,7 +1691,8 @@
   color: var(--elmas);
 }
 /* Alt notta satır içi para simgesi yazıyla aynı hizada dursun (emoji YOK, gerçek ikon). */
-.sheet-foot-note svg {
+.sheet-foot-note svg,
+.sheet-foot-note .ikon {
   vertical-align: -2px;
 }
 

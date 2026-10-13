@@ -252,7 +252,17 @@ body,
   cursor: pointer;
   padding: 0;
 }
-.icon-btn > svg {
+/* Bitmap ikon (icons.tsx `Ikon`, D-166): kendi gölgesi resimde, dokunma alttaki düğmeye gider. */
+.ikon {
+  display: inline-block;
+  flex: none;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+.icon-btn > svg,
+.icon-btn > .ikon {
   width: 19px;
   height: 19px;
 }
@@ -434,7 +444,8 @@ body,
   padding: 0 12px 0 26px;
 }
 
-.cur-item > svg {
+.cur-item > svg,
+.cur-item > .ikon {
   position: absolute;
   left: -10px;
   top: 50%;

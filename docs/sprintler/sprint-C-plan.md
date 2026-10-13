@@ -25,7 +25,7 @@ Doğrulama: vitest 1861/1861 · duman 74/74 · test APK `npm run apk`.
 2. **ChatGPT revize tasarımı esas** (`chatgpt-2-revizyon.png`): kart konturları kalkar, yumuşak mor gölge; geri düğmesi beyaz yuvarlak;
    Görevler "SIRADA" = kilit ikonlu sakin satırlar (koşul yazısı ancak oyunda gerçek koşul varsa); turuncu yalnız ana eylem.
    Not: ChatGPT'nin spec listesi resimle çelişiyor ("kontur 0 px") — resim esastır. Seçili sekme hâlâ turuncu → ayrıştır.
-3. **İkon setleri (2 × 16, ChatGPT):** önizlemeler `chatgpt-3-ikon1-onizleme.png` · `chatgpt-4-ikon2-onizleme.png`.
+3. ✅ **(2026-10-13, D-166 — asıllar `ikon-set1/2.png`, harita `tools/ui-kit/ikon-harita-1/2.json`, `--koru 0`)** **İkon setleri (2 × 16, ChatGPT):** önizlemeler `chatgpt-3-ikon1-onizleme.png` · `chatgpt-4-ikon2-onizleme.png`.
    - ÖNCE asıl dosyaları indir (1254×1254, sohbetteki son iki görsel) — indirme izni kullanıcıdan alındı sayılmaz, oturumda sor.
    - Kes: `python -I tools/ui-kit/izgara.py <png> --harita tools/ui-kit/ikon-harita.json` (harita 32 adla güncellenir) →
      `public/assets/ui/ikon/*.webp`. Pembe hız çizgileri (set 2 #7, #12) kesimde silinebilir → gerekirse ikisi yeniden çizdirilir.

@@ -523,7 +523,7 @@ export function HUD() {
         <NavTab
           id="quests"
           label={t('Görevler')}
-          icon={<QuestListIcon size={25} />}
+          icon={<QuestListIcon size={32} />}
           active={sheet === 'quests'}
           bang={dailyReady}
           kutla={dailyReady}
@@ -534,7 +534,7 @@ export function HUD() {
         <NavTab
           id="goals"
           label={t('Hedefler')}
-          icon={<TargetIcon size={25} />}
+          icon={<TargetIcon size={32} />}
           active={sheet === 'goals'}
           bang={goalsReady}
           kutla={goalsReady}
@@ -543,14 +543,14 @@ export function HUD() {
         <NavTab
           id="shop"
           label={t('Mağaza')}
-          icon={<ShopAwningIcon size={25} />}
+          icon={<ShopAwningIcon size={32} />}
           active={sheet === 'shop'}
           onClick={() => setSheet(sheet === 'shop' ? null : 'shop')}
         />
         <NavTab
           id="char"
           label={t('Çaycı')}
-          icon={<CharIcon size={25} />}
+          icon={<CharIcon size={32} />}
           active={sheet === 'char'}
           bang={charQuestActive}
           spot={spotlight}
@@ -1968,13 +1968,13 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
   useEffect(() => () => setDekorOnizleme(null), [setDekorOnizleme]);
 
   const TABS: { k: Sekme; label: string; ikon: ReactNode }[] = [
-    { k: 'outfit', label: t('Kıyafet'), ikon: <ShirtIcon size={24} /> },
-    { k: 'tray', label: t('Tepsi'), ikon: <TrayIcon size={24} /> },
-    { k: 'decor', label: t('Dekor'), ikon: <LampIcon size={24} /> },
-    { k: 'paket', label: t('Paketler'), ikon: <GemIcon size={24} /> },
-    { k: 'table', label: t('Masa'), ikon: <TableIcon size={24} /> },
-    { k: 'floor', label: t('Zemin'), ikon: <FloorIcon size={24} /> },
-    { k: 'wall', label: t('Duvar'), ikon: <WallIcon size={24} /> },
+    { k: 'outfit', label: t('Kıyafet'), ikon: <ShirtIcon size={30} /> },
+    { k: 'tray', label: t('Tepsi'), ikon: <TrayIcon size={30} /> },
+    { k: 'decor', label: t('Dekor'), ikon: <LampIcon size={30} /> },
+    { k: 'paket', label: t('Paketler'), ikon: <GemIcon size={30} /> },
+    { k: 'table', label: t('Masa'), ikon: <TableIcon size={30} /> },
+    { k: 'floor', label: t('Zemin'), ikon: <FloorIcon size={30} /> },
+    { k: 'wall', label: t('Duvar'), ikon: <WallIcon size={30} /> },
   ];
   // Tek satır yana kayar: seçilen sekme kenarda kaldıysa görünür yere gelir.
   const sekmeler = useRef<HTMLDivElement>(null);

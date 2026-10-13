@@ -143,6 +143,7 @@ ayrı CC0 paket; eklenince ayrı modüler klasöre (`public/assets/models/<paket
 | Dosya | Açıklama | Kaynak | Lisans | Durum |
 |---|---|---|---|---|
 | logo-acilis.webp | Yükleme ekranı logo+maskot, saydam, 720 px (`SplashScreen.tsx`) | Kullanıcının ürettiği logo (`docs/logotasarim/logo-maskot-saydam.png`) | Projenin kendi görseli | ✅ 2026-09-28 |
+| ikon/*.webp (32) | Oyun ikonları, 256², saydam (`icons.tsx` `Ikon`) — para/elmas/gezinme/mağaza sekmeleri/yükseltme/görev fotoğrafı | Kullanıcının ChatGPT'de ürettirdiği iki 4×4 macenta ızgara (`docs/tasarim/sprint-C/ikon-set{1,2}.png`), `tools/ui-kit/izgara.py --koru 0` ile kesildi | Projenin kendi görseli | ✅ 2026-10-13 (D-166) |
 
 > iOS yerel açılış görseli (`ios/App/App/Assets.xcassets/Splash.imageset/`, 2732²) aynı logo + oyunun mor zemini.
 

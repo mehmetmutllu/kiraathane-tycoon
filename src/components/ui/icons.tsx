@@ -1,5 +1,8 @@
 /**
- * HUD ikon seti — D-108 GRAMERİ (S10'da çizildi, S11a'da koda girdi).
+ * HUD ikon seti. Sprint C'den (D-166) beri oyun nesnesi/para/gezinme ikonları BİTMAP (aşağıda `Ikon`);
+ * bu başlıktaki D-108 grameri yalnız kalan SVG çizgi glifleri ve rozetler için geçerli.
+ *
+ * D-108 GRAMERİ (S10'da çizildi, S11a'da koda girdi).
  *
  * TEK GRAMER, beş kural:
  *   · 24×24 ızgara (görev "fotoğrafları" 48'lik kalır — onlar simge değil KÜÇÜK RESİM)
@@ -36,92 +39,62 @@ function Ic({ size, children }: { size: number; children: ReactNode }) {
   );
 }
 
-/* ══════════════ PARA BİRİMLERİ ══════════════ */
+/**
+ * BİTMAP İKONLAR (Sprint C, D-166) — ChatGPT'nin iki 4×4 ızgarasından kesildi (`tools/ui-kit/izgara.py`),
+ * 256 px saydam webp, `public/assets/ui/ikon/`. Oyun nesnesi/para/gezinme ikonları bunlar; SVG yalnız
+ * çizgi glifleri (geri, kapat, tik, ok) ve içine sayı oturan rozetlerde kaldı.
+ */
+export type IkonAd =
+  | 'para' | 'elmas' | 'gorevler' | 'hedefler' | 'magaza' | 'cayci' | 'ayarlar' | 'kiyafet'
+  | 'cay-tepsi' | 'lamba' | 'elmas-kese' | 'masa' | 'zemin' | 'duvar' | 'kilit' | 'reklamsiz'
+  | 'cay' | 'tepsi' | 'para-yigin' | 'legen' | 'masa-ekle' | 'semaver' | 'hiz' | 'kapi'
+  | 'masa-yukselt' | 'tepsi-buyuk' | 'miknatis' | 'kanat' | 'tost' | 'rozet' | 'video' | 'elmas-sandik';
 
-/** Para — madenî pul. Ortadaki düz çubuk 17 px'te YARIK gibi okunuyordu, iç elipse döndü. */
-export function CoinIcon({ size = 28 }: { size?: number }) {
-  return (
-    <Ic size={size}>
-      <ellipse cx="12" cy="14.8" rx="8.6" ry="4.2" fill="var(--ac2)" stroke={OT} strokeWidth="1.9" />
-      <ellipse cx="12" cy="10" rx="8.6" ry="4.5" fill="var(--para)" stroke={OT} strokeWidth="1.9" />
-      <ellipse cx="12" cy="10" rx="4.1" ry="2" fill="none" stroke={OT} strokeWidth="1.8" />
-    </Ic>
-  );
+const ikonUrl = (ad: IkonAd) => `/assets/ui/ikon/${ad}.webp`;
+
+export function Ikon({ ad, size }: { ad: IkonAd; size: number }) {
+  return <img className="ikon" src={ikonUrl(ad)} width={size} height={size} alt="" draggable={false} aria-hidden />;
 }
 
-/** Elmas — iki çapraz kesim çizgisi 16 px'te tırtık yapıyordu, yalnız KUŞAK çizgisi kaldı. */
+/* ══════════════ PARA BİRİMLERİ ══════════════ */
+
+/** Para — altın sikke yığını. */
+export function CoinIcon({ size = 28 }: { size?: number }) {
+  return <Ikon ad="para" size={size} />;
+}
+
+/** Elmas — mavi taşlar. */
 export function GemIcon({ size = 28 }: { size?: number }) {
-  return (
-    <Ic size={size}>
-      <path d="M7.4 3.4h9.2l4.2 5.4L12 20.6 3.2 8.8z" fill="var(--elmas)" stroke={OT} strokeWidth="2.2" strokeLinejoin="round" />
-      <path d="M3.2 8.8h17.6" fill="none" stroke={OT} strokeWidth="1.9" />
-    </Ic>
-  );
+  return <Ikon ad="elmas" size={size} />;
 }
 
 /* ══════════════ ALT GEZİNME (geometri D-106'da kilitli; değişen yalnız DİL) ══════════════ */
 
-/** Görevler — pano + onay. Aksan yalnız üstteki mandalda. */
+/** Görevler — onaylı pano. */
 export function QuestListIcon({ size = 26 }: { size?: number }) {
-  return (
-    <Ic size={size}>
-      <rect x="4" y="3.6" width="16" height="17.2" rx="3" fill="currentColor" stroke={OT} strokeWidth="2.2" />
-      <rect x="8.4" y="1.5" width="7.2" height="4.2" rx="1.9" fill={AC} stroke={OT} strokeWidth="2.2" />
-      <path d="M7.9 12.5l2.5 2.5 4.1-4.5" fill="none" stroke={OT} strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M8 18h8" stroke={OT} strokeWidth="2.4" strokeLinecap="round" />
-    </Ic>
-  );
+  return <Ikon ad="gorevler" size={size} />;
 }
 
-/** Hedefler — disk + koyu iç disk + aksan gözbebeği (üç ince halka 26 px'te birbirine giriyordu). */
+/** Hedefler — dart tahtası. */
 export function TargetIcon({ size = 26 }: { size?: number }) {
-  return (
-    <Ic size={size}>
-      <circle cx="12" cy="12" r="9" fill="currentColor" stroke={OT} strokeWidth="2.2" />
-      <circle cx="12" cy="12" r="4.8" fill={OT} />
-      <circle cx="12" cy="12" r="2.1" fill={AC} />
-    </Ic>
-  );
+  return <Ikon ad="hedefler" size={size} />;
 }
 
-/** Mağaza — tenteli vitrin. Aksan yalnız tentede. */
+/** Mağaza — tenteli dükkân. */
 export function ShopAwningIcon({ size = 26 }: { size?: number }) {
-  return (
-    <Ic size={size}>
-      <rect x="4" y="10.6" width="16" height="10.4" rx="2.4" fill="currentColor" stroke={OT} strokeWidth="2.2" />
-      <path d="M2.6 10.6l2.1-5.5h14.6l2.1 5.5z" fill={AC} stroke={OT} strokeWidth="2.2" strokeLinejoin="round" />
-      <rect x="9.4" y="13.9" width="5.2" height="7.1" rx="1.3" fill={OT} />
-    </Ic>
-  );
+  return <Ikon ad="magaza" size={size} />;
 }
 
-/** Karakter — omuz + baş. Tek kütle; 21 px'te yüz detayı zaten okunmuyordu. */
+/** Çaycı — fesli usta. */
 export function CharIcon({ size = 22 }: { size?: number }) {
-  return (
-    <Ic size={size}>
-      <circle cx="12" cy="7.8" r="4.6" fill="currentColor" stroke={OT} strokeWidth="2.2" />
-      <path d="M4.2 21c0-4.3 3.5-6.9 7.8-6.9s7.8 2.6 7.8 6.9z" fill="currentColor" stroke={OT} strokeWidth="2.2" strokeLinejoin="round" />
-    </Ic>
-  );
+  return <Ikon ad="cayci" size={size} />;
 }
 
 /* ══════════════ KABUK DÜĞMELERİ ══════════════ */
 
-/** Ayarlar — 8 diş, dış yarıçap 10,4 · iç 7,8. HESAPLANARAK çizildi: eskisi çok dişli bir
- *  yıldızdı ve 21 pikselde lekeye dönüyordu (kullanıcı: *"sağ en üstteki ayarlar kötü duruyor"*). */
+/** Ayarlar — çark. */
 export function GearIcon({ size = 22 }: { size?: number }) {
-  return (
-    <Ic size={size}>
-      <path
-        d="M10.2 4.4 L10.3 1.7 L13.7 1.7 L13.8 4.4 L16.1 5.3 L18.0 3.5 L20.5 6.0 L18.7 7.9 L19.6 10.2 L22.3 10.3 L22.3 13.7 L19.6 13.8 L18.7 16.1 L20.5 18.0 L18.0 20.5 L16.1 18.7 L13.8 19.6 L13.7 22.3 L10.3 22.3 L10.2 19.6 L7.9 18.7 L6.0 20.5 L3.5 18.0 L5.3 16.1 L4.4 13.8 L1.7 13.7 L1.7 10.3 L4.4 10.2 L5.3 7.9 L3.5 6.0 L6.0 3.5 Z"
-        fill="currentColor"
-        stroke={OT}
-        strokeWidth="2.2"
-        strokeLinejoin="round"
-      />
-      <circle cx="12" cy="12" r="3.7" fill="var(--oyuk)" stroke={OT} strokeWidth="2.2" />
-    </Ic>
-  );
+  return <Ikon ad="ayarlar" size={size} />;
 }
 
 /** Geri (sol chevron) — tek kabuğun sol üst köşesi. */
@@ -161,27 +134,14 @@ export function ResetIcon({ size = 18 }: { size?: number }) {
   );
 }
 
-/** Asma kilit — B6: `🔒` emojisinin yerini alan çizim. Aksan yalnız GÖVDEDE, kol ikincil metin
- *  renginde: kilit "kapalı" değil "HENÜZ" demeli, uyarı gibi durmamalı. */
+/** Asma kilit. */
 export function LockIcon({ size = 46 }: { size?: number }) {
-  return (
-    <Ic size={size}>
-      <path d="M7.4 10.6V7.9a4.6 4.6 0 0 1 9.2 0v2.7" fill="none" stroke="var(--tx2)" strokeWidth="2.6" strokeLinecap="round" />
-      <rect x="4.4" y="10.6" width="15.2" height="10.6" rx="3" fill={AC} stroke={OT} strokeWidth="2.2" />
-      <circle cx="12" cy="15" r="2" fill={OT} />
-      <rect x="11" y="15" width="2" height="3.6" rx="1" fill={OT} />
-    </Ic>
-  );
+  return <Ikon ad="kilit" size={size} />;
 }
 
-/** Reklam izle — ekran + oynat üçgeni. Aksan yalnız üçgende. */
+/** Reklam izle — oynat düğmeli film karesi. */
 export function PlayAdIcon({ size = 20 }: { size?: number }) {
-  return (
-    <Ic size={size}>
-      <rect x="2.4" y="4.4" width="19.2" height="15.2" rx="3.4" fill="currentColor" stroke={OT} strokeWidth="2.2" />
-      <path d="M9.8 8.4l6.4 3.6-6.4 3.6z" fill={AC} stroke={OT} strokeWidth="1.9" strokeLinejoin="round" />
-    </Ic>
-  );
+  return <Ikon ad="video" size={size} />;
 }
 
 /** Onay tiki (satır içi) — `✓` metin glifinin yerine. Kendi rengini alır. */
@@ -283,22 +243,9 @@ export function ReputationIcon({ size = 26 }: { size?: number }) {
   );
 }
 
-/* ══════════════ YÜKSELTME SİMGELERİ ══════════════
-   Bunlar hem karakter panelinde (24 ızgara) hem görev fotoğrafında (48 kutu, ×2 ölçekli)
-   çizilir — TEK çizim iki yerde. Ölçek `QuestPhoto` içinde `scale(2)` ile verilir. */
+/* ══════════════ YÜKSELTME SİMGELERİ (bitmap) + "tepsiyi boşalt" düğmesinin çizimi ══════════════ */
 
-/** Çay bardağı — ince belli, kırmızı çay. */
-function CayGlyph() {
-  return (
-    <g>
-      <path d="M7.7 3.8h8.6l-1.1 12.4a3.2 3.2 0 0 1-6.4 0z" fill="var(--tx)" stroke={OT} strokeWidth="2.1" strokeLinejoin="round" />
-      <path d="M8.7 11h6.6l-.7 5.2a2.6 2.6 0 0 1-5.2 0z" fill="var(--uyari)" />
-      <path d="M8.2 20.2h7.6" stroke={OT} strokeWidth="2.2" strokeLinecap="round" />
-    </g>
-  );
-}
-
-/** Tepsi + iki bardak. */
+/** Tepsi + iki bardak (yalnız TrayEmptyIcon'un içinde — düğme glifi, SVG kalır). */
 function TepsiGlyph() {
   return (
     <g>
@@ -309,112 +256,31 @@ function TepsiGlyph() {
   );
 }
 
-/** Mıknatıs — at nalı, uçları açık. */
-function MiknatisGlyph() {
-  return (
-    <g>
-      <path d="M4.4 4.2h5.2v8.6a2.4 2.4 0 0 0 4.8 0V4.2h5.2v8.6a7.6 7.6 0 0 1-15.2 0z" fill="var(--uyari)" stroke={OT} strokeWidth="2" strokeLinejoin="round" />
-      <rect x="4.4" y="4.2" width="5.2" height="3.6" fill="var(--tx)" stroke={OT} strokeWidth="1.9" />
-      <rect x="14.4" y="4.2" width="5.2" height="3.6" fill="var(--tx)" stroke={OT} strokeWidth="1.9" />
-    </g>
-  );
-}
-
-/** Hız — bot + hareket çizgileri. Aksan yalnız hareket çizgilerinde. */
-function HizGlyph() {
-  return (
-    <g>
-      <path d="M6.4 18.4V9.2h3.8l2.4 2.6h2.2a6.2 6.2 0 0 1 6.2 6.2v.4z" fill="currentColor" stroke={OT} strokeWidth="2" strokeLinejoin="round" />
-      <rect x="6.4" y="18.4" width="14.6" height="2.8" rx="1.3" fill={OT} />
-      <path d="M3.4 11.4H1.2M4 15.4H1.2" stroke={AC} strokeWidth="2.2" strokeLinecap="round" />
-    </g>
-  );
-}
-
-/** Leğen — bulaşık. Aksan yalnız köpükte. */
-function LeganGlyph() {
-  return (
-    <g>
-      <path d="M3.4 10.6h17.2v3.6a6.2 6.2 0 0 1-6.2 6.2h-4.8a6.2 6.2 0 0 1-6.2-6.2z" fill="currentColor" stroke={OT} strokeWidth="2.2" strokeLinejoin="round" />
-      <circle cx="8.4" cy="6.2" r="2.4" fill={AC} stroke={OT} strokeWidth="1.9" />
-      <circle cx="14.6" cy="4.8" r="2" fill="currentColor" stroke={OT} strokeWidth="1.9" />
-    </g>
-  );
-}
-
-/** Tost dilimi — üçgen + ızgara izi. */
-function TostGlyph() {
-  return (
-    <g>
-      <path d="M4.6 19.4L12 5.2l7.4 14.2z" fill={AC} stroke={OT} strokeWidth="2.1" strokeLinejoin="round" />
-      <path d="M9 15.4l3-5.6 3 5.6" fill="none" stroke={OT} strokeWidth="2" strokeLinecap="round" />
-    </g>
-  );
-}
-
-/** Masa — tabla + ayak + üstünde bardak. */
-function MasaGlyph() {
-  return (
-    <g>
-      <rect x="10.7" y="10.4" width="2.6" height="7.4" fill="currentColor" stroke={OT} strokeWidth="1.9" />
-      <ellipse cx="12" cy="9.6" rx="8.2" ry="3.2" fill="currentColor" stroke={OT} strokeWidth="2.1" />
-      <rect x="10.9" y="5.3" width="2.2" height="3.8" rx="0.8" fill={AC} stroke={OT} strokeWidth="1.9" />
-      <rect x="6.6" y="18.4" width="10.8" height="2.6" rx="1.2" fill={OT} />
-    </g>
-  );
-}
-
-/** Kapı (lavabo odası) — kanat + kol. Aksan yalnız kolda. */
-function KapiGlyph() {
-  return (
-    <g>
-      <rect x="5.4" y="2.6" width="13.2" height="18.8" rx="2.4" fill="currentColor" stroke={OT} strokeWidth="2.2" />
-      <rect x="8.2" y="5.6" width="7.6" height="7.2" rx="1.6" fill={OT} />
-      <circle cx="15.8" cy="16.4" r="1.8" fill={AC} stroke={OT} strokeWidth="1.6" />
-    </g>
-  );
-}
-
-/** Kişi (garson/bulaşıkçı fotoğrafı) — karakter ikonunun aynısı, gövde rengi rolü söyler. */
-function KisiGlyph({ fill = 'currentColor' }: { fill?: string }) {
-  return (
-    <g>
-      <circle cx="12" cy="7.8" r="4.6" fill="var(--tx)" stroke={OT} strokeWidth="2.2" />
-      <path d="M4.2 21c0-4.3 3.5-6.9 7.8-6.9s7.8 2.6 7.8 6.9z" fill={fill} stroke={OT} strokeWidth="2.2" strokeLinejoin="round" />
-    </g>
-  );
-}
-
 /* ── Panel/buton dışa açımları: aynı çizim, kendi kutusunda ── */
 
-export function TrayIcon({ size, food = false }: { size?: number; food?: boolean }) {
-  const inner = food ? <TostGlyph /> : <TepsiGlyph />;
-  if (size == null) return inner;
-  return <Ic size={size}>{inner}</Ic>;
+/** Tepsi (oyuncunun) — `food` ise tost. */
+export function TrayIcon({ size = 24, food = false }: { size?: number; food?: boolean }) {
+  return <Ikon ad={food ? 'tost' : 'tepsi'} size={size} />;
 }
 
-export function BasinIcon({ size }: { size?: number }) {
-  const inner = <LeganGlyph />;
-  if (size == null) return inner;
-  return <Ic size={size}>{inner}</Ic>;
+/** Leğen — köpüklü bulaşık. */
+export function BasinIcon({ size = 24 }: { size?: number }) {
+  return <Ikon ad="legen" size={size} />;
 }
 
-export function MagnetIcon({ size }: { size?: number }) {
-  const inner = <MiknatisGlyph />;
-  if (size == null) return inner;
-  return <Ic size={size}>{inner}</Ic>;
+/** Para mıknatısı. */
+export function MagnetIcon({ size = 24 }: { size?: number }) {
+  return <Ikon ad="miknatis" size={size} />;
 }
 
-export function BootIcon({ size }: { size?: number }) {
-  const inner = <HizGlyph />;
-  if (size == null) return inner;
-  return <Ic size={size}>{inner}</Ic>;
+/** Hareket hızı — koşan ayakkabı. */
+export function BootIcon({ size = 24 }: { size?: number }) {
+  return <Ikon ad="hiz" size={size} />;
 }
 
-export function DoorIcon({ size }: { size?: number }) {
-  const inner = <KapiGlyph />;
-  if (size == null) return inner;
-  return <Ic size={size}>{inner}</Ic>;
+/** Lavabo kapısı. */
+export function DoorIcon({ size = 24 }: { size?: number }) {
+  return <Ikon ad="kapi" size={size} />;
 }
 
 /** Boya fırçası (kozmetik dekor mağazası, WP6). Aksan yalnız boyada. */
@@ -473,8 +339,7 @@ export function CamZoomIcon({ size = 28, out = false }: { size?: number; out?: b
 
 /* ══════════════ GÖREV "FOTOĞRAFI" ══════════════
    Bunlar simge değil KÜÇÜK RESİM: kartın solunda duran, konusunu tek bakışta söyleyen bir kare.
-   Kutu artık mor kart dilinde (oyuk zemin + kontur); içindeki çizim yükseltme simgeleriyle
-   AYNI gramerden geliyor — eskiden üç ayrı aileden geliyordu ve her görev başka bir oyundandı. */
+   Kutu mor kart dilinde (oyuk zemin + kontur); içindeki ikon yükseltme simgeleriyle AYNI setten. */
 
 /** Yükseltme işareti: fotoğrafın sağ üstünde küçük yukarı ok (ilerleme yeşili — aksan değil). */
 function UpArrowOverlay() {
@@ -486,205 +351,102 @@ function UpArrowOverlay() {
 }
 
 /**
- * Görev hedef tipine göre "fotoğraf" (quest kartının solundaki kare).
- * İçerideki çizim 24 ızgarada; kare 48 → `scale(2)`. Tek çizim, iki boy.
+ * Görev hedef tipine göre "fotoğraf" (quest kartının solundaki kare): oyuk kutu + bitmap ikon.
+ * Yükseltme görevinde sağ üstte yeşil ok (ikonun kendisinde ok yoksa).
  */
 export function QuestPhoto({ target, size = 44 }: { target: QuestTarget; size?: number }) {
-  let inner: ReactNode = <CayGlyph />;
+  let ad: IkonAd = 'cay';
   let up = false;
   switch (target.type) {
     case 'pickupTea':
-      inner = <CayGlyph />;
+      ad = 'cay';
       break;
     case 'serveTea':
-      // Tost alanı görevi (v27): bardak değil TOST dilimi.
-      inner = target.area === 2 ? <TostGlyph /> : <CayGlyph />;
+      // Tost alanı görevi (v27): bardak değil TOST.
+      ad = target.area === 2 ? 'tost' : 'cay-tepsi';
       break;
     case 'collectCoin':
-      inner = (
-        <g>
-          <ellipse cx="12" cy="15" rx="8.6" ry="4.2" fill="var(--ac2)" stroke={OT} strokeWidth="1.9" />
-          <ellipse cx="12" cy="10.2" rx="8.6" ry="4.5" fill="var(--para)" stroke={OT} strokeWidth="1.9" />
-          <ellipse cx="12" cy="10.2" rx="4.1" ry="2" fill="none" stroke={OT} strokeWidth="1.8" />
-        </g>
-      );
+      ad = 'para-yigin';
       break;
     case 'washDish':
-      inner = <LeganGlyph />;
+      ad = 'legen';
       break;
     case 'pad':
-      // turu-4 SVG tutarlılığı: z2waiter/z3waiter/waiter2… yalnız 'waiter' İD'siyle eşleşmediği
-      // için MASA ikonu alıyordu → tüm garson/bulaşıkçı pad'leri KİŞİ ikonu.
-      if (target.id.includes('waiter')) {
-        inner = <KisiGlyph fill={target.id.startsWith('z3') ? AC : 'var(--ok)'} />;
-      } else if (target.id.includes('dishwasher')) {
-        inner = <KisiGlyph fill="var(--elmas)" />;
-      } else {
-        inner = <MasaGlyph />;
-      }
+      // turu-4: z2waiter/z3waiter/waiter2… hepsi garson; bulaşıkçı leğenle, kalan pad'ler yeni masa.
+      ad = target.id.includes('waiter') ? 'cayci' : target.id.includes('dishwasher') ? 'legen' : 'masa-ekle';
       break;
     case 'stationLevel':
-      // B2: tek servis merdiveni — L5 (tost) hedefi tost dilimiyle, altı çay bardağıyla anlatılır.
-      inner = target.level >= TOST_LEVEL ? <TostGlyph /> : <CayGlyph />;
+      // B2: tek servis merdiveni — L5 (tost) hedefi tostla, altı semaverle anlatılır.
+      ad = target.level >= TOST_LEVEL ? 'tost' : 'semaver';
       up = true;
       break;
     case 'waiterSpeed':
-      inner = <KisiGlyph fill="var(--ok)" />;
+      ad = 'kanat';
       up = true;
       break;
     case 'lavaboLevel':
-      inner = <KapiGlyph />;
+      ad = 'kapi';
       up = true;
       break;
     case 'tableLevel':
     case 'tablesAtLevel':
-      inner = <MasaGlyph />;
-      up = true;
+      ad = 'masa-yukselt';
       break;
     case 'waiterTray':
-      inner = <TepsiGlyph />;
+      ad = 'tepsi-buyuk';
       up = true;
       break;
     case 'charStat':
-      inner =
-        target.stat === 'tray' ? <TepsiGlyph /> : target.stat === 'magnet' ? <MiknatisGlyph /> : <HizGlyph />;
+      ad = target.stat === 'tray' ? 'tepsi' : target.stat === 'magnet' ? 'miknatis' : 'hiz';
       up = true;
       break;
   }
   return (
     <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden>
       <rect x="1.6" y="1.6" width="44.8" height="44.8" rx="14" fill="var(--oyuk)" stroke={OT} strokeWidth="3.2" />
-      <g transform="translate(3 3) scale(1.75)" color="var(--tx)">
-        {inner}
-      </g>
+      <image href={ikonUrl(ad)} x="4" y="4" width="40" height="40" />
       {up && <UpArrowOverlay />}
     </svg>
   );
 }
 
 /* ══════════════ MAĞAZA SEKMELERİ (2026-10-13) ══════════════
-   Sekme satırı tek sıra, ikon + tam yazı. Tepsi/Masa/Elmas mevcut çizimlerden; kalan dördü burada. */
+   Sekme satırı tek sıra, ikon + tam yazı. */
 
-/** Kıyafet — yelek gövdesi. Aksan yalnız papyonda. */
+/** Kıyafet — yelek. */
 export function ShirtIcon({ size = 22 }: { size?: number }) {
-  return (
-    <Ic size={size}>
-      <path
-        d="M8 3.4L4 5.6 1.8 10.4l3.6 1.8 1.2-2v10.4h10.8V10.2l1.2 2 3.6-1.8L20 5.6l-4-2.2c-.8 1.6-2.2 2.4-4 2.4s-3.2-.8-4-2.4z"
-        fill="currentColor" stroke={OT} strokeWidth="2.1" strokeLinejoin="round"
-      />
-      <path d="M8.6 7.4l3.4 1.8 3.4-1.8v3.6l-3.4-1.8-3.4 1.8z" fill={AC} stroke={OT} strokeWidth="1.7" strokeLinejoin="round" />
-    </Ic>
-  );
+  return <Ikon ad="kiyafet" size={size} />;
 }
 
-/** Dekor — ayaklı lamba. Aksan yalnız abajurda. */
+/** Dekor — ayaklı lamba. */
 export function LampIcon({ size = 22 }: { size?: number }) {
-  return (
-    <Ic size={size}>
-      <rect x="10.9" y="9.6" width="2.2" height="9.6" fill={OT} />
-      <ellipse cx="12" cy="20.2" rx="5.2" ry="1.9" fill="currentColor" stroke={OT} strokeWidth="2" />
-      <path d="M8.2 2.8h7.6l3.4 7.4H4.8z" fill={AC} stroke={OT} strokeWidth="2.1" strokeLinejoin="round" />
-    </Ic>
-  );
+  return <Ikon ad="lamba" size={size} />;
 }
 
-/** Masa (sekme) — yükseltme simgesinin aynı çizimi. */
+/** Masa. */
 export function TableIcon({ size = 22 }: { size?: number }) {
-  return (
-    <Ic size={size}>
-      <MasaGlyph />
-    </Ic>
-  );
+  return <Ikon ad="masa" size={size} />;
 }
 
-/** Zemin — eşkenar dörtgen karo; aksan tek karoda. */
+/** Zemin — karo. */
 export function FloorIcon({ size = 22 }: { size?: number }) {
-  return (
-    <Ic size={size}>
-      <path d="M12 4.4L22 12l-10 7.6L2 12z" fill="currentColor" stroke={OT} strokeWidth="2.1" strokeLinejoin="round" />
-      <path d="M12 4.4L17 8.2 12 12 7 8.2z" fill={AC} />
-      <path d="M7 8.2l10 7.6M17 8.2L7 15.8" stroke={OT} strokeWidth="1.8" />
-      <path d="M12 4.4L22 12l-10 7.6L2 12z" fill="none" stroke={OT} strokeWidth="2.1" strokeLinejoin="round" />
-    </Ic>
-  );
+  return <Ikon ad="zemin" size={size} />;
 }
 
-/** Duvar — badana + lambri kuşağı; aksan lambride. */
+/** Duvar — lambrili duvar. */
 export function WallIcon({ size = 22 }: { size?: number }) {
-  return (
-    <Ic size={size}>
-      <rect x="3" y="2.8" width="18" height="18.4" rx="2.2" fill="currentColor" stroke={OT} strokeWidth="2.1" />
-      <path d="M4.1 13.4h15.8v5.6a1.1 1.1 0 0 1-1.1 1.1H5.2a1.1 1.1 0 0 1-1.1-1.1z" fill={AC} />
-      <path d="M3 13.4h18" stroke={OT} strokeWidth="2.1" />
-      <rect x="3" y="2.8" width="18" height="18.4" rx="2.2" fill="none" stroke={OT} strokeWidth="2.1" />
-    </Ic>
-  );
+  return <Ikon ad="duvar" size={size} />;
 }
 
-/** Reklamları Kaldır — video kutusu + çapraz çizgi (çizgi uyarı renginde). */
+/** Reklamları Kaldır. */
 export function NoAdsIcon({ size = 40 }: { size?: number }) {
-  return (
-    <Ic size={size}>
-      <rect x="2.4" y="5.4" width="19.2" height="13.2" rx="2.8" fill="currentColor" stroke={OT} strokeWidth="2.1" />
-      <path d="M10 9v6l5-3z" fill={OT} />
-      <path d="M4 20.4L20 3.6" stroke={OT} strokeWidth="5.2" strokeLinecap="round" />
-      <path d="M4 20.4L20 3.6" stroke="var(--uyari)" strokeWidth="2.4" strokeLinecap="round" />
-    </Ic>
-  );
+  return <Ikon ad="reklamsiz" size={size} />;
 }
 
 /* ══════════════ ELMAS PAKETLERİ — avuç · kese · sandık ══════════════
-   48'lik kutu (simge değil küçük resim, görev fotoğrafları gibi). Kademe büyüdükçe elmas sayısı ve
-   kap büyür: oyuncu fiyatı okumadan hangisinin "çok" olduğunu görür. */
+   Kademe büyüdükçe kap büyür: oyuncu fiyatı okumadan hangisinin "çok" olduğunu görür. */
 
-function Elmas({ x, y, s = 1 }: { x: number; y: number; s?: number }) {
-  return (
-    <g transform={`translate(${x} ${y}) scale(${s})`}>
-      <path d="M-4.6-5.2h9.2l4.2 5.4L0 12-8.8.2z" fill="var(--elmas)" stroke={OT} strokeWidth="2" strokeLinejoin="round" />
-      <path d="M-8.8.2H9" fill="none" stroke={OT} strokeWidth="1.7" />
-      <path d="M-3.4-3.4h3" stroke="var(--tx)" strokeWidth="1.6" strokeLinecap="round" />
-    </g>
-  );
-}
-
+const PAKET_IKON = ['elmas', 'elmas-kese', 'elmas-sandik'] as const;
 export function GemPackArt({ kademe, size = 64 }: { kademe: number; size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden>
-      {kademe <= 0 && (
-        <g>
-          <ellipse cx="24" cy="40" rx="15" ry="3.4" fill="var(--oyuk)" />
-          <Elmas x={16} y={27} s={1.05} />
-          <Elmas x={31} y={28} s={0.95} />
-          <Elmas x={23.5} y={20} s={1.2} />
-        </g>
-      )}
-      {kademe === 1 && (
-        <g>
-          <ellipse cx="24" cy="42.4" rx="15" ry="3" fill="var(--oyuk)" />
-          <Elmas x={17} y={13} s={0.9} />
-          <Elmas x={30} y={12} s={0.85} />
-          <Elmas x={24} y={8} s={1} />
-          <path d="M14.4 18.6h19.2c5 4.4 7.8 10 7.6 15.4-.2 5-4.2 8-9.2 8H16c-5 0-9-3-9.2-8-.2-5.4 2.6-11 7.6-15.4z" fill="var(--ac2)" stroke={OT} strokeWidth="2.2" strokeLinejoin="round" />
-          <path d="M13 18.6h22" stroke={OT} strokeWidth="4.6" strokeLinecap="round" />
-          <path d="M13.6 18.6h20.8" stroke={AC} strokeWidth="2" strokeLinecap="round" />
-          <Elmas x={24} y={30} s={0.8} />
-        </g>
-      )}
-      {kademe >= 2 && (
-        <g>
-          <ellipse cx="24" cy="43" rx="19" ry="3" fill="var(--oyuk)" />
-          <Elmas x={13} y={13} s={0.85} />
-          <Elmas x={35} y={13} s={0.85} />
-          <Elmas x={19} y={9} s={0.95} />
-          <Elmas x={29} y={8.4} s={1} />
-          <Elmas x={24} y={14} s={1.05} />
-          <rect x="5.6" y="21" width="36.8" height="20.6" rx="3" fill="var(--ac2)" stroke={OT} strokeWidth="2.2" />
-          <path d="M4.2 17.4h39.6v7.2H4.2z" fill={AC} stroke={OT} strokeWidth="2.2" strokeLinejoin="round" />
-          <rect x="20.6" y="21.4" width="6.8" height="8.4" rx="1.4" fill="var(--para)" stroke={OT} strokeWidth="2" />
-          <path d="M5.6 33.4h36.8" stroke={OT} strokeWidth="1.8" />
-        </g>
-      )}
-    </svg>
-  );
+  return <Ikon ad={PAKET_IKON[Math.min(Math.max(kademe, 0), PAKET_IKON.length - 1)]} size={size} />;
 }

@@ -20,6 +20,7 @@
  *   5  · `button` font'u miras alır (B5: 13 öğe Arial'a düşüyordu, biri görev şeridiydi).
  *   6  · İkonun yerine oturtulmuş glif yok (B6: kilit, çarpı, sıfırla, tik, ok SVG'ye döndü).
  *   7  · İkonlar D-108 gramerinde: 24 ızgara + ham renk yok.
+ *   8  · Bitmap ikonların (D-166) her adının webp dosyası var.
  *
  * KAPSAM DIŞI ve bilerek: `devSandbox.css` / `DevSandbox.tsx` (yalnız `npm run dev`, oyuncuya
  * gitmez) ve FPS sayacı (isteğe bağlı tanı aracı; monospace ve eşik renkleri doğrudur).
@@ -31,7 +32,7 @@
  * buradaki liste. Testi susturarak geçme — kırması AMAÇTIR.
  */
 import { describe, expect, it } from 'vitest';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 
 const INDEX = 'src/index.css';
 const HUD = 'src/components/ui/hud.css';
@@ -219,8 +220,17 @@ describe('ikonlar — D-108 grameri', () => {
     // o bir simge değil KÜÇÜK RESİM, ve içindeki çizim yine 24 ızgaradan gelir (scale ile).
     const kutular = [...kod.matchAll(/viewBox="([^"]+)"/g)].map((m) => m[1]);
     expect(new Set(kutular)).toEqual(new Set(['0 0 24 24', '0 0 48 48']));
-    // 2026-10-13: elmas paketlerinin resmi (`GemPackArt` — avuç · kese · sandık) de küçük resim, 48 kutulu.
-    expect(kutular.filter((v) => v === '0 0 48 48').length, 'yalnız QuestPhoto + GemPackArt 48 kutulu').toBe(2);
+    // D-166: elmas paketleri bitmap'e geçti; 48 kutu yine yalnız görev fotoğrafında.
+    expect(kutular.filter((v) => v === '0 0 48 48').length, 'yalnız QuestPhoto 48 kutulu').toBe(1);
     expect(kromatikRenkler(kod), "ikon rengi token'dan okunmalı").toEqual([]);
+  });
+
+  it('8 · her bitmap ikon adının dosyası var (D-166)', () => {
+    const kod = oku(ICONS);
+    const birlesim = kod.match(/export type IkonAd =([^;]+);/)?.[1] ?? '';
+    const adlar = [...birlesim.matchAll(/'([a-z-]+)'/g)].map((m) => m[1]);
+    expect(adlar.length).toBe(32);
+    const eksik = adlar.filter((ad) => !existsSync(`public/assets/ui/ikon/${ad}.webp`));
+    expect(eksik, 'public/assets/ui/ikon/ altında olmayan ikon').toEqual([]);
   });
 });

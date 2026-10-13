@@ -4953,3 +4953,13 @@ yazı · seçim şeridi ürün küçük resmi · askılı tepsi tek elde kol yan
 (5 adaydan lila). Ardından kullanıcı lilayı "çok açık" buldu → **tur 2: boğmayan mor ara ton**. ChatGPT'ye yerleşim KİLİTLİ cila
 istendi (D-164 dersi: yön değil cila) → revize tasarım + 2×16 oyun tarzı ikon beğenildi, **ikonlar kullanılacak** (SVG grameri
 D-108'in yerini bitmap ikon alır). Belirleyici: duman 74/74 · vitest 1861. Defter/plan: `docs/sprintler/sprint-C-plan.md`.
+
+## D-166 · Bitmap ikonlar oyuna girdi; SVG yalnız çizgi glifleri + sayılı rozetlerde (2026-10-13)
+
+**Karar (kullanıcı: "önce ikonları geçir"):** ChatGPT ızgaralarının asılları (2× 1254²) sohbetten indirildi, 32 ikon kesildi
+(`public/assets/ui/ikon/`, 780 KB). Para, elmas, alt gezinme, ayarlar, kilit, video, mağaza sekmeleri, reklamsız, elmas paketleri
+(avuç/kese/sandık), Çaycı yükseltmeleri ve görev fotoğrafları artık bitmap. SVG kalanlar: geri/kapat/tik/ok/el, yıldız ve itibar
+rozeti (içine sayı oturur), tepsi-boşalt ve kamera düğmesi. Kesimde `--koru 0`: koruma açıkken çay buharı ve hız çizgileri pembe
+kalıyordu. Bekçi `mor-dil` 8: her ikon adının dosyası var (dosya silme mutasyonu yakaladı). `rozet` ikonu henüz kullanılmıyor.
+Sırada: mor ara ton zemin (yeni ikonlarla birlikte bakılacak).
+

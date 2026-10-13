@@ -108,9 +108,9 @@ function Eksik({ cost, cash }: { cost: number | null; cash: number }) {
 }
 
 const STAT_ROWS: { stat: CharStat; name: string; unit: string; icon: React.ReactNode }[] = [
-  { stat: 'tray', name: t('Tepsi'), unit: t('bardak'), icon: <TrayIcon size={34} /> },
-  { stat: 'magnet', name: t('Para Mıknatısı'), unit: t('alan'), icon: <MagnetIcon size={34} /> },
-  { stat: 'speed', name: t('Hareket Hızı'), unit: t('hız'), icon: <BootIcon size={34} /> },
+  { stat: 'tray', name: t('Tepsi'), unit: t('bardak'), icon: <TrayIcon size={42} /> },
+  { stat: 'magnet', name: t('Para Mıknatısı'), unit: t('alan'), icon: <MagnetIcon size={42} /> },
+  { stat: 'speed', name: t('Hareket Hızı'), unit: t('hız'), icon: <BootIcon size={42} /> },
 ];
 
 export type Tab = 'player' | 'waiter' | 'dish';
@@ -138,7 +138,7 @@ function WaiterTab() {
   return (
     <>
       <div className="char-stat">
-        <span className="char-stat-icon"><TrayIcon size={34} food={false} /></span>
+        <span className="char-stat-icon"><TrayIcon size={42} food={false} /></span>
         <span className="char-stat-info">
           <span className="char-stat-name">{t('Tepsi')}</span>
           <span className="char-stat-val" data-testid="waiter-val">
@@ -171,7 +171,7 @@ function WaiterTab() {
         )}
       </div>
       <div className="char-stat">
-        <span className="char-stat-icon"><BootIcon size={34} /></span>
+        <span className="char-stat-icon"><BootIcon size={42} /></span>
         <span className="char-stat-info">
           <span className="char-stat-name">{t('Hız')}</span>
           <span className="char-stat-val" data-testid="waiter-speed-val">
@@ -224,7 +224,7 @@ function DishTab() {
   return (
     <>
       <div className="char-stat">
-        <span className="char-stat-icon"><BasinIcon size={34} /></span>
+        <span className="char-stat-icon"><BasinIcon size={42} /></span>
         <span className="char-stat-info">
           <span className="char-stat-name">{t('Leğen')}</span>
           <span className="char-stat-val" data-testid="waiter-val-dish">
@@ -255,7 +255,7 @@ function DishTab() {
         )}
       </div>
       <div className="char-stat">
-        <span className="char-stat-icon"><BootIcon size={34} /></span>
+        <span className="char-stat-icon"><BootIcon size={42} /></span>
         <span className="char-stat-info">
           <span className="char-stat-name">{t('Hız')}</span>
           <span className="char-stat-val" data-testid="waiter-speed-val-dish">

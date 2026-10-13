@@ -13,12 +13,11 @@ zemin/duvar önizleme ortalı · Kurucu yeleği belde biter · tam ekran panelle
 2×16 ikon. Ayrıntı: `docs/sprintler/sprint-C-plan.md`. Görseller: `docs/tasarim/sprint-C/`.
 
 ## ⏭️ SIRADAKİ ADIM — Sprint C tur 2 (kullanıcı onayladı)
-1. Zemin: lila → **boğmayan mor ara ton** (3-4 aday çek, yan yana göster, kullanıcı seçer). Token'lar: `index.css` `--lila-*`.
+- ✅ **İkonlar geçti (D-166):** 32 bitmap ikon `public/assets/ui/ikon/` · ekran görüntüleri `docs/tasarim/sprint-C/ikon-*.png`.
+1. Zemin: lila → **boğmayan mor ara ton** (3-4 aday, yeni ikonlarla yan yana göster, kullanıcı seçer). Token'lar: `index.css` `--lila-*`.
 2. ChatGPT revize tasarımı uygula (`chatgpt-2-revizyon.png`): kontursuz kartlar + yumuşak gölge, beyaz yuvarlak geri,
    "SIRADA" kilitli sakin satırlar, turuncu yalnız ana eylem (seçili sekme ayrışsın).
-3. İkonlar: ChatGPT sohbetindeki ("UI Tasarımını Cilalama") iki 4×4 ızgaranın ASILLARINI indir (önce kullanıcıdan izin) →
-   `tools/ui-kit/izgara.py` ile kes → `public/assets/ui/ikon/` → sekme/para/elmas/alt gezinme/görev/yükseltme ikonlarına bağla.
-4. Sonra: test APK (`npm run apk`) kullanıcı telefonda dener.
+3. Sonra: test APK (`npm run apk`) kullanıcı telefonda dener.
 
 ## AÇIK KALEMLER
 - iOS inceleme: 2026-10-12 Apple'a "App Review Status" sorgusu gönderildi (vaka 102994418818); cevap mutlubadem4456@gmail.com'a gelir. Gönderime dokunma, hızlandırılmış inceleme tekrar istenmez.

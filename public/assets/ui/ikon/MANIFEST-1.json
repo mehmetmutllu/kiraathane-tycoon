@@ -1,0 +1,346 @@
+{
+  "kaynak": "ikon-set1.png",
+  "uretici": "tools/ui-kit/izgara.py",
+  "izgara": "4x4",
+  "boyut": 256,
+  "ikon_sayisi": 16,
+  "gurultu_atilan": 0,
+  "ikonlar": [
+    {
+      "ad": "para",
+      "dosya": "para.webp",
+      "hucre": [
+        0,
+        0
+      ],
+      "boyut": [
+        256,
+        256
+      ],
+      "kaynak_kutu": [
+        54,
+        75,
+        286,
+        306
+      ],
+      "sizinti_orani": 0.0,
+      "kenar_px": 8133,
+      "uyari": []
+    },
+    {
+      "ad": "elmas",
+      "dosya": "elmas.webp",
+      "hucre": [
+        1,
+        0
+      ],
+      "boyut": [
+        256,
+        256
+      ],
+      "kaynak_kutu": [
+        348,
+        88,
+        598,
+        290
+      ],
+      "sizinti_orani": 0.0,
+      "kenar_px": 8000,
+      "uyari": []
+    },
+    {
+      "ad": "gorevler",
+      "dosya": "gorevler.webp",
+      "hucre": [
+        2,
+        0
+      ],
+      "boyut": [
+        256,
+        256
+      ],
+      "kaynak_kutu": [
+        679,
+        69,
+        893,
+        299
+      ],
+      "sizinti_orani": 0.0,
+      "kenar_px": 8874,
+      "uyari": []
+    },
+    {
+      "ad": "hedefler",
+      "dosya": "hedefler.webp",
+      "hucre": [
+        3,
+        0
+      ],
+      "boyut": [
+        256,
+        256
+      ],
+      "kaynak_kutu": [
+        962,
+        71,
+        1197,
+        303
+      ],
+      "sizinti_orani": 0.0,
+      "kenar_px": 11525,
+      "uyari": []
+    },
+    {
+      "ad": "magaza",
+      "dosya": "magaza.webp",
+      "hucre": [
+        0,
+        1
+      ],
+      "boyut": [
+        256,
+        256
+      ],
+      "kaynak_kutu": [
+        48,
+        350,
+        292,
+        583
+      ],
+      "sizinti_orani": 0.0,
+      "kenar_px": 8223,
+      "uyari": []
+    },
+    {
+      "ad": "cayci",
+      "dosya": "cayci.webp",
+      "hucre": [
+        1,
+        1
+      ],
+      "boyut": [
+        256,
+        256
+      ],
+      "kaynak_kutu": [
+        379,
+        343,
+        579,
+        591
+      ],
+      "sizinti_orani": 0.0,
+      "kenar_px": 12974,
+      "uyari": []
+    },
+    {
+      "ad": "ayarlar",
+      "dosya": "ayarlar.webp",
+      "hucre": [
+        2,
+        1
+      ],
+      "boyut": [
+        256,
+        256
+      ],
+      "kaynak_kutu": [
+        664,
+        365,
+        889,
+        588
+      ],
+      "sizinti_orani": 0.0,
+      "kenar_px": 14471,
+      "uyari": []
+    },
+    {
+      "ad": "kiyafet",
+      "dosya": "kiyafet.webp",
+      "hucre": [
+        3,
+        1
+      ],
+      "boyut": [
+        256,
+        256
+      ],
+      "kaynak_kutu": [
+        949,
+        360,
+        1208,
+        583
+      ],
+      "sizinti_orani": 0.0,
+      "kenar_px": 20930,
+      "uyari": []
+    },
+    {
+      "ad": "cay-tepsi",
+      "dosya": "cay-tepsi.webp",
+      "hucre": [
+        0,
+        2
+      ],
+      "boyut": [
+        256,
+        256
+      ],
+      "kaynak_kutu": [
+        41,
+        642,
+        302,
+        883
+      ],
+      "sizinti_orani": 0.0,
+      "kenar_px": 8355,
+      "uyari": []
+    },
+    {
+      "ad": "lamba",
+      "dosya": "lamba.webp",
+      "hucre": [
+        1,
+        2
+      ],
+      "boyut": [
+        256,
+        256
+      ],
+      "kaynak_kutu": [
+        393,
+        638,
+        543,
+        890
+      ],
+      "sizinti_orani": 0.0,
+      "kenar_px": 7235,
+      "uyari": []
+    },
+    {
+      "ad": "elmas-kese",
+      "dosya": "elmas-kese.webp",
+      "hucre": [
+        2,
+        2
+      ],
+      "boyut": [
+        256,
+        256
+      ],
+      "kaynak_kutu": [
+        651,
+        656,
+        876,
+        890
+      ],
+      "sizinti_orani": 0.0,
+      "kenar_px": 8394,
+      "uyari": []
+    },
+    {
+      "ad": "masa",
+      "dosya": "masa.webp",
+      "hucre": [
+        3,
+        2
+      ],
+      "boyut": [
+        256,
+        256
+      ],
+      "kaynak_kutu": [
+        943,
+        655,
+        1217,
+        881
+      ],
+      "sizinti_orani": 0.0,
+      "kenar_px": 10872,
+      "uyari": []
+    },
+    {
+      "ad": "zemin",
+      "dosya": "zemin.webp",
+      "hucre": [
+        0,
+        3
+      ],
+      "boyut": [
+        256,
+        256
+      ],
+      "kaynak_kutu": [
+        28,
+        971,
+        297,
+        1159
+      ],
+      "sizinti_orani": 0.0,
+      "kenar_px": 8190,
+      "uyari": []
+    },
+    {
+      "ad": "duvar",
+      "dosya": "duvar.webp",
+      "hucre": [
+        1,
+        3
+      ],
+      "boyut": [
+        256,
+        256
+      ],
+      "kaynak_kutu": [
+        347,
+        932,
+        580,
+        1183
+      ],
+      "sizinti_orani": 0.0,
+      "kenar_px": 7394,
+      "uyari": []
+    },
+    {
+      "ad": "kilit",
+      "dosya": "kilit.webp",
+      "hucre": [
+        2,
+        3
+      ],
+      "boyut": [
+        256,
+        256
+      ],
+      "kaynak_kutu": [
+        676,
+        937,
+        868,
+        1170
+      ],
+      "sizinti_orani": 0.0,
+      "kenar_px": 9916,
+      "uyari": []
+    },
+    {
+      "ad": "reklamsiz",
+      "dosya": "reklamsiz.webp",
+      "hucre": [
+        3,
+        3
+      ],
+      "boyut": [
+        256,
+        256
+      ],
+      "kaynak_kutu": [
+        962,
+        948,
+        1207,
+        1168
+      ],
+      "sizinti_orani": 0.0,
+      "kenar_px": 8703,
+      "uyari": []
+    }
+  ]
+}
