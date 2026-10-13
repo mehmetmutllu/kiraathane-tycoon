@@ -25,6 +25,8 @@ zemin/duvar önizleme ortalı · Kurucu yeleği belde biter · tam ekran panelle
    https://claude.ai/artifact/FHxaDEgDNa4kqUeuWLbSXe · `.paket-afis` arka planı (index.css ~1427):
    1 Beyaz = `var(--kart)` · 2 ChatGPT = beyaz→#efe9ff→#d8cbff radyal + 4 beyaz ışıltı noktası + sağ altta `elmas-sandik` ikonu (92 px, mutlak)
    · 3 Altın = #fff6d8→#ffe08a→#f6b73c radyal + `repeating-conic-gradient` beyaz ışın (%35) · 4 Koyu = #7f6fe0→#4a3da6→#2f2577 + ışın %7, beyaz yazı.
+   2. tur (aynı link, v2) kullanıcı 3/4 arasında kaldı; yeni: 5 Altın+sandık · 6 Koyu mor zemin + altın ışın/çerçeve/başlık
+   · 7 Gün batımı (altın→mor 100° doğrusal + ışın %16, beyaz yazı) · 8 Koyu mor + sandık + ışıltı · 9 Beyaz + altın çerçeve/ışın + sandık.
    Not: `.paket-afis.full` opacity 0,75 alınmış afişi boğuk gösteriyor — seçenekler alınmamış hâlde çizildi; alınmış hâli ayrıca düşün.
 2. ChatGPT revize tasarımı uygula (`chatgpt-2-revizyon.png`): kontursuz kartlar + yumuşak gölge, beyaz yuvarlak geri,
    "SIRADA" kilitli sakin satırlar, turuncu yalnız ana eylem (seçili sekme ayrışsın).
