@@ -19,7 +19,7 @@ beyaz yuvarlak geri, mor seçili sekme, kilitli SIRADA (D-168; kullanıcı: "ço
 2. ✅ **Play 1.0.2 hazır** (2026-10-14, versionCode 10002, imzalı AAB 15,8 MiB gerçek reklam kipi): `dist-play/TeaHouseTycoon-GooglePlay.zip`
    + masaüstü kopyaları (`…-1.0.2.zip`, `TeaHouseTycoon-1.0.2.aab`). Kullanıcı arkadaşına iletir. Telefon turunda düzeltme çıkarsa 1.0.3.
 3. Küçükler: Usta kartındaki açık mavi "0/7" · küçük resimde zayıf üç (semaver, Restoran ≈ Krem fayans, Klasik Parke).
-   Duman erken akışı 2026-10-13'te 4 kez üst üste düştü, sonra kendiliğinden geçti (Vite ısınması şüphesi).
+   Duman erken akışı ara sıra düşüyor (hep "q_coin": para toplanmıyor); 2026-10-13/14 birkaç kez, ikinci koşuda geçiyor — kök sebep bulunmadı.
 
 ## AÇIK KALEMLER
 - iOS inceleme: Apple cevap verdi (2026-10-14, vaka 102987045833): 8 Eki'den beri "Waiting for Review", sorun yok; geri çekip yeniden göndermek sırayı baştan başlatıyor → BEKLE, gönderime dokunma, geri çekme, hızlandırılmış inceleme isteme. Bitince e-posta gelir.
