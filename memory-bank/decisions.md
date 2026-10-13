@@ -4969,4 +4969,7 @@ Sırada: mor ara ton zemin (yeni ikonlarla birlikte bakılacak).
 şimdiki oyundan çekildi, artifact G1mLiwdtpvW2sgCTYBib7s). Başlangıç Paketi afişi dokuz seçenekten **8 · koyu mor ışınlı + elmas
 sandığı + ışıltı** (artifact FHxaDEgDNa4kqUeuWLbSXe; 3 altın ve 4 koyu arasında kalındı). Sandığın konumu beğenilmedi, uygulamada
 yeri yeniden seçtirilir. Renk kodları ve afiş tarifi: tur kartı. Henüz koda girmedi.
+**Uygulama (aynı gün, kullanıcı seçti — artifact NKxdozMihbisTNjYfjnTtn):** sandık **D · sağda dikey ortada, 64 px** (başlık iki
+satıra kırılır, kabul); alınmış afiş **saydam değil, rengi çekilmiş** (`saturate .35`). Zemine doğrudan yazılan Ayarlar metni
+tx2 3,0:1 → çerçeve moru 4,8:1. Kart sayıları (sarı/mavi 1,0–1,5:1) için S1 kontur / S2 koyu ton cevap bekliyor.
 

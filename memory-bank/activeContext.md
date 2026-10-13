@@ -14,14 +14,11 @@ zemin/duvar önizleme ortalı · Kurucu yeleği belde biter · tam ekran panelle
 
 ## ⏭️ SIRADAKİ ADIM — Sprint C tur 2 (kullanıcı onayladı)
 - ✅ **İkonlar geçti (D-166):** 32 bitmap ikon `public/assets/ui/ikon/` · ekran görüntüleri `docs/tasarim/sprint-C/ikon-*.png`.
-1. **SEÇİLDİ (kullanıcı 2026-10-13, D-167) — UYGULA:** zemin **C Ametist** + Başlangıç Paketi afişi **8 Koyu mor + sandık**.
-   `index.css` `--lila-*` (g1 · g2 · kart · kart2 · oyuk · tx · tx2 · ot · madalyon) =
-   `#9d8fe0 #8576d2 #faf8ff #eee8ff #d9cff8 #1c1450 #4c4090 #2c226e #c4b7f5` · zemine doğrudan yazılan soluk yazı (tx2/g2 2,3:1) koyulaştır.
-   Afiş (`.paket-afis`, index.css ~1427): ışıltı (4 beyaz nokta) + `repeating-conic-gradient(from 0deg at 20% 50%, rgba(255,255,255,.07) 0 10deg, transparent 10deg 20deg)`
-   + `radial-gradient(110% 130% at 20% 50%, #7f6fe0, #4a3da6 60%, #2f2577)`; başlık/içerik beyaz + koyu yazı gölgesi;
-   sağda `elmas-sandik` ikonu (HUD.tsx afiş JSX'ine `Ikon`). **Kullanıcı: sandık konumu KÖTÜ** (sağ altta taşıyor, düğmeye yakın) →
-   daha iyi yer için 2-3 konum çek, göster. Alınmış hâl: `.full` opacity 0,75 boğuyor → ayrıca düşün. Görseller: artifact FHxaDEgDNa4kqUeuWLbSXe.
-   Sonra sarı sayıların (amber/kart 2,1–2,5:1) okunurluğuna bak.
+1. ✅ **Ametist + afiş koda girdi (D-167):** `--lila-*` Ametist · afiş koyu mor ışın + sandık **D (sağ orta)** · alınmış hâl
+   rengi çekilmiş · Ayarlar zemin metni koyulaştı. Görsel: `docs/tasarim/sprint-C/ametist-afis.png` · artifact NKxdozMihbisTNjYfjnTtn.
+   **AÇIK — kullanıcıya sor:** kart sayıları (Görevler/Hedefler/Paketler sarı-mavi, 1,0–1,5:1) S1 kontur mu S2 koyu ton mu?
+   Öneri S2 (kontur 13 px'te yutuyor). Kare: `ametist-sayilar-s1-s2.png` · S2 CSS'i `tools/_ametist-cek.mjs` içinde hazır
+   (`SAYI_KIP`); seçilince hud.css sonuna `.modal-card.screen` kapsamlı kural olarak yazılır, sonra araç silinir.
 2. ChatGPT revize tasarımı uygula (`chatgpt-2-revizyon.png`): kontursuz kartlar + yumuşak gölge, beyaz yuvarlak geri,
    "SIRADA" kilitli sakin satırlar, turuncu yalnız ana eylem (seçili sekme ayrışsın).
 3. Sonra: test APK (`npm run apk`) kullanıcı telefonda dener.

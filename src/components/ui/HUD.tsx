@@ -1813,10 +1813,14 @@ function Paketler() {
       {sa.mesaj && sa.sonuc?.sonuc !== 'tamam' && (
         <div className="sheet-foot-note" data-testid="satin-sonuc">{t(sa.mesaj)}</div>
       )}
-      {/* AFİŞ — Başlangıç Paketi, içindeki kıyafetin kendi resmiyle. */}
+      {/* AFİŞ — Başlangıç Paketi: içindeki kıyafetin kendi resmi + elmas sandığı (D-167). */}
       {iapConfig.vitrin.baslangic && (
         <div className={`paket-afis${satin.baslangic ? ' full' : ''}`} data-testid={`paket-${U.baslangic}`}>
+          <i className="paket-afis-isilti" aria-hidden />
           <img className="paket-afis-resim" src={kucukResim('kiyafet', 'kurucu')} alt="" draggable={false} />
+          <span className="paket-afis-sandik">
+            <GemPackArt kademe={2} size={64} />
+          </span>
           <div className="paket-afis-govde">
             <span className="paket-ust">{t('Bir kez alınabilir')}</span>
             <b className="paket-afis-ad">{t('Başlangıç Paketi')}</b>

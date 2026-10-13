@@ -2305,3 +2305,13 @@
   --k2: inset 0 2px 0 rgba(255, 255, 255, 0.45), 0 3px 0 var(--lila-ot);
   --k3: inset 0 3px 0 rgba(255, 255, 255, 0.5), 0 5px 0 var(--lila-ot), 0 10px 18px rgba(0, 0, 0, 0.12);
 }
+
+/* AMETİST (D-167): zemine DOĞRUDAN yazılan ikincil metin tx2'de 3,0:1 kalıyordu → çerçeve moru (4,8:1).
+   Kart içindeki tx2 açık zeminde zaten okunuyor, ona dokunulmaz. */
+.modal-card.screen .setting-slider .setting-label,
+.modal-card.screen .setting-val,
+.modal-card.screen .dil-satir .setting-label small,
+.modal-card.screen .yasal-satir a,
+.modal-card.screen .yasal-satir button {
+  color: var(--lila-ot);
+}
