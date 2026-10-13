@@ -194,7 +194,7 @@ h2{font-size:21px;font-weight:800}
      ══════════════════════════════════════════════════════════════════════ -->
 <script type="application/json" id="durum">
 {
- "guncelleme": "13.10.2026",
+ "guncelleme": "14.10.2026",
  "yapilan": 124,
  "toplam": 127,
  "kilometre": [
@@ -216,14 +216,14 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "ozet": {
-  "etiket": "Bu oturum — Sprint C tur 2 (13 Ekim)",
-  "baslik": "Oyuna <b>yeni ikonlar</b> geldi, renk seçildi",
-  "aciklama": "ChatGPT'nin iki ikon ızgarası kesilip 32 ikon olarak para, menü, mağaza, paket, yükseltme ve görevlere takıldı. Zemin için 4 mor ton, Başlangıç Paketi için 9 afiş oyundan çekildi; Ametist ve koyu mor sandıklı afiş seçildi."
+  "etiket": "Bu oturum — Sprint C tur 2 sonu (13–14 Ekim)",
+  "baslik": "Ekranlar <b>Ametist</b> ve <b>kontursuz</b>",
+  "aciklama": "Seçilen Ametist zemin ve koyu mor sandıklı Başlangıç afişi koda girdi; kart sayıları koyu tonla okunur oldu. ChatGPT'nin revize tasarımı uygulandı: kontursuz kartlar, beyaz geri düğmesi, mor seçili sekme, kilitli Sırada satırları. Test APK kullanıcıya verildi."
  },
  "siradaki": {
-  "etiket": "Sırada — Sprint C tur 3",
-  "baslik": "<b>Ametist</b> zemin + yeni afiş koda",
-  "aciklama": "Seçilen renk ve afiş uygulanır (sandığın yeri yeniden seçtirilir); ardından ChatGPT'nin kontursuz kart biçimi ve test APK."
+  "etiket": "Sırada — telefon turu",
+  "baslik": "Test APK'sı <b>telefonda</b>",
+  "aciklama": "Kullanıcı yeni ekranları telefonda dener; çıkan düzeltmeler yapılır, sorun yoksa yeni Play paketi arkadaşa gider. iOS: Apple inceleme sırasında, beklenir."
  },
  "donemler": [
   {
@@ -396,6 +396,17 @@ h2{font-size:21px;font-weight:800}
  ],
  "gunluk": [
   {
+   "tarih": "14.10.2026",
+   "etiket": "Sprint C tur 2 sonu — Ametist + revize (D-167 · D-168)",
+   "baslik": "Ekranlar <b>yeni kılığına</b> girdi",
+   "govde": "Ametist zemin ve koyu mor, sandıklı Başlangıç afişi koda girdi; sandığın yeri ve alınmış hâli kullanıcıya seçtirildi. Kartlardaki sarı ve mavi sayılar beyazda okunmuyordu, koyu tonlarıyla hepsi 4,5:1'i geçti.<br><br>Ardından ChatGPT'nin revize tasarımı uygulandı: kartlar konturu bırakıp yumuşak gölgeyle ayrışıyor, geri düğmesi beyaz, seçili sekme mor, Sırada satırları kilitli. Kullanıcı \"çok daha iyi\" dedi; test APK telefonda denenecek. Apple'dan cevap: inceleme sırada, beklenecek.",
+   "maddeler": [
+    "test <b>1862</b>",
+    "duman <b>74/74</b>",
+    "kontrast <b>≥ 4,5</b>"
+   ]
+  },
+  {
    "tarih": "13.10.2026",
    "etiket": "Sprint C tur 2 — ikonlar + renk seçimi (D-166 · D-167)",
    "baslik": "Oyun <b>kendi ikonlarına</b> kavuştu",
@@ -475,30 +486,6 @@ h2{font-size:21px;font-weight:800}
     "harf 7,7 px → <b>12,2 px</b> · örtü kalktı",
     "ad ≤ 20 harf · eski kayda bir kez sorulur · Türkçe büyük harf",
     "bekçi 19 test · mutasyon <b>4/11</b> (bellek yüzünden yarıda)"
-   ]
-  },
-  {
-   "tarih": "24.09.2026",
-   "etiket": "F4c-1 — 💎 vitrini (D-154)",
-   "baslik": "Mağazada <b>Kıyafet</b> ve <b>Tepsi</b>",
-   "govde": "Dört türün 36 adayı aynı kadrajda çizildi, kullanıcı eledi. Sahibin kıyafeti ve elindeki tepsi artık 💎 ile alınıyor; yelek gövdenin profilinden sarılıyor, gümüş askılı tepsi elden asılı taşınıyor.<br><br>Başlangıç paketi açıldı: 100 💎 + yalnız o pakette olan Kurucu kıyafeti. Teklif ilk Usta'dan sonra bir kez, geri sayımsız çıkıyor.",
-   "maddeler": [
-    "kurucu <b>bordo yelek + fes</b> · fes başka üründe yok",
-    "5 kıyafet · 4 tepsi · fiyatlar <b>taslak</b>",
-    "teklif ekran sırasının en sonunda · \"Şimdi değil\" kalıcı",
-    "bekçi 25 test · 14/14 mutasyon · duman 58/58"
-   ]
-  },
-  {
-   "tarih": "24.09.2026",
-   "etiket": "F4b — Play Games (D-153)",
-   "baslik": "Play Games <b>hazır</b>: bulut kaydı + 19 başarım",
-   "govde": "Hazır eklentiler eski kaldığı için kendi küçük Android eklentimiz yazıldı. Oyuncu bağlıysa kayıt buluta yedekleniyor; telefon değişince ya da oyun silinip kurulunca daha ileri olan kayıt kazanıyor. Başarımlar yalnız Play puanı veriyor, oyunun dengesine dokunmuyor.<br><br>Play Console'da kimlikler girilene dek bölüm kapalı; emülatörde oyun normal açıldı.",
-   "maddeler": [
-    "çakışma: <b>daha ileri kayıt kazanır</b> (toplam kazanç, eşitse XP)",
-    "daha ileri bulutun üstüne yazılmaz · sıfırlama bulutu da sıfırlar",
-    "19 başarım · <b>1000 XP</b> · giriş zorunlu değil",
-    "bekçi 25 test · 18/18 mutasyon · release APK 12,31 MiB"
    ]
   }
  ],
@@ -754,7 +741,7 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "gunlukArsiv": {
-  "kart": 84,
+  "kart": 86,
   "ilk": "05.06 – 17.06.2026",
   "son": "24.09.2026",
   "yer": "memory-bank/arsiv/pano-gunluk.json"

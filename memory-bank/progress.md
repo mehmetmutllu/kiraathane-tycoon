@@ -130,7 +130,7 @@ Bütçe düzeltmelerinin tarihçesi (73 → 121) ve bitmiş fazların tam anlat�
   · 2026-10-13 (2.): **Sprint C tur 2 — ikonlar** · ChatGPT ızgaralarının asılları indirildi, 32 bitmap ikon (para/elmas/gezinme/sekmeler/paketler/yükseltme/görev fotoğrafı) · D-166 · vitest 1862 · duman 74/74
   · 2026-10-13 (3.): zemin rengi + Başlangıç afişi seçildi (Ametist · koyu mor ışınlı sandıklı afiş, 5 + 9 aday oyundan çekildi) · D-167 · kod sonraki oturumda
   · 2026-10-13 (4.): Ametist + afiş koda girdi (sandık sağ orta, alınmış hâl soluk renk, Ayarlar metni 4,8:1) · D-167 · kart sayıları koyu ton (S2, ≥ 4,5:1) · vitest 1862 · duman 74/74
-  · 2026-10-14: ChatGPT revizesi tam ekranlara girdi — kontursuz kart + yumuşak gölge, beyaz geri, mor seçili sekme, kilitli SIRADA · D-168 · vitest 1862 · duman 74/74
+  · 2026-10-14: ChatGPT revizesi tam ekranlara girdi — kontursuz kart + yumuşak gölge, beyaz geri, mor seçili sekme, kilitli SIRADA · D-168 · vitest 1862 · duman 74/74 · test APK kullanıcıda · Apple: bekle (geri çekme sırayı sıfırlar)
 - ✅ **F6 — açılış ekranı + ekran yönü + yatay/tablet HUD** (F1b iki tur + tur 3) …
 
 ## Faz T — TUR SERİSİ: GERİ BİLDİRİM + PERFORMANS (13/13) ✅

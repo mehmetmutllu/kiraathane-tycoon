@@ -2,25 +2,23 @@
 
 > **Bu dosya ÜZERİNE YAZILIR.** ≤ 80 satır, yalnız "şu an". Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-10-13 — Sprint C tur 1 kapandı · D-165)
+## ŞU AN (2026-10-14 — Sprint C tur 2 kapandı · D-166 · D-167 · D-168)
 
 **Kural:** Play Console'u Claude KULLANMAZ. iOS'a inceleme bitmeden build GİTMEZ. Play kapalı teste güncelleme serbest.
 **Çalışma düzeni:** kullanıcı önce SEÇENEK ister ("direkt değiştirme, seçenek sun"); görsel kararlar ekran görüntüsüyle gösterilir.
 
-**Bu oturum (tek oturum, ajan yok):** ses arka planda susar · mağaza yeniden düzeni (kayan ikonlu sekmeler, küçük resimli şerit,
-paket afişi + elmas ızgarası + reklamsız şeridi, "eksik" satırı yok) · askılı tepsi tek elde · dekor önizlemesi sabit arka plan ·
-zemin/duvar önizleme ortalı · Kurucu yeleği belde biter · tam ekran paneller açık lila · ChatGPT cila turu (yerleşim kilitli) +
-2×16 ikon. Ayrıntı: `docs/sprintler/sprint-C-plan.md`. Görseller: `docs/tasarim/sprint-C/`.
+**Tur 2 bitti:** 32 bitmap ikon (D-166) · Ametist zemin + koyu mor sandıklı Başlangıç afişi (sandık sağ orta, alınmış hâl soluk
+renk) + Ayarlar zemin metni 4,8:1 + kart sayıları koyu ton ≥ 4,5:1 (D-167) · ChatGPT revizesi: kontursuz kart + `--lila-golge`,
+beyaz yuvarlak geri, mor seçili sekme, kilitli SIRADA (D-168; kullanıcı: "çok daha iyi"). Kareler: `docs/tasarim/sprint-C/`
+(`ametist-afis.png` · `ametist-sayilar-s2.png` · `revize-uygulandi.png`).
 
-## ⏭️ SIRADAKİ ADIM — Sprint C tur 2 (kullanıcı onayladı)
-- ✅ **İkonlar geçti (D-166):** 32 bitmap ikon `public/assets/ui/ikon/` · ekran görüntüleri `docs/tasarim/sprint-C/ikon-*.png`.
-1. ✅ **Ametist + afiş koda girdi (D-167):** `--lila-*` Ametist · afiş koyu mor ışın + sandık **D (sağ orta)** · alınmış hâl
-   rengi çekilmiş · Ayarlar zemin metni koyulaştı. Görsel: `docs/tasarim/sprint-C/ametist-afis.png` · artifact NKxdozMihbisTNjYfjnTtn.
-   ✅ Kart sayıları **S2 koyu ton** (`--lila-*-koyu`, hepsi ≥ 4,5:1) · kare `ametist-sayilar-s2.png`.
-   Not: duman erken akışı bu turda 4 kez üst üste düştü, sonra kendiliğinden 3 kez geçti (Vite ısınması şüphesi).
-2. ✅ **ChatGPT revizesi uygulandı (D-168):** kontursuz kart + `--lila-golge` · beyaz yuvarlak geri · seçili sekme koyu mor ·
-   SIRADA kilitli sakin satır · kare `revize-uygulandi.png`. Kullanıcı karede bakıp onaylasın/düzeltsin.
-3. Sonra: test APK (`npm run apk`) kullanıcı telefonda dener.
+## ⏭️ SIRADAKİ ADIM
+1. **Test APK kullanıcıda** (debug, 20,9 MiB, 2026-10-14): `android/app/build/outputs/apk/debug/app-debug.apk` + masaüstü
+   `TeaHouse-test-2026-10-14.apk`. Kullanıcının telefon geri bildirimini al: sandık dar ekranda başlığa çarpıyor mu · sayılar
+   okunuyor mu · kontursuz kartlar zeminden ayrışıyor mu · mor sekme/beyaz geri net mi · Ametist boğucu mu. Düzeltmeleri yap.
+2. Sorun yoksa: yeni Play paketi (`npm run play:paket`) → arkadaşa.
+3. Küçükler: Usta kartındaki açık mavi "0/7" · küçük resimde zayıf üç (semaver, Restoran ≈ Krem fayans, Klasik Parke).
+   Duman erken akışı 2026-10-13'te 4 kez üst üste düştü, sonra kendiliğinden geçti (Vite ısınması şüphesi).
 
 ## AÇIK KALEMLER
 - iOS inceleme: Apple cevap verdi (2026-10-14, vaka 102987045833): 8 Eki'den beri "Waiting for Review", sorun yok; geri çekip yeniden göndermek sırayı baştan başlatıyor → BEKLE, gönderime dokunma, geri çekme, hızlandırılmış inceleme isteme. Bitince e-posta gelir.
@@ -28,5 +26,4 @@ zemin/duvar önizleme ortalı · Kurucu yeleği belde biter · tam ekran panelle
 - Cihaz turu (Android 1.0.1): `sprint-A-defter.md` "Nasıl kontrol edersin" 5 adımı.
 - Deyimix 1.0.1 "Pending Developer Release" — kullanıcı Release diyecek.
 - AdMob "ABD eyalet yönetmelikleri" mesajı bakılmadı · ana görev ödülüne "video izle 2×" sorusu açık (varyant kapısı).
-- Küçük resimde zayıf üç: semaver (ilkel silindir), Restoran ≈ Krem fayans, Klasik Parke desensiz.
 - Duman erken akışı ara sıra düşüyor (DUMAN_PORT=4250) · `i18n/baslat` Preferences'tan önce okuyor (küçük).

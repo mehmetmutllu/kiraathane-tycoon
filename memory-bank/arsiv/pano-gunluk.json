@@ -1,9 +1,33 @@
 {
  "not": "İlerleme panosunun ESKİ oturum kartları. Pano her turda büyüyordu (67 kart / 219 KB) ve yayını canlı sürümün tamamının okunmasını şart koştuğu için tur başına maliyeti ARTIYORDU — okunanın neredeyse tamamı bir daha bakılmayacak arşivdi. Projenin kendi kuralı buraya da uygulandı (eski anlatı → arsiv/). Pano son 8 turu gösterir; öncesi burada ve git geçmişinde durur.",
  "kaynak": "docs/pano/ilerleme-panosu.html",
- "tasindi": "13.10.2026",
- "kart": 84,
+ "tasindi": "14.10.2026",
+ "kart": 86,
  "gunluk": [
+  {
+   "tarih": "24.09.2026",
+   "etiket": "F4c-1 — 💎 vitrini (D-154)",
+   "baslik": "Mağazada <b>Kıyafet</b> ve <b>Tepsi</b>",
+   "govde": "Dört türün 36 adayı aynı kadrajda çizildi, kullanıcı eledi. Sahibin kıyafeti ve elindeki tepsi artık 💎 ile alınıyor; yelek gövdenin profilinden sarılıyor, gümüş askılı tepsi elden asılı taşınıyor.<br><br>Başlangıç paketi açıldı: 100 💎 + yalnız o pakette olan Kurucu kıyafeti. Teklif ilk Usta'dan sonra bir kez, geri sayımsız çıkıyor.",
+   "maddeler": [
+    "kurucu <b>bordo yelek + fes</b> · fes başka üründe yok",
+    "5 kıyafet · 4 tepsi · fiyatlar <b>taslak</b>",
+    "teklif ekran sırasının en sonunda · \"Şimdi değil\" kalıcı",
+    "bekçi 25 test · 14/14 mutasyon · duman 58/58"
+   ]
+  },
+  {
+   "tarih": "24.09.2026",
+   "etiket": "F4b — Play Games (D-153)",
+   "baslik": "Play Games <b>hazır</b>: bulut kaydı + 19 başarım",
+   "govde": "Hazır eklentiler eski kaldığı için kendi küçük Android eklentimiz yazıldı. Oyuncu bağlıysa kayıt buluta yedekleniyor; telefon değişince ya da oyun silinip kurulunca daha ileri olan kayıt kazanıyor. Başarımlar yalnız Play puanı veriyor, oyunun dengesine dokunmuyor.<br><br>Play Console'da kimlikler girilene dek bölüm kapalı; emülatörde oyun normal açıldı.",
+   "maddeler": [
+    "çakışma: <b>daha ileri kayıt kazanır</b> (toplam kazanç, eşitse XP)",
+    "daha ileri bulutun üstüne yazılmaz · sıfırlama bulutu da sıfırlar",
+    "19 başarım · <b>1000 XP</b> · giriş zorunlu değil",
+    "bekçi 25 test · 18/18 mutasyon · release APK 12,31 MiB"
+   ]
+  },
   {
    "tarih": "24.09.2026",
    "etiket": "F4a — satın alımlar (D-152)",
