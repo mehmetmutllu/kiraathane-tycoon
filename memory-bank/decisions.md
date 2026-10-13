@@ -4963,3 +4963,10 @@ rozeti (içine sayı oturur), tepsi-boşalt ve kamera düğmesi. Kesimde `--koru
 kalıyordu. Bekçi `mor-dil` 8: her ikon adının dosyası var (dosya silme mutasyonu yakaladı). `rozet` ikonu henüz kullanılmıyor.
 Sırada: mor ara ton zemin (yeni ikonlarla birlikte bakılacak).
 
+## D-167 · Tam ekran zemini Ametist + Başlangıç afişi koyu mor ışınlı sandıklı (2026-10-13)
+
+**Karar (kullanıcı, seçeneklerden):** açık lila (D-165) yerine **C Ametist** (`--lila-*` orta mor zemin, kartlar açık; dört aday +
+şimdiki oyundan çekildi, artifact G1mLiwdtpvW2sgCTYBib7s). Başlangıç Paketi afişi dokuz seçenekten **8 · koyu mor ışınlı + elmas
+sandığı + ışıltı** (artifact FHxaDEgDNa4kqUeuWLbSXe; 3 altın ve 4 koyu arasında kalındı). Sandığın konumu beğenilmedi, uygulamada
+yeri yeniden seçtirilir. Renk kodları ve afiş tarifi: tur kartı. Henüz koda girmedi.
+
