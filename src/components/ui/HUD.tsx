@@ -1253,7 +1253,7 @@ function QuestsSheet({ onClose }: { onClose: () => void }) {
           <ul className="qlist">
             {upcoming.map((q) => (
               <li className="qrow next" key={q.id}>
-                <span className="qrow-dot" />
+                <span className="qrow-kilit"><LockIcon size={20} /></span>
                 <span className="qrow-title">{t(q.title)}</span>
               </li>
             ))}

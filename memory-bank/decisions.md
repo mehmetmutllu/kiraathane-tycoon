@@ -4974,3 +4974,11 @@ satıra kırılır, kabul); alınmış afiş **saydam değil, rengi çekilmiş**
 tx2 3,0:1 → çerçeve moru 4,8:1. Kart sayıları (sarı/mavi/yeşil 1,0–1,7:1) **S2 koyu ton** (kullanıcı: "koyu ton, kontur değil"):
 `--lila-*-koyu` dört token, ekran kabuğu kapsamında; hepsi ≥ 4,5:1 (oyuk zemindeki SIRADA satırı dahil).
 
+## D-168 · Tam ekranlar ChatGPT revizesiyle: kontursuz kart, beyaz geri, mor seçili, kilitli SIRADA (2026-10-14)
+
+**Karar (Sprint C planı madde 2, kullanıcı onaylı; `chatgpt-2-revizyon.png`):** yalnız `.modal-card.screen` içinde kart ve sekmelerin
+konturu kalkar (genişlik değil renk: ölçü kaymaz), yerine tek token `--lila-golge` (yumuşak mor gölge). Kontur ana eylem düğmesi,
+ilerleme çubuğu, anahtar ve DURUM çerçevesinde (ödül hazır amber · Usta mavi) kalır. Turuncu yalnız ana eylem: geri beyaz yuvarlak,
+seçili sekme afiş moru (`--afis-2`) dolgu, seçili çip/dil mor 3 px çerçeve. SIRADA = kilit ikonlu, yarı saydam kart rengi, koşul
+yazısı yok (oyunda koşul yok). Bekçi `mor-dil` 4: izin listesine `--lila-golge` (2 mutasyonla doğrulandı). Oyun içi HUD değişmedi.
+Kare: `docs/tasarim/sprint-C/revize-uygulandi.png`.

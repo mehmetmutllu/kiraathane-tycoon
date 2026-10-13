@@ -88,6 +88,8 @@
   --afis-1: #7f6fe0;
   --afis-2: #4a3da6;
   --afis-3: #2f2577;
+  /* Tam ekranda kontursuz kartın yumuşak gölgesi (Sprint C revize). */
+  --lila-golge: 0 4px 12px rgba(44, 34, 110, 0.22);
   /* Açık kartta renkli sayı (D-167, S2): amber/elmas/yeşil beyazda 1,0–1,7:1 kalıyordu → aynı rengin koyu tonu. */
   --lila-ac-koyu: #9c5400;
   --lila-para-koyu: #7d4700;

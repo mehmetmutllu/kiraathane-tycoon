@@ -18,8 +18,8 @@ zemin/duvar önizleme ortalı · Kurucu yeleği belde biter · tam ekran panelle
    rengi çekilmiş · Ayarlar zemin metni koyulaştı. Görsel: `docs/tasarim/sprint-C/ametist-afis.png` · artifact NKxdozMihbisTNjYfjnTtn.
    ✅ Kart sayıları **S2 koyu ton** (`--lila-*-koyu`, hepsi ≥ 4,5:1) · kare `ametist-sayilar-s2.png`.
    Not: duman erken akışı bu turda 4 kez üst üste düştü, sonra kendiliğinden 3 kez geçti (Vite ısınması şüphesi).
-2. ChatGPT revize tasarımı uygula (`chatgpt-2-revizyon.png`): kontursuz kartlar + yumuşak gölge, beyaz yuvarlak geri,
-   "SIRADA" kilitli sakin satırlar, turuncu yalnız ana eylem (seçili sekme ayrışsın).
+2. ✅ **ChatGPT revizesi uygulandı (D-168):** kontursuz kart + `--lila-golge` · beyaz yuvarlak geri · seçili sekme koyu mor ·
+   SIRADA kilitli sakin satır · kare `revize-uygulandi.png`. Kullanıcı karede bakıp onaylasın/düzeltsin.
 3. Sonra: test APK (`npm run apk`) kullanıcı telefonda dener.
 
 ## AÇIK KALEMLER

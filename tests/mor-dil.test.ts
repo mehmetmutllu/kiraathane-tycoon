@@ -139,7 +139,9 @@ describe('mor dil — D-107 palet ve ölçek kilidi', () => {
     // `--k3duz`, YENİ bir kabartma basamağı değil: `--k3`ün üst iç parlaması olmayan eşi
     // (aşağıdaki 4c bunu sayıyla kanıtlıyor). Kullanıcı 2026-09-16'da görev bandındaki gri
     // şeridi kaldırttı; basamak sayısı değişmedi, o basamağın parlamasız hâli eklendi.
-    const izin = /^var\(--k[123]\)$|^var\(--k3duz\)$|^none$/;
+    // `--lila-golge` (Sprint C revize, D-168): tam ekranın KONTURSUZ kartı — kabartma değil, zeminden ayıran yumuşak
+    // gölge. Tek token; durum yine kenarlıkla anlatılır (seçili sekme/çip, ödül hazır).
+    const izin = /^var\(--k[123]\)$|^var\(--k3duz\)$|^var\(--lila-golge\)$|^none$/;
     for (const p of stiller) {
       const kacak = bildirimler(yorumsuz(oku(p)), 'box-shadow').filter((v) => !izin.test(v));
       expect(kacak, `${p} — durum gölgeyle değil KENARLIKLA anlatılır`).toEqual([]);

@@ -1191,20 +1191,16 @@
   font-size: var(--p1);
   color: var(--para);
 }
-/* T2: "sırada" satırı zeminini KAYBETMEZ — kesik kenarlık zaten "henüz değil" diyor.
-   Zeminsizken `--tx2` gövde gradyanında 3,84 veriyordu; oyukta 7,12. */
+/* "Sırada" satırı (Sprint C revize): kesik kenarlıklı boş kutu "bitmemiş" duruyordu → kilitli, sakin, yarı saydam
+   kart rengi. Asıl görev kartından gölgesiz ve küçük yazıyla ayrışır; `--tx2` bu zeminde 5,9:1. */
 .qrow.next {
   color: var(--tx2);
-  background: var(--oyuk);
-  border: 2px dashed var(--kart);
+  background: color-mix(in srgb, var(--kart) 60%, transparent);
 }
-.qrow-dot {
+.qrow-kilit {
   flex: none;
-  width: 10px;
-  height: 10px;
-  margin: 0 5px;
-  border-radius: 50%;
-  border: 2px solid var(--tx2);
+  display: flex;
+  opacity: 0.8;
 }
 
 /* ── HEDEFLER sayfası ── */
@@ -2330,4 +2326,37 @@
 }
 .modal-card.screen .char-stat-val i {
   color: var(--lila-ok-koyu);
+}
+
+/* SPRINT C REVİZE (ChatGPT tasarımı `chatgpt-2-revizyon.png`): tam ekranda kart ve sekmeler KONTURSUZ, yumuşak mor
+   gölgeyle ayrışır. Kontur yalnız ana eylem düğmesinde, ilerleme çubuğunda, anahtarda ve DURUM bildiren
+   çerçevede (ödül hazır · Usta) kalır. Kenarlık genişliği değil rengi kalkar: ölçü kaymaz. */
+.modal-card.screen
+  :is(.goal, .qbig, .qbig-photo, .rep-hero, .char-canvas, .char-stat, .preview-canvas, .shop-chip, .shop-name-row,
+    .paket-kart, .paket-serit, .paket-afis, .screen-purse, .shop-tab, .char-tab, .shop-zone-btn, .dil-secenek,
+    .kafe-adi-degistir) {
+  border-color: transparent;
+  box-shadow: var(--lila-golge);
+}
+.modal-card.screen .goal.ready {
+  border-color: var(--ac);
+}
+/* Turuncu yalnız ANA EYLEM: geri beyaz yuvarlak, seçili sekme koyu mor (afişin moru), seçili çip mor çerçeve. */
+.modal-card.screen .sheet-back {
+  border-color: transparent;
+  border-radius: 50%;
+  background: var(--lila-kart);
+  color: var(--lila-ot);
+  box-shadow: var(--lila-golge);
+}
+.modal-card.screen .sheet-back:active {
+  box-shadow: none;
+}
+.modal-card.screen :is(.shop-tab.active, .char-tab.active, .shop-zone-btn.sel) {
+  background: var(--afis-2);
+  color: var(--lila-kart);
+}
+.modal-card.screen :is(.shop-chip.sel, .dil-secenek.secili) {
+  border-color: var(--afis-2);
+  border-width: 3px;
 }
