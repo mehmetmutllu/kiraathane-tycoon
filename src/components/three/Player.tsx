@@ -21,6 +21,9 @@ export function tepsiKaymasi(tepsi: string): [number, number, number] {
   return [KAY_TEPSI_KAYMA[0], KAY_TEPSI_KAYMA[1] - ASKI_HALKA_Y, KAY_TEPSI_KAYMA[2]];
 }
 
+/** Askılı tepsi tek elde, kol yanda taşınır (`ASKI_KOL`). Oyun ve karakter paneli aynı sorudan okur. */
+export const tepsiTekEl = (tepsi: string): boolean => tepsiGorunum(tepsi).tip === 'aski';
+
 const metalMat = { metalness: 0.55, roughness: 0.35 } as const;
 
 /** Askı kolu: tabanın kenarından (açı a, yarıçap r) halkaya uzanan çubuk. */
@@ -338,7 +341,7 @@ export function Player() {
             ortasından alır ve taşırken üst gövde `Holding_A`ya geçer. Eskiden tepsi gövdenin
             yanında SABİT bir noktadaydı ve kollar boşta sallanıyordu (ölçüm: çapa y 0,953,
             eller 0,66 — tepsi ellerin 29 cm üstünde, göğse yapışık). */}
-        <KayActor kind="owner" kiyafet={kiyafet} tasiyor={eldeVar}>
+        <KayActor kind="owner" kiyafet={kiyafet} tasiyor={eldeVar} tekEl={tepsiTekEl(tepsi)}>
           <group position={tepsiKaymasi(tepsi)}>
             <CupTray
               tea={tray}

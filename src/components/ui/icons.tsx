@@ -561,3 +561,130 @@ export function QuestPhoto({ target, size = 44 }: { target: QuestTarget; size?: 
     </svg>
   );
 }
+
+/* ══════════════ MAĞAZA SEKMELERİ (2026-10-13) ══════════════
+   Sekme satırı tek sıra, ikon + tam yazı. Tepsi/Masa/Elmas mevcut çizimlerden; kalan dördü burada. */
+
+/** Kıyafet — yelek gövdesi. Aksan yalnız papyonda. */
+export function ShirtIcon({ size = 22 }: { size?: number }) {
+  return (
+    <Ic size={size}>
+      <path
+        d="M8 3.4L4 5.6 1.8 10.4l3.6 1.8 1.2-2v10.4h10.8V10.2l1.2 2 3.6-1.8L20 5.6l-4-2.2c-.8 1.6-2.2 2.4-4 2.4s-3.2-.8-4-2.4z"
+        fill="currentColor" stroke={OT} strokeWidth="2.1" strokeLinejoin="round"
+      />
+      <path d="M8.6 7.4l3.4 1.8 3.4-1.8v3.6l-3.4-1.8-3.4 1.8z" fill={AC} stroke={OT} strokeWidth="1.7" strokeLinejoin="round" />
+    </Ic>
+  );
+}
+
+/** Dekor — ayaklı lamba. Aksan yalnız abajurda. */
+export function LampIcon({ size = 22 }: { size?: number }) {
+  return (
+    <Ic size={size}>
+      <rect x="10.9" y="9.6" width="2.2" height="9.6" fill={OT} />
+      <ellipse cx="12" cy="20.2" rx="5.2" ry="1.9" fill="currentColor" stroke={OT} strokeWidth="2" />
+      <path d="M8.2 2.8h7.6l3.4 7.4H4.8z" fill={AC} stroke={OT} strokeWidth="2.1" strokeLinejoin="round" />
+    </Ic>
+  );
+}
+
+/** Masa (sekme) — yükseltme simgesinin aynı çizimi. */
+export function TableIcon({ size = 22 }: { size?: number }) {
+  return (
+    <Ic size={size}>
+      <MasaGlyph />
+    </Ic>
+  );
+}
+
+/** Zemin — eşkenar dörtgen karo; aksan tek karoda. */
+export function FloorIcon({ size = 22 }: { size?: number }) {
+  return (
+    <Ic size={size}>
+      <path d="M12 4.4L22 12l-10 7.6L2 12z" fill="currentColor" stroke={OT} strokeWidth="2.1" strokeLinejoin="round" />
+      <path d="M12 4.4L17 8.2 12 12 7 8.2z" fill={AC} />
+      <path d="M7 8.2l10 7.6M17 8.2L7 15.8" stroke={OT} strokeWidth="1.8" />
+      <path d="M12 4.4L22 12l-10 7.6L2 12z" fill="none" stroke={OT} strokeWidth="2.1" strokeLinejoin="round" />
+    </Ic>
+  );
+}
+
+/** Duvar — badana + lambri kuşağı; aksan lambride. */
+export function WallIcon({ size = 22 }: { size?: number }) {
+  return (
+    <Ic size={size}>
+      <rect x="3" y="2.8" width="18" height="18.4" rx="2.2" fill="currentColor" stroke={OT} strokeWidth="2.1" />
+      <path d="M4.1 13.4h15.8v5.6a1.1 1.1 0 0 1-1.1 1.1H5.2a1.1 1.1 0 0 1-1.1-1.1z" fill={AC} />
+      <path d="M3 13.4h18" stroke={OT} strokeWidth="2.1" />
+      <rect x="3" y="2.8" width="18" height="18.4" rx="2.2" fill="none" stroke={OT} strokeWidth="2.1" />
+    </Ic>
+  );
+}
+
+/** Reklamları Kaldır — video kutusu + çapraz çizgi (çizgi uyarı renginde). */
+export function NoAdsIcon({ size = 40 }: { size?: number }) {
+  return (
+    <Ic size={size}>
+      <rect x="2.4" y="5.4" width="19.2" height="13.2" rx="2.8" fill="currentColor" stroke={OT} strokeWidth="2.1" />
+      <path d="M10 9v6l5-3z" fill={OT} />
+      <path d="M4 20.4L20 3.6" stroke={OT} strokeWidth="5.2" strokeLinecap="round" />
+      <path d="M4 20.4L20 3.6" stroke="var(--uyari)" strokeWidth="2.4" strokeLinecap="round" />
+    </Ic>
+  );
+}
+
+/* ══════════════ ELMAS PAKETLERİ — avuç · kese · sandık ══════════════
+   48'lik kutu (simge değil küçük resim, görev fotoğrafları gibi). Kademe büyüdükçe elmas sayısı ve
+   kap büyür: oyuncu fiyatı okumadan hangisinin "çok" olduğunu görür. */
+
+function Elmas({ x, y, s = 1 }: { x: number; y: number; s?: number }) {
+  return (
+    <g transform={`translate(${x} ${y}) scale(${s})`}>
+      <path d="M-4.6-5.2h9.2l4.2 5.4L0 12-8.8.2z" fill="var(--elmas)" stroke={OT} strokeWidth="2" strokeLinejoin="round" />
+      <path d="M-8.8.2H9" fill="none" stroke={OT} strokeWidth="1.7" />
+      <path d="M-3.4-3.4h3" stroke="var(--tx)" strokeWidth="1.6" strokeLinecap="round" />
+    </g>
+  );
+}
+
+export function GemPackArt({ kademe, size = 64 }: { kademe: number; size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden>
+      {kademe <= 0 && (
+        <g>
+          <ellipse cx="24" cy="40" rx="15" ry="3.4" fill="var(--oyuk)" />
+          <Elmas x={16} y={27} s={1.05} />
+          <Elmas x={31} y={28} s={0.95} />
+          <Elmas x={23.5} y={20} s={1.2} />
+        </g>
+      )}
+      {kademe === 1 && (
+        <g>
+          <ellipse cx="24" cy="42.4" rx="15" ry="3" fill="var(--oyuk)" />
+          <Elmas x={17} y={13} s={0.9} />
+          <Elmas x={30} y={12} s={0.85} />
+          <Elmas x={24} y={8} s={1} />
+          <path d="M14.4 18.6h19.2c5 4.4 7.8 10 7.6 15.4-.2 5-4.2 8-9.2 8H16c-5 0-9-3-9.2-8-.2-5.4 2.6-11 7.6-15.4z" fill="var(--ac2)" stroke={OT} strokeWidth="2.2" strokeLinejoin="round" />
+          <path d="M13 18.6h22" stroke={OT} strokeWidth="4.6" strokeLinecap="round" />
+          <path d="M13.6 18.6h20.8" stroke={AC} strokeWidth="2" strokeLinecap="round" />
+          <Elmas x={24} y={30} s={0.8} />
+        </g>
+      )}
+      {kademe >= 2 && (
+        <g>
+          <ellipse cx="24" cy="43" rx="19" ry="3" fill="var(--oyuk)" />
+          <Elmas x={13} y={13} s={0.85} />
+          <Elmas x={35} y={13} s={0.85} />
+          <Elmas x={19} y={9} s={0.95} />
+          <Elmas x={29} y={8.4} s={1} />
+          <Elmas x={24} y={14} s={1.05} />
+          <rect x="5.6" y="21" width="36.8" height="20.6" rx="3" fill="var(--ac2)" stroke={OT} strokeWidth="2.2" />
+          <path d="M4.2 17.4h39.6v7.2H4.2z" fill={AC} stroke={OT} strokeWidth="2.2" strokeLinejoin="round" />
+          <rect x="20.6" y="21.4" width="6.8" height="8.4" rx="1.4" fill="var(--para)" stroke={OT} strokeWidth="2" />
+          <path d="M5.6 33.4h36.8" stroke={OT} strokeWidth="1.8" />
+        </g>
+      )}
+    </svg>
+  );
+}

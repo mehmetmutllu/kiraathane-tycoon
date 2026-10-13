@@ -219,7 +219,8 @@ describe('ikonlar — D-108 grameri', () => {
     // o bir simge değil KÜÇÜK RESİM, ve içindeki çizim yine 24 ızgaradan gelir (scale ile).
     const kutular = [...kod.matchAll(/viewBox="([^"]+)"/g)].map((m) => m[1]);
     expect(new Set(kutular)).toEqual(new Set(['0 0 24 24', '0 0 48 48']));
-    expect(kutular.filter((v) => v === '0 0 48 48').length, 'yalnız QuestPhoto 48 kutulu').toBe(1);
+    // 2026-10-13: elmas paketlerinin resmi (`GemPackArt` — avuç · kese · sandık) de küçük resim, 48 kutulu.
+    expect(kutular.filter((v) => v === '0 0 48 48').length, 'yalnız QuestPhoto + GemPackArt 48 kutulu').toBe(2);
     expect(kromatikRenkler(kod), "ikon rengi token'dan okunmalı").toEqual([]);
   });
 });

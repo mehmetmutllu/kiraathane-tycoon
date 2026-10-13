@@ -14,7 +14,7 @@ import { vitrinUrunu } from '../../game/vitrin';
  * sahneyi ikinci kez kurmak hem bellek hem "mağazada gördüğün ≠ salondaki" riski olurdu.
  *
  * Eşyanın kendisi `VitrinDekor` tarafından önizleme süresince yuvasına konur (`cizilenDekor`) ve
- * grubunu buraya kaydeder; kadraj o grubun ÇİZİLEN kutusundan kurulur (`dekorKadraj`).
+ * grubunu buraya kaydeder; kadraj o grubun ÇİZİLEN kutusundan, yuva başına bir kez kurulur (`dekorKadraj`).
  */
 
 /** Mağazanın önizleme kutusu bu tuvali kendi içine takar; `surum` her çekimde artar. */
@@ -41,6 +41,9 @@ export function cekimBuKare(): boolean {
   cekildi = false;
   return v;
 }
+
+/** Yuvanın ilk ölçülen kadrajı — modeller önceden yüklendiği için ilk ölçüm gerçek modelindir. */
+const yuvaKadraji = new Map<string, ReturnType<typeof dekorKadraj>>();
 
 /** İlk çekimden sonra kaç saniyede bir yenilenir: model geç yüklenir, salon da canlı. */
 const YENILEME_SN = 0.5;
@@ -71,7 +74,13 @@ export function DekorCekimi() {
     if (!y || kutu.isEmpty()) return; // model henüz yüklenmedi
     r.son = state.clock.elapsedTime;
 
-    const k = dekorKadraj(kutu.min.toArray(), kutu.max.toArray(), y.duvar);
+    // Kadraj çizilen kutudan, ama YUVA BAŞINA BİR KEZ (kullanıcı 2026-10-13): aynı yuvadaki ürünler
+    // değişirken (yılbaşı koltuğunun dört rengi) arka plan kıpırdamaz, yalnız eşya değişir.
+    let k = yuvaKadraji.get(y.id);
+    if (!k) {
+      k = dekorKadraj(kutu.min.toArray(), kutu.max.toArray(), y.duvar);
+      yuvaKadraji.set(y.id, k);
+    }
     const el = gl.domElement;
     let en = Math.min(DEKOR_KADRAJ.enPx, el.width);
     let boy = Math.round(en / dekorKaresi.enBoy);

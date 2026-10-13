@@ -1,4 +1,6 @@
 import { Suspense, lazy, useEffect } from 'react';
+import { Capacitor } from '@capacitor/core';
+import { App as CapApp } from '@capacitor/app';
 import { HUD } from './components/ui/HUD';
 import { Joystick } from './components/ui/Joystick';
 import { SplashScreen } from './components/ui/SplashScreen';
@@ -134,7 +136,20 @@ export default function App() {
       void reklamYenidenKur();
       void magazaYenile('onPlan');
     };
-    const onVisibility = () => (document.visibilityState === 'hidden' ? arkaPlanda() : onPlanda());
+    // İki kaynak, tek durum: Android WebView'u ana ekrana dönüşte `visibilitychange`i güvenilir
+    // vermiyor (müzik arka planda çalmaya devam ediyordu); Capacitor'ın `appStateChange`i native
+    // yaşam döngüsünden gelir. İkisi birden tetiklenince ikincisi bir şey yapmaz.
+    let gizli = false;
+    const gorunurluk = (g: boolean) => {
+      if (g === gizli) return;
+      gizli = g;
+      if (g) arkaPlanda();
+      else onPlanda();
+    };
+    const onVisibility = () => gorunurluk(document.visibilityState === 'hidden');
+    const durumDinleyici = Capacitor.isNativePlatform()
+      ? CapApp.addListener('appStateChange', ({ isActive }) => gorunurluk(!isActive))
+      : null;
     // Reklam ekrandayken müzik/sesler susar, kapanınca döner.
     const reklamSesCoz = reklamAbone(() => sesDuraklat('reklam', reklamEkranda()));
     document.addEventListener('visibilitychange', onVisibility);
@@ -145,6 +160,7 @@ export default function App() {
       window.removeEventListener('blur', blur);
       window.removeEventListener('beforeunload', onHide);
       document.removeEventListener('visibilitychange', onVisibility);
+      void durumDinleyici?.then((d) => d.remove());
       sesiCoz();
       bulutCoz();
       reklamSesCoz();

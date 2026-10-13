@@ -310,3 +310,11 @@ export const KAY_MUSTERI_GOVDE = ['Knight', 'Rogue', 'Mage', 'Barbarian', 'Range
  */
 export const KAY_TEPSI_KAYMA: Vec3 = [0, -1.0, -0.45];
 export const KAY_GARSON_TEPSI_KAYMA: Vec3 = [0, -0.95, -0.4];
+
+/**
+ * ASKILI TEPSİ TEK ELDE (kullanıcı 2026-10-13: *"onu tek elinde tutmalı, normalde öyle kullanılan
+ * bir tepsi"*). Gerçekte çaycı halkayı parmaklarıyla tutar, kol yanda sarkar, tepsi yürürken sallanır.
+ * Üst gövde `Holding_A`ya GEÇMEZ; yalnız sağ üst kol gövdeden `acilma` kadar yana, `one` kadar öne
+ * açılır ki asılı tepsi bacağa girmesin (radyan, animasyonun üstüne eklenir).
+ */
+export const ASKI_KOL = { acilma: 0.32, one: 0.12 } as const;

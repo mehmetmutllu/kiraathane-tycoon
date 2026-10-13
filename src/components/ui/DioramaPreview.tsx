@@ -31,7 +31,7 @@ export function DioramaPreview({ kind, id }: { kind: 'floor' | 'wall'; id: strin
           <FloorPatch floorId={floorId} checkerHalf={4} />
           <WallBack wallId={wallId} z={-2.6} />
           {/* referans masa (ölçek/bağlam) — gerçek oyun masası, önde-merkez */}
-          <Table x={0.4} z={0.5} level={1} />
+          <Table x={0} z={0.5} level={1} />
         </Canvas>
       </div>
     </div>

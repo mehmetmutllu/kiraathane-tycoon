@@ -20,7 +20,7 @@ import {
   dishSpeedNextCost,
   type CharStat,
 } from '../../config/economy.config';
-import { CupTray, tepsiKaymasi } from '../three/Player';
+import { CupTray, tepsiKaymasi, tepsiTekEl } from '../three/Player';
 import { gecerliKiyafet, gecerliTepsi } from '../../game/vitrin';
 import { KayActor } from '../three/KayActor';
 import { FixedCam, SalonLights, FloorPatch, WallBack } from './SalonSlice';
@@ -84,7 +84,7 @@ function Onizleme({ kind, cap, dirty = 0, food = false, kiyafet, tepsi }: {
   });
   return (
     <group ref={sway}>
-      <KayActor kind={kind} kiyafet={kiyafet} tasiyor>
+      <KayActor kind={kind} kiyafet={kiyafet} tasiyor tekEl={!!tepsi && tepsiTekEl(tepsi)}>
         <group ref={trayG} position={tepsiKaymasi(tepsi ?? 'klasik')}>
           <CupTray tea={food ? 0 : cap - dirty} food={food ? cap : 0} dirty={dirty} cap={cap} gorunum={tepsi} />
         </group>

@@ -2279,3 +2279,27 @@
     zoom: 1.4;
   }
 }
+
+/* AÇIK LİLA EKRANLAR (2026-10-13): açık zeminde 2,5–3 px'lik kontur ağır duruyordu; tam ekran kabuğunun
+   içinde bütün konturlar 2 px'e iner. Dosyanın SONUNDA: eşit özgüllükteki bileşen kurallarını ezsin. */
+.modal-card.screen * {
+  border-width: 2px;
+}
+
+/* Token'lar ekran kabuğunun İÇİNDE yeniden bağlanır: hiçbir bileşen kuralı değişmeden açık zemine geçer. */
+.screen-backdrop,
+.modal-card.screen {
+  --g1: var(--lila-g1);
+  --g2: var(--lila-g2);
+  --kart: var(--lila-kart);
+  --kart2: var(--lila-kart2);
+  --oyuk: var(--lila-oyuk);
+  --tx: var(--lila-tx);
+  --tx2: var(--lila-tx2);
+  --ot: var(--lila-ot);
+  --vitrin: var(--lila-g2);
+  --madalyon: var(--lila-madalyon);
+  --k1: 0 2px 0 var(--lila-ot);
+  --k2: inset 0 2px 0 rgba(255, 255, 255, 0.45), 0 3px 0 var(--lila-ot);
+  --k3: inset 0 3px 0 rgba(255, 255, 255, 0.5), 0 5px 0 var(--lila-ot), 0 10px 18px rgba(0, 0, 0, 0.12);
+}

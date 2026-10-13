@@ -309,7 +309,7 @@ function Sahne() {
       <SceneLights />
       <Sinir>
         <Suspense fallback={null}>
-          <group ref={kok} rotation={[0, BAKIS[tur].yaw, 0]}>
+          <group ref={kok} rotation={[0, Number(q.get('yaw') ?? BAKIS[tur].yaw), 0]}>
             <Esya />
           </group>
         </Suspense>

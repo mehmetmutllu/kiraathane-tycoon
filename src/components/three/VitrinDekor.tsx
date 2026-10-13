@@ -1,5 +1,6 @@
 import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
+import { useGLTF } from '@react-three/drei';
 import { CanvasTexture, SRGBColorSpace, type Group } from 'three';
 import { vitrinYuva, yuvaAnkraj } from '../../config/decor';
 import { useGame } from '../../game/store';
@@ -50,6 +51,9 @@ function Silindir({
 }
 
 const kay = (ad: string) => `${FURNITURE}${ad}.gltf`;
+// Mağaza önizlemesi eşyayı ilk tıkta çeker: model inmemişse ilkel yedek (kırmızı kutu) çekime girerdi.
+['cabinet_small', 'table_small', 'armchair', 'lamp_standing'].forEach((ad) => useGLTF.preload(kay(ad)));
+['carpet_round_small', ...Object.values(YILBASI_MODEL)].forEach((ad) => useGLTF.preload(`${HOLIDAY}${ad}.gltf`));
 
 function Radyo() {
   const z = YERLESIM.radyo.dolapZ;

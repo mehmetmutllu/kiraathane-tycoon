@@ -4945,3 +4945,11 @@ kartları + bonus kurdeleleri, Başlangıç Paketi afişi) çizdi; kullanıcı a
 indirilmedi. **D-107 geçerli kalır**; yeni renk ailesi önerilmez. Sprint B'den kalan iş kullanıcı açarsa: imzalı mağaza cilası
 → parça sayfası → kesim (betik hazır `tools/ui-kit/`). Biten: 38 küçük resim (`public/assets/thumbs/`), mikrometin turu
 (`docs/metinler/sprint-B-mikrometin.md`), ekran envanteri (`docs/tasarim/sprint-B/`). Plan: `docs/sprintler/sprint-B-plan.md`.
+
+## D-165 · Sprint C tur 1: mağaza yeniden düzeni + açık ekranlar; tur 2 = mor ara ton + ChatGPT ikonları (2026-10-13)
+
+**Karar (kullanıcı, seçeneklerden):** Paketler = afiş + elmas ızgarası + reklamsız şeridi · sekmeler tek satır kayan, eşit, ikon + tam
+yazı · seçim şeridi ürün küçük resmi · askılı tepsi tek elde kol yanda · mağazada "{1} eksik" yok · tam ekran paneller açık zemin
+(5 adaydan lila). Ardından kullanıcı lilayı "çok açık" buldu → **tur 2: boğmayan mor ara ton**. ChatGPT'ye yerleşim KİLİTLİ cila
+istendi (D-164 dersi: yön değil cila) → revize tasarım + 2×16 oyun tarzı ikon beğenildi, **ikonlar kullanılacak** (SVG grameri
+D-108'in yerini bitmap ikon alır). Belirleyici: duman 74/74 · vitest 1861. Defter/plan: `docs/sprintler/sprint-C-plan.md`.

@@ -134,6 +134,8 @@ export const en: Record<string, string> = {
   "Alındı": "Claimed",
   ". İnternetini kontrol edip tekrar dene.": ". Check your internet connection and try again.",
   "Reklamları Kaldır": "Remove Ads",
+  "Ödüllü videolar kalır · her gün {1} elmas": "Rewarded videos stay · {1} Gems daily",
+  "Paket": "Pack",
   "Oyunun arasına giren reklamlar kalkar. Ödüllü videoları yine istediğinde izlersin. Her gün {1} elmas hediye.": "Ads between gameplay are removed. You can still watch rewarded videos whenever you want. Get {1} Gems every day.",
   "{1} elmas ve yalnız bu pakette olan Kurucu kıyafeti. Bir kez alınabilir.": "{1} Gems and the Founder Outfit, only available in this pack. One-time purchase.",
   "Kıyafet, tepsi ve dekor almak için.": "For buying outfits, trays, and decor.",

@@ -2,24 +2,23 @@
 
 > **Bu dosya ÜZERİNE YAZILIR.** ≤ 80 satır, yalnız "şu an". Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-10-10, 2. oturum — Sprint B kısmi kapandı · D-164)
+## ŞU AN (2026-10-13 — Sprint C tur 1 kapandı · D-165)
 
-**Kural:** Play Console'u Claude KULLANMAZ. iOS'a inceleme bitmeden build GİTMEZ (sıra sıfırlanır). Play kapalı teste güncelleme serbest.
-**Çalışma düzeni:** SPRINT (hafıza `feedback_sprint_yontemi.md`). Sprint B planı `docs/sprintler/sprint-B-plan.md`.
+**Kural:** Play Console'u Claude KULLANMAZ. iOS'a inceleme bitmeden build GİTMEZ. Play kapalı teste güncelleme serbest.
+**Çalışma düzeni:** kullanıcı önce SEÇENEK ister ("direkt değiştirme, seçenek sun"); görsel kararlar ekran görüntüsüyle gösterilir.
 
-**Bu oturum (Sprint B, 3 Opus ajanı + ChatGPT):**
-- ✅ Ekran envanteri: `tools/ekran-envanter.mjs` · 22 ekran × 2 boy × 2 dil · `docs/tasarim/sprint-B/` (repoda yalnız 390×844 TR).
-- ✅ 38 kozmetik küçük resmi `public/assets/thumbs/` (143 KB) · `tools/kucuk-resim.mjs` · bekçi `tests/kucuk-resim.test.ts`. HUD'a BAĞLANMADI.
-- ✅ UI kit kesim betikleri `tools/ui-kit/` (sentetik 36/36) — gerçek parça sayfası yok.
-- ✅ Mikrometin: 16 metin değişti (öğretici EN ≤ 25 harf, "Al"→"Ücretsiz al") · `docs/metinler/sprint-B-mikrometin.md`.
-- ⛔ ChatGPT tasarım yönü: iki tur reddedildi; imzalı mağaza cilası çizildi, kullanıcı "boşver" dedi (D-164). D-107 mor geçerli.
+**Bu oturum (tek oturum, ajan yok):** ses arka planda susar · mağaza yeniden düzeni (kayan ikonlu sekmeler, küçük resimli şerit,
+paket afişi + elmas ızgarası + reklamsız şeridi, "eksik" satırı yok) · askılı tepsi tek elde · dekor önizlemesi sabit arka plan ·
+zemin/duvar önizleme ortalı · Kurucu yeleği belde biter · tam ekran paneller açık lila · ChatGPT cila turu (yerleşim kilitli) +
+2×16 ikon. Ayrıntı: `docs/sprintler/sprint-C-plan.md`. Görseller: `docs/tasarim/sprint-C/`.
 
-## ⏭️ SIRADAKİ ADIM (kullanıcı seçer)
-1. iOS 1.0.0 incelemesi biterse: Apple portal → `com.mutlubadem.teahouse` → iCloud → `git merge ios-1.0.1` → Codemagic → 1.0.1.
-2. **Sprint C** (UI uygulama, mevcut imzayla): küçük resimleri mağaza şeridine bağla (çapraz pullar kalkar) · görev bandı "0/1" yarım ·
-   kırmızı kutu (dekor preload) · video kartı kapat düğmesi CSS · 360 px'te dekor şeridi kesik. İstenirse ChatGPT'nin imzalı mağaza
-   cilası (elmas kartı büyük + bonus kurdelesi + Başlangıç afişi) referans alınır — görsel ChatGPT sohbetinde, indirilmedi.
-3. P4 saat hilesi (varyant kapısı) + perf Paket 2/3.
+## ⏭️ SIRADAKİ ADIM — Sprint C tur 2 (kullanıcı onayladı)
+1. Zemin: lila → **boğmayan mor ara ton** (3-4 aday çek, yan yana göster, kullanıcı seçer). Token'lar: `index.css` `--lila-*`.
+2. ChatGPT revize tasarımı uygula (`chatgpt-2-revizyon.png`): kontursuz kartlar + yumuşak gölge, beyaz yuvarlak geri,
+   "SIRADA" kilitli sakin satırlar, turuncu yalnız ana eylem (seçili sekme ayrışsın).
+3. İkonlar: ChatGPT sohbetindeki ("UI Tasarımını Cilalama") iki 4×4 ızgaranın ASILLARINI indir (önce kullanıcıdan izin) →
+   `tools/ui-kit/izgara.py` ile kes → `public/assets/ui/ikon/` → sekme/para/elmas/alt gezinme/görev/yükseltme ikonlarına bağla.
+4. Sonra: test APK (`npm run apk`) kullanıcı telefonda dener.
 
 ## AÇIK KALEMLER
 - iOS inceleme: 2026-10-12 Apple'a "App Review Status" sorgusu gönderildi (vaka 102994418818); cevap mutlubadem4456@gmail.com'a gelir. Gönderime dokunma, hızlandırılmış inceleme tekrar istenmez.

@@ -22,6 +22,7 @@ import { kollariSiva, omuzHavlusu, HAVLU_KAYMA } from './patron';
 import { kiyafetParcalari } from './kiyafet';
 import { kiyafetGorunum, type KiyafetGorunum } from '../../config/kozmetik';
 import {
+  ASKI_KOL,
   KAY_KOK,
   KAY_KLIPLER,
   KAY_MODEL,
@@ -345,6 +346,7 @@ type KayActorProps = {
   kind: ActorKind;
   hal?: KayHal;
   tasiyor?: boolean;
+  tekEl?: boolean;
   kiyafet?: string;
   children?: ReactNode;
 };
@@ -353,6 +355,7 @@ function KayActorGovde({
   kind,
   hal,
   tasiyor = false,
+  tekEl = false,
   kiyafet,
   children,
 }: {
@@ -362,6 +365,8 @@ function KayActorGovde({
   hal?: KayHal;
   /** Elinde bir şey var mı — üst gövde `KLIP.tut`a geçer, `children` ELE takılır. */
   tasiyor?: boolean;
+  /** Eşya TEK ELDE asılı (askılı tepsi): tutuş klibi yok, çapa sağ el, sağ kol yana açılır (`ASKI_KOL`). */
+  tekEl?: boolean;
   /** Taşınan eşya (tepsi, kirli bardak). Gövde ölçeğinin DIŞINDA, ama ELİ takip eder. */
   children?: ReactNode;
 }) {
@@ -442,7 +447,7 @@ function KayActorGovde({
 
     // TAŞIMA (S16): elinde tepsi varken üst gövde `KLIP.tut`, alt gövde yürüyüş oynar.
     // KayKit'te "yürürken taşıma" klibi yok; iki yarım klip aynı anda, tam ağırlıkta çalar.
-    const hedefler = tasiyor
+    const hedefler = tasiyor && !tekEl
       ? [`${hedefKlip}|alt`, `${KLIP.tut}|ust`]
       : [hedefKlip];
 
@@ -500,13 +505,39 @@ function KayActorGovde({
     govde.getObjectByName(STERIL('handslot.l')) ?? null,
     govde.getObjectByName(STERIL('handslot.r')) ?? null,
   ], [govde]);
+  const sagKol = useMemo(() => govde.getObjectByName(STERIL('upperarm.r')) ?? null, [govde]);
   const solP = useRef(new Vector3());
   const sagP = useRef(new Vector3());
+  const kolQ = useMemo(() => ({
+    ebeveyn: new Quaternion(), ters: new Quaternion(), aktor: new Quaternion(), don: new Quaternion(), eksen: new Vector3(),
+    taban: new Quaternion(), yazilan: new Quaternion(), dolu: false,
+  }), []);
   useFrame(() => {
     const t = tepsiRef.current;
     const g = ref.current;
     if (!t || !g) return;
     const [sol, sag] = eller;
+    // Tek elde taşıma: karıştırıcı kolu bu karede yazdı; üstüne dünya eksenlerinde (aktörün ileri ve
+    // yan ekseni) açılma eklenir. Yerel eksen kemikten kemiğe değişir, dünya ekseni değişmez.
+    if (tasiyor && tekEl && sagKol?.parent) {
+      // Karıştırıcı bu karede kolu yazmadıysa (klip durmuş/çizim atlanmış) açılma ÜST ÜSTE binmesin.
+      if (kolQ.dolu && sagKol.quaternion.equals(kolQ.yazilan)) sagKol.quaternion.copy(kolQ.taban);
+      kolQ.taban.copy(sagKol.quaternion);
+      g.getWorldQuaternion(kolQ.aktor);
+      sagKol.parent.getWorldQuaternion(kolQ.ebeveyn);
+      kolQ.ters.copy(kolQ.ebeveyn).invert();
+      const ekle = (x: number, y: number, z: number, aci: number) => {
+        kolQ.eksen.set(x, y, z).applyQuaternion(kolQ.aktor);
+        kolQ.don.setFromAxisAngle(kolQ.eksen, aci);
+        // yerel' = P⁻¹ · R · P · yerel
+        sagKol.quaternion.premultiply(kolQ.ebeveyn).premultiply(kolQ.don).premultiply(kolQ.ters);
+      };
+      ekle(0, 0, 1, -ASKI_KOL.acilma);
+      ekle(1, 0, 0, -ASKI_KOL.one);
+      kolQ.yazilan.copy(sagKol.quaternion);
+      kolQ.dolu = true;
+      sagKol.updateMatrixWorld(true);
+    }
     // EL BULUNAMAZSA TEPSİ GİZLENİR, yerinde BIRAKILMAZ. Bırakmak sessiz bir kusurdu: tepsi
     // konum alamayınca son konumunda kalıyor ve sahnede sahipsiz duruyordu. Görünmemek,
     // yanlış yerde görünmekten iyidir.
@@ -515,9 +546,12 @@ function KayActorGovde({
       return;
     }
     t.visible = true;
-    sol.getWorldPosition(solP.current);
-    sag.getWorldPosition(sagP.current);
-    solP.current.add(sagP.current).multiplyScalar(0.5);
+    if (tasiyor && tekEl) sag.getWorldPosition(solP.current);
+    else {
+      sol.getWorldPosition(solP.current);
+      sag.getWorldPosition(sagP.current);
+      solP.current.add(sagP.current).multiplyScalar(0.5);
+    }
     // Dünya → bu bileşenin ebeveyn uzayı (gövde ölçeğinin DIŞI).
     t.parent?.worldToLocal(solP.current);
     t.position.copy(solP.current);

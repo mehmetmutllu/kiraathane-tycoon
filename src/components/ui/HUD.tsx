@@ -1,4 +1,4 @@
-import { Suspense, lazy, useEffect, useRef, useState, useSyncExternalStore, type ComponentProps } from 'react';
+import { Suspense, lazy, useEffect, useRef, useState, useSyncExternalStore, type ComponentProps, type ReactNode } from 'react';
 import { useGame, goalMetricsOf, tableThemeUnlocked, tableSoftMaxLevel, gorunenCuzdan } from '../../game/store';
 import { claimableGoals, collectionBonus, goalViewsForPanel, type GoalView } from '../../game/goals';
 import { dailyViews, claimableDailyCount, dayIndex, type DailyQuestView } from '../../game/dailyQuests';
@@ -22,7 +22,6 @@ import { fmt, sayi } from '../../game/decimal';
 import { SAYAC_MS, sayacDegeri } from '../../game/sayac';
 import { SAVE_VERSION } from '../../game/save';
 import { levelProgress, reputationCarryMult, economyConfig, MAX_AREAS } from '../../config/economy.config';
-import { floorSwatch, WALL_THEMES } from '../../config/palette';
 import {
   CoinIcon,
   GemIcon,
@@ -47,10 +46,18 @@ import {
   TickIcon,
   DotIcon,
   BasinIcon,
+  ShirtIcon,
+  TrayIcon,
+  LampIcon,
+  TableIcon,
+  FloorIcon,
+  WallIcon,
+  NoAdsIcon,
+  GemPackArt,
 } from './icons';
 import { Sheet } from './Sheet';
 import { baslangicTeklifiGoster, dekorAcik, dekorSalonu, vitrinSahip, vitrinUrunleri, vitrinUrunu, type VitrinTuru } from '../../game/vitrin';
-import { dekorPulu, kiyafetPulu, tepsiPulu } from '../../config/kozmetik';
+import { kiyafetPulu } from '../../config/kozmetik';
 import './hud.css';
 import { KafeAdiKutusu } from './KafeAdiKutusu';
 
@@ -1774,35 +1781,22 @@ function Paketler() {
   // Fiyatı gelmeyen ürün satılmaz; sebep düğmelerde değil, listenin üstünde BİR KEZ söylenir (metin 3).
   // Yalnız mağaza gerçekten YOKSA (denemeler bitti) ve hiç fiyat yoksa — tek eksik ürün listeyi kirletmez.
   const baglantiYok = sa.durum === 'yok' && fiyatYok === 2 + U.elmas.length;
-  const kart = (urun: string, ad: string, not: string, odul: number | null, sahip: boolean) => {
+  // Satın alma düğmesi üç düzende de aynı: sahipse "Alındı", işlemdeyse bekler, fiyat yoksa satılmaz.
+  const dugme = (urun: string, sahip: boolean) => {
     const fiyat = urunFiyati(urun);
     return (
-      <li className={`goal${sahip ? ' full' : ''}`} key={urun} data-testid={`paket-${urun}`}>
-        <span className="goal-top">
-          <b>{ad}</b>
-          {odul != null && (
-            <span className="goal-reward">
-              <GemIcon size={13} />
-              {odul}
-            </span>
-          )}
-        </span>
-        <span className="goal-foot">
-          <span className="goal-note">{not}</span>
-          <button
-            className="goal-claim"
-            data-testid={`paket-al-${urun}`}
-            disabled={sahip || !fiyat || sa.mesgul}
-            onClick={() => void al(urun)}
-          >
-            {sahip ? (
-              <>
-                <TickIcon size={13} /> {t('Alındı')}
-              </>
-            ) : sa.islemde === urun ? t('Bekleniyor…') : (fiyat ?? '—')}
-          </button>
-        </span>
-      </li>
+      <button
+        className="goal-claim paket-fiyat"
+        data-testid={`paket-al-${urun}`}
+        disabled={sahip || !fiyat || sa.mesgul}
+        onClick={() => void al(urun)}
+      >
+        {sahip ? (
+          <>
+            <TickIcon size={13} /> {t('Alındı')}
+          </>
+        ) : sa.islemde === urun ? t('Bekleniyor…') : (fiyat ?? '—')}
+      </button>
     );
   };
   return (
@@ -1819,22 +1813,47 @@ function Paketler() {
       {sa.mesaj && sa.sonuc?.sonuc !== 'tamam' && (
         <div className="sheet-foot-note" data-testid="satin-sonuc">{t(sa.mesaj)}</div>
       )}
-      <ul className="goals">
-        {kart(
-          U.reklamsiz,
-          t('Reklamları Kaldır'),
-          t('Oyunun arasına giren reklamlar kalkar. Ödüllü videoları yine istediğinde izlersin. Her gün {1} elmas hediye.', P.removeAdsDiamondsPerDay),
-          null,
-          satin.reklamsiz,
-        )}
-        {iapConfig.vitrin.baslangic &&
-          kart(U.baslangic, t('Başlangıç Paketi'), t('{1} elmas ve yalnız bu pakette olan Kurucu kıyafeti. Bir kez alınabilir.', P.starterDiamonds),
-            P.starterDiamonds, satin.baslangic)}
-        {iapConfig.vitrin.elmas &&
-          U.elmas.map((u, i) =>
-            kart(u, t(P.diamondPackLabels[i] ?? 'Elmas'), t('Kıyafet, tepsi ve dekor almak için.'), P.diamondPacks[i] ?? 0, false),
-          )}
-      </ul>
+      {/* AFİŞ — Başlangıç Paketi, içindeki kıyafetin kendi resmiyle. */}
+      {iapConfig.vitrin.baslangic && (
+        <div className={`paket-afis${satin.baslangic ? ' full' : ''}`} data-testid={`paket-${U.baslangic}`}>
+          <img className="paket-afis-resim" src={kucukResim('kiyafet', 'kurucu')} alt="" draggable={false} />
+          <div className="paket-afis-govde">
+            <span className="paket-ust">{t('Bir kez alınabilir')}</span>
+            <b className="paket-afis-ad">{t('Başlangıç Paketi')}</b>
+            <span className="paket-afis-icerik">
+              <GemIcon size={16} /> {P.starterDiamonds} + {t('Kurucu kıyafeti')}
+            </span>
+            {dugme(U.baslangic, satin.baslangic)}
+          </div>
+        </div>
+      )}
+      {/* ELMAS IZGARASI — avuç · kese · sandık; resim kademeyle büyür. */}
+      {iapConfig.vitrin.elmas && (
+        <ul className="paket-izgara">
+          {U.elmas.map((u, i) => (
+            <li className="paket-kart" key={u} data-testid={`paket-${u}`}>
+              <GemPackArt kademe={i} size={60} />
+              <span className="paket-kart-ad">{t(P.diamondPackLabels[i] ?? 'Elmas')}</span>
+              <span className="paket-kart-miktar">
+                <GemIcon size={15} />
+                {P.diamondPacks[i] ?? 0}
+              </span>
+              {dugme(u, false)}
+            </li>
+          ))}
+        </ul>
+      )}
+      {/* REKLAMLARI KALDIR — geniş şerit. Ödüllüye dokunmaz (monetization.md). */}
+      <div className={`paket-serit${satin.reklamsiz ? ' full' : ''}`} data-testid={`paket-${U.reklamsiz}`}>
+        <span className="paket-serit-ikon">
+          <NoAdsIcon size={38} />
+        </span>
+        <span className="paket-serit-govde">
+          <b>{t('Reklamları Kaldır')}</b>
+          <span>{t('Ödüllü videolar kalır · her gün {1} elmas', P.removeAdsDiamondsPerDay)}</span>
+        </span>
+        {dugme(U.reklamsiz, satin.reklamsiz)}
+      </div>
       <div className="sheet-foot-note">
         {t('Aldıkların')} {magazaHesabi()} {t('saklanır. Telefon değiştirirsen Ayarlar\'dan geri yükleyebilirsin.')}
       </div>
@@ -1842,6 +1861,12 @@ function Paketler() {
     </div>
   );
 }
+
+/** Kozmetiğin küçük resmi (`tools/kucuk-resim.mjs` çeker, bekçi `tests/kucuk-resim.test.ts`). */
+const kucukResim = (tur: string, id: string) => `/assets/thumbs/${tur}-${id}.webp`;
+const RESIM_TURU: Record<Exclude<Sekme, 'paket'>, string> = {
+  outfit: 'kiyafet', tray: 'tepsi', decor: 'dekor', table: 'masa', floor: 'zemin', wall: 'duvar',
+};
 
 type Sekme = VitrinTuru | 'table' | 'floor' | 'wall' | 'paket';
 /** Seçili ürün zaten kullanımdaysa ad satırının sağı (metin 12): neyin "uygulandığı" sekmeye göre söylenir. */
@@ -1854,7 +1879,7 @@ const UYGULANDI_SATIRI: Record<Sekme, string> = {
   wall: t('Şu an salonda'),
   paket: '',
 };
-/** 💎 ile alınan sekmeler üst satırda (F4c-2) — ₺ sekmeleriyle karışmasın. */
+/** 💎 ile alınan sekmeler (F4c-2) — elmas çizgisiyle ₺ sekmelerinden ayrılır. */
 const ELMAS_SEKME: readonly Sekme[] = ['outfit', 'tray', 'decor', 'paket'];
 
 function Bildirim({ notice }: { notice: GameNotice }) {
@@ -1942,15 +1967,21 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
   }, [tab, sel.decor, setDekorOnizleme]);
   useEffect(() => () => setDekorOnizleme(null), [setDekorOnizleme]);
 
-  const TABS: { k: Sekme; label: string }[] = [
-    { k: 'outfit', label: t('Kıyafet') },
-    { k: 'tray', label: t('Tepsi') },
-    { k: 'decor', label: t('Dekor') },
-    { k: 'paket', label: t('Paketler') },
-    { k: 'table', label: t('Masa') },
-    { k: 'floor', label: t('Zemin') },
-    { k: 'wall', label: t('Duvar') },
+  const TABS: { k: Sekme; label: string; ikon: ReactNode }[] = [
+    { k: 'outfit', label: t('Kıyafet'), ikon: <ShirtIcon size={24} /> },
+    { k: 'tray', label: t('Tepsi'), ikon: <TrayIcon size={24} /> },
+    { k: 'decor', label: t('Dekor'), ikon: <LampIcon size={24} /> },
+    { k: 'paket', label: t('Paketler'), ikon: <GemIcon size={24} /> },
+    { k: 'table', label: t('Masa'), ikon: <TableIcon size={24} /> },
+    { k: 'floor', label: t('Zemin'), ikon: <FloorIcon size={24} /> },
+    { k: 'wall', label: t('Duvar'), ikon: <WallIcon size={24} /> },
   ];
+  // Tek satır yana kayar: seçilen sekme kenarda kaldıysa görünür yere gelir.
+  const sekmeler = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = sekmeler.current?.querySelector<HTMLElement>('.shop-tab.active');
+    el?.scrollIntoView?.({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
+  }, [tab]);
 
   const kilitli = tab === 'table' && !tableUnlocked;
   const zn = Math.min(zone, Math.max(0, areasOpen - 1));
@@ -2000,80 +2031,90 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
   const bakiye = elmasli ? diamonds.toNumber() : wallet.toNumber();
   const afford = !!secili && !paketUrunu && (secili.owned || bakiye >= secili.cost);
 
-  // Seçim şeridi: renk pulu + "uygulanmış" rozeti. Ad ve fiyat şeritte DEĞİL, altındaki satırda —
-  // aynı bilgiyi iki yere yazmak şeridi kalabalıklaştırıyor ve pulu küçültüyordu.
+  // Seçim şeridi: ürünün KENDİ küçük resmi + altında durumu (fiyat · kilit). Ad şeritte DEĞİL, altındaki
+  // satırda; üstteki büyük önizleme seçileni gösterir (kullanıcı 2026-10-13: "altta ön izleme, üstte büyük hali").
   const chip = (
     key: string,
     testid: string,
-    bg: string,
+    resim: string,
     isSel: boolean,
     applied: boolean,
+    alt: ReactNode,
     onClick: () => void,
   ) => (
     <button key={key} className={`shop-chip${isSel ? ' sel' : ''}`} data-testid={testid} onClick={onClick}>
-      <span className="shop-chip-swatch" style={{ background: bg }} />
+      <img className="shop-chip-resim" src={resim} alt="" draggable={false} />
       {applied && (
         <span className="shop-chip-badge">
           <TickIcon size={11} />
         </span>
       )}
+      {alt != null && <span className="shop-chip-alt">{alt}</span>}
     </button>
+  );
+  const fiyatEtiketi = (cost: number, elmas: boolean) => (
+    <>
+      {elmas ? <GemIcon size={12} /> : <CoinIcon size={12} />}
+      {fmt(cost)}
+    </>
   );
 
   const renderStrip = () => {
+    if (tab === 'paket') return null;
+    const tur = RESIM_TURU[tab];
     if (tab === 'outfit' || tab === 'tray' || tab === 'decor') {
-      const pul = tab === 'outfit' ? kiyafetPulu : tab === 'tray' ? tepsiPulu : dekorPulu;
+      const durum = { ownedCosmetics, satin: { baslangic: satinBaslangic } };
       return vitrinUrunleri(tab).map((u) => {
-        const [a, b] = pul(u.id);
         const uygulanan = tab === 'outfit' ? outfit === u.id : tab === 'tray' ? trayLook === u.id : !!u.yuva && dekor[u.yuva] === u.id;
-        return chip(u.id, `shop-card-${tab}-${u.id}`, `linear-gradient(135deg, ${a} 0 55%, ${b} 55% 100%)`, sel[tab] === u.id, uygulanan, () =>
+        const sahip = vitrinSahip(durum, tab, u.id);
+        const alt = sahip
+          ? null
+          : tab === 'decor' && !dekorAcik(u.id, areasOpen)
+            ? <LockIcon size={12} />
+            : u.paket
+              ? t('Paket')
+              : fiyatEtiketi(u.diamonds, true);
+        return chip(u.id, `shop-card-${tab}-${u.id}`, kucukResim(tur, u.id), sel[tab] === u.id, uygulanan, alt, () =>
           setSel((p) => ({ ...p, [tab]: u.id })),
         );
       });
     }
     if (tab === 'table') {
-      return economyConfig.cosmetics.tableThemes.map((t) =>
-        chip(t.id, `shop-card-table-${t.id}`, t.color, sel.table === t.id, tableTheme === t.id, () =>
-          setSel((p) => ({ ...p, table: t.id })),
-        ),
-      );
+      return economyConfig.cosmetics.tableThemes.map((x) => {
+        const sahip = x.cost === 0 || ownedCosmetics.includes(`table:${x.id}`);
+        return chip(x.id, `shop-card-table-${x.id}`, kucukResim(tur, x.id), sel.table === x.id, tableTheme === x.id,
+          sahip ? null : fiyatEtiketi(x.cost, false), () => setSel((p) => ({ ...p, table: x.id })));
+      });
     }
-    if (tab === 'paket') return null;
     const themes = tab === 'floor' ? economyConfig.cosmetics.floorThemes : economyConfig.cosmetics.wallThemes;
     const selected = tab === 'floor' ? floorThemeByArea : wallThemeByArea;
-    return themes.map((t) => {
-      const cols =
-        tab === 'floor'
-          ? floorSwatch(t.id)
-          : [WALL_THEMES[t.id]?.cream ?? '#999', WALL_THEMES[t.id]?.wainscot ?? '#777'];
-      return chip(
-        t.id,
-        `shop-card-${tab}-${t.id}`,
-        `linear-gradient(135deg, ${cols[0]} 0 50%, ${cols[1]} 50% 100%)`,
-        sel[tab] === t.id,
-        selected[zn] === t.id,
-        () => setSel((p) => ({ ...p, [tab]: t.id })),
-      );
+    return themes.map((x) => {
+      const sahip = x.cost === 0 || ownedCosmetics.includes(`${tab}:${x.id}:z${zn}`);
+      return chip(x.id, `shop-card-${tab}-${x.id}`, kucukResim(tur, x.id), sel[tab] === x.id, selected[zn] === x.id,
+        sahip ? null : fiyatEtiketi(x.cost, false), () => setSel((p) => ({ ...p, [tab]: x.id })));
     });
   };
 
   return (
     <Sheet title={tab === 'paket' ? t('Paketler') : t('Mağaza')} testid="shop-panel" onClose={onClose}>
       <div className="shop-card">
-        <div className="shop-tabs">
-          {TABS.map(({ k, label }) => (
+        <div className="shop-tabs" ref={sekmeler}>
+          {TABS.map(({ k, label, ikon }) => (
             <button
               key={k}
               className={`shop-tab${ELMAS_SEKME.includes(k) ? ' elmas' : ''}${tab === k ? ' active' : ''}`}
               data-testid={`shop-tab-${k}`}
               onClick={() => setTab(k)}
             >
-              {label}
-              {k === 'table' && !tableUnlocked ? (
-                <span className="shop-tab-lock">
-                  <LockIcon size={13} />
-                </span>
-              ) : null}
+              <span className="shop-tab-ikon">
+                {ikon}
+                {k === 'table' && !tableUnlocked ? (
+                  <span className="shop-tab-lock">
+                    <LockIcon size={13} />
+                  </span>
+                ) : null}
+              </span>
+              <span className="shop-tab-ad">{label}</span>
             </button>
           ))}
         </div>
@@ -2151,13 +2192,8 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
                 </span>
               </div>
             )}
-            {/* B12 (T9d): alım sönükse nedeni yazar. */}
-            {secili && !secili.owned && !afford && !paketUrunu && !kilitSalon && (
-              <span className="eksik shop-eksik" data-testid="eksik">
-                {elmasli ? <GemIcon size={12} /> : <CoinIcon size={12} />}
-                {t('{1} eksik', fmt(Math.ceil(secili.cost - bakiye)))}
-              </span>
-            )}
+            {/* B12'nin "{1} eksik" satırı mağazadan KALKTI (kullanıcı 2026-10-13): fiyat ad satırında ve
+                düğmede zaten yazıyor; ekstra satır vitrini kısaltıyordu. Usta modali ve çaycı paneli tutar. */}
           </>
         )}
       </div>

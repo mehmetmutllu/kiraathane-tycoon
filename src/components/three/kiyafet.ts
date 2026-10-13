@@ -11,7 +11,7 @@ import { onlukParcasi, onlukIzgarasi, kumas, ONLUK_DILIM, ONLUK_EKSEN_Z } from '
  * Ölçüler HAM rig biriminde (gövde 0,38…1,24 · baş eni 0,86), `kiyafetTak` ile aynı dil.
  */
 export const YELEK = {
-  yAlt: 0.6,
+  yAlt: 0.74,
   yUst: 1.14,
   /** Her panelin yayı; merkezleri ±105° → önde 60°'lik açıklık, arkada paneller buluşur. */
   yayDerece: 150,
