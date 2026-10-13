@@ -1,9 +1,21 @@
 {
  "not": "İlerleme panosunun ESKİ oturum kartları. Pano her turda büyüyordu (67 kart / 219 KB) ve yayını canlı sürümün tamamının okunmasını şart koştuğu için tur başına maliyeti ARTIYORDU — okunanın neredeyse tamamı bir daha bakılmayacak arşivdi. Projenin kendi kuralı buraya da uygulandı (eski anlatı → arsiv/). Pano son 8 turu gösterir; öncesi burada ve git geçmişinde durur.",
  "kaynak": "docs/pano/ilerleme-panosu.html",
- "tasindi": "2026-09-25",
- "kart": 82,
+ "tasindi": "13.10.2026",
+ "kart": 84,
  "gunluk": [
+  {
+   "tarih": "24.09.2026",
+   "etiket": "F4a — satın alımlar (D-152)",
+   "baslik": "Satın alma <b>bağlandı</b>: Reklamları Kaldır + başlangıç 100 💎",
+   "govde": "RevenueCat katmanı kuruldu; anahtar girilene dek cihazda kapalı, tarayıcıda sahte mağaza. Reklamları Kaldır geçişliyi kaldırıyor, ödüllüye dokunmuyor ve günde 10 💎 veriyor.<br><br><b>Ölçülen: peşin 💎.</b> Başlangıç 100 💎 Kat 1'i %4,5 kısaltıyor; sınırsız 💎 bile yalnız %7,0. 💎'ın talebi 250'de bitiyor, bu yüzden paketler 25/60/150 ve vitrin 💎 harcama yeri gelene dek kapalı.",
+   "maddeler": [
+    "başlangıç paketi: <b>100 💎</b> + yalnız ona özel kozmetik (F4c)",
+    "elmas paketleri <b>25/60/150</b> kodda, vitrinde kapalı",
+    "aynı işlem iki kez ödül vermez · sıfırlama satın alımı silmez · geri yükle",
+    "bekçi 25 test · 11/11 mutasyon · duman 55/55"
+   ]
+  },
   {
    "tarih": "24.09.2026",
    "etiket": "F3 — reklam altyapısı (D-149) + ödüllü videonun ödülü (D-150)",
