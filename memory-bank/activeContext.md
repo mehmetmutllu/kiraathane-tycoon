@@ -16,7 +16,8 @@ beyaz yuvarlak geri, mor seçili sekme, kilitli SIRADA (D-168; kullanıcı: "ço
 1. **Test APK kullanıcıda** (debug, 20,9 MiB, 2026-10-14): `android/app/build/outputs/apk/debug/app-debug.apk` + masaüstü
    `TeaHouse-test-2026-10-14.apk`. Kullanıcının telefon geri bildirimini al: sandık dar ekranda başlığa çarpıyor mu · sayılar
    okunuyor mu · kontursuz kartlar zeminden ayrışıyor mu · mor sekme/beyaz geri net mi · Ametist boğucu mu. Düzeltmeleri yap.
-2. Sorun yoksa: yeni Play paketi (`npm run play:paket`) → arkadaşa.
+2. ✅ **Play 1.0.2 hazır** (2026-10-14, versionCode 10002, imzalı AAB 15,8 MiB gerçek reklam kipi): `dist-play/TeaHouseTycoon-GooglePlay.zip`
+   + masaüstü kopyaları (`…-1.0.2.zip`, `TeaHouseTycoon-1.0.2.aab`). Kullanıcı arkadaşına iletir. Telefon turunda düzeltme çıkarsa 1.0.3.
 3. Küçükler: Usta kartındaki açık mavi "0/7" · küçük resimde zayıf üç (semaver, Restoran ≈ Krem fayans, Klasik Parke).
    Duman erken akışı 2026-10-13'te 4 kez üst üste düştü, sonra kendiliğinden geçti (Vite ısınması şüphesi).
 
