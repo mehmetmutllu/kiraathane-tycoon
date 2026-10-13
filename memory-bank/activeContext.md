@@ -23,7 +23,7 @@ zemin/duvar önizleme ortalı · Kurucu yeleği belde biter · tam ekran panelle
 3. Sonra: test APK (`npm run apk`) kullanıcı telefonda dener.
 
 ## AÇIK KALEMLER
-- iOS inceleme: 2026-10-12 Apple'a "App Review Status" sorgusu gönderildi (vaka 102994418818); cevap mutlubadem4456@gmail.com'a gelir. Gönderime dokunma, hızlandırılmış inceleme tekrar istenmez.
+- iOS inceleme: Apple cevap verdi (2026-10-14, vaka 102987045833): 8 Eki'den beri "Waiting for Review", sorun yok; geri çekip yeniden göndermek sırayı baştan başlatıyor → BEKLE, gönderime dokunma, geri çekme, hızlandırılmış inceleme isteme. Bitince e-posta gelir.
 - Play: 1.0.1 zip arkadaşa (mikrometin değişti → yeni zip gerekirse `npm run play:paket`); servis hesabı JSON'u → RevenueCat; RC'de Android baslangic/reklamsiz = Non-consumable.
 - Cihaz turu (Android 1.0.1): `sprint-A-defter.md` "Nasıl kontrol edersin" 5 adımı.
 - Deyimix 1.0.1 "Pending Developer Release" — kullanıcı Release diyecek.
