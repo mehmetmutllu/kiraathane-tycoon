@@ -2315,3 +2315,19 @@
 .modal-card.screen .yasal-satir button {
   color: var(--lila-ot);
 }
+
+/* Açık kartlardaki renkli sayılar (D-167, S2): koyu HUD için seçilmiş amber/elmas/yeşil beyazda 1,0–1,7:1 kalıyordu.
+   Kontur 13 px'te harfi yuttu (S1 elendi) → rengin koyu tonu; anlam rengi aynı kalır. */
+.modal-card.screen :is(.band-sub, .goal-num) {
+  color: var(--lila-ac-koyu);
+}
+.modal-card.screen :is(.qbig-reward, .qrow-reward, .goal-reward) {
+  color: var(--lila-para-koyu);
+}
+.modal-card.screen :is(.usta-price, .paket-kart-miktar) {
+  color: var(--lila-elmas-koyu);
+  -webkit-text-stroke: 0;
+}
+.modal-card.screen .char-stat-val i {
+  color: var(--lila-ok-koyu);
+}

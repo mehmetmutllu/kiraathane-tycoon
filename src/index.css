@@ -88,6 +88,11 @@
   --afis-1: #7f6fe0;
   --afis-2: #4a3da6;
   --afis-3: #2f2577;
+  /* Açık kartta renkli sayı (D-167, S2): amber/elmas/yeşil beyazda 1,0–1,7:1 kalıyordu → aynı rengin koyu tonu. */
+  --lila-ac-koyu: #9c5400;
+  --lila-para-koyu: #7d4700;
+  --lila-elmas-koyu: #1b6fd0;
+  --lila-ok-koyu: #27781f;
 }
 
 * {

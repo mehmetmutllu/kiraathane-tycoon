@@ -16,9 +16,8 @@ zemin/duvar önizleme ortalı · Kurucu yeleği belde biter · tam ekran panelle
 - ✅ **İkonlar geçti (D-166):** 32 bitmap ikon `public/assets/ui/ikon/` · ekran görüntüleri `docs/tasarim/sprint-C/ikon-*.png`.
 1. ✅ **Ametist + afiş koda girdi (D-167):** `--lila-*` Ametist · afiş koyu mor ışın + sandık **D (sağ orta)** · alınmış hâl
    rengi çekilmiş · Ayarlar zemin metni koyulaştı. Görsel: `docs/tasarim/sprint-C/ametist-afis.png` · artifact NKxdozMihbisTNjYfjnTtn.
-   **AÇIK — kullanıcıya sor:** kart sayıları (Görevler/Hedefler/Paketler sarı-mavi, 1,0–1,5:1) S1 kontur mu S2 koyu ton mu?
-   Öneri S2 (kontur 13 px'te yutuyor). Kare: `ametist-sayilar-s1-s2.png` · S2 CSS'i `tools/_ametist-cek.mjs` içinde hazır
-   (`SAYI_KIP`); seçilince hud.css sonuna `.modal-card.screen` kapsamlı kural olarak yazılır, sonra araç silinir.
+   ✅ Kart sayıları **S2 koyu ton** (`--lila-*-koyu`, hepsi ≥ 4,5:1) · kare `ametist-sayilar-s2.png`.
+   Not: duman erken akışı bu turda 4 kez üst üste düştü, sonra kendiliğinden 3 kez geçti (Vite ısınması şüphesi).
 2. ChatGPT revize tasarımı uygula (`chatgpt-2-revizyon.png`): kontursuz kartlar + yumuşak gölge, beyaz yuvarlak geri,
    "SIRADA" kilitli sakin satırlar, turuncu yalnız ana eylem (seçili sekme ayrışsın).
 3. Sonra: test APK (`npm run apk`) kullanıcı telefonda dener.

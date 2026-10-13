@@ -4971,5 +4971,6 @@ sandığı + ışıltı** (artifact FHxaDEgDNa4kqUeuWLbSXe; 3 altın ve 4 koyu a
 yeri yeniden seçtirilir. Renk kodları ve afiş tarifi: tur kartı. Henüz koda girmedi.
 **Uygulama (aynı gün, kullanıcı seçti — artifact NKxdozMihbisTNjYfjnTtn):** sandık **D · sağda dikey ortada, 64 px** (başlık iki
 satıra kırılır, kabul); alınmış afiş **saydam değil, rengi çekilmiş** (`saturate .35`). Zemine doğrudan yazılan Ayarlar metni
-tx2 3,0:1 → çerçeve moru 4,8:1. Kart sayıları (sarı/mavi 1,0–1,5:1) için S1 kontur / S2 koyu ton cevap bekliyor.
+tx2 3,0:1 → çerçeve moru 4,8:1. Kart sayıları (sarı/mavi/yeşil 1,0–1,7:1) **S2 koyu ton** (kullanıcı: "koyu ton, kontur değil"):
+`--lila-*-koyu` dört token, ekran kabuğu kapsamında; hepsi ≥ 4,5:1 (oyuk zemindeki SIRADA satırı dahil).
 
