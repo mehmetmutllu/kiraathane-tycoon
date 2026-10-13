@@ -21,6 +21,11 @@ zemin/duvar önizleme ortalı · Kurucu yeleği belde biter · tam ekran panelle
    C Ametist `#9d8fe0 #8576d2 #faf8ff #eee8ff #d9cff8 #1c1450 #4c4090 #2c226e #c4b7f5` (zemindeki soluk yazı 2,3:1 → koyulaştır)
    D Yumuşak gece `#5c51a6 #443a8c #6b60b6 #5f54aa #352c74 #f4f0ff #ddd6f8 #1d1650 #8a7be0` (açık metin; `--k3` gölgesini kontrol et)
    Sonra sarı sayıların (amber/kart 2,1–2,5:1) okunurluğuna bak.
+   **Kullanıcı eğilimi: C Ametist** — ama Başlangıç Paketi afişi değişsin. Afiş seçenekleri (Ametist üstünde):
+   https://claude.ai/artifact/FHxaDEgDNa4kqUeuWLbSXe · `.paket-afis` arka planı (index.css ~1427):
+   1 Beyaz = `var(--kart)` · 2 ChatGPT = beyaz→#efe9ff→#d8cbff radyal + 4 beyaz ışıltı noktası + sağ altta `elmas-sandik` ikonu (92 px, mutlak)
+   · 3 Altın = #fff6d8→#ffe08a→#f6b73c radyal + `repeating-conic-gradient` beyaz ışın (%35) · 4 Koyu = #7f6fe0→#4a3da6→#2f2577 + ışın %7, beyaz yazı.
+   Not: `.paket-afis.full` opacity 0,75 alınmış afişi boğuk gösteriyor — seçenekler alınmamış hâlde çizildi; alınmış hâli ayrıca düşün.
 2. ChatGPT revize tasarımı uygula (`chatgpt-2-revizyon.png`): kontursuz kartlar + yumuşak gölge, beyaz yuvarlak geri,
    "SIRADA" kilitli sakin satırlar, turuncu yalnız ana eylem (seçili sekme ayrışsın).
 3. Sonra: test APK (`npm run apk`) kullanıcı telefonda dener.
