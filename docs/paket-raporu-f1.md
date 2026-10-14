@@ -223,7 +223,7 @@ turda yok → **F1b'de ölçülüp gösterilerek sorulacak.** Kalıcı kalem de�
 | `package.json` | `0.0.0` → **`0.9.0`** (tek kaynak) + `npm run yayin` betiği |
 | `.gitignore` | `android/keystore.properties` · `android/*.jks` |
 | `tools/apk-temizle.mjs` | bayat çıktı temizliği **AAB'yi de** kapsıyor |
-| `özel senkron deposu\topla.ps1` · `kur.ps1` | keystore iki makine arasında senkronlanıyor |
+| özel senkron betikleri | keystore iki makine arasında senkronlanıyor |
 
 **Üretilen imzalı çıktılar** (`npm run yayin`):
 
