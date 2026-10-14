@@ -14,7 +14,7 @@ KARAR           : D-130 — 1C · 2A · 3A. Kimlik com.memedobro.teahousetycoon 
 UYGULAMA        : build.gradle (kimlik + sürüm türetme + signingConfig + R8) · capacitor.config.ts
                   · MainActivity dizin taşıması · values/ + values-tr/ strings.xml ·
                   package.json 0.9.0 + `npm run yayin` · .gitignore · apk-temizle (AAB de) ·
-                  dev-ortam topla.ps1/kur.ps1
+                  özel senkron deposu senkron betikleri
 BEKÇİ           : tests/paket-f1.test.ts (19 den.) · tools/mutasyon-paket-f1.mjs 18/18 kırmızı
                   (ilk koşuda 2 kaçtı — bekçi .gitignore'ın METNİNE bakıyordu)
 FINAL           : vitest 1292 ✓ · duman 45/45 ✓ · tsc temiz · imzalı APK 8,58 MB / AAB 8,89 MB

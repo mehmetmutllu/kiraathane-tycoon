@@ -206,7 +206,7 @@ Cihazdaki simge adı da dile bağlandı: `values/strings.xml` → *Tea House Tyc
 
 **Sorulmayanlar (teknik çatal — `feedback_technical_forks`):** çıktı biçimi **ikisi de** (Play
 AAB ister, APK cihaz denemesi için) · sürüm **tek kaynağa** bağlandı · keystore RSA 4096 /
-10.000 gün / `C:\dev-ortam` · `allowBackup` açık kaldı.
+10.000 gün / `özel senkron deposu` · `allowBackup` açık kaldı.
 
 **Bilerek sorulmayan:** ekran yönü. Cevabı *oyunun yatayda nasıl göründüğü*, yani sayısı bu
 turda yok → **F1b'de ölçülüp gösterilerek sorulacak.** Kalıcı kalem değil.
@@ -223,7 +223,7 @@ turda yok → **F1b'de ölçülüp gösterilerek sorulacak.** Kalıcı kalem de�
 | `package.json` | `0.0.0` → **`0.9.0`** (tek kaynak) + `npm run yayin` betiği |
 | `.gitignore` | `android/keystore.properties` · `android/*.jks` |
 | `tools/apk-temizle.mjs` | bayat çıktı temizliği **AAB'yi de** kapsıyor |
-| `C:\dev-ortam\topla.ps1` · `kur.ps1` | keystore iki makine arasında senkronlanıyor |
+| `özel senkron deposu\topla.ps1` · `kur.ps1` | keystore iki makine arasında senkronlanıyor |
 
 **Üretilen imzalı çıktılar** (`npm run yayin`):
 

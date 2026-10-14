@@ -196,7 +196,7 @@
     "<b>Native <code>.so</code> yok</b> → Play&#39;in 16 KB sayfa şartı bu projeye dokunmuyor (kol boş)",
     "<b>Sürümün iki kaynağı vardı</b> (gradle &#34;1.0&#34; ↔ package.json &#34;0.0.0&#34;) ve hiçbir yerde karşılaştırılmıyordu — gradle artık <code>package.json</code>&#39;ı okuyor",
     "<b>Başlıklar iki dilde:</b> EN &#34;Tea House Tycoon: Idle Cafe&#34; (27/30) · TR &#34;Köşe Kıraathanesi: Tycoon&#34; (25/30)",
-    "<b>Anahtar:</b> RSA 4096 · 10.000 gün · depoda <b>değil</b> · <code>C:\\dev-ortam</code> senkronunda; anahtar yoksa derleme <b>kırılmaz</b>, imzasız çıkar",
+    "<b>Anahtar:</b> RSA 4096 · 10.000 gün · depoda <b>değil</b> · <code>özel senkron deposu</code> senkronunda; anahtar yoksa derleme <b>kırılmaz</b>, imzasız çıkar",
     "<b>Araç altı kez yanlış okudu</b> ve altısı da kolu <b>daha karamsar</b> gösteriyordu — R8 bir noktada &#34;ölü&#34; ilan edilmişti",
     "<b>F2&#39;nin kusurunun AAB kardeşi</b> de kapatıldı: <code>apk-temizle</code> artık bundle çıktısını da siliyor",
     "Bekçi: <code>paket-f1</code> (19 den.) · <code>mutasyon-paket-f1</code> <b>18/18 kırmızı</b> · ilk koşuda <b>2 kaçtı</b>, delik gerçekti",

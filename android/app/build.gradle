@@ -23,7 +23,7 @@ def surumKodu = surum.group(1).toInteger() * 10000 + surum.group(2).toInteger() 
  * İMZA: anahtar dosyası da parolası da DEPODA DEĞİL.
  *
  * `android/keystore.properties` ve `.jks` git'e girmez (`.gitignore`), iki makine arasında
- * `C:\dev-ortam` ile senkronlanır — wordmaster'da kurulmuş olan kalıbın aynısı. Dosya yoksa
+ * `özel senkron deposu` ile senkronlanır — wordmaster'da kurulmuş olan kalıbın aynısı. Dosya yoksa
  * derleme KIRILMAZ, yalnız imzasız çıkar: böylece anahtarı olmayan bir makine (ya da CI)
  * projeyi yine de derleyebilir. "Anahtar yok" ile "derleme bozuk" ayrı şeylerdir.
  *

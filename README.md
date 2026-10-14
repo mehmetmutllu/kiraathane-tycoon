@@ -1,6 +1,6 @@
-# Köşe Kıraathanesi 🫖 — 3D Idle-Tycoon Game
+# Tea House Tycoon 🫖 — 3D Idle-Tycoon Game
 
-**Store-quality 3D idle-tycoon mobile game set in a Turkish tea house (kıraathane), built with TypeScript, React Three Fiber, Rapier physics and Zustand — with a simulated game economy and a multi-session AI-assisted development workflow.**
+**Store-quality 3D idle-tycoon mobile game set in a traditional Turkish tea house, built with TypeScript, React Three Fiber, Rapier physics and Zustand — with a simulated game economy and a multi-session AI-assisted development workflow.**
 
 Grow a neighborhood tea house from scratch: tea service, kitchen, waiters, okey/backgammon tables, a hookah terrace.
 

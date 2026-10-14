@@ -2620,7 +2620,7 @@ Sanat kalemi değil; Faz S'ten ayrı tutuldu ki asset işi bunların arkasında 
 - ✅ **F1 — kabuk + imza** (tur adı F1a) · **D-130:** kimlik `com.memedobro.teahousetycoon` (Play'de KALICI),
   R8 + kaynak budama açık, sürüm `0.9.0` tek kaynaktan (`package.json`). **İmzalı APK 8,58 MB /
   AAB 8,89 MB** (debug 11,84'ten −%27,5); kazancın %96'sı `.dex`ten. Anahtar RSA 4096/10.000 gün,
-  depoda değil, `C:\dev-ortam` senkronunda. `npm run yayin` imzalı ikisini birden üretir.
+  depoda değil, `özel senkron deposu` senkronunda. `npm run yayin` imzalı ikisini birden üretir.
   Karar 1 paket sunulduktan SONRA değişti: kullanıcı kimlik kolunu değil KONUMLANDIRMAYI sordu
   → ad ile kimlik ayrıldı, başlıklar iki dilde (EN "Tea House Tycoon: Idle Cafe", TR "Köşe
   Kıraathanesi: Tycoon"), cihaz simge adı `values`/`values-tr` ile dile bağlandı. Bekçi

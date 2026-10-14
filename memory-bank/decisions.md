@@ -4194,8 +4194,8 @@ turunu ister.
 - **Sürümün iki kaynağı vardı** (gradle "1.0", package.json "0.0.0") — kapatıldı: gradle artık
   `package.json`'ı okuyor, elle yazılan sürüm satırı kalmadı.
 - **İmza:** RSA 4096 · 10.000 gün · `CN=Tea House Tycoon, O=memedobro, C=TR` · SHA-256
-  `ab2b4f60…c874`. Anahtar ve parola depoda DEĞİL (`.gitignore`), `C:\dev-ortam` ile senkron
-  (`topla.ps1`/`kur.ps1`'e eklendi) — wordmaster kalıbının aynısı. Anahtar yoksa derleme
+  `ab2b4f60…c874`. Anahtar ve parola depoda DEĞİL (`.gitignore`), `özel senkron deposu` ile senkron
+  (senkron betiklerine eklendi) — wordmaster kalıbının aynısı. Anahtar yoksa derleme
   KIRILMAZ, imzasız çıkar. `npm run yayin` imzalı APK + AAB üretir.
 - **Bekçi:** `tests/paket-f1.test.ts` (19 den.) · `node tools/mutasyon-paket-f1.mjs` **18/18
   kırmızı**. İlk koşuda 2 kaçtı (M10 · M11) ve delik gerçekti: bekçi `.gitignore`ın METNİNDE
@@ -4869,7 +4869,7 @@ Metin tablosunun 14 satırı; 14. = alımda kısa bildirim + satın alma sesi, p
 şekilde girilmez.** Tüm hesaplar mutlubadem.dev Google hesabıyla. Uygulama kimliği her platformda `com.mutlubadem.teahouse`
 (D-130'daki `com.memedobro.teahousetycoon` kalktı; Android'de yalnız applicationId, Java paketi aynı). iOS derlemesi
 Codemagic'te; Codemagic API + App Store Connect API ile uzaktan (kalıp: wordmaster `codemagic.yaml` + `memory/yayin_sureci.md`;
-anahtarlar dev-ortam gizli klasöründe). iOS'ta Play Games kapalı (Game Center yok). ASC: ad "Tea House Tycoon", Apple ID
+anahtarlar özel senkron deposu gizli klasöründe). iOS'ta Play Games kapalı (Game Center yok). ASC: ad "Tea House Tycoon", Apple ID
 6816790079, SKU teahouse001, birincil dil en-US. AdMob iOS: app `~4395129824`, geçişli `/3082048152`, ödüllü `/3787876732`.
 RevenueCat: ayrı proje "Tea House Tycoon" (a54ea25c), hak `reklamsiz` + `baslangic`.
 
